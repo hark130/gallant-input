@@ -1,12 +1,12 @@
-"""Defines the root GAIN Component Test Class.
+"""Defines the root GAIN System Test Class.
 
-Import RootCompTest for more details and usage instructions.
+Import RootSystemTest for more details and usage instructions.
 
     Typical usage example:
 
-    from test.comp_test.root_comp_test import RootCompTest
+    from test.system_test.root_comp_test import RootCompTest
 
-    class GainCompTest(RootCompTest):
+    class GainSystemTest(RootCompTest):
         def __init__(self, *args, **kwargs) -> None:
             ...
 
@@ -14,7 +14,7 @@ Import RootCompTest for more details and usage instructions.
 
     # GENERATING REPORT OUTPUT
     > export TEDIOUS_START_VERBOSE_OVERRIDE=True      # Use this to set verbosity to ALL
-    > python -m test.comp_test                        # Executes all functional test cases
+    > python -m test.system_test                      # Executes all functional test cases
     > unset TEDIOUS_START_VERBOSE_OVERRIDE            # Unset it to "clean" your environment
 """
 
@@ -25,8 +25,8 @@ from typing import Any
 from test.root_func_test import RootFuncTest
 
 
-class RootCompTest(RootFuncTest):
-    """GAIN component test class.
+class RootSystemTest(RootFuncTest):
+    """GAIN system test class.
 
     Defines functionality needed by all of this project's component tests.
     """

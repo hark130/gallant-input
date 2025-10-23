@@ -1,0 +1,28 @@
+# PURPOSE: This Docker image includes all test framework and devops dependencies.
+#
+# BUILD - This docker file must be built from the project TLD and requires gallant-input-gain.
+# docker build -t gallant-input-test -f ./devops/docker/Dockerfile.test .
+#
+# USAGE - These commands assume the CWD is the project TLD.
+# Windows host...
+# docker run --volume "${PWD}:/app/gallant-input" --workdir /app/gallant-input -it --rm gallant-input-test
+# Linux...
+# docker run --volume `pwd`:/app/gallant-input --workdir /app/gallant-input -it --rm gallant-input-test
+
+
+# This Docker image already includes all of the GALLANT INPUT (GAIN) dependencies
+FROM gallant-input-gain
+
+# Copy in test framework dependencies
+COPY ./test/requirements.txt ./lib/test_requirements.txt
+COPY ./lib/hobo-1.5.0-py3-none-any.whl ./lib/hobo-1.5.0-py3-none-any.whl
+COPY ./lib/tedious_start-1.4.0-py3-none-any.whl ./lib/tedious_start-1.4.0-py3-none-any.whl
+
+# Install test package dependencies
+RUN apk update && apk upgrade && apk add libffi-dev && pip install -r ./lib/test_requirements.txt
+
+# Copy in devops dependencies
+COPY ./devops/scripts/requirements.txt ./lib/devops_requirements.txt
+
+# Install devops dependencies
+RUN pip install -r ./lib/devops_requirements.txt

@@ -1,0 +1,23 @@
+# PURPOSE: This Docker image includes all GALLANT INPUT (GAIN) dependencies.
+#
+# BUILD - This docker file must be built from the project TLD and requires gallant-input-python-base.
+# docker build -t gallant-input-gain -f ./devops/docker/Dockerfile.gain .
+#
+# USAGE - These commands assume the CWD is the project TLD.
+# Windows host...
+# docker run --volume "${PWD}:/app/gallant-input" --workdir /app/gallant-input -it --rm gallant-input-gain
+# Linux...
+# docker run --volume `pwd`:/app/gallant-input --workdir /app/gallant-input -it --rm gallant-input-gain
+
+
+# This Docker image already includes Python, pip, and updated repositories
+FROM gallant-input-python-base
+
+# Set a working directory
+WORKDIR /root
+
+# Copy the GAIN requirements file
+COPY ./gallant_input/requirements.txt ./gain_requirements.txt
+
+# Install GAIN dependencies
+RUN pip install -r ./gain_requirements.txt

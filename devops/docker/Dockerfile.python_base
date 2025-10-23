@@ -1,0 +1,19 @@
+# PURPOSE: This is the base Docker image for all(?) GALLANT INPUT (GAIN) Docker images.
+#
+# BUILD - This docker file must be built from the project TLD.
+# docker build -t gallant-input-python-base -f ./devops/docker/Dockerfile.python_base .
+#
+# USAGE - These commands assume the CWD is the project TLD.
+# Windows host...
+# docker run --volume "${PWD}:/app/gallant-input" --workdir /app/gallant-input -it --rm gallant-input-python-base
+# Linux...
+# docker run --volume `pwd`:/app/gallant-input --workdir /app/gallant-input -it --rm gallant-input-python-base
+
+
+FROM python:3.11-alpine
+
+# Update repository indexes and install upgrades
+RUN apk update && apk upgrade && apk add build-base py3-pip && pip install --upgrade pip
+
+# Allow users to easily interact with the base OS directly
+CMD ["/bin/sh"]

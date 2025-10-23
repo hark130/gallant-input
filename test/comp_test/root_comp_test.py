@@ -761,4 +761,3 @@ class RootCompTest(TediousFuncTest):
         for locked_file in self._locked_file_objs:
             if locked_file and hasattr(locked_file, 'close'):
                 locked_file.close()
-# pylint: enable=invalid-name,attribute-defined-outside-init

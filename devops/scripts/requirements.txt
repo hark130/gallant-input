@@ -1,0 +1,4 @@
+# This file documents the requirements to execute devops scripts/code.
+
+pycodestyle
+pylint

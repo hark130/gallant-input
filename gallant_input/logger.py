@@ -15,14 +15,14 @@ clear; tail -f `ls /tmp/*.log | tail -n 1`
     Logger.info('You should know this.')   # Log information to stdout
     Logger.shutdown()                      # At the end
 """
-# Standard
+# Standard Imports
 from datetime import datetime
 from enum import IntEnum
 import logging
 import os
 import sys
-# Third Party
-# Local
+# Third Party Imports
+# Local Imports
 from gallant_input.constants import PKG_SHORT_TITLE
 from gallant_input.misc import determine_tmp_dir
 

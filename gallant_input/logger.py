@@ -159,6 +159,15 @@ class Logger():
             raise RuntimeError('Call Logger.initialize() first!')
 
 
+def log_exception(error: Exception) -> None:
+    """Print an exception message to stderr."""
+    try:
+        Logger.error(repr(error))
+    except RuntimeError:
+        # Failed arg parsing can result in a failure to initialize the logger
+        print(repr(error), file=sys.stderr, flush=True)  # Just print it to stderr
+
+
 def _create_filename() -> str:
     """Determine filename to use for logging."""
     # LOCAL VARAIBLES
@@ -178,12 +187,3 @@ def _create_filename() -> str:
 
     # DONE
     return abs_log_filename
-
-
-def log_exception(error: Exception) -> None:
-    """Print an exception message to stderr."""
-    try:
-        Logger.error(repr(error))
-    except RuntimeError:
-        # Failed arg parsing can result in a failure to initialize the logger
-        print(repr(error), file=sys.stderr, flush=True)  # Just print it to stderr

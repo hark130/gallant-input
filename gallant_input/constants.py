@@ -19,6 +19,8 @@ SIGMF_META_FILE_EXT: Final[str] = 'sigmf-meta'
 ############################
 # gallant_input.arg_parser #
 ############################
+# Parser Destinations
+GAIN_CLI_CMD_DEST: Final[str] = 'command'         # ArgumentParser destination for the command
 # Commands
 GAIN_CLI_CMD_ANALYZE: Final[str] = 'analyze'
 GAIN_CLI_CMD_IDENTIFY: Final[str] = 'identify'

@@ -36,19 +36,19 @@ class LogLevel(IntEnum):
 
 
 class DebugHandler(logging.Filter):
-    """Filters what can be logger by a specific logger."""
+    """Filters what can be logged by a specific logger."""
     def filter(self, record):
         return record.levelno in (logging.DEBUG,)
 
 
 class ErrorHandler(logging.Filter):
-    """Filters what can be logger by a specific logger."""
+    """Filters what can be logged by a specific logger."""
     def filter(self, record):
         return record.levelno in (logging.ERROR,)
 
 
 class InfoHandler(logging.Filter):
-    """Filters what can be logger by a specific logger."""
+    """Filters what can be logged by a specific logger."""
     def filter(self, record):
         return record.levelno in (logging.INFO,)
 

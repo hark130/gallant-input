@@ -4,7 +4,7 @@
 # Third Party Imports
 # Local Imports
 from gallant_input.arg_parser import parse_args
-from gallant_input.constants import EXIT_CODE_SUCCESS
+from gallant_input.constants import EXIT_CODE_ERROR, EXIT_CODE_INVAL, EXIT_CODE_SUCCESS
 from gallant_input.logger import log_exception, Logger
 
 

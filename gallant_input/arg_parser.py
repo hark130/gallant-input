@@ -70,7 +70,7 @@ def _add_identify_cmd(subparser: SubParsersAction) -> None:
 
     # ADD IT
     identify_parser = subparser.add_parser(GAIN_CLI_CMD_IDENTIFY,
-                                          help='Identify modulation schemes in a SigMF capture')
+                                           help='Identify modulation schemes in a SigMF capture')
     _add_sigmf_args(parser=identify_parser)
 
 
@@ -160,9 +160,8 @@ def _validate_mutex_args(data_file: str, meta_file: str, base_name: str) -> tupl
             raise argparse.ArgumentTypeError(f'Either "--{GAIN_CLI_ARG_DATA_FILE}" AND '
                                              f'"--{GAIN_CLI_ARG_META_FILE}" must be used or '
                                              f'"--{GAIN_CLI_ARG_SIGMF_BASE}" must be provided')
-        else:
-            dfile = base_name + f'.{SIGMF_DATA_FILE_EXT}'
-            mfile = base_name + f'.{SIGMF_META_FILE_EXT}'
+        dfile = base_name + f'.{SIGMF_DATA_FILE_EXT}'
+        mfile = base_name + f'.{SIGMF_META_FILE_EXT}'
     else:
         if base_name is not None:
             raise argparse.ArgumentTypeError(f'Do not provide "--{GAIN_CLI_ARG_SIGMF_BASE}" when '

@@ -96,6 +96,11 @@ class Logger():
             error.setFormatter(formatter)
             error.setLevel(logging.ERROR)
 
+            debug = logging.FileHandler(Logger._filename)
+            debug.addFilter(DebugHandler())
+            debug.setFormatter(formatter)
+            debug.setLevel(logging.DEBUG)
+
             root_logger.addHandler(normal)
             root_logger.addHandler(debug)
             root_logger.addHandler(error)

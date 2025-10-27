@@ -4,6 +4,8 @@ Logger.initialize(debugging=True) will duplicate any log output, and add debug m
 to <PKG>_YYYYMMDD_HHMMSS.log in the temporary directory.
 
 clear; tail -f `ls /tmp/*.log | tail -n 1`
+-or-
+clear; cat `ls /tmp/*.log | tail -n 1`
 
     Typical usage example:
 

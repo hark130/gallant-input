@@ -9,8 +9,8 @@ import os
 from gallant_input.argvals import ArgVals
 from gallant_input.constants import (GAIN_CLI_ARG_DATA_FILE, GAIN_CLI_ARG_DEBUG,
                                      GAIN_CLI_ARG_META_FILE, GAIN_CLI_ARG_SIGMF_BASE,
-                                     GAIN_CLI_CMD_ANALYZE, GAIN_CLI_CMD_DEST, PKG_SHORT_TITLE,
-                                     SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT)
+                                     GAIN_CLI_CMD_ANALYZE, GAIN_CLI_CMD_DEST, GAIN_CLI_CMD_IDENTIFY,
+                                     PKG_SHORT_TITLE, SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT)
 from gallant_input.misc import determine_tmp_dir
 from gallant_input.validation import validate_type
 
@@ -20,6 +20,9 @@ def parse_args() -> ArgVals:
 
     Returns:
         An ArgVals data class containing all parsed values.
+
+    Raises:
+        argparse.ArgumentTypeError: Mutex argument violation.
     """
     # LOCAL VARIABLES
     parser = None                                   # ArgumentParser object
@@ -30,9 +33,10 @@ def parse_args() -> ArgVals:
 
     # SETUP
     parser = argparse.ArgumentParser(prog=PKG_SHORT_TITLE,
-                                     description='Gallant Input (GAIN): Processing RF captures.')
-    subparsers = parser.add_subparsers(dest=GAIN_CLI_CMD_DEST, help='Processing feature')
+                                     description='Gallant Input (GAIN): Process RF captures.')
+    subparsers = parser.add_subparsers(dest=GAIN_CLI_CMD_DEST, help='Processing functionality')
     _add_analyze_cmd(subparser=subparsers)
+    _add_identify_cmd(subparser=subparsers)
     parser.add_argument(f'--{GAIN_CLI_ARG_DEBUG}', action='store_true',
                         help=f'Log debug messages to "{debug_log}"', required=False)
 
@@ -56,6 +60,20 @@ def _add_analyze_cmd(subparser: SubParsersAction) -> None:
     _add_sigmf_args(parser=analyze_parser)
 
 
+def _add_identify_cmd(subparser: SubParsersAction) -> None:
+    """Add the analyze command subparser."""
+    # LOCAL VARIABLES
+    identify_parser = None  # Identify command subparser
+
+    # INPUT VALIDATION
+    validate_type(var=subparser, var_name='subparser', var_type=SubParsersAction)
+
+    # ADD IT
+    identify_parser = subparser.add_parser(GAIN_CLI_CMD_IDENTIFY,
+                                          help='Identify modulation schemes in a SigMF capture')
+    _add_sigmf_args(parser=identify_parser)
+
+
 def _add_sigmf_args(parser: argparse.ArgumentParser) -> None:
     """Add the standard SigMF arguments to the parser: data, meta, base."""
     # INPUT VALIDATION
@@ -66,7 +84,7 @@ def _add_sigmf_args(parser: argparse.ArgumentParser) -> None:
                         action='store', help='The SigMF data filename (also use '
                                              f'--{GAIN_CLI_ARG_META_FILE})')
     parser.add_argument(f'-{GAIN_CLI_ARG_META_FILE[0]}', f'--{GAIN_CLI_ARG_META_FILE}',
-                        action='store', help='The SigMF data filename (also use '
+                        action='store', help='The SigMF meta filename (also use '
                                              f'--{GAIN_CLI_ARG_DATA_FILE})')
     parser.add_argument(f'-{GAIN_CLI_ARG_SIGMF_BASE[0]}', f'--{GAIN_CLI_ARG_SIGMF_BASE}',
                         action='store', help='Base filename for the SigMF data and meta files '

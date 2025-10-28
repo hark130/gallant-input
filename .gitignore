@@ -1,3 +1,9 @@
+# PROJECT
+test/test_input/*
+test/test_output/*
+
+
+# PYTHON
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

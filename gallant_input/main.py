@@ -4,6 +4,7 @@
 from pathlib import Path
 # Third Party Imports
 # Local Imports
+from gallant_input.analyze import print_signal_parameters
 from gallant_input.arg_parser import parse_args
 from gallant_input.logger import log_exception, Logger
 from gallant_input.sigmfmetaparser import SigMFMetaParser
@@ -55,7 +56,7 @@ def main() -> int:
                 case const.GAIN_CLI_CMD_ANALYZE:
                     Logger.info('Executing analysis...')
                     meta_parser = SigMFMetaParser(meta_filename=meta_file)
-                    print(f'Center Frequency: {meta_parser.get_center_freq()}hz')
+                    print_signal_parameters(meta_obj=meta_parser)
                 # identify
                 case const.GAIN_CLI_CMD_IDENTIFY:
                     Logger.info('Executing identification...')

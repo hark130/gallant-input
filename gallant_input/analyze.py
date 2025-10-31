@@ -20,15 +20,20 @@ def print_signal_parameters(meta_obj: SigMFMetaParser) -> None:
         ValueError: Invalid value.
     """
     # LOCAL VARIABLES
+    low_freq = None   # Frequency lower edge as a float
+    high_freq = None  # Frequency upper edge as a float
 
     # INPUT VALIDATION
     validate_type(var=meta_obj, var_name='meta_obj', var_type=SigMFMetaParser)
 
     # PRINT IT
     # Center frequency
-    print(f'Center Frequency: {meta_obj.get_center_freq()}hz')
+    print(f'Center Frequency: {meta_obj.get_center_freq()} Hz')
     # Bandwidth
+    print(f'Bandwidth: {meta_obj.get_bandwidth()} Hz')
     # Frequency deviation
+    (low_freq, high_freq) = meta_obj.determine_freq_range()
+    print(f'Frequency Deviation\n\tLow:  {low_freq} Hz\n\tHigh: {high_freq} Hz')
     # Burst length in symbols and seconds
     # Baud rate and bit rate
     # Preambles and Postambles

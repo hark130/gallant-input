@@ -9,6 +9,7 @@ from typing import Any
 # Third Party Imports
 import sigmf
 # Local Imports
+from gallant_input.logger import Logger
 from gallant_input.validation import validate_path, validate_string, validate_type
 
 
@@ -23,7 +24,101 @@ class SigMFMetaParser:
         self._meta_file = meta_filename  # The sigmf-meta file
 
     # COMMON-USE METHODS
+    def get_annotations_key(self, key: str) -> Any:
+        """Fetch a key from sigmf.SigMFFile.ANNOTATION_KEY.
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
+            TypeError: Bad data type.
+            ValueError: Invalid value.
+        """
+        return self.get_obj_name_key_value(obj_name=sigmf.SigMFFile.ANNOTATION_KEY, key=key)
+
+    def get_captures_key(self, key: str, index: int = 0) -> Any:
+        """Fetch a key from a sigmf.SigMFFile.CAPTURE_KEY index.
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
+            TypeError: Bad data type.
+            ValueError: Invalid value.
+        """
+        return self.get_obj_name_key_value(obj_name=sigmf.SigMFFile.CAPTURE_KEY, key=key,
+                                           index=index)
+
+    def get_global_key(self, key: str) -> Any:
+        """Fetch a key from sigmf.SigMFFile.GLOBAL_KEY.
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
+            TypeError: Bad data type.
+            ValueError: Invalid value.
+        """
+        return self.get_obj_name_key_value(obj_name=sigmf.SigMFFile.GLOBAL_KEY, key=key)
+
+    def load_data(self) -> None:
+        """Validate the meta file and load the data (if it hasn't been done already).
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            TypeError: The meta_filename argument was not a Path object.
+        """
+        if self._meta_data is None:
+            self._validate_file()
+            self._load_file()
+
+    # DATA-SPECIFIC METHODS
     # Methods listed in alphabetical order
+    def determine_freq_range(self, index: int = 0) -> tuple[float, float]:
+        """Determine the minimum and maximum frequencies from the capture at the specified index.
+
+        Attempt to fetch the optional values from the meta data.  Failing that, calculate the
+        range based on the sample rate and center frequency.
+        See: https://sigmf.readthedocs.io/en/latest/advanced.html
+
+        Args:
+            index: [OPTIONAL] The index, from the list of captures, to fetch the frequency from.
+
+        Returns:
+            A tuple of the frequency edges: (low, high).
+
+        Raises:
+            SyntaxError: A mismatch of sigmf.SigMFFile.FLO_KEY and sigmf.SigMFFile.FHI_KEY keys.
+                The SigMF Specification Version v1.2.5 states: "It is REQUIRED that both
+                freq_lower_edge and freq_upper_edge be provided, or neither; the use of just one
+                field is not allowed."
+        """
+        # LOCAL VARIABLES
+        low_freq = self.get_freq_low(index=index)    # Minimum frequency
+        high_freq = self.get_freq_high(index=index)  # Maximum frequency
+        freq_range = None                            # Tuple of low and high freq values
+
+        # VALIDATION
+        # Meta data didn't specify the range so we'll calculate it
+        if low_freq is None and high_freq is None:
+            Logger.debug('Frequency edges not found.  Calculating...')
+            freq_range = self._calculate_freq_range(index=index)
+        elif low_freq is not None and high_freq is not None:
+            freq_range = tuple((low_freq, high_freq))
+        else:
+            raise SyntaxError(f'Either both {sigmf.SigMFFile.FLO_KEY} and '
+                              f'{sigmf.SigMFFile.FHI_KEY} be provided, or neither')
+
+        # DONE
+        return freq_range
+
+    def get_bandwidth(self) -> int:
+        """Fetch the global sample rate as the estimated bandwidth of the capture.
+
+        See: https://sigmf.readthedocs.io/en/latest/advanced.html
+
+        Returns:
+            The estimated bandwidth of the capture.
+        """
+        return self.get_sample_rate()
+
     def get_center_freq(self, index: int = 0) -> int:
         """Fetch the center frequency of the capture at the specified index.
 
@@ -32,15 +127,44 @@ class SigMFMetaParser:
 
         Returns:
             The center frequency from the capture at index 0.
-
-        Raises:
-            FileNotFoundError: The meta data file is not found.
-            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
-            TypeError: Bad data type.
-            ValueError: Invalid value.
         """
-        return self.get_obj_name_key_value(obj_name=sigmf.SigMFFile.CAPTURE_KEY,
-                                           key=sigmf.SigMFFile.FREQUENCY_KEY, index=index)
+        return self.get_captures_key(key=sigmf.SigMFFile.FREQUENCY_KEY, index=index)
+
+    def get_freq_high(self, index: int = 0) -> float:
+        """Fetch the maximum available frequency of the capture.
+
+        Args:
+            index: [OPTIONAL] The index, from the list of captures, to fetch the values from.
+        """
+        # LOCAL VARIABLES
+        high_freq = None  # Upper edge frequency
+
+        # GET IT
+        try:
+            high_freq = self.get_captures_key(key=sigmf.SigMFFile.FHI_KEY, index=index)
+        except KeyError:
+            pass  # The key is optional
+
+        # DONE
+        return high_freq
+
+    def get_freq_low(self, index: int = 0) -> float:
+        """Fetch the minimum available frequency of the capture.
+
+        Args:
+            index: [OPTIONAL] The index, from the list of captures, to fetch the values from.
+        """
+        # LOCAL VARIABLES
+        low_freq = None  # Lower edge frequency
+
+        # GET IT
+        try:
+            low_freq = self.get_captures_key(key=sigmf.SigMFFile.FLO_KEY, index=index)
+        except KeyError:
+            pass  # The key is optional
+
+        # DONE
+        return low_freq
 
     def get_obj_name_key_value(self, obj_name: str, key: str, index: int = 0) -> Any:
         """Fetch a key value from a SigMF metadata object.
@@ -53,14 +177,10 @@ class SigMFMetaParser:
                 See sigmf.SigMFFile.VALID_KEYS.keys() for a list of actual values.
             key: The key to fetch from the specified obj_name.  Use sigmf.SigMFFile macros
                 for this argument.
-            index: [OPTIONAL] The index, from the list of captures, to fetch the frequency from.
+            index: [OPTIONAL] The index, from the list of captures, to fetch the values from.
 
         Returns:
             The value found at obj_name:key.
-
-        Raises:
-            FileNotFoundError: The meta data file is not found.
-            TypeError: The meta_filename argument was not a Path object.
         """
         # LOCAL VARIABLES
         value = None  # The value from obj_name:key
@@ -74,19 +194,40 @@ class SigMFMetaParser:
         # DONE
         return value
 
-    def load_data(self) -> None:
-        """Validate the meta file and load the data (if it hasn't been done already).
+    def get_sample_rate(self) -> int:
+        """Fetch the global sample rate from the capture.
 
-        Raises:
-            FileNotFoundError: The meta data file is not found.
-            TypeError: The meta_filename argument was not a Path object.
+        Returns:
+            The global sample rate of the capture.
         """
-        if self._meta_data is None:
-            self._validate_file()
-            self._load_file()
+        return self.get_global_key(key=sigmf.SigMFFile.SAMPLE_RATE_KEY)
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
+    def _calculate_freq_range(self, index: int = 0) -> tuple[float, float]:
+        """Calculate the low and high frequency values.
+
+        From https://sigmf.readthedocs.io/en/latest/advanced.html
+
+        low_freq = center_freq - 0.5*sample_rate
+        high_freq = center_freq + 0.5*sample_rate
+
+        Args:
+            index: [OPTIONAL] The index, from the list of captures, to fetch the values from.
+
+        Returns:
+            A tuple of the frequency edges: (low, high) calculated from the center frequency
+            and sample rate.
+        """
+        # LOCAL VARIABLES
+        sample_rate = self.get_sample_rate()                  # Sample rate
+        center_freq = self.get_center_freq(index=index)       # Center frequency
+        low_freq = float(center_freq - (0.5 * sample_rate))   # Lower edge frequency
+        high_freq = float(center_freq + (0.5 * sample_rate))  # Upper edge frequency
+
+        # DONE
+        return tuple((low_freq, high_freq))
+
     def _get_base_filename(self) -> str:
         """Dynamically fetch the base meta filename.
 

@@ -6,8 +6,8 @@ Open, parse, and answer questions about a sigmf-meta file.
 # Standard Imports
 from pathlib import Path
 from typing import Any
-import sigmf
 # Third Party Imports
+import sigmf
 # Local Imports
 from gallant_input.validation import validate_path, validate_string, validate_type
 

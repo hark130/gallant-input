@@ -8,7 +8,7 @@ Typical Usage:
     # Run just these unit tests
     python -m test.unit_test.test_rds.test_rds_block.test_rds_block_verify_block_integrity
     # Run just this normal 1 unit test
-    python -m test.unit_test.test_rds.test_rds_block.test_rds_block_verify_block_integrity -k n01  
+    python -m test.unit_test.test_rds.test_rds_block.test_rds_block_verify_block_integrity -k n01
 """
 
 # Standard Imports
@@ -27,6 +27,14 @@ from test.unit_test.test_rds.test_rds_block.test_rds_block import RDSBlockUnitTe
 
 class RDSBlockVBIUnitTest(RDSBlockUnitTest):
     """Parent class for all RDSBlock.verify_block_integrity() unit tests."""
+
+    # KNOWN GOOD BLOCK VALUES
+    GOOD_BLOCK_A1 =       bytes('01010111000111010101011100', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_B1 =       bytes('00100001001001011011001000', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_C1 =       bytes('11001101110011011010110011', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_C_PRIME1 = bytes('', 'utf-8')                            # TD: DDN... Find an example
+    GOOD_BLOCK_D1 =       bytes('01000110010011010001001011', 'utf-8')  # RF JQR 5.03 RDS output
+
 
     # CORE CLASS METHODS
     # Methods listed in call order
@@ -68,6 +76,18 @@ class RDSBlockVBIUnitTest(RDSBlockUnitTest):
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
 
+    def run_test_exception_mismatch(self, rds_block: bytes, block_id: BlockID) -> None:
+        """Common method call for a test case expected to raise a RDSIntegrityFailure exception.
+
+        Args:
+            rds_block: Sets the rds_block argument input.  Accepts any input, including bad input.
+            block_id: Sets the block_id argument input.  Accepts any input, including bad input.
+        """
+        exc_msg = 'This RDS block failed its integrity check: ' + \
+                  f'This block is not a {block_id.name} block'
+        self.run_test_exception(rds_block=rds_block, block_id=block_id,
+                                exception_type=RDSIntegrityFailure, exception_msg=exc_msg)
+
     def run_test_return(self, rds_block: bytes, block_id: BlockID) -> None:
         """Common method calls for a test case expected to return.
 
@@ -86,77 +106,65 @@ class NormalRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
 
     def test_n01_valid_block_a(self):
         """Valid example of RDS Block A."""
-        rds_block = bytes('01010111000111010101011100', 'utf-8')  # Block A example
+        rds_block = self.GOOD_BLOCK_A1  # Block A example
         block_id = BlockID.BLOCK_A
         self.run_test_return(rds_block, block_id)
 
     def test_n02_valid_block_b(self):
         """Valid example of RDS Block B."""
-        rds_block = bytes('00000001001010010010100010', 'utf-8')  # Block B example
+        rds_block = self.GOOD_BLOCK_B1  # Block B example
         block_id = BlockID.BLOCK_B
         self.run_test_return(rds_block, block_id)
 
-    # skip('Does not(?) include valid test case input yet')
     def test_n03_valid_block_c(self):
         """Valid example of RDS Block C."""
-        rds_block = bytes('00001101110011011011010011', 'utf-8')  # Block C example
+        rds_block = self.GOOD_BLOCK_C1  # Block C example
         block_id = BlockID.BLOCK_C
         self.run_test_return(rds_block, block_id)
 
-    # skip('Does not(?) include valid test case input yet')
+    @skip('Does not include valid test case input yet')
     def test_n04_valid_block_c_prime(self):
         """Valid example of RDS Block C'."""
-        rds_block = bytes('00001101110011011011010011', 'utf-8')  # Block C' example
+        rds_block = self.GOOD_BLOCK_C_PRIME1  # Block C' example
         block_id = BlockID.BLOCK_C_PRIME
         self.run_test_return(rds_block, block_id)
 
     def test_n05_valid_block_d(self):
         """Valid example of RDS Block D."""
-        rds_block = bytes('01011100001011100100001110', 'utf-8')  # Block D example
+        rds_block = self.GOOD_BLOCK_D1  # Block D example
         block_id = BlockID.BLOCK_D
         self.run_test_return(rds_block, block_id)
 
     def test_n06_valid_block_a_expecting_b(self):
         """Valid example of RDS Block A but it's expecting a different block."""
-        rds_block = bytes('01010111000111010101011100', 'utf-8')  # Block A example
+        rds_block = self.GOOD_BLOCK_A1  # Block A example
         block_id = BlockID.BLOCK_B
-        exception_type = RDSIntegrityFailure
-        exception_msg = ''
-        self.run_test_exception(rds_block, block_id, exception_type, exception_msg)
+        self.run_test_exception_mismatch(rds_block, block_id)
 
     def test_n07_valid_block_b_expecting_c(self):
         """Valid example of RDS Block B but it's expecting a different block."""
-        rds_block = bytes('00000001001010010010100010', 'utf-8')  # Block B example
+        rds_block = self.GOOD_BLOCK_B1  # Block B example
         block_id = BlockID.BLOCK_C
-        exception_type = RDSIntegrityFailure
-        exception_msg = ''
-        self.run_test_exception(rds_block, block_id, exception_type, exception_msg)
+        self.run_test_exception_mismatch(rds_block, block_id)
 
-    # skip('Does not(?) include valid test case input yet')
     def test_n08_valid_block_c_expecting_c_prime(self):
         """Valid example of RDS Block C but it's expecting a different block."""
-        rds_block = bytes('00001101110011011011010011', 'utf-8')  # Block C example
+        rds_block = self.GOOD_BLOCK_C1  # Block C example
         block_id = BlockID.BLOCK_C_PRIME
-        exception_type = RDSIntegrityFailure
-        exception_msg = ''
-        self.run_test_exception(rds_block, block_id, exception_type, exception_msg)
+        self.run_test_exception_mismatch(rds_block, block_id)
 
-    # skip('Does not(?) include valid test case input yet')
+    @skip('Does not include valid test case input yet')
     def test_n09_valid_block_c_prime_expecting_d(self):
         """Valid example of RDS Block C' but it's expecting a different block."""
-        rds_block = bytes('00001101110011011011010011', 'utf-8')  # Block C' example
+        rds_block = self.GOOD_BLOCK_C_PRIME1  # Block C' example
         block_id = BlockID.BLOCK_D
-        exception_type = RDSIntegrityFailure
-        exception_msg = ''
-        self.run_test_exception(rds_block, block_id, exception_type, exception_msg)
+        self.run_test_exception_mismatch(rds_block, block_id)
 
     def test_n10_valid_block_d_expecting_a(self):
         """Valid example of RDS Block D but it's expecting a different block."""
-        rds_block = bytes('01011100001011100100001110', 'utf-8')  # Block D example
+        rds_block = self.GOOD_BLOCK_D1  # Block D example
         block_id = BlockID.BLOCK_A
-        exception_type = RDSIntegrityFailure
-        exception_msg = ''
-        self.run_test_exception(rds_block, block_id, exception_type, exception_msg)
+        self.run_test_exception_mismatch(rds_block, block_id)
 
 
 if __name__ == '__main__':

@@ -4,9 +4,10 @@
 from typing import Final
 # Third Party Imports
 # Local Imports
+from gallant_input.converters import convert_bin_bytes_to_int, convert_int_to_bin_bytes
 from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.constants import RDS_CRC_POLY
-from gallant_input.rds.exceptions import RDSIntegrityFailure
+from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
 from gallant_input.validation import validate_type
 
 
@@ -32,6 +33,18 @@ class RDSBlock:
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
+    def get_block_id(self) -> BlockID:
+        """Fetch the current RDS block ID.
+
+        The block ID may have been updated post-integrity check (e.g., BlockID.BLOCK_C_OR_CP,
+        BlockID.GUESS).
+        """
+        # VALIDATION
+        self._validate_internals()
+
+        # DONE
+        return self._rds_block_id
+
     def verify_block_integrity(self) -> None:
         """Validate the RDS block provided.
 
@@ -55,6 +68,10 @@ class RDSBlock:
         # 1. Calculate the CRC
         crc = self._calc_rds_crc()
         # 2. Validate Block ID
+        try:
+            self._validate_rds_block_id(crc=crc)
+        except RDSBlockIDMismatch as err:
+            raise RDSIntegrityFailure(f'This RDS block failed its integrity check: {err}') from err
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
@@ -62,8 +79,8 @@ class RDSBlock:
     def _calc_rds_crc(self) -> int:
         """Calculates the RDS block CRC."""
         # LOCAL VARIABLES
-        reg = int(self._rds_block_data.decode('utf-8'), 2)  # Data in a 16-bit register
-        poly = int(RDS_CRC_POLY.decode('utf-8'), 2)         # RDS CRC polynomial as an integer
+        reg = convert_bin_bytes_to_int(self._rds_block_data)  # Data in a 16-bit register
+        poly = convert_bin_bytes_to_int(RDS_CRC_POLY)         # RDS CRC polynomial as an integer
 
         # PREPARE
         reg <<= 10  # Append 10 zero bits (CRC width)
@@ -100,16 +117,20 @@ class RDSBlock:
                 RDS Block ID).
         """
         # LOCAL VARIABLES
-        rds_cwrd_int = int(self._rds_block_cwrd.decode('ascii'), 2)  # Checkword as an integer
-        offset_value = None                                          # Block ID offset value
+        offset_int = None                                          # Block ID Offset bytes as an int
+        cwrd_int = convert_bin_bytes_to_int(self._rds_block_cwrd)  # Checkword as an int
 
         # INPUT VALIDATION
         validate_type(crc, 'crc', int)
         validate_type(block_id, 'block_id', BlockID)
 
         # VALIDATE IT
-        offset_value = block_id.get_id_offset()  # bytes object
-
+        offset_int = convert_bin_bytes_to_int(block_id.get_id_offset())
+        # print(f'\nCRC:          {convert_int_to_bin_bytes(crc, 10)} ({crc})'
+        #       f'\nOFFSET VALUE: {convert_int_to_bin_bytes(offset_int, 10)} ({offset_int})'
+        #       f'\nCWORD:        {convert_int_to_bin_bytes(cwrd_int, 10)} ({cwrd_int})')  # DEBUGGING
+        if crc ^ offset_int != cwrd_int:
+            raise RDSBlockIDMismatch(f'This block is not a {block_id.name} block')
 
     def _validate_rds_block_id(self, crc: int) -> None:
         """Validates the _rds_block_id attribute against the CRC.

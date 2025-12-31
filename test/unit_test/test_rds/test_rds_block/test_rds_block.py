@@ -49,11 +49,11 @@ class RDSBlockUnitTest(RootUnitTest):
         See: help(TediousUnitTest)
 
     Attributes:
-        test_case_data:     # Stores data about the test case as a TestCaseData object
-        test_input_dir:     # Default input directory (OPTIONAL)
-        test_output_dir:    # Default output directory (OPTIONAL)
-        input_rds_block:    # Test case input: RDSBlock(rds_block)
-        input_block_id:     # Test case input: RDSBlock(block_id)
+        test_case_data:   # Stores data about the test case as a TestCaseData object
+        test_input_dir:   # Default input directory (OPTIONAL)
+        test_output_dir:  # Default output directory (OPTIONAL)
+        input_rds_block:  # Test case input: RDSBlock(rds_block)
+        input_block_id:   # Test case input: RDSBlock(block_id)
     """
 
     # CORE CLASS METHODS

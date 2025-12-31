@@ -7,6 +7,7 @@ class BlockID(IntEnum):
     BLOCK_B = 2        # Block B
     BLOCK_C = 3        # Block C
     BLOCK_C_PRIME = 4  # Block C′
-    BLOCK_D = 5        # Block D
-    UNKNOWN = 6        # Undetermined block ID
-    GUESS = 7          # Test all of the block IDs
+    BLOCK_C_OR_CP = 5  # Block C or C′
+    BLOCK_D = 6        # Block D
+    UNKNOWN = 7        # Undetermined block ID
+    GUESS = 8          # Test all of the block IDs

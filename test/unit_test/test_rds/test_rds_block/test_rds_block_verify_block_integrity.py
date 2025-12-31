@@ -34,7 +34,7 @@ class RDSBlockVBIUnitTest(RDSBlockUnitTest):
         Child class must override this method.  See TediousUnitTest.call_callable() for details.
         """
         test_obj = RDSBlock(rds_block=self.input_rds_block, block_id=self.input_block_id)
-        return test_obj.verify_block_integrity()  # This method does not take any args
+        return test_obj.verify_block_integrity(*self._args, **self._kwargs)
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call.
@@ -53,7 +53,7 @@ class RDSBlockVBIUnitTest(RDSBlockUnitTest):
     def run_test_success(self, rds_block: bytes, block_id: BlockID) -> None:
         """Common method calls for a test case expected to succeed."""
         self.set_ctor_args(rds_block=rds_block, block_id=block_id)
-        self.set_test_input(None)  # This method does not take any args
+        self.set_test_input()  # This method does not take any args
         self.expect_return(None)
         self.run_test()
 

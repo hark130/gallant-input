@@ -63,17 +63,16 @@ class RDSBlock:
         """Calculates the RDS block CRC."""
         # LOCAL VARIABLES
         reg = int(self._rds_block_data.decode('utf-8'), 2)  # Data in a 16-bit register
-        # poly = int(RDS_CRC_POLY.decode('utf-8'), 2)         # RDS CRC polynomial as an integer
+        poly = int(RDS_CRC_POLY.decode('utf-8'), 2)         # RDS CRC polynomial as an integer
 
         # PREPARE
         reg <<= 10  # Append 10 zero bits (CRC width)
 
         # CALCULATE IT
-        print('\nHERE')  # DEBUGGING
         for bit in range(16):
             # Check MSB (bit 25)
             if reg & (1 << 25):
-                reg ^= RDS_CRC_POLY << 15
+                reg ^= poly << 15
             reg <<= 1
         # Extract 10-bit remainder
         crc = (reg >> 16) & 0x3FF

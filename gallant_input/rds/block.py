@@ -40,7 +40,7 @@ class RDSBlock:
         3. Update block ID (only for BlockID.GUESS values)
 
         Raises:
-            ?????
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
         """
         # LOCAL VARIABLES
         crc = None  # Calculated CRC as an integer

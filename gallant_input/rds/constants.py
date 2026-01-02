@@ -6,6 +6,13 @@ from typing import Final
 # Local Imports
 
 
+# See: https://en.wikipedia.org/wiki/Radio_Data_System#Baseband_coding_(Data-link_layer)
+RDS_BLOCK_LEN: Final[int] = 26  # The lengh, in bits, of one RDS block
+RDS_BLOCK_DATA_LEN: Final[int] = 16  # The lengh, in bits, of one RDS block data field
+RDS_BLOCK_CWORD_LEN: Final[int] = 10  # The lengh, in bits, of one RDS block checkword field
+RDS_BLOCKS_IN_GROUP: Final[int] = 4  # The number of RDS blocks in an RDS group
+RDS_GROUP_LEN: Final[int] = RDS_BLOCK_LEN * RDS_BLOCKS_IN_GROUP  # The length, in bits, of a group
+
 # Taken from RDS: The Radio Data System Appendix B: Table B.1 Binary Values of the RDS Offset Words
 # See: https://www.iz3mez.it/wp-content/library/ebook/RDS%20-%20The%20Radio%20Data%20System.pdf
 RDS_BLOCK_LEN: Final[int] = 26  # The lengh, in bits, of one RDS block

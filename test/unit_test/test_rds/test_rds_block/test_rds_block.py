@@ -56,6 +56,24 @@ class RDSBlockUnitTest(RootUnitTest):
         input_block_id:   # Test case input: RDSBlock(block_id)
     """
 
+    # KNOWN GOOD BLOCK VALUES
+    GOOD_BLOCK_A1 =       bytes('01010111000111010101011100', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_B1 =       bytes('00100001001001011011001000', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_C1 =       bytes('11001101110011011010110011', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_C_PRIME1 = bytes('', 'utf-8')                            # TD: DDN... Find an example
+    GOOD_BLOCK_D1 =       bytes('01000110010011010001001011', 'utf-8')  # RF JQR 5.03 RDS output
+
+    # BAD BLOCK VALUES
+    BAD_BLOCK1 = None  # TypeError: None
+    BAD_BLOCK2 = tuple(('00100001001001011011001000', 'utf-8'))  # TypeError: tuple
+    BAD_BLOCK3 = 0x15C755C                                       # ValueError: integer value
+    BAD_BLOCK4 = bytes('', 'utf-8')                              # ValueError: Empty
+    BAD_BLOCK5 = bytes('1000110010011010001001011', 'utf-8')     # ValueError: too short
+    BAD_BLOCK6 = bytes('001000110010011010001001011', 'utf-8')   # ValueError: too long
+    # ValueError: two blocks
+    BAD_BLOCK7 = bytes('0101011100011101010101110000100001001001011011001000', 'utf-8')
+    BAD_BLOCK8 = bytes('01000110010021010001001011', 'utf-8')    # ValueError: "I thought I saw a 2"
+
     # CORE CLASS METHODS
     # Methods listed in call order
     def __init__(self, *args, **kwargs) -> None:

@@ -28,14 +28,6 @@ from test.unit_test.test_rds.test_rds_block.test_rds_block import RDSBlockUnitTe
 class RDSBlockVBIUnitTest(RDSBlockUnitTest):
     """Parent class for all RDSBlock.verify_block_integrity() unit tests."""
 
-    # KNOWN GOOD BLOCK VALUES
-    GOOD_BLOCK_A1 =       bytes('01010111000111010101011100', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_B1 =       bytes('00100001001001011011001000', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_C1 =       bytes('11001101110011011010110011', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_C_PRIME1 = bytes('', 'utf-8')                            # TD: DDN... Find an example
-    GOOD_BLOCK_D1 =       bytes('01000110010011010001001011', 'utf-8')  # RF JQR 5.03 RDS output
-
-
     # CORE CLASS METHODS
     # Methods listed in call order
 

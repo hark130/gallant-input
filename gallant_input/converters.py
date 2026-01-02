@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import validate_bytes
+from gallant_input.validation import validate_bytes, validate_type
 
 
 def convert_bin_bytes_to_int(binary: bytes) -> int:

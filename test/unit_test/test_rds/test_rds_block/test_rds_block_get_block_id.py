@@ -12,6 +12,7 @@ Typical Usage:
 """
 
 # Standard Imports
+from enum import IntEnum
 from typing import Any
 from unittest import skip
 # Third Party Imports
@@ -292,6 +293,52 @@ class SpecialRDSBlockGBIUnitTest(RDSBlockGBIUnitTest):
         in_block_id = BlockID.BLOCK_C_OR_CP
         out_block_id = BlockID.BLOCK_C_PRIME
         self.run_test_return(rds_block, in_block_id, out_block_id)
+
+    @skip('Does not include valid test case input yet')
+    def test_s08_block_e_support1(self):
+        """Block E is not yet supported: sample 1."""
+        rds_block = self.GOOD_BLOCK_E1
+        block_id = BlockID.BLOCK_E
+        self.run_test_exception(rds_block, block_id, NotImplementedError, 'No support for Block E')
+
+    def test_s09_block_e_support2(self):
+        """Block E is not yet supported: sample 2."""
+        rds_block = self.GOOD_BLOCK_E2
+        block_id = BlockID.BLOCK_E
+        self.run_test_exception(rds_block, block_id, NotImplementedError, 'No support for Block E')
+
+    @skip('Does not include valid test case input yet')
+    def test_s10_block_e_guess1(self):
+        """Guess Block E is not yet supported: sample 1."""
+        rds_block = self.GOOD_BLOCK_E1
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
+                                'This RDS block failed its integrity check: '
+                                'Unable to match a valid Block ID')
+
+    def test_s11_block_e_guess2(self):
+        """Guess Block E is not yet supported: sample 2."""
+        rds_block = self.GOOD_BLOCK_E2
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
+                                'This RDS block failed its integrity check: '
+                                'Unable to match a valid Block ID')
+
+    def test_s12_guess_block_c1_fail(self):
+        """Guess Block C*: Block A."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = BlockID.BLOCK_C_OR_CP
+        self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
+                                'This RDS block failed its integrity check: '
+                                "Unable to match a valid C or C' Block ID")
+
+    def test_s13_valid_block_unknown_fail(self):
+        """Unknown input: Block A."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = BlockID.UNKNOWN
+        self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
+                                'This RDS block failed its integrity check: '
+                                'Will not match an UNKNOWN Block ID')
 
 
 if __name__ == '__main__':

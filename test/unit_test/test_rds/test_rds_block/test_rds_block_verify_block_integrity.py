@@ -167,5 +167,83 @@ class NormalRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
         self.run_test_exception_mismatch(rds_block, block_id)
 
 
+class ErrorRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
+    """Error Test Cases."""
+
+    def test_e01_rds_block_bad_type_none(self):
+        """Bad rds_block type: None."""
+        rds_block = self.BAD_BLOCK1
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e02_rds_block_bad_type_tuple(self):
+        """Bad rds_block type: tuple."""
+        rds_block = self.BAD_BLOCK2
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e03_rds_block_bad_type_int(self):
+        """Bad rds_block type: int."""
+        rds_block = self.BAD_BLOCK3
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e04_rds_block_bad_value_empty(self):
+        """Bad rds_block value: empty."""
+        rds_block = self.BAD_BLOCK4
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+
+    def test_e05_rds_block_bad_value_short(self):
+        """Bad rds_block value: short."""
+        rds_block = self.BAD_BLOCK5
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+
+    def test_e06_rds_block_bad_value_long(self):
+        """Bad rds_block value: long."""
+        rds_block = self.BAD_BLOCK6
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+
+    def test_e07_rds_block_bad_value_two_blocks(self):
+        """Bad rds_block value: two blocks."""
+        rds_block = self.BAD_BLOCK7
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+
+    def test_e08_rds_block_bad_value_binary(self):
+        """Bad rds_block value: binary contains an invalid character."""
+        rds_block = self.BAD_BLOCK8
+        block_id = BlockID.GUESS
+        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid binary value detected')
+
+    def test_e09_block_id_bad_type_none(self):
+        """Bad block_id type: None."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = None
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e10_block_id_bad_type_tuple(self):
+        """Bad block_id type: tuple."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = tuple((self.GOOD_BLOCK_A1, BlockID.GUESS))
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e11_block_id_bad_type_int(self):
+        """Bad block_id type: int."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = 9  # BlockID.GUESS value
+        self.run_test_exception(rds_block, block_id, TypeError, 'argument should have been of type')
+
+    def test_e12_block_id_bad_value_empty(self):
+        """Bad block_id value: undetermined."""
+        rds_block = self.GOOD_BLOCK_A1
+        block_id = BlockID.UNKNOWN
+        self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
+                                'This RDS block failed its integrity check: '
+                                'Will not match an UNKNOWN Block ID')
+
+
 if __name__ == '__main__':
     execute_test_cases()

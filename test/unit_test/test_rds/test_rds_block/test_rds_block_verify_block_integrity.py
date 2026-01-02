@@ -158,6 +158,41 @@ class NormalRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
         block_id = BlockID.BLOCK_A
         self.run_test_exception_mismatch(rds_block, block_id)
 
+    @skip('This external example may not be good.  The computed CRC is in dispute.')
+    def test_n11_valid_block_a_external_example(self):
+        """Valid external example of RDS Block A."""
+        rds_block = self.GOOD_BLOCK_A2  # Block A example
+        block_id = BlockID.BLOCK_A
+        self.run_test_return(rds_block, block_id)
+
+    @skip('This external example may not be good.  The computed CRC is in dispute.')
+    def test_n12_valid_block_b_external_example(self):
+        """Valid external example of RDS Block B."""
+        rds_block = self.GOOD_BLOCK_B2  # Block B example
+        block_id = BlockID.BLOCK_B
+        self.run_test_return(rds_block, block_id)
+
+    @skip('This external example may not be good.  The computed CRC is in dispute.')
+    def test_n13_valid_block_c_external_example(self):
+        """Valid external example of RDS Block C."""
+        rds_block = self.GOOD_BLOCK_C2  # Block C example
+        block_id = BlockID.BLOCK_C
+        self.run_test_return(rds_block, block_id)
+
+    @skip('This external example may not be good.  The computed CRC is in dispute.')
+    def test_n14_valid_block_c_prime_external_example(self):
+        """Valid external example of RDS Block C'."""
+        rds_block = self.GOOD_BLOCK_C_PRIME2  # Block C' example
+        block_id = BlockID.BLOCK_C_PRIME
+        self.run_test_return(rds_block, block_id)
+
+    @skip('This external example may not be good.  The computed CRC is in dispute.')
+    def test_n15_valid_block_d_external_example(self):
+        """Valid external example of RDS Block D."""
+        rds_block = self.GOOD_BLOCK_D2  # Block D example
+        block_id = BlockID.BLOCK_D
+        self.run_test_return(rds_block, block_id)
+
 
 class ErrorRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
     """Error Test Cases."""
@@ -235,6 +270,23 @@ class ErrorRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
         self.run_test_exception(rds_block, block_id, RDSIntegrityFailure,
                                 'This RDS block failed its integrity check: '
                                 'Will not match an UNKNOWN Block ID')
+
+
+class SpecialRDSBlockGBIUnitTest(RDSBlockVBIUnitTest):
+    """Special Test Cases."""
+
+    @skip('Does not include valid test case input yet')
+    def test_s01_block_e_support1(self):
+        """Block E is not yet supported: sample 1."""
+        rds_block = self.GOOD_BLOCK_E1
+        block_id = BlockID.BLOCK_E
+        self.run_test_exception(rds_block, block_id, NotImplementedError, 'No support for Block E')
+
+    def test_s02_block_e_support2(self):
+        """Block E is not yet supported: sample 2."""
+        rds_block = self.GOOD_BLOCK_E2
+        block_id = BlockID.BLOCK_E
+        self.run_test_exception(rds_block, block_id, NotImplementedError, 'No support for Block E')
 
 
 if __name__ == '__main__':

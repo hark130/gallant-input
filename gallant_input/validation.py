@@ -22,6 +22,25 @@ from typing import Any, Final
 _BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
 
 
+def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
+    """Validate a bytes object representation of binary data to a certain length.
+
+    Args:
+        validate_this: A bytes object to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        exact_len: [OPTIONAL] If greater than -1, the exact length of validate_this is verified
+            against this value (e.g., exact_len=0 verifies validate_this is empty).
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
+    """
+    validate_bytes(validate_this, param_name, exact_len)
+    # Content
+    if not all(bin_char in b'01' for bin_char in validate_this):
+        raise ValueError(f'Invalid binary value detected in "{param_name}"')
+
+
 def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
     """Validate a bytes object to a certain length.
 
@@ -34,7 +53,7 @@ def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None)
     Raises:
         TypeError: Invalid data type.
         ValueError: Bad value (e.g., exact_len is a positive integer but validate_this doesn't
-            measure up.
+            measure up).
     """
     # LOCAL VARIABLES
     validate_len = False  # Validate the length of validate_this against exact_len

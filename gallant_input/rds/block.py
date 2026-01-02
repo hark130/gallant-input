@@ -9,7 +9,7 @@ from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.constants import (RDS_BLOCK_LEN, RDS_BLOCK_DATA_LEN, RDS_BLOCK_CWORD_LEN,
                                          RDS_CRC_POLY)
 from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
-from gallant_input.validation import validate_bytes, validate_type
+from gallant_input.validation import validate_binary_bytes, validate_type
 
 
 class RDSBlock:
@@ -235,8 +235,5 @@ class RDSBlock:
 
     def _validate_rds_block(self) -> None:
         """Validate the ctor's arg on behalf of the class."""
-        # Type and length
-        validate_bytes(validate_this=self._rds_block, param_name='rds_block', exact_len=RDS_BLOCK_LEN)
-        # Content
-        if not all(bin_char in b'01' for bin_char in self._rds_block):
-            raise ValueError(f'Invalid binary value detected in rds_block: {self._rds_block}')
+        # Type, length, and content
+        validate_binary_bytes(validate_this=self._rds_block, param_name='rds_block', exact_len=RDS_BLOCK_LEN)

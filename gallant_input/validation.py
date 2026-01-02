@@ -22,6 +22,41 @@ from typing import Any, Final
 _BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
 
 
+def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
+    """Validate a bytes object to a certain length.
+
+    Args:
+        validate_this: A bytes object to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        exact_len: [OPTIONAL] If greater than -1, the exact length of validate_this is verified
+            against this value (e.g., exact_len=0 verifies validate_this is empty).
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value (e.g., exact_len is a positive integer but validate_this doesn't
+            measure up.
+    """
+    # LOCAL VARIABLES
+    validate_len = False  # Validate the length of validate_this against exact_len
+    act_len = 0           # Actual length of validate_this
+
+    # INPUT VALIDATION
+    # param_name
+    validate_string(validate_this=param_name, param_name='param_name', can_be_empty=False)
+    # exact_len
+    if exact_len is not None:
+        validate_type(exact_len, 'exact_len', int)
+        if exact_len > -1:
+            validate_len = True
+    # validate_this
+    validate_type(validate_this, param_name, bytes)
+    if validate_len:
+        act_len = len(validate_this)
+        if act_len != exact_len:
+            raise ValueError(f'The "{param_name}" argument must be of length "{exact_len}" '
+                             f'instead of "{act_len}"')
+
+
 def validate_file(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
     """Validate validate_this as a Path ojbect to a file that exists.
 

@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import validate_type
+from gallant_input.validation import validate_bytes
 
 
 def convert_bin_bytes_to_int(binary: bytes) -> int:
@@ -19,7 +19,7 @@ def convert_bin_bytes_to_int(binary: bytes) -> int:
         TypeError: Invalid data type.
         ValueError: The bytes object contains non-binary characters.
     """
-    validate_type(var=binary, var_name='binary', var_type=bytes)
+    validate_bytes(validate_this=binary, param_name='binary', exact_len=None)
     if not all(bin_chars in b'01' for bin_chars in binary):
         raise ValueError(f'The "binary" argument contains non-binary values: {binary}')
     return int(binary.decode('ascii'), 2)

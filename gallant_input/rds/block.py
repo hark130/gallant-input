@@ -1,4 +1,4 @@
-"""Defines a class to parse an Radio Data System (RDS) block."""
+"""Defines a class to parse a Radio Data System (RDS) block."""
 
 # Standard Imports
 from typing import Final
@@ -6,15 +6,10 @@ from typing import Final
 # Local Imports
 from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.block_id import BlockID
-from gallant_input.rds.constants import RDS_CRC_POLY
+from gallant_input.rds.constants import (RDS_BLOCK_LEN, RDS_BLOCK_DATA_LEN, RDS_BLOCK_CWORD_LEN,
+                                         RDS_CRC_POLY)
 from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
-from gallant_input.validation import validate_type
-
-
-# See: https://en.wikipedia.org/wiki/Radio_Data_System#Baseband_coding_(Data-link_layer)
-RDS_BLOCK_LEN: Final[int] = 26  # The lengh, in bits, of one RDS block
-RDS_BLOCK_DATA_LEN: Final[int] = 16  # The lengh, in bits, of one RDS block data field
-RDS_BLOCK_CORR_LEN: Final[int] = 10  # The lengh, in bits, of one RDS block error correction field
+from gallant_input.validation import validate_bytes, validate_type
 
 
 class RDSBlock:
@@ -66,6 +61,8 @@ class RDSBlock:
 
     def verify_block_integrity(self) -> None:
         """Validate the RDS block provided.
+
+        Always call this method first when defining public methods.
 
         1. Validates internals
         2. Validate block ID
@@ -122,7 +119,7 @@ class RDSBlock:
         """Split self._rds_block into its data and error correction fields."""
         self._rds_block_data = self._rds_block[:RDS_BLOCK_DATA_LEN]
         self._rds_block_cwrd = self._rds_block[RDS_BLOCK_DATA_LEN:
-                                               RDS_BLOCK_DATA_LEN + RDS_BLOCK_CORR_LEN]
+                                               RDS_BLOCK_DATA_LEN + RDS_BLOCK_CWORD_LEN]
 
     def _validate_block_id(self, crc: int, block_id: BlockID) -> None:
         """Validates a BlockID against the CRC and the checkword.
@@ -238,17 +235,8 @@ class RDSBlock:
 
     def _validate_rds_block(self) -> None:
         """Validate the ctor's arg on behalf of the class."""
-        # LOCAL VARIABLES
-        length = 0  # Length of the RDS block attribute value
-
-        # VALIDATE IT
-        # Type
-        validate_type(var=self._rds_block, var_name='rds_block', var_type=bytes)
-        # Length
-        length = len(self._rds_block)
-        if len(self._rds_block) != RDS_BLOCK_LEN:
-            raise ValueError(f'Invalid length of rds_block: {length} '
-                             f'(must be of length {RDS_BLOCK_LEN})')
+        # Type and length
+        validate_bytes(validate_this=self._rds_block, param_name='rds_block', exact_len=RDS_BLOCK_LEN)
         # Content
         if not all(bin_char in b'01' for bin_char in self._rds_block):
             raise ValueError(f'Invalid binary value detected in rds_block: {self._rds_block}')

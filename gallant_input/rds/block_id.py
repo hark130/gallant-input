@@ -1,7 +1,7 @@
 """Define the BlockID enum class to identify Radio Data System (RDS) blocks."""
 
 # Standard Imports
-from enum import IntEnum
+from enum import auto, IntEnum
 # Third Party Imports
 # Local Imports
 from gallant_input.rds.constants import (RDS_OFFSET_A, RDS_OFFSET_B, RDS_OFFSET_C,
@@ -10,15 +10,15 @@ from gallant_input.rds.constants import (RDS_OFFSET_A, RDS_OFFSET_B, RDS_OFFSET_
 
 class BlockID(IntEnum):
     """Communicate Radio Data System (RDS) block IDs among the rds sub-package."""
-    BLOCK_A = 1        # Block A
-    BLOCK_B = 2        # Block B
-    BLOCK_C = 3        # Block C
-    BLOCK_C_PRIME = 4  # Block C′
-    BLOCK_C_OR_CP = 5  # Block C or C′
-    BLOCK_D = 6        # Block D
-    BLOCK_E = 7        # Block D
-    UNKNOWN = 8        # Undetermined block ID
-    GUESS = 9          # Test all of the block IDs
+    BLOCK_A = auto()        # Block A
+    BLOCK_B = auto()        # Block B
+    BLOCK_C = auto()        # Block C
+    BLOCK_C_PRIME = auto()  # Block C′
+    BLOCK_C_OR_CP = auto()  # Block C or C′
+    BLOCK_D = auto()        # Block D
+    BLOCK_E = auto()        # Block D
+    GUESS = auto()          # Test all of the block IDs
+    UNKNOWN = auto()        # Undetermined block ID
 
     def get_id_offset(self) -> bytes:
         """Get the offset value associated with a discrete Block ID.

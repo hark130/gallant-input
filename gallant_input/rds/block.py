@@ -33,14 +33,33 @@ class RDSBlock:
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
-    def get_block_id(self) -> BlockID:
-        """Fetch the current RDS block ID.
+    def get_block_data(self) -> bytes:
+        """Fetch the RDS block data from a validated RDS block.
 
-        The block ID may have been updated post-integrity check (e.g., BlockID.BLOCK_C_OR_CP,
-        BlockID.GUESS).
+        Raises:
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
         """
         # VALIDATION
-        self._validate_internals()
+        self.verify_block_integrity()
+
+        # DONE
+        return self._rds_block_data
+
+    def get_block_id(self) -> BlockID:
+        """Fetch the RDS block ID of a validated RDS block.
+
+        The block ID may be updated during the integrity check (e.g., BlockID.BLOCK_C_OR_CP,
+        BlockID.GUESS).
+
+        Raises:
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
+        """
+        # VALIDATION
+        self.verify_block_integrity()
 
         # DONE
         return self._rds_block_id
@@ -54,6 +73,8 @@ class RDSBlock:
 
         Raises:
             RDSIntegrityFailure: The RDS block has failed its integrity check.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
         """
         # LOCAL VARIABLES
         crc = None  # Calculated CRC as an integer
@@ -215,15 +236,16 @@ class RDSBlock:
     def _validate_rds_block(self) -> None:
         """Validate the ctor's arg on behalf of the class."""
         # LOCAL VARIABLES
-        length = len(self._rds_block)  # Lenght of the RDS block attribute value
+        length = 0  # Length of the RDS block attribute value
 
         # VALIDATE IT
         # Type
         validate_type(var=self._rds_block, var_name='rds_block', var_type=bytes)
         # Length
+        length = len(self._rds_block)
         if len(self._rds_block) != RDS_BLOCK_LEN:
             raise ValueError(f'Invalid length of rds_block: {length} '
                              f'(must be of length {RDS_BLOCK_LEN})')
         # Content
         if not all(bin_char in b'01' for bin_char in self._rds_block):
-            raise TypeError(f'Invalid binary value detected in rds_block: {self._rds_block}')
+            raise ValueError(f'Invalid binary value detected in rds_block: {self._rds_block}')

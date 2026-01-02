@@ -32,7 +32,6 @@ RDSBlockUnitTest is the parent class for all rds.block RDSBlock unit test classe
 # Standard Imports
 from typing import Any
 # Third Party Imports
-from test.test_case_data import TestCaseData
 from test.unit_test.root_unit_test import RootUnitTest
 # Local Imports
 
@@ -57,18 +56,18 @@ class RDSBlockUnitTest(RootUnitTest):
     """
 
     # KNOWN GOOD BLOCK VALUES
-    GOOD_BLOCK_A1 =       bytes('01010111000111010101011100', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_B1 =       bytes('00100001001001011011001000', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_C1 =       bytes('11001101110011011010110011', 'utf-8')  # RF JQR 5.03 RDS output
+    GOOD_BLOCK_A1 = bytes('01010111000111010101011100', 'utf-8')        # RF JQR 5.03 RDS output
+    GOOD_BLOCK_B1 = bytes('00100001001001011011001000', 'utf-8')        # RF JQR 5.03 RDS output
+    GOOD_BLOCK_C1 = bytes('11001101110011011010110011', 'utf-8')        # RF JQR 5.03 RDS output
     GOOD_BLOCK_C_PRIME1 = bytes('', 'utf-8')                            # TD: DDN... Find an example
-    GOOD_BLOCK_D1 =       bytes('01000110010011010001001011', 'utf-8')  # RF JQR 5.03 RDS output
-    GOOD_BLOCK_E1 =       bytes('', 'utf-8')                            # TD: DDN... Find an example
-    GOOD_BLOCK_A2 =       bytes('11001100110011001101110111', 'utf-8')  # External example
-    GOOD_BLOCK_B2 =       bytes('00010010001101000010101110', 'utf-8')  # External example
-    GOOD_BLOCK_C2 =       bytes('10101010101010100110100100', 'utf-8')  # External example
+    GOOD_BLOCK_D1 = bytes('01000110010011010001001011', 'utf-8')        # RF JQR 5.03 RDS output
+    GOOD_BLOCK_E1 = bytes('', 'utf-8')                                  # TD: DDN... Find an example
+    GOOD_BLOCK_A2 = bytes('11001100110011001101110111', 'utf-8')        # External example
+    GOOD_BLOCK_B2 = bytes('00010010001101000010101110', 'utf-8')        # External example
+    GOOD_BLOCK_C2 = bytes('10101010101010100110100100', 'utf-8')        # External example
     GOOD_BLOCK_C_PRIME2 = bytes('11000011110000110110000001', 'utf-8')  # External example
-    GOOD_BLOCK_D2 =       bytes('01100110011001100111001101', 'utf-8')  # External example
-    GOOD_BLOCK_E2 =       bytes('11110000111100001001100110', 'utf-8')  # External example
+    GOOD_BLOCK_D2 = bytes('01100110011001100111001101', 'utf-8')        # External example
+    GOOD_BLOCK_E2 = bytes('11110000111100001001100110', 'utf-8')        # External example
 
     # BAD BLOCK VALUES
     BAD_BLOCK1 = None  # TypeError: None

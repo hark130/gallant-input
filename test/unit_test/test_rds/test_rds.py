@@ -31,7 +31,6 @@ RDSUnitTest is the parent class for all rds sub-package related unit test classe
 
 # Standard Imports
 # Third Party Imports
-from test.test_case_data import TestCaseData
 from test.unit_test.root_unit_test import RootUnitTest
 # Local Imports
 
@@ -55,12 +54,6 @@ class RDSUnitTest(RootUnitTest):
 
     # CORE CLASS METHODS
     # Methods listed in call order
-    def __init__(self, *args, **kwargs) -> None:
-        """RootUnitTest ctor."""
-        # ATTRIBUTES
-        # Define bespoke attributes here
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

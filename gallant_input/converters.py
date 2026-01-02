@@ -7,7 +7,7 @@ from gallant_input.validation import validate_type
 
 
 def convert_bin_bytes_to_int(binary: bytes) -> int:
-	"""Convert a bytes-representation of a binary number to an integer.
+    """Convert a bytes-representation of a binary number to an integer.
 
     Args:
         binary: A binary literal in a bytes object.
@@ -18,15 +18,15 @@ def convert_bin_bytes_to_int(binary: bytes) -> int:
     Raises:
         TypeError: Invalid data type.
         ValueError: The bytes object contains non-binary characters.
-	"""
-	validate_type(var=binary, var_name='binary', var_type=bytes)
-	if not all(bin_chars in b'01' for bin_chars in binary):
-		raise ValueError(f'The "binary" argument contains non-binary values: {binary}')
-	return int(binary.decode('ascii'), 2)
+    """
+    validate_type(var=binary, var_name='binary', var_type=bytes)
+    if not all(bin_chars in b'01' for bin_chars in binary):
+        raise ValueError(f'The "binary" argument contains non-binary values: {binary}')
+    return int(binary.decode('ascii'), 2)
 
 
 def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:
-	"""Convert an integer to its binary value in a bytes object.
+    """Convert an integer to its binary value in a bytes object.
 
     Args:
         number: A value to convert to binary.
@@ -39,8 +39,8 @@ def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:
         TypeError: Invalid data type.
         ValueError: Invalid value (e.g., min_width may not be negative).
     """
-	validate_type(var=number, var_name='number', var_type=int)
-	validate_type(var=min_width, var_name='min_width', var_type=int)
-	if min_width < 0:
-		raise ValueError(f'Invalid value for "min_width": {min_width}')
-	return format(number, f'0{str(min_width)}b').encode('ascii')
+    validate_type(var=number, var_name='number', var_type=int)
+    validate_type(var=min_width, var_name='min_width', var_type=int)
+    if min_width < 0:
+        raise ValueError(f'Invalid value for "min_width": {min_width}')
+    return format(number, f'0{str(min_width)}b').encode('ascii')

@@ -3,9 +3,7 @@
 
 class RDSBlockIDMismatch(Exception):
     """An RDS block does not match the expected Block ID."""
-    pass
 
 
 class RDSIntegrityFailure(Exception):
     """An RDS block has failed its integrity check."""
-    pass

@@ -4,7 +4,7 @@
 from typing import Final
 # Third Party Imports
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int, convert_int_to_bin_bytes
+from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.constants import RDS_CRC_POLY
 from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
@@ -107,7 +107,7 @@ class RDSBlock:
         reg <<= 10  # Append 10 zero bits (CRC width)
 
         # CALCULATE IT
-        for bit in range(16):
+        for _ in range(16):
             # Check MSB (bit 25)
             if reg & (1 << 25):
                 reg ^= poly << 15
@@ -121,7 +121,7 @@ class RDSBlock:
     def _split_rds_block(self) -> None:
         """Split self._rds_block into its data and error correction fields."""
         self._rds_block_data = self._rds_block[:RDS_BLOCK_DATA_LEN]
-        self._rds_block_cwrd = self._rds_block[RDS_BLOCK_DATA_LEN : \
+        self._rds_block_cwrd = self._rds_block[RDS_BLOCK_DATA_LEN:
                                                RDS_BLOCK_DATA_LEN + RDS_BLOCK_CORR_LEN]
 
     def _validate_block_id(self, crc: int, block_id: BlockID) -> None:
@@ -147,12 +147,14 @@ class RDSBlock:
 
         # VALIDATE IT
         offset_int = convert_bin_bytes_to_int(block_id.get_id_offset())
-        # print(f'\nCRC:          {convert_int_to_bin_bytes(crc, 10)} ({crc})'
-        #       f'\nOFFSET VALUE: {convert_int_to_bin_bytes(offset_int, 10)} ({offset_int})'
-        #       f'\nCWORD:        {convert_int_to_bin_bytes(cwrd_int, 10)} ({cwrd_int})')  # DEBUGGING
         if crc ^ offset_int != cwrd_int:
             raise RDSBlockIDMismatch(f'This block is not a {block_id.name} block')
 
+# pylint: disable=too-many-branches
+# The match statement was added in Python 3.10:
+#   https://docs.python.org/3/reference/compound_stmts.html#match
+# Inspiration:
+#   https://docs.python.org/3/tutorial/controlflow.html#match-statements
     def _validate_rds_block_id(self, crc: int) -> None:
         """Validates the _rds_block_id attribute against the CRC.
 
@@ -206,7 +208,7 @@ class RDSBlock:
             case BlockID.BLOCK_E:
                 raise NotImplementedError('No support for Block E')
             case BlockID.UNKNOWN:
-                    raise RDSBlockIDMismatch("Will not match an UNKNOWN Block ID")
+                raise RDSBlockIDMismatch("Will not match an UNKNOWN Block ID")
             case BlockID.GUESS:
                 for valid_id in valid_ids:
                     try:
@@ -221,6 +223,7 @@ class RDSBlock:
                     raise RDSBlockIDMismatch('Unable to match a valid Block ID')
             case _:
                 raise NotImplementedError(f'Unsupported BlockID value: {self._rds_block_id}')
+# pylint: enable=too-many-branches
 
     def _validate_internals(self) -> None:
         """Validate the private attributes once."""

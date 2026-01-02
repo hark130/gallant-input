@@ -4,7 +4,7 @@
 from typing import Final
 # Third Party Imports
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int
+from gallant_input.converters import convert_bin_bytes_to_int, convert_int_to_bin_bytes
 from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.constants import (RDS_BLOCK_LEN, RDS_BLOCK_DATA_LEN, RDS_BLOCK_CWORD_LEN,
                                          RDS_CRC_POLY)
@@ -144,6 +144,9 @@ class RDSBlock:
 
         # VALIDATE IT
         offset_int = convert_bin_bytes_to_int(block_id.get_id_offset())
+        print(f'\nCRC:          {convert_int_to_bin_bytes(crc, 10)} ({crc})'
+              f'\nOFFSET VALUE: {convert_int_to_bin_bytes(offset_int, 10)} ({offset_int})'
+              f'\nCWORD:        {convert_int_to_bin_bytes(cwrd_int, 10)} ({cwrd_int})')  # DEBUGGING
         if crc ^ offset_int != cwrd_int:
             raise RDSBlockIDMismatch(f'This block is not a {block_id.name} block')
 

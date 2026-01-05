@@ -14,6 +14,8 @@ from gallant_input.validation import validate_binary_bytes
 REGION_NA: Final[str] = 'North America'  # Default region
 
 
+# pylint: disable=too-many-instance-attributes
+# Of course it has more than 7 attributes.  It's a dataclass!
 @dataclass
 class RDSGroupInfo:
     """Information about an RDS group.
@@ -103,3 +105,4 @@ class RDSGroupInfo:
 
             # DONE
             self._validated = True
+# pylint: enable=too-many-instance-attributes

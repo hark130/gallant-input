@@ -1,7 +1,6 @@
 """Defines a class to parse a Radio Data System (RDS) block."""
 
 # Standard Imports
-from typing import Final
 # Third Party Imports
 # Local Imports
 from gallant_input.converters import convert_bin_bytes_to_int, convert_int_to_bin_bytes
@@ -239,4 +238,5 @@ class RDSBlock:
     def _validate_rds_block(self) -> None:
         """Validate the ctor's arg on behalf of the class."""
         # Type, length, and content
-        validate_binary_bytes(validate_this=self._rds_block, param_name='rds_block', exact_len=RDS_BLOCK_LEN)
+        validate_binary_bytes(validate_this=self._rds_block, param_name='rds_block',
+                              exact_len=RDS_BLOCK_LEN)

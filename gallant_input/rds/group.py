@@ -18,7 +18,7 @@ class RDSGroup:
 
     # CORE CLASS METHODS
     # Methods listed in call order
-    def __init__(self, rds_group: bytes, assume_na:bool = True) -> None:
+    def __init__(self, rds_group: bytes, assume_na: bool = True) -> None:
         """RDSBlock ctor.
 
         TO DO: DON'T DO NOW... programmatically determine the region, North America or otherwise,
@@ -26,7 +26,7 @@ class RDSGroup:
 
         Args:
             rds_group: The CRC calculated from the RDS block data segment.
-            assume_na: Assume the region is North America (e.g., RBDS vs RDS PTY codes).        
+            assume_na: Assume the region is North America (e.g., RBDS vs RDS PTY codes).
         """
         self._murica = assume_na     # MURICA!
         self._rds_group = rds_group  # The RDS block
@@ -85,13 +85,13 @@ class RDSGroup:
         self._group_info = \
         RDSGroupInfo(
             # BLOCK A
-            pic = block_a_data[:RDS_BLOCK_DATA_LEN],
+            pic=block_a_data[:RDS_BLOCK_DATA_LEN],
             # BLOCK B
-            gtype = block_b_data[:4],
-            msg_ver = block_b_data[4:5],
-            tp = block_b_data[5:6],
-            pty = block_b_data[6:11],
-            dep = block_b_data[11:RDS_BLOCK_DATA_LEN]
+            gtype=block_b_data[:4],
+            msg_ver=block_b_data[4:5],
+            tp=block_b_data[5:6],
+            pty=block_b_data[6:11],
+            dep=block_b_data[11:RDS_BLOCK_DATA_LEN]
         )
 
     def _split_rds_group(self) -> None:

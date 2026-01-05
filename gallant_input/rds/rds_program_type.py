@@ -13,7 +13,7 @@ from enum import IntEnum
 
 class RDSProgTypeCode(IntEnum):
     """RDS Program Type (PTY) code."""
-    UNDEFINED = 0            # No programme type or undefined 
+    UNDEFINED = 0            # No programme type or undefined
     NEWS = 1                 # News
     CURRENT_AFFAIRS = 2      # Current affairs
     INFORMATION = 3          # Information
@@ -41,7 +41,7 @@ class RDSProgTypeCode(IntEnum):
     COUNTRY_MUSCI = 25       # Country music
     NATIONAL_MUSIC = 26      # National music
     OLDIES_MUSIC = 27        # Oldies music
-    FOLK_MUSIC = 28          # Folk music 
+    FOLK_MUSIC = 28          # Folk music
     DOCUMENTARY = 29         # Documentary
     ALARM_TEST = 30          # Alarm test
     ALARM = 31               # Alarm

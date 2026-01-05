@@ -1,4 +1,4 @@
-"""Defines the logic for running all RDS sub-package unit tests as a module.
+"""Defines the logic for running all rds.block RDSBlock() method unit tests as a module.
 
     Typical usage example:
 

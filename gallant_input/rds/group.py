@@ -40,6 +40,20 @@ class RDSGroup:
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
+    def get_group_info(self) -> RDSGroupInfo:
+        """Fetch all of the RDS group information from a validated RDS group.
+
+        Raises:
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
+        """
+        # VALIDATION
+        self.verify_group_integrity()
+
+        # DONE
+        return self._group_info
+
     def verify_group_integrity(self) -> None:
         """Validate the RDS group provided.
 

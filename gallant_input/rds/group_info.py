@@ -88,7 +88,7 @@ class RDSGroupInfo:
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
-    def _validate_data(self) -> None:
+    def validate_data(self) -> None:
         """Validate the internal data.
 
         Always invoke this method first in public "getter" methods.

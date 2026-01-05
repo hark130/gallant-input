@@ -184,14 +184,14 @@ class NormalRDSGroupGGIUnitTest(RDSGroupGGIUnitTest):
         # Dictionary of expected RDSGroupInfo attr-to-validate : expected-value
         self.good_group1_exp_info = {
             # Attributes
-            'pic':bytes('0101011100011101', 'utf-8'), 'gtype':bytes('0010', 'utf-8'),
-            'msg_ver':bytes('0', 'utf-8'), 'tp':bytes('0', 'utf-8'),
-            'pty':bytes('01001', 'utf-8'),
+            'pic': bytes('0101011100011101', 'utf-8'), 'gtype': bytes('0010', 'utf-8'),
+            'msg_ver': bytes('0', 'utf-8'), 'tp': bytes('0', 'utf-8'),
+            'pty': bytes('01001', 'utf-8'),
             # Properties
-            'group_type':2, 'msg_group_type_a':True, 'msg_group_type_b':False,
-            'traffic_reports':False,
+            'group_type': 2, 'msg_group_type_a': True, 'msg_group_type_b': False,
+            'traffic_reports': False,
             # This "property" expected value assumes "assume_na" is True
-            'program_type':RBDSProgTypeCode(9),
+            'program_type': RBDSProgTypeCode(9),
         }
 
         super().__init__(*args, **kwargs)

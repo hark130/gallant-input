@@ -109,8 +109,6 @@ class RDSGroup:
     def _split_rds_group(self) -> None:
         """Split self._rds_group into its data blocks."""
         # LOCAL VARIABLES
-        # print(f'RDS GROUP: {self._rds_group}')  # DEBUGGING
-        # print(f'SLICING FROM {RDS_GROUP_LEN-(4*RDS_BLOCK_LEN)} TO {RDS_GROUP_LEN-(3*RDS_BLOCK_LEN)}')  # DEBUGGING
         rds_block_a = self._rds_group[RDS_GROUP_LEN-(4*RDS_BLOCK_LEN):
                                       RDS_GROUP_LEN-(3*RDS_BLOCK_LEN)]
         rds_block_b = self._rds_group[RDS_GROUP_LEN-(3*RDS_BLOCK_LEN):

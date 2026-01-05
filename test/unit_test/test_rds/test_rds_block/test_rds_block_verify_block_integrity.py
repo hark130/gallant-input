@@ -217,25 +217,25 @@ class ErrorRDSBlockVBIUnitTest(RDSBlockVBIUnitTest):
         """Bad rds_block value: empty."""
         rds_block = self.BAD_BLOCK4
         block_id = BlockID.GUESS
-        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+        self.run_test_exception(rds_block, block_id, ValueError, 'The "rds_block" argument must be of length "26" instead of')
 
     def test_e05_rds_block_bad_value_short(self):
         """Bad rds_block value: short."""
         rds_block = self.BAD_BLOCK5
         block_id = BlockID.GUESS
-        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+        self.run_test_exception(rds_block, block_id, ValueError, 'The "rds_block" argument must be of length "26" instead of')
 
     def test_e06_rds_block_bad_value_long(self):
         """Bad rds_block value: long."""
         rds_block = self.BAD_BLOCK6
         block_id = BlockID.GUESS
-        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+        self.run_test_exception(rds_block, block_id, ValueError, 'The "rds_block" argument must be of length "26" instead of')
 
     def test_e07_rds_block_bad_value_two_blocks(self):
         """Bad rds_block value: two blocks."""
         rds_block = self.BAD_BLOCK7
         block_id = BlockID.GUESS
-        self.run_test_exception(rds_block, block_id, ValueError, 'Invalid length of rds_block')
+        self.run_test_exception(rds_block, block_id, ValueError, 'The "rds_block" argument must be of length "26" instead of')
 
     def test_e08_rds_block_bad_value_binary(self):
         """Bad rds_block value: binary contains an invalid character."""

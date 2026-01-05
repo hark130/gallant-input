@@ -48,25 +48,25 @@ class RDSGroupInfo:
     @property
     def group_type(self) -> int:
         """Translate the gtype (Group Type Code) into an integer."""
-        self._validate_data()
+        self.validate_data()
         return convert_bin_bytes_to_int(binary=self.gtype)
 
     @property
     def msg_group_type_a(self) -> bool:
         """Is this RDS group message group type A?."""
-        self._validate_data()
+        self.validate_data()
         return self.msg_ver == b'0'  # If B0=0 then Message Group Type A else Type B
 
     @property
     def msg_group_type_b(self) -> bool:
         """Is this RDS group message group type B?."""
-        self._validate_data()
+        self.validate_data()
         return self.msg_ver != b'0'  # If B0=0 then Message Group Type A else Type B
 
     @property
     def traffic_reports(self) -> bool:
         """Does this channel include periodic traffic reports?."""
-        self._validate_data()
+        self.validate_data()
         return self.tp == b'1'
 
     @property
@@ -78,7 +78,7 @@ class RDSGroupInfo:
             RBDSProgTypeCode for North America (AKA REGION_NA) and RDSProgTypeCode for all others.
         """
         prog_type = None  # An IntEnum of the program type, as interpreted by region
-        self._validate_data()
+        self.validate_data()
         if self.region == REGION_NA:
             prog_type = RBDSProgTypeCode(convert_bin_bytes_to_int(binary=self.pty))
         else:

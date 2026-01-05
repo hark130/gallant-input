@@ -63,10 +63,9 @@ class RDSGroup:
             self._split_rds_group()  # Split the group into four blocks
 
             # VERIFY INTEGRITY
-            # Validate block IDs
             try:
                 self._validate_rds_group_integrity()
-            except RDSBlockIDMismatch as err:
+            except (RDSBlockIDMismatch, RDSIntegrityFailure) as err:
                 raise RDSIntegrityFailure('This RDS group failed its integrity check: '
                                           f'{err}') from err
             # Parse group information
@@ -97,8 +96,8 @@ class RDSGroup:
     def _split_rds_group(self) -> None:
         """Split self._rds_group into its data blocks."""
         # LOCAL VARIABLES
-        print(f'RDS GROUP: {self._rds_group}')  # DEBUGGING
-        print(f'SLICING FROM {RDS_GROUP_LEN-(4*RDS_BLOCK_LEN)} TO {RDS_GROUP_LEN-(3*RDS_BLOCK_LEN)}')  # DEBUGGING
+        # print(f'RDS GROUP: {self._rds_group}')  # DEBUGGING
+        # print(f'SLICING FROM {RDS_GROUP_LEN-(4*RDS_BLOCK_LEN)} TO {RDS_GROUP_LEN-(3*RDS_BLOCK_LEN)}')  # DEBUGGING
         rds_block_a = self._rds_group[RDS_GROUP_LEN-(4*RDS_BLOCK_LEN):
                                       RDS_GROUP_LEN-(3*RDS_BLOCK_LEN)]
         rds_block_b = self._rds_group[RDS_GROUP_LEN-(3*RDS_BLOCK_LEN):
@@ -139,7 +138,6 @@ class RDSGroup:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        print(f'BLOCK A: {self._rds_block_a}')  # DEBUGGING
         self._rds_block_a.verify_block_integrity()
         self._rds_block_b.verify_block_integrity()
         self._rds_block_c.verify_block_integrity()

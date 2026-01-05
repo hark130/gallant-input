@@ -57,8 +57,9 @@ class RDSGroupUnitTest(RDSUnitTest):
 
     # CORE CLASS METHODS
     # Methods listed in call order
+
     def __init__(self, *args, **kwargs) -> None:
-        """RootUnitTest ctor."""
+        """RDSGroupUnitTest ctor."""
         # ATTRIBUTES
         self.input_rds_group = None  # Test case input: RDSGroup(rds_group)
         self.input_assume_na = None   # Test case input: RDSGroup(assume_na)

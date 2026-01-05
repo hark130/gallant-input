@@ -29,10 +29,7 @@ class RDSGroupVGIUnitTest(RDSGroupUnitTest):
     # Methods listed in call order
 
     def call_callable(self):
-        """Defines how the class will invoke the function call.
-
-        Child class must override this method.  See TediousUnitTest.call_callable() for details.
-        """
+        """Defines how the class will invoke the method call."""
         test_obj = RDSGroup(rds_group=self.input_rds_group, assume_na=self.input_assume_na)
         return test_obj.verify_group_integrity(*self._args, **self._kwargs)
 

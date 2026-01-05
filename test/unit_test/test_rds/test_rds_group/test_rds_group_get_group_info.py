@@ -17,9 +17,10 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
 from gallant_input.rds.constants import RDS_GROUP_LEN
+from gallant_input.rds.exceptions import RDSIntegrityFailure
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.group_info import RDSGroupInfo
-from gallant_input.rds.exceptions import RDSIntegrityFailure
+from gallant_input.rds.rbds_program_type import RBDSProgTypeCode
 from test.unit_test.test_rds.test_rds_group.test_rds_group import RDSGroupUnitTest
 
 
@@ -78,7 +79,27 @@ class RDSGroupGGIUnitTest(RDSGroupUnitTest):
     # Methods listed in alphabetical order
 
     def _validate_group_info(self, return_value: RDSGroupInfo) -> None:
-        """Validate the RDSGroupInfo returned by the method call against a test author dict.
+        """Validate the RDSGroupInfo returned by a method call against test author expected values.
+
+        Validate the contents of the RDSGroupInfo returned by the method call against test
+        author-defined dictionaries of attributes and/or methods (as properties) and their expected
+        values in the return_value data class.
+
+        Args:
+            return_value: The RDSGroupInfo data class returned by the method call.
+        """
+        # VALIDATE IT
+        # Ask it to validate itself
+        try:
+            return_value.validate_data()
+        except (TypeError, ValueError) as err:
+            self._add_test_failure('The returned RDSGroupInfo dataclass failed its own '
+                                   f'validation: {err}')
+        # Attrs
+        self._validate_group_info_attrs(return_value=return_value)
+
+    def _validate_group_info_attrs(self, return_value: RDSGroupInfo) -> None:
+        """Validate the RDSGroupInfo returned by the method call against test author expected attrs.
 
         Validate the contents of the RDSGroupInfo returned by the method call against a test
         author-defined dictionary of attribute names (key) and their expected values (val) in the
@@ -162,9 +183,15 @@ class NormalRDSGroupGGIUnitTest(RDSGroupGGIUnitTest):
         # ATTRIBUTES
         # Dictionary of expected RDSGroupInfo attr-to-validate : expected-value
         self.good_group1_exp_info = {
+            # Attributes
             'pic':bytes('0101011100011101', 'utf-8'), 'gtype':bytes('0010', 'utf-8'),
             'msg_ver':bytes('0', 'utf-8'), 'tp':bytes('0', 'utf-8'),
-            'pty':bytes('01001', 'utf-8')
+            'pty':bytes('01001', 'utf-8'),
+            # Properties
+            'group_type':2, 'msg_group_type_a':True, 'msg_group_type_b':False,
+            'traffic_reports':False,
+            # This "property" expected value assumes "assume_na" is True
+            'program_type':RBDSProgTypeCode(9),
         }
 
         super().__init__(*args, **kwargs)

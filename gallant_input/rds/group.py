@@ -1,10 +1,8 @@
 """Defines a class to parse a Radio Data System (RDS) group of blocks."""
 
 # Standard Imports
-from typing import Final
 # Third Party Imports
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.block import RDSBlock
 from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.group_info import RDSGroupInfo
@@ -13,6 +11,7 @@ from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
 from gallant_input.validation import validate_bytes, validate_type
 
 
+# pylint: disable=too-many-instance-attributes
 class RDSGroup:
     """Parse a group of Radio Data System (RDS) blocks."""
 
@@ -82,16 +81,16 @@ class RDSGroup:
 
         # PARSE IT
         self._group_info = \
-        RDSGroupInfo(
-            # BLOCK A
-            pic=block_a_data[:RDS_BLOCK_DATA_LEN],
-            # BLOCK B
-            gtype=block_b_data[:4],
-            msg_ver=block_b_data[4:5],
-            tp=block_b_data[5:6],
-            pty=block_b_data[6:11],
-            dep=block_b_data[11:RDS_BLOCK_DATA_LEN]
-        )
+            RDSGroupInfo(
+                # BLOCK A
+                pic=block_a_data[:RDS_BLOCK_DATA_LEN],
+                # BLOCK B
+                gtype=block_b_data[:4],
+                msg_ver=block_b_data[4:5],
+                tp=block_b_data[5:6],
+                pty=block_b_data[6:11],
+                dep=block_b_data[11:RDS_BLOCK_DATA_LEN]
+            )
 
     def _split_rds_group(self) -> None:
         """Split self._rds_group into its data blocks."""
@@ -142,3 +141,4 @@ class RDSGroup:
         self._rds_block_b.verify_block_integrity()
         self._rds_block_c.verify_block_integrity()
         self._rds_block_d.verify_block_integrity()
+# pylint: enable=too-many-instance-attributes

@@ -13,7 +13,6 @@ Typical Usage:
 
 # Standard Imports
 from typing import Any
-from unittest import skip
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
@@ -182,7 +181,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
     def test_s01_out_of_order_group_shift1(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
         rds_group = self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3 \
-                    + self.GOOD_BLOCK_C3
+            + self.GOOD_BLOCK_C3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
@@ -190,7 +189,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
     def test_s02_out_of_order_group_shift2(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
         rds_group = self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 \
-                    + self.GOOD_BLOCK_B3 
+            + self.GOOD_BLOCK_B3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
@@ -198,7 +197,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
     def test_s03_out_of_order_group_shift3(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
         rds_group = self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 \
-                    + self.GOOD_BLOCK_A3
+            + self.GOOD_BLOCK_A3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
@@ -206,7 +205,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
     def test_s04_valid_yet_disparate_blocks(self):
         """A group of RDS blocks that are not necessarily related to each other."""
         rds_group = self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1 \
-                    + self.GOOD_BLOCK_D3
+            + self.GOOD_BLOCK_D3
         assume_na = True
         self.run_test_return(rds_group, assume_na)
 

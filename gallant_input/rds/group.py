@@ -18,7 +18,7 @@ class RDSGroup:
     # CORE CLASS METHODS
     # Methods listed in call order
     def __init__(self, rds_group: bytes, assume_na: bool = True) -> None:
-        """RDSBlock ctor.
+        """RDSGroup ctor.
 
         TO DO: DON'T DO NOW... programmatically determine the region, North America or otherwise,
         based on the PI code.

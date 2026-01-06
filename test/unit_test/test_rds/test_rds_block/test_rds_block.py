@@ -58,7 +58,7 @@ class RDSBlockUnitTest(RDSUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
     def __init__(self, *args, **kwargs) -> None:
-        """RootUnitTest ctor."""
+        """RDSBlockUnitTest ctor."""
         # ATTRIBUTES
         self.input_rds_block = None  # Test case input: RDSBlock(rds_block)
         self.input_block_id = None   # Test case input: RDSBlock(block_id)

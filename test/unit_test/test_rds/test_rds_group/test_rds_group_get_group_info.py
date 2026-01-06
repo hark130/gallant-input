@@ -39,7 +39,7 @@ class RDSGroupGGIUnitTest(RDSGroupUnitTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """RootUnitTest ctor."""
+        """RDSGroupGGIUnitTest ctor."""
         # ATTRIBUTES
         self.exp_attr_dict = None  # Dictionary of RDSGroupInfo attrs : values to validate
 
@@ -74,6 +74,36 @@ class RDSGroupGGIUnitTest(RDSGroupUnitTest):
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
+
+    def run_test_exception(self, rds_group: Any, assume_na: Any,
+                           exception_type: Exception, exception_msg: str) -> None:
+        """Common method calls for a test case expected to raise an exception.
+
+        Args:
+            rds_group: Sets the rds_group argument input.  Accepts any input, including bad input.
+            assume_na: Sets the assume_na argument input.  Accepts any input, including bad input.
+            exception_type: An Exception type to expect (e.g., ValueError).
+            exception_msg: A sub-string, empty or not, to look for in the raised Exception.
+        """
+        self.set_ctor_args(rds_group=rds_group, assume_na=assume_na)
+        self.set_test_input()  # This method does not take any args
+        self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
+        self.run_test()
+
+    def run_test_return(self, rds_group: bytes, assume_na: bool, exp_attr: dict = None) -> None:
+        """Common method calls for a test case expected to return.
+
+        Args:
+            rds_group: Sets the rds_group argument input.
+            assume_na: Sets the assume_na argument input.
+            exp_attr: [OPTIONAL] A dictionary of RDSGroupInfo attributes, and their expected values,
+                to test in the actual return value.
+        """
+        self.set_ctor_args(rds_group=rds_group, assume_na=assume_na)
+        self.set_test_input()  # This method does not take any args
+        self.expect_return(None)  # This method has a return value but validation will be customized
+        self.exp_attr_dict = exp_attr
+        self.run_test()
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
@@ -141,36 +171,6 @@ class RDSGroupGGIUnitTest(RDSGroupUnitTest):
                                                f'"{exp_attr}" but received '
                                                f'"{temp_attr_val}" instead')
 
-    def run_test_exception(self, rds_group: Any, assume_na: Any,
-                           exception_type: Exception, exception_msg: str) -> None:
-        """Common method calls for a test case expected to raise an exception.
-
-        Args:
-            rds_group: Sets the rds_group argument input.  Accepts any input, including bad input.
-            assume_na: Sets the assume_na argument input.  Accepts any input, including bad input.
-            exception_type: An Exception type to expect (e.g., ValueError).
-            exception_msg: A sub-string, empty or not, to look for in the raised Exception.
-        """
-        self.set_ctor_args(rds_group=rds_group, assume_na=assume_na)
-        self.set_test_input()  # This method does not take any args
-        self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
-        self.run_test()
-
-    def run_test_return(self, rds_group: bytes, assume_na: bool, exp_attr: dict = None) -> None:
-        """Common method calls for a test case expected to return.
-
-        Args:
-            rds_group: Sets the rds_group argument input.
-            assume_na: Sets the assume_na argument input.
-            exp_attr: [OPTIONAL] A dictionary of RDSGroupInfo attributes, and their expected values,
-                to test in the actual return value.
-        """
-        self.set_ctor_args(rds_group=rds_group, assume_na=assume_na)
-        self.set_test_input()  # This method does not take any args
-        self.expect_return(None)  # This method has a return value but validation will be customized
-        self.exp_attr_dict = exp_attr
-        self.run_test()
-
 
 class NormalRDSGroupGGIUnitTest(RDSGroupGGIUnitTest):
     """Normal Test Cases."""
@@ -179,7 +179,7 @@ class NormalRDSGroupGGIUnitTest(RDSGroupGGIUnitTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """RootUnitTest ctor."""
+        """NormalRDSGroupGGIUnitTest ctor."""
         # ATTRIBUTES
         # Dictionary of expected RDSGroupInfo attr-to-validate : expected-value
         self.good_group1_exp_info = {
@@ -300,7 +300,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupGGIUnitTest):
                                 'This RDS group failed its integrity check:')
 
     def test_s02_out_of_order_group_shift2(self):
-        """A group of RDS blocks that are valid but out of order: caesar shift 1."""
+        """A group of RDS blocks that are valid but out of order: caesar shift 2."""
         rds_group = self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 \
             + self.GOOD_BLOCK_B3
         assume_na = True
@@ -308,7 +308,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupGGIUnitTest):
                                 'This RDS group failed its integrity check:')
 
     def test_s03_out_of_order_group_shift3(self):
-        """A group of RDS blocks that are valid but out of order: caesar shift 1."""
+        """A group of RDS blocks that are valid but out of order: caesar shift 3."""
         rds_group = self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 \
             + self.GOOD_BLOCK_A3
         assume_na = True

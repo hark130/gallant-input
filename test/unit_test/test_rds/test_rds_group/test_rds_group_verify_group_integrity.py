@@ -184,7 +184,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
                                 'This RDS group failed its integrity check:')
 
     def test_s02_out_of_order_group_shift2(self):
-        """A group of RDS blocks that are valid but out of order: caesar shift 1."""
+        """A group of RDS blocks that are valid but out of order: caesar shift 2."""
         rds_group = self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 \
             + self.GOOD_BLOCK_B3
         assume_na = True
@@ -192,7 +192,7 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
                                 'This RDS group failed its integrity check:')
 
     def test_s03_out_of_order_group_shift3(self):
-        """A group of RDS blocks that are valid but out of order: caesar shift 1."""
+        """A group of RDS blocks that are valid but out of order: caesar shift 3."""
         rds_group = self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 \
             + self.GOOD_BLOCK_A3
         assume_na = True

@@ -34,6 +34,7 @@ from typing import Any
 # Third Party Imports
 from test.unit_test.test_rds.test_rds import RDSUnitTest
 # Local Imports
+from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 
 
 class RDSPICodeUnitTest(RDSUnitTest):
@@ -61,7 +62,8 @@ class RDSPICodeUnitTest(RDSUnitTest):
     def __init__(self, *args, **kwargs) -> None:
         """RDSPICodeUnitTest ctor."""
         # ATTRIBUTES
-        self.input_pi_code = None  # Test case input: RDSPICode(pi_code)
+        self.input_pi_code = None                                  # Test input: RDSPICode(pi_code)
+        self.def_good_pic = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
 
         super().__init__(*args, **kwargs)
 

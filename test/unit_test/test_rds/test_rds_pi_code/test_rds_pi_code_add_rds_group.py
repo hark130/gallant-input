@@ -20,9 +20,7 @@ from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_GROUP_LEN
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
-from gallant_input.rds.group_info import RDSGroupInfo
 from gallant_input.rds.picode import RDSPICode
-from gallant_input.rds.rbds_program_type import RBDSProgTypeCode
 from test.unit_test.test_rds.test_rds_pi_code.test_rds_pi_code import RDSPICodeUnitTest
 
 
@@ -133,15 +131,14 @@ class ErrorRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
         """Bad rds_group type: RDSGroup(tuple)."""
         pi_code = self.def_good_pic
         rds_group = RDSGroup(tuple((self.GOOD_BLOCK_A3, self.GOOD_BLOCK_B3, self.GOOD_BLOCK_C3,
-                           self.GOOD_BLOCK_D3)))
+                                    self.GOOD_BLOCK_D3)))
         self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_e07_rds_group_bad_type_int(self):
         """Bad rds_group type: RDSGroup(int)."""
         pi_code = self.def_good_pic
         rds_group = RDSGroup(convert_bin_bytes_to_int(self.GOOD_GROUP1))
-        self.run_test_exception(pi_code, rds_group, TypeError,
-                                'argument should have been of type')
+        self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_e08_rds_group_bad_value_empty(self):
         """Bad rds_group value: RDSGroup(empty bytes)."""
@@ -185,32 +182,32 @@ class SpecialRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     def test_s01_out_of_order_group_shift1(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3 \
-            + self.GOOD_BLOCK_C3)
+        rds_group = RDSGroup(self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3
+                             + self.GOOD_BLOCK_C3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
-                                'This RDS PI code set detected a bad RDS group:')
+                                'This RDS PI code set has a bad RDS group:')
 
     def test_s02_out_of_order_group_shift2(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 2."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 \
-            + self.GOOD_BLOCK_B3)
+        rds_group = RDSGroup(self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3
+                             + self.GOOD_BLOCK_B3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
-                                'This RDS PI code set detected a bad RDS group:')
+                                'This RDS PI code set has a bad RDS group:')
 
     def test_s03_out_of_order_group_shift3(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 3."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 \
-            + self.GOOD_BLOCK_A3)
+        rds_group = RDSGroup(self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3
+                             + self.GOOD_BLOCK_A3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
-                                'This RDS PI code set detected a bad RDS group:')
+                                'This RDS PI code set has a bad RDS group:')
 
     def test_s04_valid_yet_disparate_blocks(self):
         """A group of RDS blocks that are not necessarily related to each other."""
         pi_code = self.GOOD_BLOCK_A1[:RDS_BLOCK_DATA_LEN]
-        rds_group = RDSGroup(self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1 \
-            + self.GOOD_BLOCK_D3)
+        rds_group = RDSGroup(self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1
+                             + self.GOOD_BLOCK_D3)
         self.run_test_return(pi_code, rds_group)
 
     def test_s05_method_mixup(self):

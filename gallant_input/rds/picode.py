@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_GROUP_LEN
+from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
 from gallant_input.validation import validate_binary_bytes, validate_list, validate_type
@@ -74,7 +74,6 @@ class RDSPICode:
         """
         self._validate_internals()
 
-
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
@@ -126,7 +125,7 @@ class RDSPICode:
         try:
             actual_pic = rds_group.get_group_info().pic
         except RDSIntegrityFailure as err:
-            raise RDSIntegrityFailure(f'This RDS PI code set detected a bad RDS group: {err}')
+            raise RDSIntegrityFailure(f'This RDS PI code set has a bad RDS group: {err}') from err
         if actual_pic != self._pi_code:
             raise RDSPICodeMismatch(f'This RDS PI code set expected code "{self._pi_code}" but '
                                     f'"{actual_pic}" was parsed instead')
@@ -139,7 +138,8 @@ class RDSPICode:
         # Content
         for rds_group_obj in self._rds_group_objs:
             # Type, Content, and PI code
-            self._validate_internal_rds_group_picode(rds_group=rds_group_obj)
+            self._validate_internal_rds_group_picode(rds_group=rds_group_obj,
+                                                     var_name='internal RDSGroup object')
 
     def _validate_internals(self) -> None:
         """Validate the private attributes once."""

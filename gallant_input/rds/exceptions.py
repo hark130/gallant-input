@@ -7,3 +7,7 @@ class RDSBlockIDMismatch(Exception):
 
 class RDSIntegrityFailure(Exception):
     """An RDS block has failed its integrity check."""
+
+
+class RDSPICodeMismatch(Exception):
+    """An RDS group's Program Identification code (PI code) does not match the expected code."""

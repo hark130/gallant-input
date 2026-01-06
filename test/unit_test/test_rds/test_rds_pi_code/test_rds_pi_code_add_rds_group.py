@@ -39,13 +39,6 @@ class RDSPICodeARGUnitTest(RDSPICodeUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
 
-    def __init__(self, *args, **kwargs) -> None:
-        """RDSPICodeARGUnitTest ctor."""
-        # ATTRIBUTES
-        self.def_good_pic = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
-
-        super().__init__(*args, **kwargs)
-
     def call_callable(self):
         """Defines how the class will invoke the method call."""
         test_obj = RDSPICode(pi_code=self.input_pi_code)
@@ -60,9 +53,6 @@ class RDSPICodeARGUnitTest(RDSPICodeUnitTest):
         self._validate_return_value(return_value=return_value)
 
     # COMMON-USE METHODS
-    # Methods listed in alphabetical order
-
-    # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
     def run_test_exception(self, pi_code: Any, rds_group: Any, exception_type: Exception,
@@ -92,6 +82,9 @@ class RDSPICodeARGUnitTest(RDSPICodeUnitTest):
         self.set_test_input(rds_group)
         self.expect_return(None)  # This method does not have a return value
         self.run_test()
+
+    # CLASS HELPER METHODS
+    # Methods listed in alphabetical order
 
 
 class NormalRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
@@ -190,7 +183,7 @@ class ErrorRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
         self.run_test_exception(pi_code, rds_group, ValueError, 'Invalid binary value detected')
 
 
-class SpecialRDSPICodeGBIUnitTest(RDSPICodeARGUnitTest):
+class SpecialRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     """Special Test Cases."""
 
     def test_s01_out_of_order_group_shift1(self):
@@ -223,6 +216,12 @@ class SpecialRDSPICodeGBIUnitTest(RDSPICodeARGUnitTest):
         rds_group = RDSGroup(self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1 \
             + self.GOOD_BLOCK_D3)
         self.run_test_return(pi_code, rds_group)
+
+    def test_s05_method_mixup(self):
+        """Confused add_bytes() for add_rds_group() (or vice-versa)."""
+        pi_code = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]
+        rds_group = self.GOOD_GROUP1
+        self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
 
 if __name__ == '__main__':

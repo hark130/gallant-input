@@ -18,7 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 # Local Imports
 from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_GROUP_LEN
-from gallant_input.rds.exceptions import RDSIntegrityFailure
+from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.group_info import RDSGroupInfo
 from gallant_input.rds.picode import RDSPICode
@@ -246,6 +246,14 @@ class SpecialRDSPICodeABUnitTest(RDSPICodeABUnitTest):
         group_bytes = RDSGroup(self.GOOD_GROUP1)
         self.run_test_exception(pi_code, group_bytes, TypeError,
                                 'argument should have been of type')
+
+    def test_s06_good_pic_wrong_block(self):
+        """Valid pi_code in the ctor but the RDSGroup PI code doesn't match."""
+        pi_code = self.GOOD_BLOCK_B3[:RDS_BLOCK_DATA_LEN]
+        group_bytes = self.GOOD_GROUP1
+        self.run_test_exception(pi_code, group_bytes, RDSPICodeMismatch,
+                                f'expected code "{pi_code}" but '
+                                f'"{group_bytes[:RDS_BLOCK_DATA_LEN]}" was parsed instead')
 
 
 if __name__ == '__main__':

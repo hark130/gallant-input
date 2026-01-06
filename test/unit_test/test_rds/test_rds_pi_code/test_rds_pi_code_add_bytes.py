@@ -1,10 +1,10 @@
 """Unit test module for RDSPICode.add_bytes().
 
 Typical Usage:
-    python -m test                                           # Run *all* the test cases
-    python -m test.unit_test                                 # Run *all* the unit test cases
-    python -m test.unit_test.test_rds                        # Run *all* rds sub-package test cases
-    python -m test.unit_test.test_rds.test_rds_pi_code       # Run *all* RDSPICode method test cases
+    python -m test                                      # Run *all* the test cases
+    python -m test.unit_test                            # Run *all* the unit test cases
+    python -m test.unit_test.test_rds                   # Run *all* rds sub-package test cases
+    python -m test.unit_test.test_rds.test_rds_pi_code  # Run *all* RDSPICode method test cases
     # Run just these unit tests
     python -m test.unit_test.test_rds.test_rds_pi_code.test_rds_pi_code_add_bytes
     # Run just this normal 1 unit test
@@ -45,11 +45,7 @@ class RDSPICodeABUnitTest(RDSPICodeUnitTest):
         return test_obj.add_bytes(*self._args, **self._kwargs)
 
     def validate_return_value(self, return_value):
-        """Defines how the class will validate the return value of the tested call.
-
-        Child class must override this method.
-        See TediousUnitTest.validate_return_value() for details.
-        """
+        """Defines how the class will validate the return value of the tested call."""
         self._validate_return_value(return_value=return_value)
 
     # COMMON-USE METHODS

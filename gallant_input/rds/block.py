@@ -58,7 +58,7 @@ class RDSBlock:
         # DONE
         return self._rds_block_id
 
-    def verify_block_integrity(self) -> None:
+    def verify_block_integrity(self, force: bool = False) -> None:
         """Validate the RDS block provided.
 
         Always call this method first when defining public methods.
@@ -66,6 +66,10 @@ class RDSBlock:
         1. Validates internals
         2. Validate block ID
         3. Update block ID (only for BlockID.GUESS values)
+
+        Args:
+            force: [OPTIONAL] If True, validates everything all over again; Even if it's already
+                been validated.
 
         Raises:
             RDSIntegrityFailure: The RDS block has failed its integrity check.
@@ -76,7 +80,8 @@ class RDSBlock:
         crc = None  # Calculated CRC as an integer
 
         # VALIDATION
-        self._validate_internals()
+        validate_type(force, 'force', bool)
+        self._validate_internals(force=force)
 
         # PREPARE
         self._split_rds_block()  # Split data and checkword
@@ -221,9 +226,14 @@ class RDSBlock:
                 raise NotImplementedError(f'Unsupported BlockID value: {self._rds_block_id}')
 # pylint: enable=too-many-branches
 
-    def _validate_internals(self) -> None:
-        """Validate the private attributes once."""
-        if self._validated is False:
+    def _validate_internals(self, force: bool = False) -> None:
+        """Validate the private attributes once.
+
+        Args:
+            force: [OPTIONAL] If True, validates everything all over again; Even if it's already
+                been validated.
+        """
+        if self._validated is False or force is True:
             # self._validated
             validate_type(var=self._validated, var_name='_validated attribute', var_type=bool)
             # self._rds_block

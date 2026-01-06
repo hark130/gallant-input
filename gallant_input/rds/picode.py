@@ -61,10 +61,14 @@ class RDSPICode:
         """
         self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
-    def verify_pi_code_integrity(self) -> None:
+    def verify_pi_code_integrity(self, force: bool = False) -> None:
         """Validate all RDS groups provided against the established PI code.
 
         Always call this method first when defining public methods.
+
+        Args:
+            force: [OPTIONAL] If True, validates everything all over again; Even if it's already
+                been validated.
 
         Raises:
             RDSIntegrityFailure: The RDS block has failed its integrity check.
@@ -72,7 +76,8 @@ class RDSPICode:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        self._validate_internals()
+        validate_type(force, 'force', bool)
+        self._validate_internals(force=force)
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
@@ -141,9 +146,9 @@ class RDSPICode:
             self._validate_internal_rds_group_picode(rds_group=rds_group_obj,
                                                      var_name='internal RDSGroup object')
 
-    def _validate_internals(self) -> None:
+    def _validate_internals(self, force: bool = False) -> None:
         """Validate the private attributes once."""
-        if self._validated is False:
+        if self._validated is False or force is True:
             # self._validated
             validate_type(var=self._validated, var_name='_validated attribute', var_type=bool)
             # self._pi_code

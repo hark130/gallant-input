@@ -54,7 +54,7 @@ class RDSGroup:
         # DONE
         return self._group_info
 
-    def verify_group_integrity(self) -> None:
+    def verify_group_integrity(self, force: bool = False) -> None:
         """Validate the RDS group provided.
 
         Always call this method first when defining public methods.
@@ -63,12 +63,17 @@ class RDSGroup:
         2. Validate block IDs: A, B, C*, D
         3. Parse group information
 
+        Args:
+            force: [OPTIONAL] If True, validates everything all over again; Even if it's already
+                been validated.
+
         Raises:
             RDSIntegrityFailure: The RDS block has failed its integrity check.
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        if self._verified is False:
+        validate_type(force, 'force', bool)
+        if self._verified is False or force is True:
             # VALIDATION
             self._validate_internals()
 

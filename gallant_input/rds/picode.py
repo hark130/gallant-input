@@ -43,7 +43,7 @@ class RDSPICode:
             ValueError: Invalid value.
         """
         rds_group = RDSGroup(rds_group=group_bytes)
-        self._add_rds_group(rds_group=rds_group)
+        self._add_rds_group(rds_group=rds_group, var_name='group_bytes')
 
     def add_rds_group(self, rds_group: RDSGroup) -> None:
         """Add an RDSGroup object to the PI code set.
@@ -59,7 +59,7 @@ class RDSPICode:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        self._add_rds_group(rds_group=rds_group)
+        self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
     def verify_pi_code_integrity(self) -> None:
         """Validate all RDS groups provided against the established PI code.
@@ -78,13 +78,15 @@ class RDSPICode:
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
-    def _add_rds_group(self, rds_group: RDSGroup) -> None:
+    def _add_rds_group(self, rds_group: RDSGroup, var_name: str) -> None:
         """SPOT on how to add an RDSGroup object to the PI code set.
 
         The PI code of rds_group must the same as the ctor's pi_code value.
 
         Args:
             rds_group: An RDSGroup object associated with the established PI code.
+            var_name: The argument name that was the catalyst for the RDSGroup object
+                (e.g., group_bytes, rds_group).
 
         Raises:
             RDSIntegrityFailure: The RDS block bytes provided has failed the integrity check.
@@ -94,13 +96,18 @@ class RDSPICode:
         """
         # VALIDATION
         self.verify_pi_code_integrity()
-        self._validate_internal_rds_group_picode(rds_group=rds_group)
+        self._validate_internal_rds_group_picode(rds_group=rds_group, var_name=var_name)
 
         # ADD IT
         self._rds_group_objs.append(rds_group)  # It passed muster
 
-    def _validate_internal_rds_group_picode(self, rds_group: RDSGroup) -> None:
+    def _validate_internal_rds_group_picode(self, rds_group: RDSGroup, var_name: str) -> None:
         """Checks an RDSGroup's PI code against the internal attribute.
+
+        Args:
+            rds_group: The RDSGroup object to validate.
+            var_name: The argument name that was the catalyst for the RDSGroup object
+                (e.g., group_bytes, rds_group).
 
         Raises:
             RDSIntegrityFailure: The RDS block has failed its integrity check.
@@ -113,7 +120,7 @@ class RDSPICode:
 
         # VALIDATE IT
         # Type
-        validate_type(var=rds_group, var_name='rds_group', var_type=RDSGroup)
+        validate_type(var=rds_group, var_name=var_name, var_type=RDSGroup)
         # Content
         # NOTE: Calling the RDSGroup.get_group_info() method will invoke the validation method
         try:

@@ -61,6 +61,11 @@ class RDSPICode:
         """
         self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
+    def get_pi_code(self) -> None:
+        """Get the PI code."""
+        self.verify_pi_code_integrity()
+        return self._pi_code
+
     def verify_pi_code_integrity(self, force: bool = False) -> None:
         """Validate all RDS groups provided against the established PI code.
 

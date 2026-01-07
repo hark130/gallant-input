@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Final
 # Third Party Imports
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int
+from gallant_input.converters import convert_bin_bytes_to_int, convert_bin_bytes_to_hex_str
 from gallant_input.rds.rbds_program_type import RBDSProgTypeCode
 from gallant_input.rds.rds_program_type import RDSProgTypeCode
 from gallant_input.validation import validate_binary_bytes

@@ -4,6 +4,7 @@
 from typing import List
 # Third Party Imports
 # Local Imports
+from gallant_input.converters import convert_bin_bytes_to_hex_str
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.picode import RDSPICode

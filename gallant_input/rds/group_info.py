@@ -52,6 +52,12 @@ class RDSGroupInfo:
         return convert_bin_bytes_to_int(binary=self.gtype)
 
     @property
+    def pi_code(self) -> str:
+        """Convert the PI code bytes to a hexadecimal value in a string."""
+        self.validate_data()
+        return convert_bin_bytes_to_hex_str(binary=self.pic, add_prefix=True)
+
+    @property
     def msg_group_type_a(self) -> bool:
         """Is this RDS group message group type A?."""
         self.validate_data()

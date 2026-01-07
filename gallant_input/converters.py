@@ -25,6 +25,36 @@ def convert_bin_bytes_to_int(binary: bytes) -> int:
     return int(binary.decode('ascii'), 2)
 
 
+def convert_bin_bytes_to_hex_str(binary: bytes, add_prefix: bool = True) -> str:
+    """Convert a bytes-representation of a binary number to a hex value in a string.
+
+    Example Usage:
+        convert_bin_bytes_to_hex_str(b'10101010', True)  -> 0xAA
+        convert_bin_bytes_to_hex_str(b'01010101', False) -> 0x55
+
+    Args:
+        binary: A binary literal in a bytes object.
+        add_prefix: [OPTIONAL] If True, prepend the string with the '0x' prefix.
+
+    Returns:
+        The hexadecimal version of the binary value, as a string.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: The bytes object contains non-binary characters.
+    """
+    # LOCAL VARIABLES
+    bin_int = convert_bin_bytes_to_int(binary=binary)
+    bin_hex = f'{bin_int:02X}'
+
+    # ADD PREFIX?
+    if add_prefix is True:
+        bin_hex = '0x' + bin_hex
+
+    # DONE
+    return bin_hex
+
+
 def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:
     """Convert an integer to its binary value in a bytes object.
 

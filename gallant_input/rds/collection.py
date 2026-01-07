@@ -53,6 +53,16 @@ class RDSCollection:
         """
         self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
+    def fetch_pic_bytes(self) -> List[bytes]:
+        """Fetch a list of all the PI code bytes contained in this collection."""
+        self.verify_collection_integrity()
+        return self._fetch_pic_bytes()
+
+    def fetch_pic_strs(self) -> List[bytes]:
+        """Fetch a list of all the PI codes, as hex values in strs, contained in this collection."""
+        self.verify_collection_integrity()
+        return [convert_bin_bytes_to_hex_str(pi_code) for pi_code in self._fetch_pic_bytes()]
+
     def verify_collection_integrity(self, force: bool = False) -> None:
         """Validate all RDS groups for all PI codes in the collection.
 
@@ -135,6 +145,10 @@ class RDSCollection:
 
         # DONE
         return actual_pic
+
+    def _fetch_pic_bytes(self) -> List[bytes]:
+        """Fetch a list of all the PI code bytes contained in this collection."""
+        return list(self._picode_dict.keys())
 
     def _validate_internals(self, force: bool = False) -> None:
         """Validate the private attributes once."""

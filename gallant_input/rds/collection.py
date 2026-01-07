@@ -59,7 +59,7 @@ class RDSCollection:
         self.verify_collection_integrity()
         return self._fetch_pic_bytes()
 
-    def fetch_pic_strs(self) -> List[bytes]:
+    def fetch_pic_strs(self) -> List[str]:
         """Fetch a list of all the PI codes, as hex values in strs, contained in this collection."""
         self.verify_collection_integrity()
         return [convert_bin_bytes_to_hex_str(pi_code) for pi_code in self._fetch_pic_bytes()]

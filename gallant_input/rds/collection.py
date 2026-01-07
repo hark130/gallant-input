@@ -3,11 +3,10 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.picode import RDSPICode
-from gallant_input.validation import validate_binary_bytes, validate_list, validate_type
+from gallant_input.validation import validate_type
 
 
 class RDSCollection:
@@ -100,7 +99,7 @@ class RDSCollection:
         # ADD IT
         if rds_group_pic not in self._picode_dict:
             self._picode_dict[rds_group_pic] = RDSPICode(pi_code=rds_group_pic)
-        self._picode_dict[rds_group_pic].add_rds_group(rds_group=rds_group)            
+        self._picode_dict[rds_group_pic].add_rds_group(rds_group=rds_group)
 
     def _fetch_internal_rds_group_picode(self, rds_group: RDSGroup, var_name: str) -> bytes:
         """Check and return an RDSGroup's PI code.

@@ -66,6 +66,48 @@ class RDSPICode:
         self.verify_pi_code_integrity()
         return self._pi_code
 
+    def get_station_name(self) -> str:
+        """Attempt to form the station name from Message Group Type 00s in the set.
+
+        Returns:
+            The reformed station name as a string.  The returned value will include all offsets.
+
+        Raises:
+            RDSDataIncomplete: The Message Group Types are missing one or more offsets.
+            RDSMsgGroupTypeMissing: There are no Message Group Type 00s in the set.
+        """
+        # LOCAL VARIABLES
+        temp_group_info = None  # Temporary RDSGroupInfo() object
+        station_name = ''       # The reformed station name
+        offset_dict = {}        # The dictionary of offsets and their strings
+        msg_groups = []         # List of Message Group Type 00s
+
+        # VALIDATION
+        self.verify_pi_code_integrity()
+
+        # GET IT
+        # List of RDSMsgGroupType00()s
+        for rds_group_obj in self._rds_group_objs:
+            try:
+                msg_groups.append(rds_group_obj.get_msg_group00())
+            except RDSMsgGroupTypeMissing:
+                pass  # Not Message Group Type 00 so skip it
+        # Validate results
+        if len(msg_groups) == 0:
+            raise RDSMsgGroupTypeMissing(f'This RDSPICode does not contain any Message Type 00s')
+        # Get the offsets and station name chunks
+        for msg_group in msg_groups:
+            if msg_group.offset not in offset_dict:
+                offset_dict[msg_group.offset] = msg_group.station_name_chunk
+        # Reform station name
+        try:
+            station_name = offset_dict[0] + offset_dict[1] + offset_dict[2] + offset_dict[3]
+        except KeyError as err:
+            raise RDSDataIncomplete(f'Missing offeset {err.args[0]}') from err
+
+        # DONE
+        return station_name
+
     def verify_pi_code_integrity(self, force: bool = False) -> None:
         """Validate all RDS groups provided against the established PI code.
 

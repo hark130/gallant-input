@@ -1,5 +1,6 @@
 """Defines bespoke RDS exceptions for use in this sub-package."""
 
+
 class RDSFeatureUnavailable(Exception):
     """An RDS group + version does not implement a particular feature."""
 

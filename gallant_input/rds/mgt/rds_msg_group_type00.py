@@ -1,12 +1,14 @@
 """Defines the RDSMsgGroupType00() dataclass."""
 
 # Standard Imports
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 # Third Party Imports
 # Local Imports
-from gallant_idea.converters import convert_bin_bytes_to_int
-from gallant_idea.rds.constants import RDS_BLOCK_DATA_LEN
+from gallant_input.converters import convert_bin_bytes_to_int
+from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
+from gallant_input.rds.exceptions import RDSFeatureUnavailable
+from gallant_input.rds.mgt.rds_msg_group_type import RDSMsgGroupType
+from gallant_input.validation import validate_binary_bytes, validate_type
 
 
 @dataclass
@@ -31,20 +33,17 @@ class RDSMsgGroupType00(RDSMsgGroupType):
 
     # Public Attributes
     # See RDSMsgGroupType() for inherited attributes
-    di: bytes           # The Block 2 Decoder Identification Code [b2]
+    di: bytes           # The Block 2 Decoder Identification Code
     char_seg: bytes     # The Block 2 character segment
     block3_data: bytes  # The data segment from block 3
     block4_data: bytes  # The data segment from block 4
-
-    # Private Attributes
-    _validated: bool = field(default=False, repr=False)
 
     # CORE METHODS
     # In alphabetical order
 
     def validate_content(self) -> None:
         """Validate the contents of the dataclass: type, content, length, format."""
-        if self._validated not True:
+        if self._validated is not True:
             validate_type(self._validated, 'internal attribute _validated', bool)
             validate_binary_bytes(self.msg_ver, 'msg_ver', 1)
             validate_binary_bytes(self.char_seg, 'char_seg', 2)
@@ -71,8 +70,9 @@ class RDSMsgGroupType00(RDSMsgGroupType):
                                         'available for data group type 0A')
         # The 16 bits of the Block 3 data segment holds two AFs.
         # Use The new RDS IEC 62106:1999 standard's "AF code tables" to interpret the values
-        return tuple((convert_bin_bytes_to_int(block3_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]),
-            convert_bin_bytes_to_int(block3_data[int(RDS_BLOCK_DATA_LEN/2):RDS_BLOCK_DATA_LEN-1])))
+        return tuple((convert_bin_bytes_to_int(self.block3_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]),
+                      convert_bin_bytes_to_int(self.block3_data[int(RDS_BLOCK_DATA_LEN/2):
+                                                                RDS_BLOCK_DATA_LEN-1])))
 
     @property
     def char_a(self) -> str:
@@ -82,7 +82,7 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         The offset helps reassemble the four two-character sets.  See station_name_chunk for more.
         """
         self.validate_content()
-        return chr(convert_bin_bytes_to_int(block4_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]))
+        return chr(convert_bin_bytes_to_int(self.block4_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]))
 
     @property
     def char_b(self) -> str:
@@ -92,8 +92,8 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         The offset helps reassemble the four two-character sets.  See station_name_chunk for more.
         """
         self.validate_content()
-        return chr(convert_bin_bytes_to_int(
-            block4_data[int(RDS_BLOCK_DATA_LEN/2):RDS_BLOCK_DATA_LEN-1]))
+        return chr(convert_bin_bytes_to_int(self.block4_data[int(RDS_BLOCK_DATA_LEN/2):
+                                                             RDS_BLOCK_DATA_LEN-1]))
 
     @property
     def offset(self) -> int:
@@ -106,7 +106,7 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         return convert_bin_bytes_to_int(binary=self.char_seg)
 
     @property
-    station_name_chunk(self) -> str:
+    def station_name_chunk(self) -> str:
         """The two station name characters (A & B) defined in this group.
 
         Use the group's offset values to help reassemble the full station name.

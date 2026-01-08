@@ -5,10 +5,11 @@
 # Local Imports
 from gallant_input.converters import convert_bin_bytes_to_hex_str
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
-from gallant_input.rds.exceptions import (RDSDataIncomplete, RDSIntegrityFailure,
-                                          RDSMsgGroupTypeMissing, RDSPICodeMismatch)
+from gallant_input.rds.exceptions import (RDSIntegrityFailure, RDSMsgGroupTypeMissing,
+                                          RDSPICodeMismatch)
 from gallant_input.rds.group import RDSGroup
-from gallant_input.validation import validate_binary_bytes, validate_list, validate_type
+from gallant_input.validation import (validate_binary_bytes, validate_list, validate_string,
+                                      validate_type)
 
 
 class RDSPICode:
@@ -73,6 +74,48 @@ class RDSPICode:
         self.verify_pi_code_integrity()
         return convert_bin_bytes_to_hex_str(self.get_pi_code())
 
+    def get_radio_text(self) -> str:
+        """Attempt to form the radio text from Message Group Type 02s in the set.
+
+        Returns:
+            The reformed radio text as a string.  The returned value will include all offsets.
+
+        Raises:
+            RDSMsgGroupTypeMissing: There are no Message Group Type 02s in the set.
+        """
+        # LOCAL VARIABLES
+        radio_text = ''   # The reformed station name
+        offset_dict = {}  # The dictionary of offsets and their strings
+        msg_groups = []   # List of Message Group Type 02s
+
+        # VALIDATION
+        self.verify_pi_code_integrity()
+
+        # GET IT
+        # List of RDSMsgGroupType00()s
+        for rds_group_obj in self._rds_group_objs:
+            try:
+                msg_groups.append(rds_group_obj.get_msg_group02())  # EAFP
+            except RDSMsgGroupTypeMissing:
+                pass  # Not Message Group Type 00 so skip it
+        # Validate results
+        if len(msg_groups) == 0:
+            raise RDSMsgGroupTypeMissing('This RDSPICode does not contain any Message Type 02s')
+        # Get the offsets and radio text chunks
+        for msg_group in msg_groups:
+            if msg_group.offset not in offset_dict:
+                offset_dict[msg_group.offset] = msg_group.radio_text_chunk
+            else:
+                # Seems we've lapped it so form the string as-is, reset the dict, and continue
+                radio_text = radio_text + _combine_offset_dict(offset_dict)
+                offset_dict = {msg_group.offset: msg_group.radio_text_chunk}  # Reset
+
+        # Reform remaining(?) radio text
+        radio_text = radio_text + _combine_offset_dict(offset_dict)
+
+        # DONE
+        return radio_text
+
     def get_station_name(self) -> str:
         """Attempt to form the station name from Message Group Type 00s in the set.
 
@@ -80,7 +123,6 @@ class RDSPICode:
             The reformed station name as a string.  The returned value will include all offsets.
 
         Raises:
-            RDSDataIncomplete: The Message Group Types are missing one or more offsets.
             RDSMsgGroupTypeMissing: There are no Message Group Type 00s in the set.
         """
         # LOCAL VARIABLES
@@ -104,12 +146,13 @@ class RDSPICode:
         # Get the offsets and station name chunks
         for msg_group in msg_groups:
             if msg_group.offset not in offset_dict:
-                offset_dict[msg_group.offset] = msg_group.station_name_chunk
-        # Reform station name
-        try:
-            station_name = offset_dict[0] + offset_dict[1] + offset_dict[2] + offset_dict[3]  # EAFP
-        except KeyError as err:
-            raise RDSDataIncomplete(f'Missing offeset {err.args[0]}') from err
+                offset_dict[msg_group.offset] = msg_group.radio_text_chunk
+            else:
+                # Seems we've lapped it so form the string as-is, reset the dict, and continue
+                station_name = station_name + _combine_offset_dict(offset_dict)
+                offset_dict = {msg_group.offset: msg_group.station_name_chunk}  # Reset
+        # Reform remaining(?) radio text
+        station_name = station_name + _combine_offset_dict(offset_dict)
 
         # DONE
         return station_name
@@ -210,3 +253,55 @@ class RDSPICode:
             # self._rds_group_objs
             self._validate_internal_rds_groups()
             self._validated = True
+
+
+def _combine_offset_dict(offset_dict: dict, missing: str = '?') -> str:
+    """Combine a dictionary of offset : str by the offset values.
+
+    Missing offsets are replaced with a missing character.
+
+    Args:
+        offset_dict: A dictionary of integers (assumed to be starting at 0) and strings.
+        missing: [OPTIONAL] Placeholder character for missing values.  This value is automatically
+            sized, short or long, to the length of the other strings found in the dictionary
+            (unless the strings vary in length).
+            This string can be empty.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    combined_str = ''   # The combined values from the dictionay
+    len_dict = 0        # Length of the dictionary
+    width = None        # Width of the missing string
+    new_miss = missing  # Width-formatting missing string
+
+    # VALIDATION
+    validate_string(missing, 'missing', can_be_empty=True)
+    validate_type(offset_dict, 'offset_dict', dict)
+    for key, val in offset_dict.items():
+        validate_type(key, 'offset_dict key', int)
+        validate_string(val, 'offset_dict value', can_be_empty=False)
+        if width is None:
+            width = len(val)
+        elif width != len(val):
+            width = len(missing)  # There's a variety of widths so we'll just use missing
+
+    # PREPARATION
+    if len(missing) > width:
+        new_miss = missing[:width]
+    elif len(missing) < width:
+        new_miss = missing * width
+        new_miss = new_miss[:width]
+
+    # COMBINE IT
+    len_dict = len(offset_dict)
+    for index in range(len_dict):
+        try:
+            combined_str = combined_str + offset_dict[index]
+        except KeyError:
+            combined_str = combined_str + new_miss  # An offset was missing
+
+    # DONE
+    return combined_str

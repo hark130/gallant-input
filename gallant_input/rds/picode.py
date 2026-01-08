@@ -3,6 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
+from gallant_input.converters import convert_bin_bytes_to_hex_str
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 from gallant_input.rds.exceptions import (RDSDataIncomplete, RDSIntegrityFailure,
                                           RDSMsgGroupTypeMissing, RDSPICodeMismatch)
@@ -62,10 +63,15 @@ class RDSPICode:
         """
         self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
-    def get_pi_code(self) -> None:
+    def get_pi_code(self) -> bytes:
         """Get the PI code."""
         self.verify_pi_code_integrity()
         return self._pi_code
+
+    def get_pi_code_str(self) -> str:
+        """Get the PI code as a hex string."""
+        self.verify_pi_code_integrity()
+        return convert_bin_bytes_to_hex_str(self.get_pi_code())
 
     def get_station_name(self) -> str:
         """Attempt to form the station name from Message Group Type 00s in the set.

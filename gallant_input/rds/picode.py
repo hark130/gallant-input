@@ -107,11 +107,11 @@ class RDSPICode:
                 offset_dict[msg_group.offset] = msg_group.radio_text_chunk
             else:
                 # Seems we've lapped it so form the string as-is, reset the dict, and continue
-                radio_text = radio_text + _combine_offset_dict(offset_dict)
+                radio_text = radio_text + _combine_offset_dict(offset_dict, num_keys=16)
                 offset_dict = {msg_group.offset: msg_group.radio_text_chunk}  # Reset
 
         # Reform remaining(?) radio text
-        radio_text = radio_text + _combine_offset_dict(offset_dict)
+        radio_text = radio_text + _combine_offset_dict(offset_dict, num_keys=16)
 
         # DONE
         return radio_text
@@ -149,10 +149,10 @@ class RDSPICode:
                 offset_dict[msg_group.offset] = msg_group.radio_text_chunk
             else:
                 # Seems we've lapped it so form the string as-is, reset the dict, and continue
-                station_name = station_name + _combine_offset_dict(offset_dict)
+                station_name = station_name + _combine_offset_dict(offset_dict, num_keys=4)
                 offset_dict = {msg_group.offset: msg_group.station_name_chunk}  # Reset
         # Reform remaining(?) radio text
-        station_name = station_name + _combine_offset_dict(offset_dict)
+        station_name = station_name + _combine_offset_dict(offset_dict, num_keys=4)
 
         # DONE
         return station_name
@@ -255,13 +255,14 @@ class RDSPICode:
             self._validated = True
 
 
-def _combine_offset_dict(offset_dict: dict, missing: str = '?') -> str:
+def _combine_offset_dict(offset_dict: dict, num_keys: int, missing: str = '?') -> str:
     """Combine a dictionary of offset : str by the offset values.
 
     Missing offsets are replaced with a missing character.
 
     Args:
         offset_dict: A dictionary of integers (assumed to be starting at 0) and strings.
+        num_keys: The maximum number of keys to expect (e.g., num_keys=4 for Group Type 00s)
         missing: [OPTIONAL] Placeholder character for missing values.  This value is automatically
             sized, short or long, to the length of the other strings found in the dictionary
             (unless the strings vary in length).
@@ -273,7 +274,6 @@ def _combine_offset_dict(offset_dict: dict, missing: str = '?') -> str:
     """
     # LOCAL VARIABLES
     combined_str = ''   # The combined values from the dictionay
-    len_dict = 0        # Length of the dictionary
     width = None        # Width of the missing string
     new_miss = missing  # Width-formatting missing string
 
@@ -296,8 +296,7 @@ def _combine_offset_dict(offset_dict: dict, missing: str = '?') -> str:
         new_miss = new_miss[:width]
 
     # COMBINE IT
-    len_dict = len(offset_dict)
-    for index in range(len_dict):
+    for index in range(num_keys):
         try:
             combined_str = combined_str + offset_dict[index]
         except KeyError:

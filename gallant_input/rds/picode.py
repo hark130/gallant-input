@@ -4,7 +4,8 @@
 # Third Party Imports
 # Local Imports
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
-from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
+from gallant_input.rds.exceptions import (RDSDataIncomplete, RDSIntegrityFailure,
+                                          RDSMsgGroupTypeMissing, RDSPICodeMismatch)
 from gallant_input.rds.group import RDSGroup
 from gallant_input.validation import validate_binary_bytes, validate_list, validate_type
 
@@ -77,7 +78,6 @@ class RDSPICode:
             RDSMsgGroupTypeMissing: There are no Message Group Type 00s in the set.
         """
         # LOCAL VARIABLES
-        temp_group_info = None  # Temporary RDSGroupInfo() object
         station_name = ''       # The reformed station name
         offset_dict = {}        # The dictionary of offsets and their strings
         msg_groups = []         # List of Message Group Type 00s
@@ -89,19 +89,19 @@ class RDSPICode:
         # List of RDSMsgGroupType00()s
         for rds_group_obj in self._rds_group_objs:
             try:
-                msg_groups.append(rds_group_obj.get_msg_group00())
+                msg_groups.append(rds_group_obj.get_msg_group00())  # EAFP
             except RDSMsgGroupTypeMissing:
                 pass  # Not Message Group Type 00 so skip it
         # Validate results
         if len(msg_groups) == 0:
-            raise RDSMsgGroupTypeMissing(f'This RDSPICode does not contain any Message Type 00s')
+            raise RDSMsgGroupTypeMissing('This RDSPICode does not contain any Message Type 00s')
         # Get the offsets and station name chunks
         for msg_group in msg_groups:
             if msg_group.offset not in offset_dict:
                 offset_dict[msg_group.offset] = msg_group.station_name_chunk
         # Reform station name
         try:
-            station_name = offset_dict[0] + offset_dict[1] + offset_dict[2] + offset_dict[3]
+            station_name = offset_dict[0] + offset_dict[1] + offset_dict[2] + offset_dict[3]  # EAFP
         except KeyError as err:
             raise RDSDataIncomplete(f'Missing offeset {err.args[0]}') from err
 

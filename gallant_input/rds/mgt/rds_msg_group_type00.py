@@ -11,7 +11,7 @@ from gallant_input.rds.mgt.rds_msg_group_type import RDSMsgGroupType
 from gallant_input.validation import validate_binary_bytes, validate_type
 
 
-@dataclass
+@dataclass(kw_only=True)  # Avoid linter false-negatives (e.g., Pylint's unexpected-keyword-arg)
 class RDSMsgGroupType00(RDSMsgGroupType):
     """RDS message group type 00 dataclasse.
 
@@ -46,6 +46,7 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         if self._validated is not True:
             validate_type(self._validated, 'internal attribute _validated', bool)
             validate_binary_bytes(self.msg_ver, 'msg_ver', 1)
+            validate_binary_bytes(self.di, 'di', 1)
             validate_binary_bytes(self.char_seg, 'char_seg', 2)
             validate_binary_bytes(self.block3_data, 'block3_data', 16)
             validate_binary_bytes(self.block4_data, 'block4_data', 16)

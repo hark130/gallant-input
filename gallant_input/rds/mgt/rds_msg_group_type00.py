@@ -11,9 +11,10 @@ from gallant_input.rds.mgt.rds_msg_group_type import RDSMsgGroupType
 from gallant_input.validation import validate_binary_bytes, validate_type
 
 
+# pylint: disable=duplicate-code
 @dataclass(kw_only=True)  # Avoid linter false-negatives (e.g., Pylint's unexpected-keyword-arg)
 class RDSMsgGroupType00(RDSMsgGroupType):
-    """RDS message group type 00 dataclasse.
+    """RDS message group type 00 dataclass.
 
     Group Type 0A: Basic tuning and switching information only
     Group Type 0B: Basic tuning and switching information only
@@ -121,3 +122,4 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         """
         self.validate_content()
         return self.char_a + self.char_b
+# pylint: enable=duplicate-code

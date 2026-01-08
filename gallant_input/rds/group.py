@@ -10,6 +10,7 @@ from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_BLOCK_LEN, RDS_G
 from gallant_input.rds.exceptions import (RDSBlockIDMismatch, RDSIntegrityFailure,
                                           RDSMsgGroupTypeMissing)
 from gallant_input.rds.mgt.rds_msg_group_type00 import RDSMsgGroupType00
+from gallant_input.rds.mgt.rds_msg_group_type02 import RDSMsgGroupType02
 from gallant_input.validation import validate_bytes, validate_type
 
 
@@ -86,6 +87,36 @@ class RDSGroup:
 
         # DONE
         return mgt00
+
+    def get_msg_group02(self) -> RDSMsgGroupType02:
+        """Extract the Message Group Type 02 information from this RDS Group.
+
+        Raises:
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
+            RDSMsgGroupTypeMissing: This RDS group does not contain Group Type 02.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
+        """
+        # LOCAL VARIABLES
+        group_info = None  # RDS group's information
+        mgt02 = None       # RDSMsgGroupType02()
+
+        # VALIDATION
+        self.verify_group_integrity()
+        group_info = self.get_group_info()
+        if group_info.group_type != 0x2:
+            raise RDSMsgGroupTypeMissing(f'This group type is {group_info.group_type}, not 2')
+
+        # GET IT
+        mgt02 = RDSMsgGroupType02(
+                msg_ver=group_info.msg_ver,
+                char_seg=self._rds_block_b.get_block_data()[12:16],
+                block3_data=self._rds_block_c.get_block_data()[:RDS_BLOCK_DATA_LEN],
+                block4_data=self._rds_block_d.get_block_data()[:RDS_BLOCK_DATA_LEN],
+            )
+
+        # DONE
+        return mgt02
 
     def verify_group_integrity(self, force: bool = False) -> None:
         """Validate the RDS group provided.

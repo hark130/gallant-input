@@ -78,10 +78,10 @@ class RDSGroup:
         # GET IT
         mgt00 = RDSMsgGroupType00(
                 msg_ver=group_info.msg_ver,
-                di=self._rds_block_b.get_block_data()[13],
-                char_seg=self._rds_block_b.get_block_data()[14:15],
-                block3_data=self._rds_block_c.get_block_data()[:RDS_BLOCK_DATA_LEN-1],
-                block4_data=self._rds_block_d.get_block_data()[:RDS_BLOCK_DATA_LEN-1],
+                di=self._rds_block_b.get_block_data()[13:14],
+                char_seg=self._rds_block_b.get_block_data()[14:16],
+                block3_data=self._rds_block_c.get_block_data()[:RDS_BLOCK_DATA_LEN],
+                block4_data=self._rds_block_d.get_block_data()[:RDS_BLOCK_DATA_LEN],
             )
 
         # DONE

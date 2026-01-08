@@ -146,7 +146,7 @@ class RDSPICode:
         # Get the offsets and station name chunks
         for msg_group in msg_groups:
             if msg_group.offset not in offset_dict:
-                offset_dict[msg_group.offset] = msg_group.radio_text_chunk
+                offset_dict[msg_group.offset] = msg_group.station_name_chunk
             else:
                 # Seems we've lapped it so form the string as-is, reset the dict, and continue
                 station_name = station_name + _combine_offset_dict(offset_dict, num_keys=4)

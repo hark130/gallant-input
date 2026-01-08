@@ -54,6 +54,37 @@ class RDSGroup:
         # DONE
         return self._group_info
 
+    def get_msg_group00(self) -> RDSMsgGroupType00:
+        """Extract the Message Group Type 00 information from this RDS Group.
+
+        Raises:
+            RDSIntegrityFailure: The RDS block has failed its integrity check.
+            RDSMsgGroupTypeMissing: This RDS group does not contain Group Type 00.
+            TypeError: Invalid data type.
+            ValueError: Invalid value.
+        """
+        # LOCAL VARIABLES
+        group_info = None  # RDS group's information
+        mgt00 = None       # RDSMsgGroupType00()
+
+        # VALIDATION
+        self.verify_group_integrity()
+        group_info = self.get_group_info()
+        if group_info.group_type != 0x0:
+            raise RDSMsgGroupTypeMissing(f'This group type is {group_info.group_type}, not 0')
+
+        # GET IT
+        mgt00 = RDSMsgGroupType00(
+                msg_ver=group_info.msg_ver,
+                di=self._rds_block_b[13],
+                char_seg=self._rds_block_b[14:15],
+                block3_data=self._rds_block_c[:RDS_BLOCK_DATA_LEN-1],
+                block4_data=self._rds_block_d[:RDS_BLOCK_DATA_LEN-1],
+            )
+
+        # DONE
+        return mgt00
+
     def verify_group_integrity(self, force: bool = False) -> None:
         """Validate the RDS group provided.
 

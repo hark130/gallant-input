@@ -32,7 +32,7 @@ class RDSGroupInfo:
     pic: bytes      # Program Identification Code (PIC) [b15 — b0]
     # Block 2
     gtype: bytes    # Group Type Code [b15–b12]
-    msg_ver: bytes  # Message Group Type [b11]
+    msg_ver: bytes  # Message Group Type Version [b11]
     tp: bytes       # Traffic Program Code [b10]
     pty: bytes      # Program Type [b9–b5]
     dep: bytes      # The rest of the bits are group type dependent [b4–b0]

@@ -65,6 +65,15 @@ class RDSCollection:
         self.verify_collection_integrity()
         return [convert_bin_bytes_to_hex_str(pi_code) for pi_code in self._fetch_pic_bytes()]
 
+    def fetch_rdspicode_obj(self, pi_code: bytes) -> RDSPICode:
+        """Fetch a particular RDSPICode object.
+
+        Raises:
+            KeyError: There is no RDSPICode object for pi_code.
+        """
+        self.verify_collection_integrity()
+        return self._picode_dict[pi_code]
+
     def verify_collection_integrity(self, force: bool = False) -> None:
         """Validate all RDS groups for all PI codes in the collection.
 

@@ -84,7 +84,7 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         The offset helps reassemble the four two-character sets.  See station_name_chunk for more.
         """
         self.validate_content()
-        return chr(convert_bin_bytes_to_int(self.block4_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]))
+        return chr(convert_bin_bytes_to_int(self.block4_data[0:int(RDS_BLOCK_DATA_LEN/2)]))
 
     @property
     def char_b(self) -> str:
@@ -95,7 +95,7 @@ class RDSMsgGroupType00(RDSMsgGroupType):
         """
         self.validate_content()
         return chr(convert_bin_bytes_to_int(self.block4_data[int(RDS_BLOCK_DATA_LEN/2):
-                                                             RDS_BLOCK_DATA_LEN-1]))
+                                                             RDS_BLOCK_DATA_LEN]))
 
     @property
     def offset(self) -> int:

@@ -63,7 +63,7 @@ class RDSMsgGroupType02(RDSMsgGroupType):
         self.validate_content()
         if self.msg_group_type_a is True:
             character = chr(
-                convert_bin_bytes_to_int(self.block3_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]))
+                convert_bin_bytes_to_int(self.block3_data[0:int(RDS_BLOCK_DATA_LEN/2)]))
         return character
 
     @property
@@ -77,21 +77,21 @@ class RDSMsgGroupType02(RDSMsgGroupType):
         self.validate_content()
         if self.msg_group_type_a is True:
             character = chr(convert_bin_bytes_to_int(self.block3_data[int(RDS_BLOCK_DATA_LEN/2):
-                                                                      RDS_BLOCK_DATA_LEN-1]))
+                                                                      RDS_BLOCK_DATA_LEN]))
         return character
 
     @property
     def char_c(self) -> str:
         """The third character (C) in the radio text segment contained in this group."""
         self.validate_content()
-        return chr(convert_bin_bytes_to_int(self.block4_data[0:int(RDS_BLOCK_DATA_LEN/2)-1]))
+        return chr(convert_bin_bytes_to_int(self.block4_data[0:int(RDS_BLOCK_DATA_LEN/2)]))
 
     @property
     def char_d(self) -> str:
         """The fourth character (D) in the radio text segment contained in this group."""
         self.validate_content()
         return chr(convert_bin_bytes_to_int(self.block4_data[int(RDS_BLOCK_DATA_LEN/2):
-                                                             RDS_BLOCK_DATA_LEN-1]))
+                                                             RDS_BLOCK_DATA_LEN]))
 
     @property
     def offset(self) -> int:

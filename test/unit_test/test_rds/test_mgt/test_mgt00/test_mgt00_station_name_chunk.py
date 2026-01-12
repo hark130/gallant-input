@@ -40,7 +40,7 @@ class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):
         """Defines how the class will invoke the method call."""
         self.get_rds_group_msg_group00(rds_group=self.input_rds_group,
                                        assume_na=self.input_assume_na)
-        return self.self.built_rds_mgt00.station_name_chunk
+        return self.built_rds_mgt00.station_name_chunk
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call."""

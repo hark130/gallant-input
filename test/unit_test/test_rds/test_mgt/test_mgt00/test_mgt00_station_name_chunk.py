@@ -4,9 +4,8 @@ Typical Usage:
     python -m test                                           # Run *all* the test cases
     python -m test.unit_test                                 # Run *all* the unit test cases
     python -m test.unit_test.test_rds                        # Run *all* rds sub-package test cases
-    python -m test.unit_test.test_rds.test_mgt               # Run *all* RDSMsgGroupType method test cases
-    # Run just the RDSMsgGroupType00 unit tests
-    python -m test.unit_test.test_rds.test_mgt.test_mgt00
+    python -m test.unit_test.test_rds.test_mgt               # Run *all* RDSMsgGroupType test cases
+    python -m test.unit_test.test_rds.test_mgt.test_mgt00    # Run just the RDSMsgGroupType00 tests
     # Run just the RDSMsgGroupType00.station_name_chunk test cases
     python -m test.unit_test.test_rds.test_mgt.test_mgt00.test_mgt00_station_name_chunk
 """
@@ -92,9 +91,6 @@ class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):
 class NormalRDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00SNCUnitTest):
     """Normal Test Cases."""
 
-    # TEST CASES
-    # Test cases listed in numberical order
-
     def test_n01_good_group1_offset_0(self):
         """Live capture of a coherent RDS Group 1: Station Name Offset 0."""
         rds_group = self.GOOD_GROUP1_MSG00_OFF0
@@ -102,7 +98,7 @@ class NormalRDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00SNCUnitTest):
         exp_ret = '  '
         self.run_test_return(rds_group, assume_na, exp_ret)
 
-    def test_n02_good_group2_offset_1(self):
+    def test_n02_good_group2_offset_0(self):
         """Live capture of a coherent RDS Group 2: Station Name Offset 0."""
         rds_group = self.GOOD_GROUP2_MSG00_OFF0
         assume_na = True

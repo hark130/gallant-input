@@ -31,8 +31,10 @@ RDSMsgGrpTypeUnitTest is the parent class for all rds.mgt sub-package related un
 
 # Standard Imports
 # Third Party Imports
-from test.unit_test.root_unit_test import RootUnitTest
 # Local Imports
+from gallant_input.rds.exceptions import RDSIntegrityFailure
+from gallant_input.rds.group import RDSGroup
+from test.unit_test.test_rds.test_rds import RDSUnitTest
 
 
 class RDSMsgGrpTypeUnitTest(RDSUnitTest):
@@ -73,14 +75,14 @@ class RDSMsgGrpTypeUnitTest(RDSUnitTest):
     # GOOD GROUP VALUES
     # KONO 101.1 FM Live Capture of Group Type 00A - Station Name
     # GOOD GROUP 1: Station Name "    " Offset 0 "  "
-    GOOD_GROUP1_MSG00_OFF0 = GOOD_GRP1_MSG00_BLOCK_A + GOOD_GRP1_MSG00_BLOCK_B \
-                             + GOOD_GRP1_MSG00_BLOCK_C + GOOD_GRP1_MSG00_BLOCK_D
+    GOOD_GROUP1_MSG00_OFF0 = GOOD_GRP1_MSG00_BLOCK_A0 + GOOD_GRP1_MSG00_BLOCK_B0 \
+                             + GOOD_GRP1_MSG00_BLOCK_C0 + GOOD_GRP1_MSG00_BLOCK_D0
     # GOOD GROUP 2: Station Name "KONO" Offset 0 "KO"
     GOOD_GROUP2_MSG00_OFF0 = GOOD_GRP2_MSG00_BLOCK_A0 + GOOD_GRP2_MSG00_BLOCK_B0 \
                              + GOOD_GRP2_MSG00_BLOCK_C0 + GOOD_GRP2_MSG00_BLOCK_D0
     # GOOD GROUP 2: Station Name "KONO" Offset 1 "NO"
-    GOOD_GROUP2_MSG00_OFF1 = GOOD_GRP3_MSG00_BLOCK_A0 + GOOD_GRP3_MSG00_BLOCK_B0 \
-                             + GOOD_GRP3_MSG00_BLOCK_C0 + GOOD_GRP3_MSG00_BLOCK_D0
+    GOOD_GROUP2_MSG00_OFF1 = GOOD_GRP3_MSG00_BLOCK_A1 + GOOD_GRP3_MSG00_BLOCK_B1 \
+                             + GOOD_GRP3_MSG00_BLOCK_C1 + GOOD_GRP3_MSG00_BLOCK_D1
 
     # CORE CLASS METHODS
     # Methods listed in call order

@@ -8,7 +8,7 @@ Typical Usage:
     # Run just the RDSMsgGroupType00 unit tests
     python -m test.unit_test.test_rds.test_mgt.test_group_type00
     # Run just the RDSMsgGroupType00.station_name_chunk test cases
-    python -m test.unit_test.test_rds.test_mgt.test_group_type00.test_group_type_station_name_chunk
+    python -m test.unit_test.test_rds.test_mgt.test_group_type00.test_group_type00_station_name_chunk
 """
 
 # Standard Imports

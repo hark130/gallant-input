@@ -106,7 +106,7 @@ class NormalRDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00SNCUnitTest):
 
     def test_n03_good_group2_offset_1(self):
         """Live capture of a coherent RDS Group 2: Station Name Offset 1."""
-        rds_group = self.GOOD_GROUP2_MSG00_OFF1
+        rds_group = self.GOOD_GROUP3_MSG00_OFF1
         assume_na = True
         exp_ret = 'NO'
         self.run_test_return(rds_group, assume_na, exp_ret)

@@ -50,6 +50,8 @@ class RDSMsgGrpTypeUnitTest(RDSUnitTest):
 
     Attributes:
         built_rds_group:    # RDSGroup() object for this test case
+        input_rds_group:    # Test case input: RDSGroup(rds_group)
+        input_assume_na:    # Test case input: RDSGroup(assume_na)
         test_case_data:     # Stores data about the test case as a TestCaseData object
         test_input_dir:     # Default input directory (OPTIONAL)
         test_output_dir:    # Default output directory (OPTIONAL)
@@ -88,9 +90,13 @@ class RDSMsgGrpTypeUnitTest(RDSUnitTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """RDSBlockUnitTest ctor."""
+        """RDSMsgGrpTypeUnitTest ctor."""
         # ATTRIBUTES
         self.built_rds_group = None  # RDSGroup() object built from input
+        self.input_rds_group = None  # Test case input: RDSGroup(rds_group)
+        self.input_assume_na = None   # Test case input: RDSGroup(assume_na)
+
+        super().__init__(*args, **kwargs)
 
         super().__init__(*args, **kwargs)
 

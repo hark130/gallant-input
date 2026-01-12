@@ -51,6 +51,8 @@ class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
     Attributes:
         built_rds_group:    # RDSGroup() object for this test case
         built_rds_mgt00:    # RDSMsgGroupType00() object for this test case
+        input_rds_group:    # Test case input: RDSGroup(rds_group)
+        input_assume_na:    # Test case input: RDSGroup(assume_na)
         test_case_data:     # Stores data about the test case as a TestCaseData object
         test_input_dir:     # Default input directory (OPTIONAL)
         test_output_dir:    # Default output directory (OPTIONAL)
@@ -60,7 +62,7 @@ class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """RDSBlockUnitTest ctor."""
+        """RDSMsgGrpType00UnitTest ctor."""
         # ATTRIBUTES
         self.built_rds_mgt00 = None  # RDSMsgGroupType00() object to test
 
@@ -96,7 +98,7 @@ class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
         """Build an RDSMsgGroupType00() object to test."""
         self.build_rds_group(rds_group=rds_group, assume_na=assume_na)
         try:
-            self.self.built_rds_mgt00 = self.built_rds_group.get_msg_group00()
+            self.built_rds_mgt00 = self.built_rds_group.get_msg_group00()
         except (RDSIntegrityFailure, RDSMsgGroupTypeMissing, TypeError, ValueError) as err:
             self.fail_test_case(f'RDSGroup({rds_group}, {assume_na}).get_msg_group00() failed to '
                                 'build an RDSMsgGroupType00() object as test case input: '

@@ -31,11 +31,11 @@ RDSMsgGrpType00UnitTest is the parent class for all rds.mgt sub-package related 
 
 # Standard Imports
 # Third Party Imports
-from test.unit_test.root_unit_test import RootUnitTest
 # Local Imports
+from test.unit_test.test_rds.test_mgt.test_mgt import RDSMsgGrpTypeUnitTest
 
 
-class RDSMsgGrpType00UnitTest(RDSMsgUnitTest):
+class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
     """Parent class for all rds.mgt RDSMsgGroupType00 specific unit tests.
 
     Inherit from this class, define necessary functionality for the function you're testing and

@@ -21,7 +21,7 @@ from gallant_input.rds.exceptions import RDSIntegrityFailure
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.group_info import RDSGroupInfo
 from gallant_input.rds.rbds_program_type import RBDSProgTypeCode
-from test.unit_test.test_rds.test_rds_group.test_rds_group import RDSGroupUnitTest
+from test.unit_test.test_rds.test_mgt.test_mgt00.test_mgt00 import RDSMsgGrpType00UnitTest
 
 
 class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):

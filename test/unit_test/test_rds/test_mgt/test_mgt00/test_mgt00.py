@@ -5,7 +5,7 @@ RDSMsgGrpType00UnitTest is the parent class for all rds.mgt sub-package related 
     Typical usage example:
 
     from my_module_to_test import my_function_to_test as my_function
-    from test.unit_test.test_rds.test_mgt.test_mgt import RDSMsgGrpType00UnitTest
+    from test.unit_test.test_rds.test_mgt.test_mgt00.test_mgt00 import RDSMsgGrpType00UnitTest
 
     class RDSSomethingUnitTest(RDSMsgGrpType00UnitTest):
         # Establish the local test (input/output) dirs

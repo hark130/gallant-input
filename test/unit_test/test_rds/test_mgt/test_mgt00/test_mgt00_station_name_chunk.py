@@ -11,15 +11,9 @@ Typical Usage:
 """
 
 # Standard Imports
-from typing import Any
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
-from gallant_input.rds.constants import RDS_GROUP_LEN
-from gallant_input.rds.exceptions import RDSIntegrityFailure
-from gallant_input.rds.group import RDSGroup
-from gallant_input.rds.group_info import RDSGroupInfo
-from gallant_input.rds.rbds_program_type import RBDSProgTypeCode
 from test.unit_test.test_rds.test_mgt.test_mgt00.test_mgt00 import RDSMsgGrpType00UnitTest
 
 
@@ -28,6 +22,9 @@ class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):
 
     Attributes:
         built_rds_group:    # RDSGroup() object for this test case
+        built_rds_mgt00:    # RDSMsgGroupType00() object for this test case
+        input_rds_group:    # Test case input: RDSGroup(rds_group)
+        input_assume_na:    # Test case input: RDSGroup(assume_na)
         test_case_data:     # Stores data about the test case as a TestCaseData object
         test_input_dir:     # Default input directory (OPTIONAL)
         test_output_dir:    # Default output directory (OPTIONAL)
@@ -88,6 +85,8 @@ class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):
     # Methods listed in alphabetical order
 
 
+# pylint: disable=too-many-ancestors
+# Leave me be, Pylint.
 class NormalRDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00SNCUnitTest):
     """Normal Test Cases."""
 
@@ -111,6 +110,7 @@ class NormalRDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00SNCUnitTest):
         assume_na = True
         exp_ret = 'NO'
         self.run_test_return(rds_group, assume_na, exp_ret)
+# pylint: enable=too-many-ancestors
 
 
 if __name__ == '__main__':

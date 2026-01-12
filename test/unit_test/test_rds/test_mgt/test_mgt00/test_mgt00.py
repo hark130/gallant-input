@@ -59,8 +59,6 @@ class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
 
-    # CORE CLASS METHODS
-    # Methods listed in call order
     def __init__(self, *args, **kwargs) -> None:
         """RDSBlockUnitTest ctor."""
         # ATTRIBUTES
@@ -103,7 +101,6 @@ class RDSMsgGrpType00UnitTest(RDSMsgGrpTypeUnitTest):
             self.fail_test_case(f'RDSGroup({rds_group}, {assume_na}).get_msg_group00() failed to '
                                 'build an RDSMsgGroupType00() object as test case input: '
                                 f'{repr(err)}')
-
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

@@ -117,7 +117,10 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.populate_test_object(pi_code=pi_code, stream_bytes=stream_bytes)
+        if stream_bytes is not None:
+            self.populate_test_object(pi_code=pi_code, stream_bytes=stream_bytes)
+        else:
+            self.create_test_obj(pi_code=pi_code)
         self.set_test_input()  # This method does not take any arguments
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
@@ -176,6 +179,39 @@ class NormalRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
                                 exception_type=exp_except, exception_msg=exp_msg)
 
 
+class ErrorRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
+    """Error Test Cases."""
+
+    def test_e01_no_input_bytes(self):
+        """No bytes were input, either by add_bytes() or add_rds_group()."""
+        stream_bytes = None
+        pi_code = self.GOOD_SET2_MSG02A[:RDS_BLOCK_DATA_LEN]
+        exp_except = RDSMsgGroupTypeMissing
+        exp_msg = 'This RDSPICode does not contain any Message Type 02s'
+        self.run_test_exception(pi_code, stream_bytes,
+                                exception_type=exp_except, exception_msg=exp_msg)
+
+
+class BoundaryRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
+    """Boundary Test Cases."""
+
+    def test_b01_double_valid_complete_radio_text_sets(self):
+        """Valid and complete set of all radio text offsets x2 (AKA a long capture)."""
+        num_captured = 2
+        stream_bytes = self.GOOD_SET2_MSG02A * num_captured
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        exp_ret = self.GOOD_SET2_RADIO_TEXT * num_captured
+        self.run_test_return(pi_code, stream_bytes, exp_ret)
+
+    def test_b02_ten_valid_complete_radio_text_sets(self):
+        """Valid and complete set of all radio text offsets x10 (AKA a long capture)."""
+        num_captured = 10
+        stream_bytes = self.GOOD_SET2_MSG02A * num_captured
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        exp_ret = self.GOOD_SET2_RADIO_TEXT * num_captured
+        self.run_test_return(pi_code, stream_bytes, exp_ret)
+
+
 class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
     """Special Test Cases."""
 
@@ -199,8 +235,7 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         """Valid, ordered, radio text offsets missing a few trailing offsets."""
         missing = 9  # The number of RDS groups to remove
         stream_bytes = self.GOOD_SET2_MSG02A[:len(self.GOOD_SET2_MSG02A)-missing * RDS_GROUP_LEN]
-        exp_ret = self.GOOD_SET2_RADIO_TEXT[:len(self.GOOD_SET2_RADIO_TEXT)-missing*4] \
-                  + '?' * missing * 4
+        exp_ret = self.GOOD_SET2_RADIO_TEXT[:len(self.GOOD_SET2_RADIO_TEXT)-missing*4]
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 
@@ -214,11 +249,9 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
 
     def test_s04_missing_middle_offsets(self):
         """Valid, ordered, radio text offsets missing a few offsets in the middle."""
-        missing = 7  # The number of RDS groups to remove
-        stream_bytes = self.GOOD_SET2_MSG02A[:len(self.GOOD_SET2_MSG02A)-missing * RDS_GROUP_LEN] \
-                       + self.GOOD_SET2_MSG02A[(16 - missing) * RDS_GROUP_LEN:]
-        exp_ret = self.GOOD_SET2_RADIO_TEXT[:len(self.GOOD_SET2_RADIO_TEXT)-missing*4] \
-                  + '?' * missing * 4 + self.GOOD_SET2_RADIO_TEXT[missing*4:]
+        stream_bytes = self.GOOD_SET2_GRP01_MSG02_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF15
+        exp_ret = self.GOOD_SET2_RADIO_TEXT[:4] + '?' * 14 * 4 \
+                  + self.GOOD_SET2_RADIO_TEXT[len(self.GOOD_SET2_RADIO_TEXT)-4:]
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 
@@ -229,8 +262,7 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         stream_bytes = self.GOOD_SET2_MSG02A[start_grp * RDS_GROUP_LEN:
                                              (start_grp+keeping)*RDS_GROUP_LEN]
         exp_ret = '?' * start_grp * 4 \
-                  + self.GOOD_SET2_RADIO_TEXT[start_grp*4:(start_grp+keeping)*4] \
-                  + '?' * (len(self.GOOD_SET2_RADIO_TEXT)-((start_grp+keeping)*4))
+                  + self.GOOD_SET2_RADIO_TEXT[start_grp*4:(start_grp+keeping)*4]
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 

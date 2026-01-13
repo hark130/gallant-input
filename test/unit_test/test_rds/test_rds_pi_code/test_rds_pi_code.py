@@ -53,8 +53,9 @@ class RDSPICodeUnitTest(RDSUnitTest):
         test_case_data:   # Stores data about the test case as a TestCaseData object
         test_input_dir:   # Default input directory (OPTIONAL)
         test_output_dir:  # Default output directory (OPTIONAL)
-        input_pi_code:  # Test case input: RDSPICode(pi_code)
+        input_pi_code:    # Test case input: RDSPICode(pi_code)
         input_assume_na:  # Test case input: RDSPICode(assume_na)
+        test_obj:         # RDSPICode() test object created by self.create_test_obj()
     """
 
     # GOOD GROUP VALUES
@@ -137,6 +138,10 @@ class RDSPICodeUnitTest(RDSUnitTest):
         + GOOD_SET2_GRP01_MSG02_OFF12 + GOOD_SET2_GRP01_MSG02_OFF13 \
         + GOOD_SET2_GRP01_MSG02_OFF14 + GOOD_SET2_GRP01_MSG02_OFF15
 
+    # GOOD SET RESULTS
+    GOOD_SET1_STATION_NAME = 'KONO    '
+    GOOD_SET2_RADIO_TEXT = "KONO 101.1 San Antonio's Greatest Hits                          "
+
     # CORE CLASS METHODS
     # Methods listed in call order
 
@@ -177,9 +182,10 @@ class RDSPICodeUnitTest(RDSUnitTest):
     # Methods listed in alphabetical order
 
     def create_test_obj(self, pi_code: Any) -> None:
-        """Creates the PICode() test object store in self.test_obj."""
-        self.set_ctor_args(pi_code=pi_code)
-        self.test_obj = RDSPICode(pi_code=self.input_pi_code)
+        """Creates the PICode() test object store in self.test_obj, once."""
+        if self.test_obj is None:
+            self.set_ctor_args(pi_code=pi_code)
+            self.test_obj = RDSPICode(pi_code=self.input_pi_code)
 
     def set_ctor_args(self, pi_code: Any) -> None:
         """Set the class ctor arguments.

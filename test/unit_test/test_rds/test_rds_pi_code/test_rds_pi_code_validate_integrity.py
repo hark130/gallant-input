@@ -1,4 +1,4 @@
-"""Unit test module for RDSPICode.add_rds_group().
+"""Unit test module for RDSPICode.verify_pi_code_integrity().
 
 Typical Usage:
     python -m test                                      # Run *all* the test cases
@@ -23,7 +23,7 @@ from test.unit_test.test_rds.test_rds_pi_code.test_rds_pi_code import RDSPICodeU
 
 
 class RDSPICodeVPCIUnitTest(RDSPICodeUnitTest):
-    """Parent class for all RDSPICode.add_rds_group() unit tests.
+    """Parent class for all RDSPICode.verify_pi_code_integrity() unit tests.
 
     Attributes:
         test_case_data:   # Stores data about the test case as a TestCaseData object

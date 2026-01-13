@@ -75,7 +75,12 @@ class RDSPICode:
         return convert_bin_bytes_to_hex_str(self.get_pi_code())
 
     def get_radio_text(self) -> str:
-        """Attempt to form the radio text from Message Group Type 02s in the set.
+        """Attempt to form the sequential radio text from Message Group Type 02s in the set.
+
+        This method will not assume the length of the radio text string (because more bytes may
+        be coming).  However, skipped offsets will receive placeholders.  Also, in the case of
+        out of order offsets or duplicate offsets, the string will be reset and leading
+        placeholders will be added.
 
         Returns:
             The reformed radio text as a string.  The returned value will include all offsets.
@@ -84,34 +89,42 @@ class RDSPICode:
             RDSMsgGroupTypeMissing: There are no Message Group Type 02s in the set.
         """
         # LOCAL VARIABLES
-        radio_text = ''   # The reformed station name
-        offset_dict = {}  # The dictionary of offsets and their strings
-        msg_groups = []   # List of Message Group Type 02s
+        skip_char = '?'     # The 'missing' character
+        radio_text = ''     # The reformed station name
+        offset_dict = {}    # The dictionary of offsets and their strings
+        msg_groups = []     # List of Message Group Type 02s
+        prev_offset = None  # The previous message group offset that was handled
 
         # VALIDATION
         self.verify_pi_code_integrity()
 
         # GET IT
-        # List of RDSMsgGroupType00()s
+        # Form the list of RDSMsgGroupType02()s
         for rds_group_obj in self._rds_group_objs:
             try:
                 msg_groups.append(rds_group_obj.get_msg_group02())  # EAFP
             except RDSMsgGroupTypeMissing:
-                pass  # Not Message Group Type 00 so skip it
+                pass  # Not Message Group Type 02 so skip it
         # Validate results
         if len(msg_groups) == 0:
             raise RDSMsgGroupTypeMissing('This RDSPICode does not contain any Message Type 02s')
         # Get the offsets and radio text chunks
         for msg_group in msg_groups:
-            if msg_group.offset not in offset_dict:
-                offset_dict[msg_group.offset] = msg_group.radio_text_chunk
-            else:
-                # Seems we've lapped it so form the string as-is, reset the dict, and continue
-                radio_text = radio_text + _combine_offset_dict(offset_dict, num_keys=16)
-                offset_dict = {msg_group.offset: msg_group.radio_text_chunk}  # Reset
-
-        # Reform remaining(?) radio text
-        radio_text = radio_text + _combine_offset_dict(offset_dict, num_keys=16)
+            # First group
+            if prev_offset is None:
+                prev_offset = msg_group.offset  # Starting here
+                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
+                    * msg_group.offset) + msg_group.radio_text_chunk
+            # Rollover (e.g., 15 --> 0) or dupe (e.g., 1 --> 1), whether one or more was skipped
+            elif prev_offset >= msg_group.offset:
+                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
+                    * msg_group.offset) + msg_group.radio_text_chunk  # Truncate, pad and continue
+            # In order (e.g., 1 --> 2, 5 --> 7)
+            elif msg_group.offset > prev_offset:
+                # Good, but maybe one got skipped
+                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
+                    * (msg_group.offset - (prev_offset + 1))) + msg_group.radio_text_chunk
+            prev_offset = msg_group.offset  # Advance
 
         # DONE
         return radio_text

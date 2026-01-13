@@ -35,6 +35,7 @@ from typing import Any
 from test.unit_test.test_rds.test_rds import RDSUnitTest
 # Local Imports
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
+from gallant_input.rds.picode import RDSPICode
 
 
 class RDSPICodeUnitTest(RDSUnitTest):
@@ -144,6 +145,7 @@ class RDSPICodeUnitTest(RDSUnitTest):
         # ATTRIBUTES
         self.input_pi_code = None                                  # Test input: RDSPICode(pi_code)
         self.def_good_pic = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
+        self.test_obj = None                                       # PICode() test object
 
         super().__init__(*args, **kwargs)
 
@@ -173,6 +175,11 @@ class RDSPICodeUnitTest(RDSUnitTest):
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
+
+    def create_test_obj(self, pi_code: Any) -> None:
+        """Creates the PICode() test object store in self.test_obj."""
+        self.set_ctor_args(pi_code=pi_code)
+        self.test_obj = RDSPICode(pi_code=self.input_pi_code)
 
     def set_ctor_args(self, pi_code: Any) -> None:
         """Set the class ctor arguments.

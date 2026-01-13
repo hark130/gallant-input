@@ -39,8 +39,7 @@ class RDSPICodeABUnitTest(RDSPICodeUnitTest):
 
     def call_callable(self):
         """Defines how the class will invoke the method call."""
-        test_obj = RDSPICode(pi_code=self.input_pi_code)
-        return test_obj.add_bytes(*self._args, **self._kwargs)
+        return self.test_obj.add_bytes(*self._args, **self._kwargs)
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call."""
@@ -60,7 +59,7 @@ class RDSPICodeABUnitTest(RDSPICodeUnitTest):
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.set_ctor_args(pi_code=pi_code)
+        self.create_test_obj(pi_code=pi_code)
         self.set_test_input(group_bytes)
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
@@ -72,7 +71,7 @@ class RDSPICodeABUnitTest(RDSPICodeUnitTest):
             pi_code: Sets the pi_code ctor argument input.
             group_bytes: The bytes object to pass to the method call.
         """
-        self.set_ctor_args(pi_code=pi_code)
+        self.create_test_obj(pi_code=pi_code)
         self.set_test_input(group_bytes)
         self.expect_return(None)  # This method does not have a return value
         self.run_test()

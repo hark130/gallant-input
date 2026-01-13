@@ -91,7 +91,6 @@ class RDSPICode:
         # LOCAL VARIABLES
         skip_char = '?'     # The 'missing' character
         radio_text = ''     # The reformed station name
-        offset_dict = {}    # The dictionary of offsets and their strings
         msg_groups = []     # List of Message Group Type 02s
         prev_offset = None  # The previous message group offset that was handled
 
@@ -113,17 +112,20 @@ class RDSPICode:
             # First group
             if prev_offset is None:
                 prev_offset = msg_group.offset  # Starting here
-                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
-                    * msg_group.offset) + msg_group.radio_text_chunk
+                radio_text = radio_text \
+                    + ((len(msg_group.radio_text_chunk) * skip_char) * msg_group.offset) \
+                    + msg_group.radio_text_chunk
             # Rollover (e.g., 15 --> 0) or dupe (e.g., 1 --> 1), whether one or more was skipped
             elif prev_offset >= msg_group.offset:
-                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
-                    * msg_group.offset) + msg_group.radio_text_chunk  # Truncate, pad and continue
+                radio_text = radio_text \
+                    + ((len(msg_group.radio_text_chunk) * skip_char) * msg_group.offset) \
+                    + msg_group.radio_text_chunk  # Truncate, pad and continue
             # In order (e.g., 1 --> 2, 5 --> 7)
             elif msg_group.offset > prev_offset:
                 # Good, but maybe one got skipped
-                radio_text = radio_text + ((len(msg_group.radio_text_chunk) * skip_char) \
-                    * (msg_group.offset - (prev_offset + 1))) + msg_group.radio_text_chunk
+                radio_text = radio_text \
+                    + ((len(msg_group.radio_text_chunk) * skip_char) *
+                        (msg_group.offset - (prev_offset + 1))) + msg_group.radio_text_chunk
             prev_offset = msg_group.offset  # Advance
 
         # DONE

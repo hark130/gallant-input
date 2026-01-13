@@ -12,16 +12,12 @@ Typical Usage:
 """
 
 # Standard Imports
-from typing import Any
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_GROUP_LEN
 from gallant_input.rds.exceptions import (RDSIntegrityFailure, RDSMsgGroupTypeMissing,
                                           RDSPICodeMismatch)
-from gallant_input.rds.group import RDSGroup
-from gallant_input.rds.picode import RDSPICode
 from test.unit_test.test_rds.test_rds_pi_code.test_rds_pi_code import RDSPICodeUnitTest
 
 
@@ -218,15 +214,15 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
     def test_s01_mix_and_match_group_types(self):
         """Valid, ordered, radio text offsets have other messages mixed in."""
         stream_bytes = self.GOOD_SET1_GRP01_MSG00_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF00 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF01 + self.GOOD_SET1_GRP02_MSG00_OFF01 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF02 + self.GOOD_SET1_GRP03_MSG00_OFF02 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF03 + self.GOOD_SET1_GRP04_MSG00_OFF03 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF04 + self.GOOD_SET2_GRP01_MSG02_OFF05 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF06 + self.GOOD_SET2_GRP01_MSG02_OFF07 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF08 + self.GOOD_SET2_GRP01_MSG02_OFF09 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF10 + self.GOOD_SET2_GRP01_MSG02_OFF11 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF12 + self.GOOD_SET2_GRP01_MSG02_OFF13 \
-        + self.GOOD_SET2_GRP01_MSG02_OFF14 + self.GOOD_SET2_GRP01_MSG02_OFF15
+            + self.GOOD_SET2_GRP01_MSG02_OFF01 + self.GOOD_SET1_GRP02_MSG00_OFF01 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF02 + self.GOOD_SET1_GRP03_MSG00_OFF02 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF03 + self.GOOD_SET1_GRP04_MSG00_OFF03 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF04 + self.GOOD_SET2_GRP01_MSG02_OFF05 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF06 + self.GOOD_SET2_GRP01_MSG02_OFF07 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF08 + self.GOOD_SET2_GRP01_MSG02_OFF09 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF10 + self.GOOD_SET2_GRP01_MSG02_OFF11 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF12 + self.GOOD_SET2_GRP01_MSG02_OFF13 \
+            + self.GOOD_SET2_GRP01_MSG02_OFF14 + self.GOOD_SET2_GRP01_MSG02_OFF15
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         exp_ret = self.GOOD_SET2_RADIO_TEXT
         self.run_test_return(pi_code, stream_bytes, exp_ret)
@@ -251,7 +247,7 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         """Valid, ordered, radio text offsets missing a few offsets in the middle."""
         stream_bytes = self.GOOD_SET2_GRP01_MSG02_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF15
         exp_ret = self.GOOD_SET2_RADIO_TEXT[:4] + '?' * 14 * 4 \
-                  + self.GOOD_SET2_RADIO_TEXT[len(self.GOOD_SET2_RADIO_TEXT)-4:]
+            + self.GOOD_SET2_RADIO_TEXT[len(self.GOOD_SET2_RADIO_TEXT)-4:]
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 
@@ -275,7 +271,7 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         characters (e.g., '?'), C. append the new string.
         """
         stream_bytes = self.GOOD_SET2_GRP01_MSG02_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF01 \
-                       + self.GOOD_SET2_GRP01_MSG02_OFF02 + self.GOOD_SET2_GRP01_MSG02_OFF01
+            + self.GOOD_SET2_GRP01_MSG02_OFF02 + self.GOOD_SET2_GRP01_MSG02_OFF01
         exp_ret = 'KONO' + ' 101' + '.1 S' + '???? 101'
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
@@ -290,7 +286,7 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         characters (e.g., '?'), C. append the new string.
         """
         stream_bytes = self.GOOD_SET2_GRP01_MSG02_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF01 \
-                       + self.GOOD_SET2_GRP01_MSG02_OFF01
+            + self.GOOD_SET2_GRP01_MSG02_OFF01
         exp_ret = 'KONO' + ' 101' + '???? 101'
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)

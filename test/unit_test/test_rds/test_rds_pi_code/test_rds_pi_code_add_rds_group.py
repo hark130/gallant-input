@@ -20,7 +20,6 @@ from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN, RDS_GROUP_LEN
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
-from gallant_input.rds.picode import RDSPICode
 from test.unit_test.test_rds.test_rds_pi_code.test_rds_pi_code import RDSPICodeUnitTest
 
 

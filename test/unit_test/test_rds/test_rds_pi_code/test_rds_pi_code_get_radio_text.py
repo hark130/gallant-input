@@ -248,6 +248,21 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 
+    def test_s07_duplicate_offsets(self):
+        """Valid radio text offsets but they're the same.
+
+        Live captures show me that radio text messages should be in order, by offset.
+        Much the same as out-of-order offsets, I'll treat duplicate offsets as if a few got
+        dropped.  I should handle it that, the first time I receive a duplicate offset,
+        I: A. truncate the previous string, B. prepend the new string with leading filler
+        characters (e.g., '?'), C. append the new string.
+        """
+        stream_bytes = self.GOOD_SET2_GRP01_MSG02_OFF00 + self.GOOD_SET2_GRP01_MSG02_OFF01 \
+                       + self.GOOD_SET2_GRP01_MSG02_OFF01
+        exp_ret = 'KONO' + ' 101' + '???? 101'
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        self.run_test_return(pi_code, stream_bytes, exp_ret)
+
 
 if __name__ == '__main__':
     execute_test_cases()

@@ -89,7 +89,6 @@ class RDSPICode:
             RDSMsgGroupTypeMissing: There are no Message Group Type 02s in the set.
         """
         # LOCAL VARIABLES
-        skip_char = '?'     # The 'missing' character
         radio_text = ''     # The reformed station name
         msg_groups = []     # List of Message Group Type 02s
         prev_offset = None  # The previous message group offset that was handled
@@ -133,7 +132,6 @@ class RDSPICode:
         """
         # LOCAL VARIABLES
         station_name = ''   # The reformed station name
-        offset_dict = {}    # The dictionary of offsets and their strings
         msg_groups = []     # List of Message Group Type 00s
         prev_offset = None  # The previous message group offset that was handled
 
@@ -309,7 +307,6 @@ def _combine_offset_dict(offset_dict: dict, num_keys: int, missing: str = '?') -
     return combined_str
 
 
-
 def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: str = '?') -> str:
     """Pad the text chunk with missing characters according to the offset differences.
 
@@ -351,9 +348,6 @@ def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: s
     pad_str = (missing * chunk_len)[:chunk_len]
 
     # PAD IT
-    # print(f'\nPREV: {prev_offset}\tCURR: {curr_offset}\tCHUNK: {chunk}\tMISS: {missing}')  # DEBUGGING
-    # print(f'PAD STR: {pad_str}')  # DEBUGGING
-    # print(f'PREAMBLE: {type(pad_str * curr_offset)}')  # DEBUGGING
     # First group
     if prev_offset is None:
         padded_chunk = pad_str * curr_offset + chunk  # Pad the chunk
@@ -368,8 +362,9 @@ def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: s
     # DONE
     return padded_chunk
 
+
 def _validate_not_negative_int(var: int, var_name: str) -> None:
     """Validate an integer as not negative (>= 0)."""
     validate_type(var, var_name, int)
     if var < 0:
-            raise ValueError(f'The "{var_name}" argument may not be negative: {var}')
+        raise ValueError(f'The "{var_name}" argument may not be negative: {var}')

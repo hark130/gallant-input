@@ -78,13 +78,10 @@ class RDSPICodeGSNUnitTest(RDSPICodeUnitTest):
 
         # CREATE AND POPULATE
         try:
-            # print(f'STEAM BYTES: {stream_bytes}')  # DEBUGGING
             self.create_test_obj(pi_code=pi_code)  # Creates self.test_obj, once
             while True:
                 if stop > stream_len:
                     break  # All done
-                # print(f'TEST OBJ: {type(self.test_obj)}\t{dir(self.test_obj)}')  # DEBUGGING
-                # print(f'STREAM CHUNK: {stream_bytes[start:stop]}')  # DEBUGGING
                 self.test_obj.add_bytes(group_bytes=stream_bytes[start:stop])
                 # Advance to the next RDSGroup chunk
                 start += RDS_GROUP_LEN

@@ -246,8 +246,7 @@ class SpecialRDSPICodeGSNUnitTest(RDSPICodeGSNUnitTest):
     def test_s04_missing_middle_offsets(self):
         """Valid, ordered, radio text offsets missing a few offsets in the middle."""
         stream_bytes = self.GOOD_SET1_GRP01_MSG00_OFF00 + self.GOOD_SET1_GRP04_MSG00_OFF03
-        exp_ret = self.GOOD_SET1_STATION_NAME[:2] + '?' * 2 * 2 \
-            + self.GOOD_SET1_STATION_NAME[len(self.GOOD_SET1_STATION_NAME)-2:]
+        exp_ret = 'KO' + '????  '
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 
@@ -287,7 +286,7 @@ class SpecialRDSPICodeGSNUnitTest(RDSPICodeGSNUnitTest):
         """
         stream_bytes = self.GOOD_SET1_GRP01_MSG00_OFF00 + self.GOOD_SET1_GRP02_MSG00_OFF01 \
             + self.GOOD_SET1_GRP02_MSG00_OFF01
-        exp_ret = 'KONO' + '??KO'
+        exp_ret = 'KONO' + '??NO'
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
 

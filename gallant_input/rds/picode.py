@@ -120,6 +120,11 @@ class RDSPICode:
     def get_station_name(self) -> str:
         """Attempt to form the station name from Message Group Type 00s in the set.
 
+        This method will not assume the length of the station name string (because more bytes may
+        be coming).  However, skipped offsets will receive placeholders.  Also, in the case of
+        out of order offsets or duplicate offsets, the string will be reset and leading
+        placeholders will be added.
+
         Returns:
             The reformed station name as a string.  The returned value will include all offsets.
 
@@ -127,9 +132,10 @@ class RDSPICode:
             RDSMsgGroupTypeMissing: There are no Message Group Type 00s in the set.
         """
         # LOCAL VARIABLES
-        station_name = ''       # The reformed station name
-        offset_dict = {}        # The dictionary of offsets and their strings
-        msg_groups = []         # List of Message Group Type 00s
+        station_name = ''   # The reformed station name
+        offset_dict = {}    # The dictionary of offsets and their strings
+        msg_groups = []     # List of Message Group Type 00s
+        prev_offset = None  # The previous message group offset that was handled
 
         # VALIDATION
         self.verify_pi_code_integrity()
@@ -146,14 +152,10 @@ class RDSPICode:
             raise RDSMsgGroupTypeMissing('This RDSPICode does not contain any Message Type 00s')
         # Get the offsets and station name chunks
         for msg_group in msg_groups:
-            if msg_group.offset not in offset_dict:
-                offset_dict[msg_group.offset] = msg_group.station_name_chunk
-            else:
-                # Seems we've lapped it so form the string as-is, reset the dict, and continue
-                station_name = station_name + _combine_offset_dict(offset_dict, num_keys=4)
-                offset_dict = {msg_group.offset: msg_group.station_name_chunk}  # Reset
-        # Reform remaining(?) radio text
-        station_name = station_name + _combine_offset_dict(offset_dict, num_keys=4)
+            station_name = station_name + _pad_chunk(prev_offset=prev_offset,
+                                                     curr_offset=msg_group.offset,
+                                                     chunk=msg_group.station_name_chunk)
+            prev_offset = msg_group.offset  # Advance
 
         # DONE
         return station_name
@@ -349,7 +351,7 @@ def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: s
     pad_str = (missing * chunk_len)[:chunk_len]
 
     # PAD IT
-    # print(f'PREV: {prev_offset}\tCURR: {curr_offset}\tCHUNK: {chunk}\tMISS: {missing}')  # DEBUGGING
+    # print(f'\nPREV: {prev_offset}\tCURR: {curr_offset}\tCHUNK: {chunk}\tMISS: {missing}')  # DEBUGGING
     # print(f'PAD STR: {pad_str}')  # DEBUGGING
     # print(f'PREAMBLE: {type(pad_str * curr_offset)}')  # DEBUGGING
     # First group

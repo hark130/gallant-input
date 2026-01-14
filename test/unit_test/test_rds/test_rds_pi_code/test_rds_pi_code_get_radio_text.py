@@ -95,7 +95,7 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
             self.fail_test_case(f'Invalid input detected in stream_bytes: {repr(err)}')
 
     def run_test_exception(self, pi_code: bytes, stream_bytes: bytes, exception_type: Exception,
-                           exception_msg: str) -> None:
+                           exception_msg: str, set_input: bool = True) -> None:
         """Common method calls for a test case expected to raise an exception.
 
         Args:
@@ -109,16 +109,20 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
                 pi_code).  RDSPICode.add_bytes() has its own dedicated unit tests.
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
+            set_input: [OPTIONAL] Indicates who calls set_test_input().  If True, this method
+                will call self.set_test_input().  If False, the test author must call it.
         """
         if stream_bytes is not None:
             self.populate_test_object(pi_code=pi_code, stream_bytes=stream_bytes)
         else:
             self.create_test_obj(pi_code=pi_code)
-        self.set_test_input()  # This method does not take any arguments
+        if set_input is True:
+            self.set_test_input()  # This test case utilizes default arguments
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
 
-    def run_test_return(self, pi_code: bytes, stream_bytes: bytes, exp_ret: str) -> None:
+    def run_test_return(self, pi_code: bytes, stream_bytes: bytes, exp_ret: str,
+                        set_input: bool = True) -> None:
         """Common method calls for a test case expected to return.
 
         Args:
@@ -131,9 +135,12 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
                 be a multiple of RDS_GROUP_LEN, must be valid RDSGroup, must be associated with
                 pi_code).  RDSPICode.add_bytes() has its own dedicated unit tests.
             exp_ret: The expected return from the method call.
+            set_input: [OPTIONAL] Indicates who calls set_test_input().  If True, this method
+                will call self.set_test_input().  If False, the test author must call it.
         """
         self.populate_test_object(pi_code=pi_code, stream_bytes=stream_bytes)
-        self.set_test_input()  # This method does not take any arguments
+        if set_input is True:
+            self.set_test_input()  # This test case utilizes default arguments
         self.expect_return(exp_ret)
         self.run_test()
 
@@ -184,6 +191,28 @@ class ErrorRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         self.run_test_exception(pi_code, stream_bytes,
                                 exception_type=exp_except, exception_msg=exp_msg)
 
+    def test_e02_bad_type_none(self):
+        """Bad sanitize data type: None."""
+        stream_bytes = None
+        pi_code = self.GOOD_SET2_MSG02A[:RDS_BLOCK_DATA_LEN]
+        sanitize = None
+        exp_except = TypeError
+        exp_msg = 'argument should have been of type'
+        self.set_test_input(sanitize)
+        self.run_test_exception(pi_code, stream_bytes,
+                                exception_type=exp_except, exception_msg=exp_msg, set_input=False)
+
+    def test_e03_bad_type_str(self):
+        """Bad sanitize data type: string."""
+        stream_bytes = None
+        pi_code = self.GOOD_SET2_MSG02A[:RDS_BLOCK_DATA_LEN]
+        sanitize = 'True'
+        exp_except = TypeError
+        exp_msg = 'argument should have been of type'
+        self.set_test_input(sanitize)
+        self.run_test_exception(pi_code, stream_bytes,
+                                exception_type=exp_except, exception_msg=exp_msg, set_input=False)
+
 
 class BoundaryRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
     """Boundary Test Cases."""
@@ -203,6 +232,26 @@ class BoundaryRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         exp_ret = self.GOOD_SET2_RADIO_TEXT * num_captured
         self.run_test_return(pi_code, stream_bytes, exp_ret)
+
+    def test_b03_sanitize_several_carriage_returns(self):
+        """Sanitize radio text with several non-printables: carriage return (0xD)."""
+        num_captured = 10
+        stream_bytes = self.GOOD_SET3_MSG02A * num_captured
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        sanitize = True
+        exp_ret = (self.GOOD_SET3_RADIO_TEXT * num_captured).replace('\r', '.')
+        self.set_test_input(sanitize)
+        self.run_test_return(pi_code, stream_bytes, exp_ret, set_input=False)
+
+    def test_b04_do_not_sanitize_carriage_returns(self):
+        """Disable sanitize for radio text with several non-printables: carriage return (0xD)."""
+        num_captured = 10
+        stream_bytes = self.GOOD_SET3_MSG02A * num_captured
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        sanitize = False
+        exp_ret = self.GOOD_SET3_RADIO_TEXT * num_captured
+        self.set_test_input(sanitize)
+        self.run_test_return(pi_code, stream_bytes, exp_ret, set_input=False)
 
 
 class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
@@ -287,6 +336,33 @@ class SpecialRDSPICodeGRTUnitTest(RDSPICodeGRTUnitTest):
         exp_ret = 'KONO' + ' 101' + '???? 101'
         pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code, stream_bytes, exp_ret)
+
+    def test_s08_sanitize_normal(self):
+        """Use the sanitize feature on radio text missing non-printables."""
+        stream_bytes = self.GOOD_SET2_MSG02A
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        sanitize = True
+        exp_ret = self.GOOD_SET2_RADIO_TEXT
+        self.set_test_input(sanitize)
+        self.run_test_return(pi_code, stream_bytes, exp_ret, set_input=False)
+
+    def test_s09_sanitize_carriage_returns(self):
+        """Use the sanitize feature on radio text with non-printables: carriage return (0xD)."""
+        stream_bytes = self.GOOD_SET3_MSG02A
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        sanitize = True
+        exp_ret = self.GOOD_SET3_RADIO_TEXT.replace('\r', '.')
+        self.set_test_input(sanitize)
+        self.run_test_return(pi_code, stream_bytes, exp_ret, set_input=False)
+
+    def test_s10_do_not_sanitize_carriage_returns(self):
+        """Disable the sanitize feature on radio text with non-printables: carriage return (0xD)."""
+        stream_bytes = self.GOOD_SET3_MSG02A
+        pi_code = stream_bytes[:RDS_BLOCK_DATA_LEN]
+        sanitize = False
+        exp_ret = self.GOOD_SET3_RADIO_TEXT
+        self.set_test_input(sanitize)
+        self.run_test_return(pi_code, stream_bytes, exp_ret, set_input=False)
 
 
 if __name__ == '__main__':

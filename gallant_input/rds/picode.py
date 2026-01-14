@@ -109,23 +109,9 @@ class RDSPICode:
             raise RDSMsgGroupTypeMissing('This RDSPICode does not contain any Message Type 02s')
         # Get the offsets and radio text chunks
         for msg_group in msg_groups:
-            # First group
-            if prev_offset is None:
-                prev_offset = msg_group.offset  # Starting here
-                radio_text = radio_text \
-                    + ((len(msg_group.radio_text_chunk) * skip_char) * msg_group.offset) \
-                    + msg_group.radio_text_chunk
-            # Rollover (e.g., 15 --> 0) or dupe (e.g., 1 --> 1), whether one or more was skipped
-            elif prev_offset >= msg_group.offset:
-                radio_text = radio_text \
-                    + ((len(msg_group.radio_text_chunk) * skip_char) * msg_group.offset) \
-                    + msg_group.radio_text_chunk  # Truncate, pad and continue
-            # In order (e.g., 1 --> 2, 5 --> 7)
-            elif msg_group.offset > prev_offset:
-                # Good, but maybe one got skipped
-                radio_text = radio_text \
-                    + ((len(msg_group.radio_text_chunk) * skip_char) *
-                        (msg_group.offset - (prev_offset + 1))) + msg_group.radio_text_chunk
+            radio_text = radio_text + _pad_chunk(prev_offset=prev_offset,
+                                                 curr_offset=msg_group.offset,
+                                                 chunk=msg_group.radio_text_chunk)
             prev_offset = msg_group.offset  # Advance
 
         # DONE
@@ -319,3 +305,69 @@ def _combine_offset_dict(offset_dict: dict, num_keys: int, missing: str = '?') -
 
     # DONE
     return combined_str
+
+
+
+def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: str = '?') -> str:
+    """Pad the text chunk with missing characters according to the offset differences.
+
+    No assumptions will be made about the total number of expected offsets.  Skipped offsets
+    will be padded to the width of chunk with the missing string.  If the previous offset is larger
+    than the current offset, that will be counted as a rollover and the current chunk will be padded
+    to its current offset.
+
+    Args:
+        prev_offset: The integer of the previous offset or None if this is the first chunk being
+            processed.  This value is treated as an index so negative values are not permitted.
+        curr_offset: The offset of the chunk being processed.
+        chunk: Non-empty string to pad (or not) based on the difference between the previous offset
+            and the current offset.
+        missing: The character to pad chunk with, as applicable.
+
+    Returns:
+        A string containing chunk which may or may not be padded with missing based on the
+        difference between prev_offset and curr_offset.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    padded_chunk = ''  # The chunk string padded according to the offset difference
+    chunk_len = 0      # Used to determine the "width" off one offset
+    pad_str = ''       # The string to use for padding
+
+    # VALIDATION
+    if prev_offset is not None:
+        _validate_not_negative_int(prev_offset, 'prev_offset')
+    _validate_not_negative_int(curr_offset, 'curr_offset')
+    validate_string(chunk, 'chunk', can_be_empty=False)
+    validate_string(missing, 'missing', can_be_empty=False)
+
+    # SETUP
+    chunk_len = len(chunk)
+    pad_str = (missing * chunk_len)[:chunk_len]
+
+    # PAD IT
+    # print(f'PREV: {prev_offset}\tCURR: {curr_offset}\tCHUNK: {chunk}\tMISS: {missing}')  # DEBUGGING
+    # print(f'PAD STR: {pad_str}')  # DEBUGGING
+    # print(f'PREAMBLE: {type(pad_str * curr_offset)}')  # DEBUGGING
+    # First group
+    if prev_offset is None:
+        padded_chunk = pad_str * curr_offset + chunk  # Pad the chunk
+    # Rollover (e.g., 15 --> 0) or dupe (e.g., 1 --> 1), whether one or more was skipped
+    elif prev_offset >= curr_offset:
+        padded_chunk = (pad_str * curr_offset) + chunk  # Pad the chunk
+    # In order (e.g., 1 --> 2, 5 --> 7)
+    elif curr_offset > prev_offset:
+        # Good, but maybe one got skipped
+        padded_chunk = (pad_str * (curr_offset - (prev_offset + 1))) + chunk
+
+    # DONE
+    return padded_chunk
+
+def _validate_not_negative_int(var: int, var_name: str) -> None:
+    """Validate an integer as not negative (>= 0)."""
+    validate_type(var, var_name, int)
+    if var < 0:
+            raise ValueError(f'The "{var_name}" argument may not be negative: {var}')

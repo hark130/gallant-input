@@ -74,13 +74,17 @@ class RDSPICode:
         self.verify_pi_code_integrity()
         return convert_bin_bytes_to_hex_str(self.get_pi_code())
 
-    def get_radio_text(self) -> str:
+    def get_radio_text(self, sanitize: bool = False) -> str:
         """Attempt to form the sequential radio text from Message Group Type 02s in the set.
 
         This method will not assume the length of the radio text string (because more bytes may
         be coming).  However, skipped offsets will receive placeholders.  Also, in the case of
         out of order offsets or duplicate offsets, the string will be reset and leading
         placeholders will be added.
+
+        Args:
+            sanitize: [OPTIONAL] If True, non-printable characters will be replaced with a
+                period (.).
 
         Returns:
             The reformed radio text as a string.  The returned value will include all offsets.
@@ -95,6 +99,7 @@ class RDSPICode:
 
         # VALIDATION
         self.verify_pi_code_integrity()
+        validate_type(sanitize, 'sanitize', bool)
 
         # GET IT
         # Form the list of RDSMsgGroupType02()s
@@ -112,6 +117,9 @@ class RDSPICode:
                                                  curr_offset=msg_group.offset,
                                                  chunk=msg_group.radio_text_chunk)
             prev_offset = msg_group.offset  # Advance
+        # Sanitize?
+        if sanitize:
+            radio_text = ''.join(char if char.isprintable() else '.' for char in radio_text)
 
         # DONE
         return radio_text

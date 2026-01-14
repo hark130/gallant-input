@@ -94,6 +94,7 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
         except (TypeError, ValueError) as err:
             self.fail_test_case(f'Invalid input detected in stream_bytes: {repr(err)}')
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
     def run_test_exception(self, pi_code: bytes, stream_bytes: bytes, exception_type: Exception,
                            exception_msg: str, set_input: bool = True) -> None:
         """Common method calls for a test case expected to raise an exception.
@@ -120,6 +121,7 @@ class RDSPICodeGRTUnitTest(RDSPICodeUnitTest):
             self.set_test_input()  # This test case utilizes default arguments
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def run_test_return(self, pi_code: bytes, stream_bytes: bytes, exp_ret: str,
                         set_input: bool = True) -> None:

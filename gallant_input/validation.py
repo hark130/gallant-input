@@ -26,7 +26,7 @@ def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int 
     """Validate a bytes object representation of binary data to a certain length.
 
     Args:
-        validate_this: A bytes object to validate.
+        validate_this: A bytes object containing binary to validate.
         param_name: The name of the parameter to be used in exception messages.
         exact_len: [OPTIONAL] If greater than -1, the exact length of validate_this is verified
             against this value (e.g., exact_len=0 verifies validate_this is empty).

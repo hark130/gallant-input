@@ -48,10 +48,10 @@ class AISPayloadInfo:
         return AIS_MID_TO_NAME[self.mid]
 
     @property
-    def mmsi_num(self):
+    def mmsi_num(self) -> int:
         """Translate the MMSI value to an integer."""
         self.validate_data()
-        return convert_bin_bytes_to_int(binary=self.mmsi)
+        return self._get_mmsi()
 
     @property
     def num_repeats(self) -> str:
@@ -84,7 +84,7 @@ class AISPayloadInfo:
             validate_binary_bytes(self.mmsi, 'mmsi', 30)
             validate_binary_bytes(self.msg_bits, 'msg_bits')
             if self._get_mid() not in AIS_MID_TO_NAME:
-                raise AISPayloadInvalid(f'Unable to locate MID: {self.mid}')
+                raise AISPayloadInvalid(f'Unable to locate MID: {self._get_mid()}')
             total_len = len(self.msg_type) + len(self.repeat) + len(self.mmsi) + len(self.msg_bits)
             if 0 != total_len % AIS_PAYLOAD_SLOT_LEN:
                 raise AISPayloadInvalid('This AIS payload is not slot-aligned')
@@ -100,5 +100,13 @@ class AISPayloadInfo:
 
     def _get_mid(self) -> int:
         """SPOT to fetch the MID during validation, avoiding unintentional recursion."""
-        return convert_bin_bytes_to_int(binary=self.mmsi[0:3])
+        mmsi_int = self._get_mmsi()  # Convert the MMSI to an integer
+        # Convert the integer into a leading-zero filled 9 digit number
+        mmsi_str = str(f'{mmsi_int:09d}')
+        # Convert the first three digits into an integer
+        return int(mmsi_str[0:3])
+
+    def _get_mmsi(self) -> int:
+        """SPOT to fetch the MMSI during validation, avoiding unintentional recursion."""
+        return convert_bin_bytes_to_int(binary=self.mmsi)
 # pylint: enable=too-many-instance-attributes

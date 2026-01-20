@@ -5,6 +5,7 @@
 # Local Imports
 from gallant_input.ais.constants import AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN
 from gallant_input.ais.payload_info import AISPayloadInfo
+from gallant_input.validation import validate_binary_bytes, validate_type
 
 
 class AISPayload:
@@ -76,10 +77,10 @@ class AISPayload:
         validate_binary_bytes(validate_this=self._bin_bytes, param_name='bin_bytes')
         len_bin_bytes = len(self._bin_bytes)
         if 0 == len_bin_bytes:
-            raise ValueError(f'The "bin_bytes" argument may not be empty')
-        elif 0 != (len_bin_bytes % AIS_PAYLOAD_SLOT_LEN):
+            raise ValueError('The "bin_bytes" argument may not be empty')
+        if 0 != (len_bin_bytes % AIS_PAYLOAD_SLOT_LEN):
             raise ValueError(f'The length of the "bin_bytes" argument (length: {len_bin_bytes}) '
                              'must be an AIS payload slot multiple')
-        elif len_bin_bytes > AIS_PAYLOAD_SLOT_LEN * AIS_PAYLOAD_MAX_SLOTS:
+        if len_bin_bytes > AIS_PAYLOAD_SLOT_LEN * AIS_PAYLOAD_MAX_SLOTS:
             raise ValueError('Too many slots for a valid AIS payload: '
                              f'{int(len_bin_bytes / AIS_PAYLOAD_SLOT_LEN)}')

@@ -91,9 +91,8 @@ AIS_MID_TO_NAME = {
      303: 'United States of America - Alaska (State of)',
      304: 'Antigua and Barbuda',
      305: 'Antigua and Barbuda',
-     306: 'Netherlands (Kingdom of the) - Bonaire, Sint Eustatius and Saba',
-     306: 'Netherlands (Kingdom of the) - Curaçao',
-     306: 'Netherlands (Kingdom of the) - Sint Maarten (Dutch part)',
+     306: 'Netherlands (Kingdom of the) - Bonaire, Sint Eustatius and Saba / Curaçao / '
+          'Sint Maarten (Dutch part)',
      307: 'Netherlands (Kingdom of the) - Aruba',
      308: 'Bahamas (Commonwealth of the)',
      309: 'Bahamas (Commonwealth of the)',

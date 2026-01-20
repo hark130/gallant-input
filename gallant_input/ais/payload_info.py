@@ -2,11 +2,10 @@
 
 # Standard Imports
 from dataclasses import dataclass, field
-from typing import Final
 # Third Party Imports
 # Local Imports
-from gallant_input.ais.constants import AIS_MID_TO_NAME
-from gallant_input.converters import convert_bin_bytes_to_int, convert_bin_bytes_to_hex_str
+from gallant_input.ais.constants import AIS_MID_TO_NAME, AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN
+from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.ais.exceptions import AISPayloadInvalid
 from gallant_input.validation import validate_binary_bytes
 
@@ -88,7 +87,7 @@ class AISPayloadInfo:
                 raise AISPayloadInvalid(f'Unable to locate MID: {self.mid}')
             total_len = len(self.msg_type) + len(self.repeat) + len(self.mmsi) + len(self.msg_bits)
             if 0 != total_len % AIS_PAYLOAD_SLOT_LEN:
-                raise AISPayloadInvalid(f'This AIS payload is not slot-aligned')
+                raise AISPayloadInvalid('This AIS payload is not slot-aligned')
             if total_len > AIS_PAYLOAD_SLOT_LEN * AIS_PAYLOAD_MAX_SLOTS:
                 raise AISPayloadInvalid('Too many slots for a valid AIS payload: '
                                         f'{int(total_len / AIS_PAYLOAD_SLOT_LEN)}')

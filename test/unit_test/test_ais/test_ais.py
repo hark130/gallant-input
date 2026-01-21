@@ -63,6 +63,14 @@ class AISUnitTest(RootUnitTest):
                         + b'100000000000000001000000101100100000101101' \
                         + b'000110011010001001010000010100100011010000' \
                         + b'101111111111001100000000000000000000000000'
+    # Generated using https://github.com/trendmicro/ais/tree/master
+    # python AIVDM_Encoder.py --type=1 --vsize=30x10 --mmsi=740405000
+    # RRS Sir David Attenborough (AKA RRS "Boaty McBoatface")
+    # Values = {MSG TYPE: 1, MMSI: 740405000 (MID: 740), REPEAT: 0}
+    GOOD_AIS_PAYLOAD2 = b'000001001011000010000110101111000010001111' \
+                        + b'100000000000000001000000101100100000101101' \
+                        + b'000110011010001001010000010100100011010000' \
+                        + b'101111111111001100000000000000000000000000'
 
     # CORE CLASS METHODS
     # Methods listed in call order
@@ -71,6 +79,8 @@ class AISUnitTest(RootUnitTest):
         """AISUnitTest ctor."""
         # ATTRIBUTES
         self.input_ap_bin_bytes = None  # Test case input: AISPayload(bin_bytes)
+
+        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

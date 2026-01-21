@@ -1,4 +1,16 @@
-"""Defines the AISPayload class to parse AIS payloads."""
+"""Defines the AISPayload class to parse AIS payloads.
+
+Example Usage:
+    # Generated using https://github.com/trendmicro/ais/tree/master
+    # python AIVDM_Encoder.py --type=1 --vsize=30x10
+    ais_payload = b'000001000011101011110111001110011000101111' \
+                  + b'100000000000000001000000101100100000101101' \
+                  + b'000110011010001001010000010100100011010000' \
+                  + b'101111111111001100000000000000000000000000'
+    ap = AISPayload(ais_payload)
+    ap_info = ap.get_payload_info()
+    print(f'MMSI: {ap_info.mmsi_num}')  # See: gallant_input.ais.payload_info AISPayloadInfo()
+"""
 
 # Standard Imports
 # Third Party Imports

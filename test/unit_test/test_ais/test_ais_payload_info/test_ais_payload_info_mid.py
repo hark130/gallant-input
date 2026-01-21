@@ -4,7 +4,7 @@ Typical Usage:
     python -m test                                           # Run *all* the test cases
     python -m test.unit_test                                 # Run *all* the unit test cases
     python -m test.unit_test.test_ais                        # Run *all* ais sub-package test cases
-    python -m test.unit_test.test_ais.test_ais_payload_info         # Run *all* AISPayloadInfo method test cases
+    python -m test.unit_test.test_ais.test_ais_payload_info  # Run *all* AISPayloadInfo method tests
     # Run just these unit tests
     python -m test.unit_test.test_ais.test_ais_payload_info.test_ais_payload_info_mid
     # Run just this normal 1 unit test
@@ -13,15 +13,12 @@ Typical Usage:
 
 # Standard Imports
 from typing import Any
-from unittest import skip
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
-from gallant_input.ais.constants import AIS_PAYLOAD_SLOT_LEN
 from gallant_input.ais.exceptions import AISPayloadInvalid
 from gallant_input.ais.payload_info import AISPayloadInfo
-from test.unit_test.test_ais.test_ais_payload_info.test_ais_payload_info import AISPayloadInfoUnitTest
-# from test.unit_test.test_ais.test_ais_payload_info import AISPayloadInfoUnitTest
+from test.unit_test.test_ais.test_ais_payload_info import AISPayloadInfoUnitTest
 
 
 class AISPayloadInfoMidUnitTest(AISPayloadInfoUnitTest):
@@ -139,7 +136,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         # ATTRIBUTES
         super().__init__(*args, **kwargs)
 
-        self.GOOD_AIS_PAYLOAD1_MMSI = self.GOOD_AIS_PAYLOAD1[8:38]  # GOOD_AIS_PAYLOAD1's MMSI
+        self.good_ais_payload1_mmsi = self.GOOD_AIS_PAYLOAD1[8:38]  # GOOD_AIS_PAYLOAD1's MMSI
 
     def call_callable(self):
         """Overriding parent method for added granularity."""
@@ -148,7 +145,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
 
     def test_b01_too_short_empty(self):
         """Invalid mmsi length: 0."""
-        test_input = self.GOOD_AIS_PAYLOAD1_MMSI[0:0]
+        test_input = self.good_ais_payload1_mmsi[0:0]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
         self.set_bad_mmsi_test_input(mmsi=test_input)
@@ -156,7 +153,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
 
     def test_b02_too_short_one(self):
         """Invalid mmsi length: 1."""
-        test_input = self.GOOD_AIS_PAYLOAD1_MMSI[0:1]
+        test_input = self.good_ais_payload1_mmsi[0:1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
         self.set_bad_mmsi_test_input(mmsi=test_input)
@@ -164,7 +161,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
 
     def test_b03_too_short_minus_one(self):
         """Invalid mmsi length: 30-1."""
-        test_input = self.GOOD_AIS_PAYLOAD1_MMSI[0:30-1]
+        test_input = self.good_ais_payload1_mmsi[0:30-1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
         self.set_bad_mmsi_test_input(mmsi=test_input)
@@ -172,7 +169,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
 
     def test_b04_too_long_plus_one(self):
         """Invalid mmsi length: 30+1."""
-        test_input = (self.GOOD_AIS_PAYLOAD1_MMSI * 2)[0:30+1]
+        test_input = (self.good_ais_payload1_mmsi * 2)[0:30+1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
         self.set_bad_mmsi_test_input(mmsi=test_input)
@@ -180,7 +177,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
 
     def test_b05_too_long_double(self):
         """Invalid mmsi length: 30*2."""
-        test_input = self.GOOD_AIS_PAYLOAD1_MMSI * 2
+        test_input = self.good_ais_payload1_mmsi * 2
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
         self.set_bad_mmsi_test_input(mmsi=test_input)

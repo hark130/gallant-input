@@ -140,7 +140,7 @@ class AISPayloadInfoUnitTest(AISUnitTest):
             ValueError: Invalid value.
         """
         ap_obj = self.create_aispayload(bin_bytes=bin_bytes)  # AISPayload object
-        return api_obj.get_payload_info()
+        return ap_obj.get_payload_info()
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

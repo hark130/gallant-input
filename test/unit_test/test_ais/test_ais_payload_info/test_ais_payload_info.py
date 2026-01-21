@@ -34,6 +34,8 @@ from typing import Any
 # Third Party Imports
 from test.unit_test.test_ais.test_ais import AISUnitTest
 # Local Imports
+from gallant_input.ais.payload_info import AISPayloadInfo
+from gallant_input.validation import validate_bytes
 
 
 class AISPayloadInfoUnitTest(AISUnitTest):
@@ -56,13 +58,6 @@ class AISPayloadInfoUnitTest(AISUnitTest):
 
     # CORE CLASS METHODS
     # Methods listed in call order
-    def __init__(self, *args, **kwargs) -> None:
-        """AISPayloadInfoUnitTest ctor."""
-        # ATTRIBUTES
-        self.input_ais_block = None  # Test case input: AISPayloadInfo(ais_block)
-        self.input_block_id = None   # Test case input: AISPayloadInfo(block_id)
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

@@ -11,6 +11,9 @@ AIS_PAYLOAD_MAX_SLOTS: Final[int] = 5   # Maximum AIS payload slots for variable
 # See: https://en.wikipedia.org/wiki/Automatic_identification_system#Message_format
 AIS_PAYLOAD_SLOT_LEN: Final[int] = 168  # The lengh, in bits, of one AIS payload slot
 # Table of Maritime Identification Digits (MID)
+# NOTE Some MMSIs (e.g., SART - 972yyzzzz), do not have a MID
+AIS_MID_UNKNOWN_NUM: Final[int] = 999  # The MID to use for MMSIs that do not include a MID
+AIS_MID_UNKNOWN_NAME: Final[str] = 'UNSPECIFIED'  # The MID name for AIS_MID_UNKNOWN_NUMs
 # See: https://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx
 AIS_MID_TO_NAME = {
      201: 'Albania (Republic of)',
@@ -306,4 +309,5 @@ AIS_MID_TO_NAME = {
      765: 'Suriname (Republic of)',
      770: 'Uruguay (Eastern Republic of)',
      775: 'Venezuela (Bolivarian Republic of)',
+     AIS_MID_UNKNOWN_NUM: AIS_MID_UNKNOWN_NAME,
 }

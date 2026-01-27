@@ -16,6 +16,7 @@ from typing import Any
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 # Local Imports
+from gallant_input.ais.constants import AIS_MID_UNKNOWN_NUM
 from gallant_input.ais.exceptions import AISPayloadInvalid
 from gallant_input.ais.payload_info import AISPayloadInfo
 from gallant_input.converters import convert_int_to_bin_bytes
@@ -273,7 +274,7 @@ class SpecialAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         # https://beacons.amsa.gov.au/mmsi/index.asp
         mmsi = '050312345'  # MMSI Formats --> Group MMSIs --> Ex. 1
         test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
-        exp_return = int(mmsi[0:3])
+        exp_return = int(mmsi[1:4])
         self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_return(exp_return)
 
@@ -330,41 +331,47 @@ class SpecialAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         self.run_test_return(exp_return)
 
     def test_s09_non_ship_mmsi_ais_sart(self):
-        """Valid AIS payload with a non-standard MMSI format: 970MIDXXX.
+        """Valid AIS payload with a non-standard MMSI format: 970yyzzzz.
 
-        AIS SART (Search and Rescue Transmitter).
+        AIS SART (Search and Rescue Transmitter).  Where "yy" is a numeric ID assigned to a
+        manufacturer, and "zzzz" is a sequence number chosen by that manufacturer.
 
-        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        See:
+        https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity#The_first_digit_of_an_MMSI
         """
         mmsi = '970360781'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:8796138
         test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
-        exp_return = int(mmsi[3:6])
+        exp_return = AIS_MID_UNKNOWN_NUM
         self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_return(exp_return)
 
     def test_s10_non_ship_mmsi_mob_device(self):
-        """Valid AIS payload with a non-standard MMSI format: 972XXXXXX.
+        """Valid AIS payload with a non-standard MMSI format: 972yyzzzz.
 
-        MOB (Man Overboard) device.
+        MOB (Man Overboard) device.  Where "yy" is a numeric ID assigned to a manufacturer,
+        and "zzzz" is a sequence number chosen by that manufacturer.
 
-        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        See:
+        https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity#The_first_digit_of_an_MMSI
         """
         mmsi = '972367686'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:9069228
         test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
-        exp_return = int(mmsi[3:6])
+        exp_return = AIS_MID_UNKNOWN_NUM
         self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_return(exp_return)
 
     def test_s11_non_ship_mmsi_epirb_ais(self):
-        """Valid AIS payload with a non-standard MMSI format: 974XXXXXX.
+        """Valid AIS payload with a non-standard MMSI format: 974yyzzzz.
 
-        EPIRB (Emergency Position Indicating Radio Beacon) AIS.
+        EPIRB (Emergency Position Indicating Radio Beacon) AIS.  Where "yy" is a numeric ID
+        assigned to a manufacturer, and "zzzz" is a sequence number chosen by that manufacturer.
 
-        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        See:
+        https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity#The_first_digit_of_an_MMSI
         """
         mmsi = '974209718'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:9070804
         test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
-        exp_return = int(mmsi[3:6])
+        exp_return = AIS_MID_UNKNOWN_NUM
         self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_return(exp_return)
 

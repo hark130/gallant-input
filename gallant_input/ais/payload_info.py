@@ -8,6 +8,7 @@ from gallant_input.ais.constants import (AIS_MID_TO_NAME, AIS_MID_UNKNOWN_NUM,
                                          AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN)
 from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.ais.exceptions import AISPayloadInvalid
+from gallant_input.ais.mmsi_code_type import MMSICodeType
 from gallant_input.validation import validate_binary_bytes
 
 
@@ -47,6 +48,18 @@ class AISPayloadInfo:
         """The name of the country that issued the MMSI."""
         self.validate_data()
         return AIS_MID_TO_NAME[self.mid]
+
+    @property
+    def mmsi_code_name(self) -> str:
+        """Evaluate the MMSI as a code type's nice name."""
+        self.validate_data()
+        return self.mmsi_code_type.nice_name
+
+    @property
+    def mmsi_code_type(self) -> MMSICodeType:
+        """Evaluate the MMSI as a code type."""
+        self.validate_data()
+        return self._determine_mmsi_code_type()
 
     @property
     def mmsi_num(self) -> int:
@@ -103,6 +116,39 @@ class AISPayloadInfo:
     # PRIVATE METHODS
     # Methods listed in alphabetical order
 
+    def _determine_mmsi_code_type(self) -> MMSICodeType:
+        """Determine the MMSICodeType based on the MMSI."""
+        # LOCAL VARIABLES
+        mmsi_str = self._get_mmsi_str()     # MMSI string
+        code_type = MMSICodeType.UNDEFINED  # MMSICodeType object
+
+        # See: https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity
+        #   #The_first_digit_of_an_MMSI
+        if mmsi_str.startswith('970'):
+            code_type = MMSICodeType.SART  # 970yyzzzz - AIS SART (Search and Rescue Transmitter)
+        elif mmsi_str.startswith('972'):
+            code_type = MMSICodeType.MOB  # 972yyzzzz - MOB (Man Overboard) device
+        elif mmsi_str.startswith('974'):
+            code_type = MMSICodeType.EPIRB  # 974yyzzzz - Emergency Position Indicating Radio Beacon
+        # See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        elif mmsi_str.startswith('98'):
+            code_type = MMSICodeType.AUXILIARY  # 98MIDXXXX - Auxiliary craft assoc. w/ parent ship
+        elif mmsi_str.startswith('99'):
+            code_type = MMSICodeType.NAVIGATION  # 99MIDXXXX - Aids to Navigation
+        elif mmsi_str.startswith('00'):
+            code_type = MMSICodeType.COASTAL  # 00MIDXXXX - Coastal stations
+        elif mmsi_str.startswith('111'):
+            code_type = MMSICodeType.SAR_AIRCRAFT  # 111MIDXXX - SAR (Search and Rescue) aircraft
+        elif mmsi_str.startswith('8'):
+            code_type = MMSICodeType.DIVER  # 8MIDXXXXX - Diver’s radio
+        elif mmsi_str.startswith('0'):
+            code_type = MMSICodeType.GROUP  # 0MIDXXXXX - Group of ships
+        else:
+            code_type = MMSICodeType.SHIP  # MIDXXXXXX - Ship
+
+        # DONE
+        return code_type
+
     def _get_mid(self) -> int:
         """SPOT to fetch the MID during validation, avoiding unintentional recursion.
 
@@ -112,12 +158,13 @@ class AISPayloadInfo:
         https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity#The_first_digit_of_an_MMSI
         """
         # LOCAL VARIABLES
-        mmsi_str = self._get_mmsi_str()  # MMSI string
-        mid_str = ''                     # MID string
+        code_type = self._determine_mmsi_code_type()  # MMSI code type
+        mmsi_str = self._get_mmsi_str()               # MMSI string
+        mid_str = ''                                  # MID string
 
         # PARSE IT
         # MID undefined
-        if mmsi_str.startswith('97'):
+        if code_type in [MMSICodeType.SART, MMSICodeType.MOB, MMSICodeType.EPIRB]:
             # See: https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity
             #   #The_first_digit_of_an_MMSI
             # 970yyzzzz - AIS SART (Search and Rescue Transmitter)
@@ -125,22 +172,25 @@ class AISPayloadInfo:
             # 974yyzzzz - EPIRB (Emergency Position Indicating Radio Beacon) AIS
             mid_str = str(AIS_MID_UNKNOWN_NUM)
         # Two digits preceding the MID
-        elif mmsi_str.startswith('9') or mmsi_str.startswith('00'):
+        elif code_type in [MMSICodeType.COASTAL, MMSICodeType.AUXILIARY, MMSICodeType.NAVIGATION]:
             # 00MIDXXXX - Coastal stations
             # 98MIDXXXX - Auxiliary craft associated with a parent ship
             # 99MIDXXXX - Aids to Navigation
             mid_str = mmsi_str[2:5]
         # Three digits preceding the MID
-        elif mmsi_str.startswith('111'):
+        elif code_type in [MMSICodeType.SAR_AIRCRAFT]:
             # 111MIDXXX - SAR (Search and Rescue) aircraft
             mid_str = mmsi_str[3:6]
         # One digit preceding the MID
-        elif mmsi_str.startswith('8') or mmsi_str.startswith('0'):
+        elif code_type in [MMSICodeType.GROUP, MMSICodeType.DIVER]:
             # 0MIDXXXXX - Group of ships; the U.S. Coast Guard, for example, is 03699999
             # 8MIDXXXXX - Diver’s radio (not used in the U.S. in 2013)
             mid_str = mmsi_str[1:4]
-        else:
+        # Leading MID
+        elif code_type in [MMSICodeType.SHIP]:
             mid_str = mmsi_str[0:3]  # MIDXXXXXX - Ship
+        else:
+            mid_str = str(AIS_MID_UNKNOWN_NUM)  # In lieu of raising an exception...
 
         # DONE
         return int(mid_str)

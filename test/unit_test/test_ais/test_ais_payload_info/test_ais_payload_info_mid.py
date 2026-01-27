@@ -18,6 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 # Local Imports
 from gallant_input.ais.exceptions import AISPayloadInvalid
 from gallant_input.ais.payload_info import AISPayloadInfo
+from gallant_input.converters import convert_int_to_bin_bytes
 from test.unit_test.test_ais.test_ais_payload_info import AISPayloadInfoUnitTest
 
 
@@ -98,7 +99,7 @@ class AISPayloadInfoMidUnitTest(AISPayloadInfoUnitTest):
         self.expect_return(exp_return)
         self.run_test()
 
-    def set_bad_mmsi_test_input(self, mmsi: Any) -> None:
+    def set_mmsi_test_input(self, mmsi: Any) -> None:
         """Set granular test input using self.GOOD_AIS_PAYLOAD1 as default input but mmsi is bad."""
         msg_type = self.GOOD_AIS_PAYLOAD1[0:6]
         repeat = self.GOOD_AIS_PAYLOAD1[6:8]
@@ -148,7 +149,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = self.good_ais_payload1_mmsi[0:0]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_b02_too_short_one(self):
@@ -156,7 +157,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = self.good_ais_payload1_mmsi[0:1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_b03_too_short_minus_one(self):
@@ -164,7 +165,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = self.good_ais_payload1_mmsi[0:30-1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_b04_too_long_plus_one(self):
@@ -172,7 +173,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = (self.good_ais_payload1_mmsi * 2)[0:30+1]
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_b05_too_long_double(self):
@@ -180,7 +181,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = self.good_ais_payload1_mmsi * 2
         exp_except = ValueError
         exp_except_msg = 'The "mmsi" argument must be of length "30" '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_b06_barely_bad_mmsi_conversion(self):
@@ -188,7 +189,7 @@ class BoundaryAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = b'111011100110101100101000000000'  # 1,000,000,000
         exp_except = AISPayloadInvalid
         exp_except_msg = 'Invalid MMSI length of '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
 
@@ -205,7 +206,7 @@ class ErrorAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = self.GOOD_AIS_PAYLOAD1[8:38].decode('ascii')  # Good input, bad data type
         exp_except = TypeError
         exp_except_msg = 'argument should have been of type '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_e02_bad_ctor_data_type_none(self):
@@ -213,7 +214,7 @@ class ErrorAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = None
         exp_except = TypeError
         exp_except_msg = 'argument should have been of type '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_e03_bad_ctor_value_decimal(self):
@@ -221,7 +222,7 @@ class ErrorAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = b'000000000000000000000247320162'
         exp_except = ValueError
         exp_except_msg = 'Invalid binary value detected in "mmsi"'
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
 
@@ -238,7 +239,7 @@ class SpecialAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = b'0' * 30
         exp_except = AISPayloadInvalid
         exp_except_msg = 'Unable to locate MID: '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
 
     def test_s02_bad_payload_all_ones(self):
@@ -246,8 +247,126 @@ class SpecialAISPayloadInfoMidUnitTest(AISPayloadInfoMidUnitTest):
         test_input = b'1' * 30
         exp_except = AISPayloadInvalid
         exp_except_msg = 'Invalid MMSI length of '
-        self.set_bad_mmsi_test_input(mmsi=test_input)
+        self.set_mmsi_test_input(mmsi=test_input)
         self.run_test_exception(exp_except, exp_except_msg)
+
+    def test_s03_non_ship_mmsi_divers_radio(self):
+        """Valid AIS payload with a non-standard MMSI format: 8MIDXXXXX.
+
+        Diver’s radio (not used in the U.S. in 2013).
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '836610101'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:7281226
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[1:4])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s04_non_ship_mmsi_group_of_ships(self):
+        """Valid AIS payload with a non-standard MMSI format: 0MIDXXXXX.
+
+        Group of ships; the U.S. Coast Guard, for example, is 03699999.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        # https://beacons.amsa.gov.au/mmsi/index.asp
+        mmsi = '050312345'  # MMSI Formats --> Group MMSIs --> Ex. 1
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[0:3])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s05_non_ship_mmsi_coastal_station(self):
+        """Valid AIS payload with a non-standard MMSI format: 00MIDXXXX.
+
+        Coastal stations.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '3669999'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:4224109
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[0:3])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s06_non_ship_mmsi_sar_aircraft(self):
+        """Valid AIS payload with a non-standard MMSI format: 111MIDXXX.
+
+        SAR (Search and Rescue) aircraft.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '111316001'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:5685588
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[3:6])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s07_non_ship_mmsi_navigation_aid(self):
+        """Valid AIS payload with a non-standard MMSI format: 99MIDXXXX.
+
+        Aids to Navigation.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '992320001'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:5602084
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[2:5])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s08_non_ship_mmsi_auxiliary_craft(self):
+        """Valid AIS payload with a non-standard MMSI format: 98MIDXXXX.
+
+        Auxiliary craft associated with a parent ship.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '983669046'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:10255197
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[2:5])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s09_non_ship_mmsi_ais_sart(self):
+        """Valid AIS payload with a non-standard MMSI format: 970MIDXXX.
+
+        AIS SART (Search and Rescue Transmitter).
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '970360781'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:8796138
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[3:6])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s10_non_ship_mmsi_mob_device(self):
+        """Valid AIS payload with a non-standard MMSI format: 972XXXXXX.
+
+        MOB (Man Overboard) device.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '972367686'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:9069228
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[3:6])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
+
+    def test_s11_non_ship_mmsi_epirb_ais(self):
+        """Valid AIS payload with a non-standard MMSI format: 974XXXXXX.
+
+        EPIRB (Emergency Position Indicating Radio Beacon) AIS.
+
+        See: https://www.e-navigation.nl/content/mmsi-mid-formats
+        """
+        mmsi = '974209718'  # https://www.marinetraffic.com/en/ais/details/ships/shipid:9070804
+        test_input = convert_int_to_bin_bytes(number=int(mmsi), min_width=30)
+        exp_return = int(mmsi[3:6])
+        self.set_mmsi_test_input(mmsi=test_input)
+        self.run_test_return(exp_return)
 
 
 if __name__ == '__main__':

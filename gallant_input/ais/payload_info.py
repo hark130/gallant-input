@@ -4,7 +4,8 @@
 from dataclasses import dataclass, field
 # Third Party Imports
 # Local Imports
-from gallant_input.ais.constants import AIS_MID_TO_NAME, AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN
+from gallant_input.ais.constants import (AIS_MID_TO_NAME, AIS_MID_UNKNOWN_NUM,
+                                         AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN)
 from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.ais.exceptions import AISPayloadInvalid
 from gallant_input.validation import validate_binary_bytes
@@ -103,10 +104,46 @@ class AISPayloadInfo:
     # Methods listed in alphabetical order
 
     def _get_mid(self) -> int:
-        """SPOT to fetch the MID during validation, avoiding unintentional recursion."""
-        mmsi_str = self._get_mmsi_str()
-        # Convert the first three digits into an integer
-        return int(mmsi_str[0:3])
+        """SPOT to fetch the MID during validation, avoiding unintentional recursion.
+
+        For supported formats, see:
+        https://www.e-navigation.nl/content/mmsi-mid-formats
+            -or-
+        https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity#The_first_digit_of_an_MMSI
+        """
+        # LOCAL VARIABLES
+        mmsi_str = self._get_mmsi_str()  # MMSI string
+        mid_str = ''                     # MID string
+
+        # PARSE IT
+        # MID undefined
+        if mmsi_str.startswith('97'):
+            # See: https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity
+            #   #The_first_digit_of_an_MMSI
+            # 970yyzzzz - AIS SART (Search and Rescue Transmitter)
+            # 972yyzzzz - MOB (Man Overboard) device
+            # 974yyzzzz - EPIRB (Emergency Position Indicating Radio Beacon) AIS
+            mid_str = str(AIS_MID_UNKNOWN_NUM)
+        # Two digits preceding the MID
+        elif mmsi_str.startswith('9') or mmsi_str.startswith('00'):
+            # 00MIDXXXX - Coastal stations
+            # 98MIDXXXX - Auxiliary craft associated with a parent ship
+            # 99MIDXXXX - Aids to Navigation
+            mid_str = mmsi_str[2:5]
+        # Three digits preceding the MID
+        elif mmsi_str.startswith('111'):
+            # 111MIDXXX - SAR (Search and Rescue) aircraft
+            mid_str = mmsi_str[3:6]
+        # One digit preceding the MID
+        elif mmsi_str.startswith('8') or mmsi_str.startswith('0'):
+            # 0MIDXXXXX - Group of ships; the U.S. Coast Guard, for example, is 03699999
+            # 8MIDXXXXX - Diver’s radio (not used in the U.S. in 2013)
+            mid_str = mmsi_str[1:4]
+        else:
+            mid_str = mmsi_str[0:3]  # MIDXXXXXX - Ship
+
+        # DONE
+        return int(mid_str)
 
     def _get_mmsi(self) -> int:
         """SPOT to fetch the MMSI during validation, avoiding unintentional recursion."""

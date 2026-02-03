@@ -77,8 +77,9 @@ def find_dense_repeat(haystack: bytes | str) -> tuple[bytes | str:int]:
     for win_len in range(2, floor(len(haystack)/2)+1):
         repeats += find_common_repeats(haystack, win_len)
     # Set a benchmark to compare the rest of the results against
-    dense_repeat = repeats[0]  # This is the starting benchmark
-    cur_winner = len(dense_repeat[0]) * dense_repeat[1]
+    if repeats:
+        dense_repeat = repeats[0]  # This is the starting benchmark
+        cur_winner = len(dense_repeat[0]) * dense_repeat[1]
     # Check for values that exceed the current benchmark
     for repeat in repeats:
         temp_density = len(repeat[0]) * repeat[1]

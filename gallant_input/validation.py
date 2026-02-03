@@ -83,6 +83,9 @@ def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
     Args:
         validate_this: A bytes object to validate as a bytes object or a string.
         param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a bytes object or a string.
     """
     # LOCAL VARIABLES
     exp_type = f'{bytes} or {str}'  # The expected data types

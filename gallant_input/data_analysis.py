@@ -6,7 +6,7 @@ from math import floor
 from typing import List
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import validate_bytes_or_str, validate_pos_int
+from gallant_input.validation import validate_bytes_or_str, validate_pos_int, validate_type
 
 
 def find_common_repeats(haystack: bytes | str, win_len: int = 24,
@@ -26,6 +26,10 @@ def find_common_repeats(haystack: bytes | str, win_len: int = 24,
     Returns:
         A list of the most common repeated substrings, of length "win_len" and their respective
         counts.  There is no guarantee that the length of the return value will be equal to max_num.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Invalid integer.
     """
     # LOCAL VARIABLES
     counter_obj = None
@@ -45,7 +49,7 @@ def find_common_repeats(haystack: bytes | str, win_len: int = 24,
 
 
 def find_dense_repeat(haystack: bytes | str) -> tuple[bytes | str:int]:
-    """Find the most reaping substring (count(substring) * len(subsring)) in the haystack.
+    """Find the most dense repeating substring (count(substring) * len(subsring)) in the haystack.
 
     The substring will always be longer than a single character.
 
@@ -54,6 +58,10 @@ def find_dense_repeat(haystack: bytes | str) -> tuple[bytes | str:int]:
 
     Returns:
         The first occurrence of the most dense substring in the haystack.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
     repeats = []         # A list of the most common repeated substrings and their respective counts
@@ -80,6 +88,44 @@ def find_dense_repeat(haystack: bytes | str) -> tuple[bytes | str:int]:
 
     # DONE
     return dense_repeat
+
+
+def find_dense_repeats(haystack: bytes | str,
+                       reverse: bool = False) -> List[tuple[bytes | str:int]]:
+    """Recursively find the densed repeats in a haystack.
+
+    The base case is the most repeated substring (within the most repeated substring, etc) found
+    in the haystack.
+
+    Args:
+        haystack: The object to search for repeating strings.
+        reverse: [OPTIONAL] If True, the first index of the return value will be the base case
+            substring.
+
+    Returns:
+        A list of tuples that reference each other.  By default (reverse=False), each entry's
+        index 0 will contain the index 0 of the next entry in the list.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    repeats = []  # List of recursive repeats
+
+    # INPUT VALIDATION
+    # haystack
+    # Handled by find_common_repeats()
+    # reverse
+    validate_type(reverse, 'reverse', bool)
+
+    # FIND THEM
+    repeats = _find_dense_repeats(haystack)
+    if reverse:
+        repeats = repeats[::-1]
+
+    # DONE
+    return repeats
 
 
 def find_repeats(haystack: bytes | str, win_len: int = 24) -> dict:
@@ -112,3 +158,31 @@ def find_repeats(haystack: bytes | str, win_len: int = 24) -> dict:
 def _build_counter_obj(haystack: bytes | str, win_len: int) -> Counter:
     """Build and return a Counter() object."""
     return Counter(haystack[i:i+win_len] for i in range(len(haystack)-win_len+1))
+
+
+def _find_dense_repeats(haystack: bytes | str) -> List[tuple[bytes | str:int]]:
+    """Recursively find the densed repeats in a haystack.
+
+    The base case is the most repeated substring (within the most repeated substring, etc) found
+    in the haystack.
+
+    Args:
+        haystack: The object to search for repeating strings.
+
+    Returns:
+        A list of tuples that reference each other.  By default (reverse=False), each entry's
+        index 0 will contain the index 0 of the next entry in the list.
+    """
+    # LOCAL VARIABLES
+    repeats = []              # List of recursive repeats
+    temp_dense_repeat = None  # Temp find_dense_repeat() return value
+
+    # FIND THEM
+    temp_dense_repeat = find_dense_repeat(haystack)
+    if temp_dense_repeat:
+        repeats.append(temp_dense_repeat)
+        if temp_dense_repeat[0] != haystack:
+            repeats += _find_dense_repeats(temp_dense_repeat[0])
+
+    # DONE
+    return repeats

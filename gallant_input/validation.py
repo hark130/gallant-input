@@ -182,7 +182,7 @@ def validate_pos_int(validate_this: int, param_name: str) -> None:
         ValueError: validate_this is not positive.
     """
     # VALIDATION
-    validate_int(validate_this, param_name, int)
+    validate_int(validate_this, param_name)
     if validate_this <= 0:
         raise ValueError(f'The "{param_name}" argument is not positive')
 

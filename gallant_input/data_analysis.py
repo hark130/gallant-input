@@ -1,13 +1,16 @@
 """Functionality to analyze data."""
 
 # Standard Imports
-from collections import defaultdict
+from collections import Counter, defaultdict
+from math import floor
+from typing import List
 # Third Party Imports
 # Local Imports
+from gallant_input.validation import validate_bytes_or_str, validate_pos_int
 
 
 def find_common_repeats(haystack: bytes | str, win_len: int = 24,
-                        max_num: int = 1) -> List[tuple[bytes|str:int]]:
+                        max_num: int = 1) -> List[tuple[bytes | str:int]]:
     """Find a certain number of the most common repeats of a certain length.
 
     1. Counts all the repeats of length "win_len"
@@ -41,7 +44,7 @@ def find_common_repeats(haystack: bytes | str, win_len: int = 24,
     return common_repeats
 
 
-def find_dense_repeat(haystack: bytes | str) -> tuple[bytes|str:int]:
+def find_dense_repeat(haystack: bytes | str) -> tuple[bytes | str:int]:
     """Find the most reaping substring (count(substring) * len(subsring)) in the haystack.
 
     The substring will always be longer than a single character.
@@ -64,9 +67,9 @@ def find_dense_repeat(haystack: bytes | str) -> tuple[bytes|str:int]:
     # FIND IT
     # Find *all* the most common repeats for each length starting at half the haystack length
     for win_len in range(2, floor(len(haystack)/2)+1):
-        repeats += find_common_repeats(haystack, win_len, max_num)
+        repeats += find_common_repeats(haystack, win_len)
     # Set a benchmark to compare the rest of the results against
-    dense_repeat = repeats[0]  # This is the 
+    dense_repeat = repeats[0]  # This is the starting benchmark
     cur_winner = len(dense_repeat[0]) * dense_repeat[1]
     # Check for values that exceed the current benchmark
     for repeat in repeats:
@@ -100,7 +103,7 @@ def find_repeats(haystack: bytes | str, win_len: int = 24) -> dict:
     for i in range(len(haystack)-win_len+1):
         window = haystack[i:i+win_len]
         seen[window].append(i)
-    result = {key:value for key,value in seen.items() if len(value) > 1}
+    result = {key: value for key, value in seen.items() if len(value) > 1}
 
     # DONE
     return result

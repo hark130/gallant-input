@@ -36,7 +36,7 @@ def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool
     # INPUT VALIDATION
     validate_bytes_or_str(stream1, 'stream1')
     validate_bytes_or_str(stream2, 'stream2')
-    if type(stream1) != type(stream2):
+    if not isinstance(stream1, type(stream2)):
         raise TypeError(f'The type of stream1 "{type(stream1)}" must be the same '
                         f'as stream2 "{type(stream2)}"')
     validate_type(show_index, 'show_index', bool)

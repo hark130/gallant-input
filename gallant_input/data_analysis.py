@@ -6,7 +6,8 @@ from math import floor
 from typing import List
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import validate_bytes_or_str, validate_pos_int, validate_type
+from gallant_input.validation import (validate_bytes_or_str, validate_list, validate_pos_int,
+                                      validate_type)
 
 
 def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool = True) -> int:
@@ -21,7 +22,8 @@ def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool
         The number of differences between the two streams.
 
     Raises:
-
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
     prefix1 = 'STREAM1: '       # Identifying preface for stream 1
@@ -221,6 +223,44 @@ def find_repeats(haystack: bytes | str, win_len: int = 24) -> dict:
     return result
 
 
+def find_stream_lcd(stream_list: List[bytes | str]) -> bytes | str:
+    """Find the leading common sub-string among a list of objects.
+
+    A list with one entry will result in returning the entry.  A list with no entries will
+    raise an Exception.  The data type of all list entries must be the same.
+
+    Args:
+        stream_list: A list of objects to find the least common leading sub-string for.
+
+    Returns:
+        The least common leading sub-string between all of the list entries.  If there is no
+        overlap between the entries, the return value will be empty.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value: empty list, empty list entry.
+    """
+    # LOCAL VARIABLES
+    stream_lcd = None  # The stream least common preamble
+
+    # INPUT VALIDATION
+    validate_list(stream_list, 'stream_list', can_be_empty=False)
+    for stream_list_entry in stream_list:
+        validate_bytes_or_str(stream_list_entry, 'stream_list entry')
+        if not stream_list_entry:
+            raise ValueError('The stream_list entries may not be empty')
+        if not isinstance(stream_list_entry, type(stream_list[0])):
+            raise TypeError('A data type mismatch was detected within the stream list: '
+                            f'index 0 was of type "{type(stream_list[0])}" and then a '
+                            f'type of "{type(stream_list_entry)}" was detected')
+
+    # FIND IT
+    stream_lcd = _find_stream_lcd(stream_list)
+
+    # DONE
+    return stream_lcd
+
+
 def _build_counter_obj(haystack: bytes | str, win_len: int) -> Counter:
     """Build and return a Counter() object."""
     return Counter(haystack[i:i+win_len] for i in range(len(haystack)-win_len+1))
@@ -252,3 +292,38 @@ def _find_dense_repeats(haystack: bytes | str) -> List[tuple[bytes | str:int]]:
 
     # DONE
     return repeats
+
+
+def _find_lcd(stream1: bytes | str, stream2: bytes | str) -> bytes | str:
+    """Find the leading least common preamble between two streams."""
+    # LOCAL VARIABLES
+    stream_lcd = stream1[:0]  # Working candidate for the lcd
+    long_stream = stream1     # Longest stream, default starting condition
+    shrt_stream = stream2     # Shortest stream, default starting condition
+
+    # PREPARE
+    if len(stream2) > len(stream1):
+        long_stream = stream2
+        shrt_stream = stream1
+
+    # FIND IT
+    for index in range(len(shrt_stream), 0, -1):
+        if long_stream.startswith(shrt_stream[:index]):
+            stream_lcd = shrt_stream[:index]  # Found it
+            break  # Stop looking
+
+    # DONE
+    return stream_lcd
+
+
+def _find_stream_lcd(stream_list: List[bytes | str]) -> bytes | str:
+    """Find the leading common sub-string among a list of objects."""
+    # LOCAL VARIABLES
+    stream_lcd = stream_list[0]  # Working candidate for the lcd
+
+    # FIND IT
+    for next_stream in stream_list[1:]:
+        stream_lcd = _find_lcd(next_stream, stream_lcd)
+
+    # DONE
+    return stream_lcd

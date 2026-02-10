@@ -9,6 +9,71 @@ from typing import List
 from gallant_input.validation import validate_bytes_or_str, validate_pos_int, validate_type
 
 
+def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool = True) -> int:
+    """Compare two streams and print the differences.
+
+    Args:
+        stream1: The first stream to compare.
+        stream2: The second stream to compare.
+        show_index: [OPTIONAL] Include a line indicating the index (0-9).
+
+    Returns:
+        The number of differences between the two streams.
+
+    Raises:
+
+    """
+    # LOCAL VARIABLES
+    prefix1 = 'STREAM1: '       # Identifying preface for stream 1
+    prefix2 = 'STREAM2: '       # Identifying preface for stream 2
+    index_prefix = 'INDEX:   '  # Identifying preface for the indices
+    diff_prefix = 'NEQ:     '   # Identifying preface for the diff indicator
+    max_len = 0                 # The length of the longest stream
+    missing_char = '?'          # Missing character
+    diff_char = '*'             # Difference character
+    num_diffs = 0               # Number of differences
+
+    # INPUT VALIDATION
+    validate_bytes_or_str(stream1, 'stream1')
+    validate_bytes_or_str(stream2, 'stream2')
+    if type(stream1) != type(stream2):
+        raise TypeError(f'The type of stream1 "{type(stream1)}" must be the same '
+                        f'as stream2 "{type(stream2)}"')
+    validate_type(show_index, 'show_index', bool)
+
+    # PREPARE
+    # Properly format the missing character
+    missing_char = missing_char[0]
+    if isinstance(stream1, bytes):
+        missing_char = bytes(missing_char, 'ascii')
+        index_prefix = index_prefix + '  '  # Python prints a b' prefix that misaligns output
+        diff_prefix = diff_prefix + '  '  # Python prints a b' prefix that misaligns output
+    # Determine the maximum length and pad the other stream (as applicable)
+    max_len = len(stream1)
+    if len(stream2) > max_len:
+        max_len = len(stream2)
+        stream1 = stream1 + missing_char * (max_len - len(stream1))  # Pad the stream
+    elif max_len > len(stream2):
+        stream2 = stream2 + missing_char * (max_len - len(stream2))  # Pad the stream
+
+    # COMPARE IT
+    print(f'{prefix1}{stream1}')
+    print(f'{prefix2}{stream2}')
+    if show_index:
+        print(f'{index_prefix}{"".join([str(index%10) for index in range(max_len)])}')
+    print(diff_prefix, end='')
+    for index in range(max_len):
+        if stream1[index] != stream2[index]:
+            print(diff_char, end='')
+            num_diffs += 1
+        else:
+            print(' ', end='')
+    print()  # Final line wrap
+
+    # DONE
+    return num_diffs
+
+
 def find_common_repeats(haystack: bytes | str, win_len: int = 24,
                         max_num: int = 1) -> List[tuple[bytes | str:int]]:
     """Find a certain number of the most common repeats of a certain length.

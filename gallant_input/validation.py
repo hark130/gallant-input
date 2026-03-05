@@ -14,6 +14,7 @@ validated.
 # Standard Imports
 from pathlib import Path
 from typing import Any, Final
+import math
 # Third Party Imports
 from numpy import asarray
 from numpy.typing import ArrayLike

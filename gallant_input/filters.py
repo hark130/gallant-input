@@ -1,12 +1,17 @@
 """Implement FIR/IIR filters."""
 
 # Standard Imports
+import math
 # Third Party Imports
 from numpy.typing import ArrayLike
 from scipy.signal import firwin
 import numpy
 # Local Imports
-from gallant_input.validation import validate_pos_int
+from gallant_input.validation import (validate_arraylike, validate_float, validate_string,
+                                      validate_pos_float, validate_pos_int, validate_type)
+
+# I didn't do it this time.  It was firwin()!
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 
 
 def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
@@ -48,7 +53,7 @@ def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = 
     help(scipy.signal.firwin).
 
     Args:
-        numtaps: Length of the filter (number of coefficients, i.e. the filter 
+        numtaps: Length of the filter (number of coefficients, i.e. the filter
             order + 1).  Must be odd if a passband includes the Nyquist frequency.
         cutoff: Cutoff frequency of filter (expressed in the same units as `fs`)
             OR an array of cutoff frequencies (that is, band edges). In the
@@ -87,7 +92,7 @@ def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = 
         ValueError: Bad value.
     """
     _validate_firwin_args(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
-                          pass_zero=pass_zero)
+                          pass_zero=pass_zero, scale=scale, fs=fs)
     return firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window, pass_zero=pass_zero)
 
 
@@ -116,9 +121,9 @@ def _validate_cutoff(cutoff: float | ArrayLike, cutoff_name: str, ratio: bool) -
     _validate_cutoff_type(cutoff, cutoff_name)
     validate_pos_float(cutoff, cutoff_name)  # Cutoff must be positive, regardless
     if ratio:
-        if cutoff > 0.99999999999999994:
+        if cutoff > cutoff_limit:
             raise ValueError(f'As a ratio, the "{cutoff_name}" cutoff value '
-                             f'"{cutoff}" *must* be < 1')
+                             f'"{cutoff}" *must* be < 1 (or {cutoff_limit})')
 
 
 def _validate_cutoff_type(cutoff: float | ArrayLike, cutoff_name: str) -> None:
@@ -153,6 +158,8 @@ def _validate_cutoff_type(cutoff: float | ArrayLike, cutoff_name: str) -> None:
                             '1-dimensional ArrayLike object') from err
 
 
+# Placeholder for future, wiser validation
+# pylint: disable=unused-argument
 def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width=None, window='hamming',
                           pass_zero=True, scale=True, fs=None) -> None:
     """Validate scipy.signal.firwin() arguments on behalf of the module.
@@ -213,4 +220,4 @@ def _validate_freqs(cutoff: float | ArrayLike, cutoff_name: str,
     if not ratio:
         if cutoff > nyquist or math.isclose(cutoff, nyquist):
             raise ValueError(f'The "{cutoff_name}" value ({cutoff}) must be < {nyquist} '
-                             f'(which is {freq} / 2)')
+                             f'(which is {fs} / 2)')

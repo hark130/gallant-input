@@ -4,12 +4,13 @@
 # Third Party Imports
 from numpy.typing import ArrayLike
 from scipy.signal import firwin
+import numpy
 # Local Imports
 from gallant_input.validation import validate_pos_int
 
 
 def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
-               window: string | tuple = 'hamming', pass_zero: bool | string = True,
+               window: str | tuple = 'hamming', pass_zero: bool | str = True,
                scale: bool = True, fs: float | None = None) -> numpy.ndarray:
     """Design a low-pass filter using scipy.signal.firwin().
 
@@ -38,7 +39,7 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
 
 
 def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
-                 window: string | tuple = 'hamming', pass_zero: bool | string = True,
+                 window: str | tuple = 'hamming', pass_zero: bool | str = True,
                  scale: bool = True, fs: float | None = None) -> numpy.ndarray:
     """A SPOT to call scipy.signal.firwin().
 
@@ -102,27 +103,54 @@ def _validate_cutoff(cutoff: float | ArrayLike, cutoff_name: str, ratio: bool) -
         cutoff_name: The name of the argument to use in Exception messages.
         ratio: If True, then the cutoff value must be > 0 and < 1.  In actual practice, any values
             > 0.99999999999999994 (4 is repeating) are rejected.
-    
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
     cutoff_limit = 0.99999999999999994  # The arbitrary upper end limit for a cutoff ratio
 
     # INPUT VALIDATION
     validate_type(var=ratio, var_name='ratio', var_type=bool)
-    validate_string(cutoff_name, 'cutoff_name', can_be_empty=False)
+    _validate_cutoff_type(cutoff, cutoff_name)
+    validate_pos_float(cutoff, cutoff_name)  # Cutoff must be positive, regardless
+    if ratio:
+        if cutoff > 0.99999999999999994:
+            raise ValueError(f'As a ratio, the "{cutoff_name}" cutoff value '
+                             f'"{cutoff}" *must* be < 1')
+
+
+def _validate_cutoff_type(cutoff: float | ArrayLike, cutoff_name: str) -> None:
+    """Validate the scipy.signal.firwin(cutoff) argument's data type on behalf of this module.
+
+    Args:
+        cutoff: The cutoff value to validate as a float or an ArrayLike object.
+        cutoff_name: The name of the argument to use in Exception messages.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    is_float = True  # Track data type validation for explicitly detailed Exception message
+
+    # VALIDATE TYPE
+    # Virtually all of the GAIN.validate_*() functions check the *_name argument but, in this case,
+    # I wanted to remove it as a possibility before the is-it-a-float-or-an-arraylike-or-bad check.
+    validate_string(cutoff_name, 'cutoff_name', can_be_empty=False)  # Check it once
+    # Float?
     try:
         validate_float(validate_this=cutoff, param_name=cutoff_name)
     except TypeError:
-        validate_arraylike(array_like=cutoff, param_name=cutoff_name, num_dim=1)
-    else:
-        if ratio:
-            validate_pos_float(cutoff, cutoff_name)
-            # if cutoff <= 0 and math.isclose(cutoff, 0, abs_tol=1e-9):
-            #     raise ValueError(f'As a ratio, the "{cutoff_name}" cutoff value '
-            #                      f'"{cutoff}" *must* be > 0')
-            if cutoff > 0.99999999999999994:
-                raise ValueError(f'As a ratio, the "{cutoff_name}" cutoff value '
-                                 f'"{cutoff}" *must* be < 1')
+        is_float = False
+    # ArrayLike?
+    if not is_float:
+        try:
+            validate_arraylike(array_like=cutoff, param_name=cutoff_name, num_dim=1)
+        except TypeError as err:
+            raise TypeError(f'The "{cutoff_name}" argument must be a float or a '
+                            '1-dimensional ArrayLike object') from err
 
 
 def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width=None, window='hamming',
@@ -131,6 +159,10 @@ def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width=None, w
 
     Args:
         See help(_call_firwin) for a description of the arguments.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # ARGUMENT VALIDATION
     validate_pos_int(validate_this=numtaps, param_name='numtaps')
@@ -159,9 +191,14 @@ def _validate_freqs(cutoff: float | ArrayLike, cutoff_name: str,
         fs: [OPTIONAL] The sampling frequency (AKA sample rate) of the signal.  Can be None.
         fs_name: The name of the argument to use in Exception messages.  Dynamically optional if
             fs is None.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    ratio = True  # Indicates whether or not cutoff must(?) be a ratio (see: help(firwin))
+    ratio = True    # Indicates whether or not cutoff must(?) be a ratio (see: help(firwin))
+    nyquist = None  # fs / 2 if fs is defined
 
     # VALIDATE
     # fs
@@ -169,5 +206,11 @@ def _validate_freqs(cutoff: float | ArrayLike, cutoff_name: str,
         validate_string(fs_name, 'fs_name', can_be_empty=False)
         validate_float(validate_this=fs, param_name=fs_name)
         ratio = False  # The fs argument is a valid float so cutoff must(?) be defined in Hz
+        nyquist = fs / 2
     # cutoff
     _validate_cutoff(cutoff=cutoff, cutoff_name=cutoff_name, ratio=ratio)
+    # context
+    if not ratio:
+        if cutoff > nyquist or math.isclose(cutoff, nyquist):
+            raise ValueError(f'The "{cutoff_name}" value ({cutoff}) must be < {nyquist} '
+                             f'(which is {freq} / 2)')

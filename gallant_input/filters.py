@@ -14,6 +14,25 @@ from gallant_input.validation import (validate_arraylike, validate_float, valida
 # pylint: disable=too-many-arguments, too-many-positional-arguments
 
 
+def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
+                     width: float | None = None, window: str | tuple = 'hamming',
+                     pass_zero: bool | str = True, scale: bool = True,
+                     fs: float | None = None) -> numpy.ndarray:
+    """Create a basic low-pass filter, with good default values, using scipy.signal.firwin().
+
+    See help(design_lpf) for more details on the arguments.
+
+    Returns:
+        FIR filter coefficients in a numpy.ndarray object of length "numtaps".
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    return design_lpf(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
+                      pass_zero=pass_zero, scale=scale, fs=fs)
+
+
 def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
                window: str | tuple = 'hamming', pass_zero: bool | str = True,
                scale: bool = True, fs: float | None = None) -> numpy.ndarray:
@@ -38,6 +57,13 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
               `fs/2` (i.e the filter is a single band highpass filter)
             - Otherwise, center of first passband
         fs: [OPTIONAL] The sampling frequency (AKA sample rate) of the signal in Hz.
+
+    Returns:
+        FIR filter coefficients in a numpy.ndarray object of length "numtaps".
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     return _call_firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
                         pass_zero=pass_zero, scale=scale, fs=fs)
@@ -160,8 +186,9 @@ def _validate_cutoff_type(cutoff: float | ArrayLike, cutoff_name: str) -> None:
 
 # Placeholder for future, wiser validation
 # pylint: disable=unused-argument
-def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width=None, window='hamming',
-                          pass_zero=True, scale=True, fs=None) -> None:
+def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
+                          window: str | tuple = 'hamming', pass_zero: bool | str = True,
+                          scale: bool = True, fs: float | None = None) -> None:
     """Validate scipy.signal.firwin() arguments on behalf of the module.
 
     Args:

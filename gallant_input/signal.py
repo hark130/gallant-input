@@ -8,9 +8,9 @@ from scipy.fft import fft, fftfreq
 from scipy.signal import firwin
 import numpy
 # Local Imports
-from gallant_input.validation import (validate_arraylike, validate_float, validate_int,
-                                      validate_string, validate_pos_float, validate_pos_int,
-                                      validate_type)
+from gallant_input.validation import (validate_arraylike, validate_bool, validate_float,
+                                      validate_int, validate_string, validate_pos_float,
+                                      validate_pos_int, validate_type)
 
 
 def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
@@ -60,7 +60,8 @@ def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = 
         TypeError: Bad data type.
         ValueError: Bad value.
     """
-    return _call_fft(signal=signal)
+    return _call_fft(signal=signal, axis_len=axis_len, axis=axis, norm=norm,
+                     overwrite=overwrite, workers=workers)
 
 
 def compute_frequency_axis(num_samp: int, samp_rate: int | float) -> numpy.ndarray:
@@ -77,6 +78,20 @@ def compute_frequency_axis(num_samp: int, samp_rate: int | float) -> numpy.ndarr
         Array of frequency values in Hz.
     """
     return _call_fftfreq(win_len=num_samp, spacing=1/samp_rate)
+
+
+def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
+    """Calculate the absolute value of each element in signal.
+
+    Args:
+        signal: An array object which represents a signal to transform.  Can be real or complex.
+
+    Returns:
+        An ndarray containing the absolute value of each element in signal.  For complex input,
+        a + ib, the absolute value is sqrt{ a^2 + b^2 }.
+    """
+    _validate_ndarray(array=signal, array_name='signal')
+    return numpy.absolute(signal)
 
 
 def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
@@ -145,13 +160,13 @@ def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis:
         ValueError: Bad value.
     """
     # ARGUMENT VALIDATION
-    validate_type(var=signal, var_name='signal', var_type=numpy.ndarray)
+    _validate_ndarray(signal, 'signal')
     if axis_len is not None:
         validate_int(axis_len, 'axis_len')
     validate_int(axis, 'axis')
     if norm is not None:
         validate_string(norm, 'norm', can_be_empty=False)
-    validate_type(overwrite, 'overwrite', bool)
+    validate_bool(overwrite, 'overwrite')
     if workers is not None:
         validate_int(workers, 'workers')
 
@@ -202,3 +217,23 @@ def _validate_fftfreq_scalar(spacing: int | float | complex) -> None:
         except TypeError:
             raise TypeError('The "spacing" argument must be a numerical scalar instead of '
                             f'type {type(spacing)}')
+
+
+def _validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False) -> None:
+    """Validate numpy.ndarray objects on behalf of the module.
+
+    Args:
+        array: The object to validate as a numpy.ndarray.
+        array_name: The name of the original argument to use in Exception messages.
+        can_be_empty: [OPTIONAL] If True, array may be empty.  Otherwise, it must contain at least
+            one element (or a ValueError exception is raised).
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # ARGUMENT VALIDATION
+    validate_bool(validate_this=array, param_name=array_name)
+    validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
+    if not can_be_empty and len(array) <= 0:
+        raise ValueError(f'The "{array_name}" ndarray may not be empty')

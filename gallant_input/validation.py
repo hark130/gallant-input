@@ -82,6 +82,19 @@ def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int 
         raise ValueError(f'Invalid binary value detected in "{param_name}"')
 
 
+def validate_bool(validate_this: bytes, param_name: str) -> None:
+    """Validate a variable as a bool.
+
+    Args:
+        validate_this: An object to validate as a bool.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: Invalid data type.
+    """
+    validate_type(var=validate_this, var_name=param_name, var_type=bool)
+
+
 def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
     """Validate a bytes object to a certain length.
 

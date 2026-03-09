@@ -1,8 +1,10 @@
 """Manipulate signals."""
 
 # Standard Imports
+from typing import Tuple
 import math
 # Third Party Imports
+from numpy.fft import fftshift
 from numpy.typing import ArrayLike
 from scipy.fft import fft, fftfreq
 from scipy.signal import firwin
@@ -92,6 +94,51 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
     """
     _validate_ndarray(array=signal, array_name='signal')
     return numpy.absolute(signal)
+
+
+def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
+                     shift_result: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]
+    """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
+
+    1. Calculate FFT bins
+    2. Map FFT bins to frequencies
+    3. Computer the strength of each frequency
+
+    Args:
+        signal: The signal to evaluate.
+        samp_rate: The sampling frequency in Hz.
+        shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
+
+    Returns:
+        A tuple containing the mapped frequencies (x-axis?) and the magnitude of each (y-axis?).
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    fft_arr = None   # Compute the 1-D discrete FFT of a signal
+    freq_map = None  # The Discrete Fourier Transform sample frequency bin centers
+    mag_map = None   # The absolute value of each element in signal
+
+    # INPUT VALIDATION
+    validate_bool(shift_result, 'shift_result')
+
+    # COMPUTE IT
+    # 1. Calculate FFT bins
+    fft_arr = compute_basic_fft(signal)
+    # 2. Map FFT bins to frequencies
+    freq_map = compute_frequency_axis(num_samp=len(signal), samp_rate=samp_rate)
+    # 3. Computer the strength of each frequency
+    mag_map = compute_magnitude_spectrum(signal=signal)
+
+    # SHIFT IT
+    if shift_result:
+        freq_map = fftshift(freq_map)
+        mag_map = fftshift(mag_map)
+
+    # DONE
+    return tuple((freq_map, mag_map))
 
 
 def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,

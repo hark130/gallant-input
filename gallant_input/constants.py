@@ -1,6 +1,7 @@
 """Defines SPOT constants on behalf of the package."""
 
 # Standard Imports
+from getpass import getuser
 from typing import Final
 # Third Party Imports
 # Local Imports
@@ -30,6 +31,18 @@ GAIN_CLI_ARG_META_FILE: Final[str] = 'metafile'   # .sigmf-meta filename
 GAIN_CLI_ARG_SIGMF_BASE: Final[str] = 'basename'  # Base filename for .sigmf-* files
 # General Arguments
 GAIN_CLI_ARG_DEBUG: Final[str] = 'debug'          # Debug logging
+
+
+####################
+# gallant_input.io #
+####################
+# Default username
+try:
+    _username = getuser()
+except (KeyError, ImportError, OSError):
+    _username = 'UNKNOWN'
+finally:
+    DEF_USERNAME: Final[str] = _username  # Default username
 
 
 ######################

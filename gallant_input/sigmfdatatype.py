@@ -25,7 +25,16 @@ class SigMFDataType(IntEnum):
 
     @property
     def translate(self) -> str:
-        """Convert the IntEnum.value into its SigMF code: 'f', 'i', or 'u'."""
+        """Convert the IntEnum.value into its SigMF code: 'f', 'i', or 'u'.
+
+        Returns:
+            A single character representation of the Dataset Format.
+
+        Raises:
+            LookupError: SigMFDataType.UNDEFINED
+            NotImplementedError: Any IntEnum values added to SigMFDataType that weren't also
+                implemented here.
+        """
         sigmf_code = None  # The IntEnum value converted to SigMF Dataset Format data type code
         if self.value == _FLOAT:
             sigmf_code = 'f'

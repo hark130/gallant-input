@@ -285,6 +285,43 @@ def validate_pos_int(validate_this: int, param_name: str) -> None:
         raise ValueError(f'The "{param_name}" argument is not positive')
 
 
+def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
+    """Validate an argument, which could be an int or float, on behalf of this package.
+
+    Many arguments are being implemented as int | float in this package
+    (e.g., sample rate, sample spacing) so this function will be used as a SPOT for validation.
+
+    Args:
+        validate_this: The parameter to validate as an int or float.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a string.
+        ValueError: validate_this is empty and can_be_empty is False.
+
+    """
+    # LOCAL VARIABLES
+    valid = False  # Flow control variable
+
+    # VALIDATE IT
+    # int?
+    try:
+        validate_int(validate_this, param_name)
+    except TypeError:
+        pass  # Ignoring one failure
+    else:
+        valid = True
+    # float?
+    if not valid:
+        try:
+            validate_float(validate_this, param_name)
+        except TypeError:
+            raise TypeError(f'The "{param_name}" argument must be an integer or floating point '
+                            f'data type instead of type {type(validate_this)}')
+        else:
+            valid = True
+
+
 def validate_string(validate_this: str, param_name: str, can_be_empty: bool = False) -> None:
     """Standardizes how this module validates string parameters.
 

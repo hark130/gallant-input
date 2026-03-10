@@ -4,6 +4,7 @@
 from getpass import getuser
 from typing import Final
 # Third Party Imports
+from sigmf import SigMFFile
 # Local Imports
 
 
@@ -59,3 +60,15 @@ EXIT_CODE_ERROR: Final[int] = 2    # Error encountered during execution
 # Temporary directory constants
 TEMP_DIR_DEF_NIX: Final[str] = '/tmp'      # Default *nix temp dir
 TEMP_DIR_DEF_WIN: Final[str] = 'C:\\Temp'  # Default Windows temp dir
+
+
+########################
+# gallant_input.sigmf* #
+########################
+# SigMF Metadata Dictionary Keys
+# https://sigmf.org/#subsec:GlobalObject
+SIG_GLOB_AUTHOR_KEY: Final[str] = SigMFFile.AUTHOR_KEY
+SIG_GLOB_DATATYPE_KEY: Final[str] = SigMFFile.DATATYPE_KEY
+SIG_GLOB_DESCRIPTION_KEY: Final[str] = SigMFFile.DESCRIPTION_KEY
+SIG_GLOB_SAMPLE_RATE_KEY: Final[str] = SigMFFile.SAMPLE_RATE_KEY
+SIG_GLOB_VERSION_KEY: Final[str] = SigMFFile.VERSION_KEY

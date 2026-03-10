@@ -316,10 +316,11 @@ def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
         try:
             validate_float(validate_this, param_name)
         except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
             raise TypeError(f'The "{param_name}" argument must be an integer or floating point '
                             f'data type instead of type {type(validate_this)}')
-        else:
-            valid = True
+            # pylint: enable=raise-missing-from
 
 
 def validate_string(validate_this: str, param_name: str, can_be_empty: bool = False) -> None:

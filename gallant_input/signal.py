@@ -2,17 +2,13 @@
 
 # Standard Imports
 from typing import Tuple
-import math
 # Third Party Imports
 from numpy.fft import fftshift
-from numpy.typing import ArrayLike
 from scipy.fft import fft, fftfreq
-from scipy.signal import firwin
 import numpy
 # Local Imports
-from gallant_input.validation import (validate_arraylike, validate_bool, validate_float,
-                                      validate_int, validate_string, validate_pos_float,
-                                      validate_pos_int, validate_type)
+from gallant_input.validation import (validate_bool, validate_int, validate_int_or_float,
+                                      validate_string, validate_pos_int, validate_type)
 
 
 def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
@@ -34,6 +30,8 @@ def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
     return compute_fft(signal=signal)
 
 
+# It's not my fault.  It's NumPy!
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
                 norm: str | None = None, overwrite: bool = False,
                 workers: int | None = None) -> numpy.ndarray:
@@ -64,6 +62,7 @@ def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = 
     """
     return _call_fft(signal=signal, axis_len=axis_len, axis=axis, norm=norm,
                      overwrite=overwrite, workers=workers)
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def compute_frequency_axis(num_samp: int, samp_rate: int | float) -> numpy.ndarray:
@@ -97,7 +96,7 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
 
 
 def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
-                     shift_result: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]
+                     shift_result: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
 
     1. Calculate FFT bins
@@ -128,9 +127,9 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
     # 1. Calculate FFT bins
     fft_arr = compute_basic_fft(signal)
     # 2. Map FFT bins to frequencies
-    freq_map = compute_frequency_axis(num_samp=len(signal), samp_rate=samp_rate)
+    freq_map = compute_frequency_axis(num_samp=len(fft_arr), samp_rate=samp_rate)
     # 3. Computer the strength of each frequency
-    mag_map = compute_magnitude_spectrum(signal=signal)
+    mag_map = compute_magnitude_spectrum(signal=fft_arr)
 
     # SHIFT IT
     if shift_result:
@@ -141,6 +140,8 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
     return tuple((freq_map, mag_map))
 
 
+# It's not my fault.  It's NumPy!
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
               norm: str | None = None, overwrite: bool = False,
               workers: int | None = None) -> numpy.ndarray:
@@ -150,7 +151,7 @@ def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1
     and calls it.
 
     Note:
-        - The scipy.fft.fft(plan) argument, reserved for passing in a precomputed plan provided by 
+        - The scipy.fft.fft(plan) argument, reserved for passing in a precomputed plan provided by
           downstream FFT vendors, is being ignored here because it is currently not used in SciPy.
 
     See help(compute_fft), help(scipy.fft.fft), or
@@ -168,6 +169,7 @@ def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1
     _validate_fft_args(signal=signal, axis_len=axis_len, axis=axis, norm=norm,
                        overwrite=overwrite, workers=overwrite)
     return fft(signal, n=axis_len, axis=axis, norm=norm, overwrite_x=overwrite, workers=workers)
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def _call_fftfreq(win_len: int, spacing: int | float | complex = 1.0) -> numpy.ndarray:
@@ -194,6 +196,8 @@ def _call_fftfreq(win_len: int, spacing: int | float | complex = 1.0) -> numpy.n
     return fftfreq(n=win_len, d=spacing)
 
 
+# It's not my fault.  It's NumPy!
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
                        norm: str | None = None, overwrite: bool = False,
                        workers: int | None = None) -> None:
@@ -216,6 +220,7 @@ def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis:
     validate_bool(overwrite, 'overwrite')
     if workers is not None:
         validate_int(workers, 'workers')
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def _validate_fftfreq_args(win_len: int, spacing: int | float | complex = 1.0) -> None:
@@ -254,8 +259,11 @@ def _validate_fftfreq_scalar(spacing: int | float | complex) -> None:
         try:
             validate_type(spacing, 'spacing', complex)  # Last chance
         except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
             raise TypeError('The "spacing" argument must be a numerical scalar instead of '
                             f'type {type(spacing)}')
+            # pylint: enable=raise-missing-from
 
 
 def _validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False) -> None:

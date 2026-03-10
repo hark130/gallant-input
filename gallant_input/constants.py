@@ -39,11 +39,11 @@ GAIN_CLI_ARG_DEBUG: Final[str] = 'debug'          # Debug logging
 ####################
 # Default username
 try:
-    _username = getuser()
+    _USERNAME = getuser()
 except (KeyError, ImportError, OSError):
-    _username = 'UNKNOWN'
+    _USERNAME = 'UNKNOWN'
 finally:
-    DEF_USERNAME: Final[str] = _username  # Default username
+    DEF_USERNAME: Final[str] = _USERNAME  # Default username
 
 
 ######################

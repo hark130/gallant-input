@@ -108,7 +108,7 @@ def build_global_object(dataset_format: str = 'cf32_le', samp_rate: int | float 
         if samp_rate < 0 or samp_rate > 1000000000000:
             raise ValueError(f'The "samp_rate" value of "{samp_rate}" violates the SigMF standard '
                              'of minimum : 0 maximum : 1000000000000')
-        global_dict[SIG_GLOB_SAMPLE_RATE_KEY] = sample_rate
+        global_dict[SIG_GLOB_SAMPLE_RATE_KEY] = samp_rate
     # author
     if author is not None:
         validate_string(validate_this=author, param_name='author', can_be_empty=False)

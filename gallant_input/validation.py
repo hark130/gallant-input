@@ -17,9 +17,82 @@ from typing import Any, Final
 # Third Party Imports
 # Local Imports
 
-
+# Template string for arguments of the wrong data type
+_BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty
 _BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+
+
+def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
+    """Validate a bytes object representation of binary data to a certain length.
+
+    Args:
+        validate_this: A bytes object containing binary to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        exact_len: [OPTIONAL] If greater than -1, the exact length of validate_this is verified
+            against this value (e.g., exact_len=0 verifies validate_this is empty).
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
+    """
+    validate_bytes(validate_this, param_name, exact_len)
+    # Content
+    if not all(bin_char in b'01' for bin_char in validate_this):
+        raise ValueError(f'Invalid binary value detected in "{param_name}"')
+
+
+def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
+    """Validate a bytes object to a certain length.
+
+    Args:
+        validate_this: A bytes object to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        exact_len: [OPTIONAL] If greater than -1, the exact length of validate_this is verified
+            against this value (e.g., exact_len=0 verifies validate_this is empty).
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value (e.g., exact_len is a positive integer but validate_this doesn't
+            measure up).
+    """
+    # LOCAL VARIABLES
+    validate_len = False  # Validate the length of validate_this against exact_len
+    act_len = 0           # Actual length of validate_this
+
+    # INPUT VALIDATION
+    # param_name
+    validate_string(validate_this=param_name, param_name='param_name', can_be_empty=False)
+    # exact_len
+    if exact_len is not None:
+        validate_type(exact_len, 'exact_len', int)
+        if exact_len > -1:
+            validate_len = True
+    # validate_this
+    validate_type(validate_this, param_name, bytes)
+    if validate_len:
+        act_len = len(validate_this)
+        if act_len != exact_len:
+            raise ValueError(f'The "{param_name}" argument must be of length "{exact_len}" '
+                             f'instead of "{act_len}"')
+
+
+def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
+    """Validate one of two data types: bytes, str.
+
+    Args:
+        validate_this: A bytes object to validate as a bytes object or a string.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a bytes object or a string.
+    """
+    # LOCAL VARIABLES
+    exp_type = f'{bytes} or {str}'  # The expected data types
+
+    # VALIDATE IT
+    if not _validate_type(validate_this, bytes) and not _validate_type(validate_this, str):
+        raise TypeError(_BAD_TYPE.format(param_name, exp_type, type(validate_this)))
 
 
 def validate_file(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
@@ -67,6 +140,7 @@ def validate_path(validate_this: Path, param_name: str, must_exist: bool = True)
 
     Args:
         validate_this: A Path object to a path that exists.
+        param_name: The name of the parameter to be used in exception messages.
         must_exist: Optional; If False, ignores missing files.
 
     Raises:
@@ -80,6 +154,40 @@ def validate_path(validate_this: Path, param_name: str, must_exist: bool = True)
     if must_exist and not validate_this.exists():
         raise FileNotFoundError(f'Unable to locate "{param_name}" path: '
                                 f'"{str(validate_this.absolute())}"')
+
+
+def validate_int(validate_this: Path, param_name: str) -> None:
+    """Validate validate_this as an int ojbect.
+
+    Args:
+        validate_this: The parameter to validate.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not an int.
+    """
+    # VALIDATION
+    validate_type(validate_this, param_name, int)
+
+
+def validate_pos_int(validate_this: int, param_name: str) -> None:
+    """Validate validate_this as a positive integer.
+
+    IMPORTANT NOTE: Positive integers are greater than zero.  To put it another way, zero is
+    *NOT* positive.
+
+    Args:
+        validate_this: The parameter to validate.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a positive integer.
+        ValueError: validate_this is not positive.
+    """
+    # VALIDATION
+    validate_int(validate_this, param_name)
+    if validate_this <= 0:
+        raise ValueError(f'The "{param_name}" argument is not positive')
 
 
 def validate_string(validate_this: str, param_name: str, can_be_empty: bool = False) -> None:
@@ -115,6 +223,26 @@ def validate_type(var: Any, var_name: str, var_type: type) -> None:
     Raises:
         TypeError: Invalid data type.
     """
-    if not isinstance(var, var_type):
-        raise TypeError(f'The "{var_name}" argument should have been of type "{var_type}" '
-                        f'but was "{type(var)}" instead')
+    if not _validate_type(var, var_type):
+        raise TypeError(_BAD_TYPE.format(var_name, var_type, type(var)))
+
+
+def _validate_type(var: Any, var_type: type) -> bool:
+    """Standardizes how variables are evaluated against a data type.
+
+    Args:
+        var: The variable to type-validate.
+        var_type: The expected variable type.
+
+    Returns:
+        True if var is of type var_type, False otherwise.
+    """
+    # LOCAL VARIABLES
+    is_valid = False  # Is var of type var_type?
+
+    # VALIDATE IT
+    if isinstance(var, var_type):
+        is_valid = True
+
+    # DONE
+    return is_valid

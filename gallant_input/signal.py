@@ -242,21 +242,13 @@ def _validate_fftfreq_scalar(spacing: int | float | complex) -> None:
     num_scalar = False  # Flow control variable
 
     # VALIDATE IT
-    # int?
+    # int or float?
     try:
-        validate_int(spacing, 'spacing')
+        validate_int_or_float(spacing, 'spacing')
     except TypeError:
         pass  # Ignoring one failure
     else:
         num_scalar = True
-    # float?
-    if not num_scalar:
-        try:
-            validate_float(spacing, 'spacing')
-        except TypeError:
-            pass  # Ignoring one failure
-        else:
-            num_scalar = True
     # complex?
     if not num_scalar:
         try:

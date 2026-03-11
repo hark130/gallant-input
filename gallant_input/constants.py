@@ -81,3 +81,4 @@ SIG_CAP_DATETIME_KEY: Final[str] = SigMFFile.DATETIME_KEY
 SIG_CAP_FREQUENCY_KEY: Final[str] = SigMFFile.FREQUENCY_KEY
 # https://sigmf.org/#subsec:AnnotationsArray
 SIG_FIELD_ANNOTATION_KEY: Final[str] = SigMFFile.ANNOTATION_KEY
+SIG_ANNO_START_INDEX_KEY: Final[str] = SigMFFile.START_INDEX_KEY

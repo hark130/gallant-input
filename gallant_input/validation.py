@@ -18,6 +18,7 @@ import math
 # Third Party Imports
 from numpy import asarray
 from numpy.typing import ArrayLike
+import numpy
 # Local Imports
 
 # Template string for arguments of the wrong data type
@@ -214,6 +215,26 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
     validate_type(validate_this, param_name, list)
     if not validate_this and not can_be_empty:
         raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+
+
+def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False) -> None:
+    """Validate numpy.ndarray objects on behalf of the module.
+
+    Args:
+        array: The object to validate as a numpy.ndarray.
+        array_name: The name of the original argument to use in Exception messages.
+        can_be_empty: [OPTIONAL] If True, array may be empty.  Otherwise, it must contain at least
+            one element (or a ValueError exception is raised).
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # ARGUMENT VALIDATION
+    validate_bool(validate_this=array, param_name=array_name)
+    validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
+    if not can_be_empty and len(array) <= 0:
+        raise ValueError(f'The "{array_name}" ndarray may not be empty')
 
 
 def validate_path(validate_this: Path, param_name: str, must_exist: bool = True) -> None:

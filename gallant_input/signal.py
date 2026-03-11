@@ -8,7 +8,8 @@ from scipy.fft import fft, fftfreq
 import numpy
 # Local Imports
 from gallant_input.validation import (validate_bool, validate_int, validate_int_or_float,
-                                      validate_string, validate_pos_int, validate_type)
+                                      validate_ndarray, validate_pos_int, validate_string,
+                                      validate_type)
 
 
 def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
@@ -91,7 +92,7 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
         An ndarray containing the absolute value of each element in signal.  For complex input,
         a + ib, the absolute value is sqrt{ a^2 + b^2 }.
     """
-    _validate_ndarray(array=signal, array_name='signal')
+    validate_ndarray(array=signal, array_name='signal')
     return numpy.absolute(signal)
 
 
@@ -211,7 +212,7 @@ def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis:
         ValueError: Bad value.
     """
     # ARGUMENT VALIDATION
-    _validate_ndarray(signal, 'signal')
+    validate_ndarray(signal, 'signal')
     if axis_len is not None:
         validate_int(axis_len, 'axis_len')
     validate_int(axis, 'axis')
@@ -264,23 +265,3 @@ def _validate_fftfreq_scalar(spacing: int | float | complex) -> None:
             raise TypeError('The "spacing" argument must be a numerical scalar instead of '
                             f'type {type(spacing)}')
             # pylint: enable=raise-missing-from
-
-
-def _validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False) -> None:
-    """Validate numpy.ndarray objects on behalf of the module.
-
-    Args:
-        array: The object to validate as a numpy.ndarray.
-        array_name: The name of the original argument to use in Exception messages.
-        can_be_empty: [OPTIONAL] If True, array may be empty.  Otherwise, it must contain at least
-            one element (or a ValueError exception is raised).
-
-    Raises:
-        TypeError: Bad data type.
-        ValueError: Bad value.
-    """
-    # ARGUMENT VALIDATION
-    validate_bool(validate_this=array, param_name=array_name)
-    validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
-    if not can_be_empty and len(array) <= 0:
-        raise ValueError(f'The "{array_name}" ndarray may not be empty')

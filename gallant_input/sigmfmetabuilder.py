@@ -5,10 +5,11 @@ from typing import Any, List
 # Third Party Imports
 import sigmf
 # Local Imports
-from gallant_input.constants import (SIG_CAP_DATETIME_KEY, SIG_CAP_FREQUENCY_KEY,
-                                     SIG_CAP_START_INDEX_KEY, SIG_GLOB_AUTHOR_KEY,
-                                     SIG_FIELD_ANNOTATION_KEY, SIG_FIELD_CAPTURE_KEY,
-                                     SIG_FIELD_GLOBAL_KEY, SIG_GLOB_DATATYPE_KEY, DEF_USERNAME,
+from gallant_input.constants import (SIG_ANNO_START_INDEX_KEY, SIG_CAP_DATETIME_KEY,
+                                     SIG_CAP_FREQUENCY_KEY, SIG_CAP_START_INDEX_KEY,
+                                     SIG_GLOB_AUTHOR_KEY, SIG_FIELD_ANNOTATION_KEY,
+                                     SIG_FIELD_CAPTURE_KEY, SIG_FIELD_GLOBAL_KEY,
+                                     SIG_GLOB_DATATYPE_KEY, DEF_USERNAME,
                                      SIG_GLOB_DESCRIPTION_KEY, SIG_GLOB_SAMPLE_RATE_KEY,
                                      SIG_GLOB_VERSION_KEY)
 from gallant_input.sigmfdatatype import SigMFDataType
@@ -16,8 +17,37 @@ from gallant_input.validation import (validate_bool, validate_int, validate_int_
                                       validate_string, validate_type)
 
 
-def build_annotations_array() -> List:
-    """TO DO: DON'T DO NOW..."""
+def build_annotations_array(sample_start: int = 0) -> List[dict[str:Any]]:
+    """Build a SigMF annotations array for use as a 'annotations' value in the metadata dictionary.
+
+    See: https://sigmf.org/#subsec:AnnotationsArray
+
+    Args:
+        sample_start: [OPTIONAL] The sample index at which this Segment takes effect.
+
+    Returns:
+        An annotations array list of dictionaries with sigmf.SigMFFile.*_KEY as keys with the
+        arguments as values.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Invalid value.
+    """
+    # LOCAL VARIABLES
+    annotations_dict = {}                 # SigMF Captures object dict of SigMFFile.*_KEY keys/vals
+    min_samp_start = 0                    # Minimum value for sample_start
+    max_samp_start = 9223372036854775807  # Maximum value for sample_start
+
+    # BUILD IT
+    # sample_start
+    validate_int(sample_start, 'sample_start')
+    if sample_start < 0 or sample_start > max_samp_start:
+        raise ValueError(f'The "sample_start" value of "{sample_start}" violates the SigMF '
+                         f'standard of minimum : {min_samp_start} maximum : {max_samp_start}')
+    annotations_dict[SIG_ANNO_START_INDEX_KEY] = sample_start
+
+    # DONE
+    return [annotations_dict]
 
 
 def build_captures_array(sample_start: int = 0, date_time: str | None = None,
@@ -68,7 +98,7 @@ def build_captures_array(sample_start: int = 0, date_time: str | None = None,
         captures_dict[SIG_CAP_FREQUENCY_KEY] = center_freq
 
     # DONE
-    return captures_dict
+    return [captures_dict]
 
 
 def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = SigMFDataType.FLOAT,
@@ -131,7 +161,7 @@ def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = Sig
 
 def build_default_metadata(dataset_format: str = 'cf32_le', samp_rate: int | float | None = None,
                            date_time: str | None = None,
-                           center_freq: float | None = None) -> dict[str:Any]
+                           center_freq: float | None = None) -> dict[str:Any]:
     """Build a basic SigMF metadata dictionary.
 
     Creates a basic dictionary with a global object, captures array, and an annotations array.
@@ -162,7 +192,7 @@ def build_default_metadata(dataset_format: str = 'cf32_le', samp_rate: int | flo
                                                               samp_rate=samp_rate)
     metadata_dict[SIG_FIELD_CAPTURE_KEY] = build_captures_array(date_time=date_time,
                                                                 center_freq=center_freq)
-    metadata_dict[SIG_FIELD_ANNOTATION_KEY] = build_annotations_array()  # TO DO: DON'T DO NOW... Finish this after the function is implemented
+    metadata_dict[SIG_FIELD_ANNOTATION_KEY] = build_annotations_array()
 
     # DONE
     return metadata_dict

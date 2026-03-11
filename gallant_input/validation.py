@@ -59,9 +59,7 @@ def validate_arraylike(array_like: ArrayLike, param_name: str, num_dim: int | No
         raise TypeError(f'The data type of the "{param_name}" value was rejected: {err}') from err
     except ValueError as err:
         raise ValueError(f'The "{param_name}" value was rejected: {err}') from err
-    if num_dim is not None:
-        if arr.ndim != num_dim:
-            raise ValueError(f'The "{param_name}" value is not {num_dim}-dimensional')
+    _validate_arraylike_ndim(arr, param_name, num_dim)
 
 
 def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int = None) -> None:
@@ -217,7 +215,8 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
         raise ValueError(_BAD_VAL_EMPTY.format(param_name))
 
 
-def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False) -> None:
+def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False,
+                     num_dim: int | None = None) -> None:
     """Validate numpy.ndarray objects on behalf of the module.
 
     Args:
@@ -225,6 +224,9 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
         array_name: The name of the original argument to use in Exception messages.
         can_be_empty: [OPTIONAL] If True, array may be empty.  Otherwise, it must contain at least
             one element (or a ValueError exception is raised).
+        num_dim: [OPTIONAL] If num_dim is an integer, the number of dimensions of array
+            will be tested against this value.  Otherwise, the number of dimensions will
+            be ignored.
 
     Raises:
         TypeError: Bad data type.
@@ -235,6 +237,11 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
     validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
     if not can_be_empty and len(array) <= 0:
         raise ValueError(f'The "{array_name}" ndarray may not be empty')
+    if num_dim is not None:
+        validate_int(num_dim, 'num_dim')
+        if num_dim < 0:
+            raise ValueError(f'The "num_dim" argument may not be negative: {num_dim}')
+        _validate_arraylike_ndim(array, array_name, num_dim)
 
 
 def validate_path(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
@@ -379,6 +386,30 @@ def validate_type(var: Any, var_name: str, var_type: type) -> None:
     """
     if not _validate_type(var, var_type):
         raise TypeError(_BAD_TYPE.format(var_name, var_type, type(var)))
+
+
+def _validate_arraylike_ndim(var: ArrayLike, var_name: str, num_dim: int | None) -> None:
+    """Standardizes how the dimensions of ArrayLike variables are evaluated.
+
+    This function will *not* validate the data type of var, var_name, or num_dim (other than
+    testing it for None).  Instead, it assumes the data types are valid and immediately checks
+    the number of dimensions.
+
+    Args:
+        array_like: Includes, but is not(?) limited to, the following data types: list, tuple,
+            range, numpy.array.
+        param_name: The name of the parameter to be used in exception messages.
+        num_dim: [OPTIONAL] If num_dim is an integer, the number of dimensions of the array_like
+            object will be tested against this value.  Otherwise, the number of dimensions will
+            be ignored.
+
+    Raises:
+        ValueError: The var argument's number of dimensions does not match num_dim.
+    """
+    if num_dim is not None:
+        if var.ndim != num_dim:
+            raise ValueError(f'The "{param_name}" value is {var.ndim}-dimensional instead '
+                             f'of {num_dim}-dimensional')
 
 
 def _validate_type(var: Any, var_type: type) -> bool:

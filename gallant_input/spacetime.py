@@ -20,7 +20,7 @@ def create_rfc_3339_z_time(date_time: datetime | None = None, frac_sec: bool = T
 
     Args:
         date_time: [OPTIONAL] The object to generate the string from.  If provided, will be
-            converted to UTC.  If None then the current time, using  as the timezone, is used.
+            converted to UTC.  If None then the current time, using UTC as the timezone, is used.
             See: datetime.now(timezone.utc).
         frac_sec: [OPTIONAL] If True, fractional seconds are preserved.
 

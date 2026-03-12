@@ -396,9 +396,9 @@ def _validate_arraylike_ndim(var: ArrayLike, var_name: str, num_dim: int | None)
     the number of dimensions.
 
     Args:
-        array_like: Includes, but is not(?) limited to, the following data types: list, tuple,
+        var: Includes, but is not(?) limited to, the following data types: list, tuple,
             range, numpy.array.
-        param_name: The name of the parameter to be used in exception messages.
+        var_name: The name of the parameter to be used in exception messages.
         num_dim: [OPTIONAL] If num_dim is an integer, the number of dimensions of the array_like
             object will be tested against this value.  Otherwise, the number of dimensions will
             be ignored.
@@ -408,7 +408,7 @@ def _validate_arraylike_ndim(var: ArrayLike, var_name: str, num_dim: int | None)
     """
     if num_dim is not None:
         if var.ndim != num_dim:
-            raise ValueError(f'The "{param_name}" value is {var.ndim}-dimensional instead '
+            raise ValueError(f'The "{var_name}" value is {var.ndim}-dimensional instead '
                              f'of {num_dim}-dimensional')
 
 

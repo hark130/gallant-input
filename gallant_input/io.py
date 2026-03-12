@@ -4,9 +4,12 @@
 from pathlib import Path
 # Third Party Imports
 from numpy.typing import DTypeLike
+from sigmf import SigMFFile
 import numpy
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
+from gallant_input.validation import (validate_bool, validate_path, validate_ndarray,
+                                      validate_string, validate_type)
 
 
 def write_samples(filename: str | Path, samples: numpy.ndarray,
@@ -55,7 +58,7 @@ def write_samples(filename: str | Path, samples: numpy.ndarray,
     # PREPARE IT
     new_samp_dtype = numpy.dtype(sample_dtype)
     if samples.dtype != new_samp_dtype:
-        samples = np.asarray(samples, dtype=new_samp_dtype)
+        samples = numpy.asarray(samples, dtype=new_samp_dtype)
 
     # WRITE IT
     if metadata is None:

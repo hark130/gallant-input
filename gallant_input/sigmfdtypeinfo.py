@@ -26,7 +26,7 @@ from sigmf.error import SigMFError
 import numpy
 # Local Imports
 from gallant_input.endian import Endian
-from gallant_input.validation import validate_bool, validate_string
+from gallant_input.validation import validate_bool, validate_string, validate_type
 
 
 # SigMF dtype_info dictionary keys
@@ -50,7 +50,7 @@ class SigMFDTypeInfo():
     dataset: str  # SigMF Dataset Format value
 
     # Private Attributes
-    _dtype_dict: dict = {}
+    _dtype_dict: dict = None
     _validated: bool = field(default=False, repr=False)
 
     # CORE METHODS
@@ -154,6 +154,7 @@ class SigMFDTypeInfo():
         except ValueError as err:
             raise ValueError(f'The "dataset" value "{self.dataset}" failed '
                              f'basic SigMF validation: {err}') from err
+        validate_type(self._dtype_dict, 'internal attribute _dtype_dict', dict)
 
 
 def _determine_endianness(map_type) -> Endian:

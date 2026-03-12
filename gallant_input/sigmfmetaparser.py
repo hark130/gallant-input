@@ -279,7 +279,7 @@ class SigMFMetaParser:
             # captures
             case sigmf.SigMFFile.CAPTURE_KEY:
                 cap_list = self._meta_data.get_captures()
-                key_val = cap_list[index][key]
+                key_val = cap_list[index][key]  # BUG: THIS LINE NEEDS A TRY/EXCEPT OR A "SAFE KEY LOOKUP" LOCAL PRIVATE FUNCTION.  (WHAT'S THE RESPONSE FOR A MISSING KEY AGAIN...?)
             # annotations
             case sigmf.SigMFFile.ANNOTATION_KEY:
                 key_val = self._meta_data.get_annotations(key)

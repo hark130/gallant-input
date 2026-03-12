@@ -108,6 +108,7 @@ def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = Sig
     Only IEEE-754 single-precision and double-precision floating-point types are supported by
     the SigMF Core namespace. Note that complex data types are specified by the bit width of
     the individual I/Q components, and not by the total complex pair bitwidth (like Numpy).
+    See: https://sigmf.org/#sigmf-dataset-format
 
     Args:
         is_complex: [OPTIONAL] If True, 'c'.  Otherise it's real: 'r'.

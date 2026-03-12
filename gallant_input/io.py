@@ -12,6 +12,52 @@ from gallant_input.validation import (validate_bool, validate_path, validate_nda
                                       validate_string, validate_type)
 
 
+def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64,
+                 sigmf_data: bool = False) -> numpy.ndarray:
+    """Read samples from an IQ file or SigMF dataset.
+
+    Args:
+        filename: The relative or absolute output file path to save the samples to.  If sigmf_data
+            is True, the file extension of this filename will be changed to match the SigMF format.
+        sample_dtype: [OPTIONAL] The data type of the samples to read.  If this does not match the
+            actual data type of samples then samples will be updated to match.  This argument
+            supports numpy data types (e.g., numpy.complex128) and numpy.dtype objects
+            (e.g., numpy.dtype('complex128')).  If sigmf_data is True, this value will be ignored
+            in lieu of the SigMF metadata 'datatype' value.
+        sigmf_data: [OPTIONAL] If true, filename will be modified to match the SigMF format.
+
+    Returns:
+        An array of the samples from filename.
+
+    Raises:
+        FileNotFoundError: must_exist is True but validate_this is not found.
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    file_path = filename   # The filename argument positively changed to be a Path object
+    new_samp_dtype = None  # sample_dtype explicitly converted to a numpy.dtype object
+    samples = None         # The array of samples read from filename
+
+    # INPUT VALIDATION
+    # filename
+    if isinstance(filename, str):
+        file_path = Path(filename)
+    _validate_read_samples(filename=file_path, sample_dtype=sample_dtype, sigmf_data=sigmf_data)
+
+    # SETUP
+    new_samp_dtype = numpy.dtype(sample_dtype)
+
+    # READ IT
+    if sigmf_data:
+        samples = _read_sigmf_samples(basename=file_path.with_suffix(''))
+    else:
+        samples = numpy.fromfile(file=file_path, dtype=new_samp_dtype)
+
+    # DONE
+    return samples
+
+
 def write_samples(filename: str | Path, samples: numpy.ndarray,
                   sample_dtype: DTypeLike = numpy.complex64,
                   metadata: dict | None = None, overwrite: bool = False) -> None:
@@ -69,6 +115,26 @@ def write_samples(filename: str | Path, samples: numpy.ndarray,
                              overwrite=overwrite)
 
 
+def _read_sigmf_samples(basename: Path) -> numpy.ndarray:
+    """Read a SigMF dataset into an array.
+
+    The dtype is read from the SigMF metadata.
+
+    Args:
+        basename: The base filename of the SigMF dataset.
+    """
+    # LOCAL VARIABLES
+    samples = None  # The samples read from basename.SIGMF_DATA_FILE_EXT
+
+    # INPUT VALIDATION
+    validate_path(validate_this=basename, param_name='basename', must_exist=False)
+
+    # TO DO: DON'T DO NOW... DO THE LONG COMMENT FIRST IN SUCH A WAY AS TO MINIMIZE THE NUMBER OF TIMES THE PATH OBJECTS ARE MODIFIED
+
+    # DONE
+    return samples
+
+
 def _validate_dest_filename(filename: Path, overwrite: bool) -> None:
     """Validate the filename context vs overwriting on behalf of the module.
 
@@ -117,6 +183,23 @@ def _validate_dtype_like(dtlike: DTypeLike, param_name: str, must_be_complex: bo
         raise ValueError(f'The converted "{param_name}" argument must be complex and, as such, '
                          f'must conform to one of the following "{supp_complex}" instead '
                          f'of "{type(test_dtlike)}"')
+
+
+def _validate_read_samples(filename: Path, sample_dtype: DTypeLike, sigmf_data: bool) -> None:
+    """Validate the read_samples() arguments.
+
+    Raises:
+        FileNotFoundError: must_exist is True but validate_this is not found.
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # INPUT VALIDATION
+    # filename
+    validate_path(filename, 'filename (converted)', must_exist=True)  # TO DO: DON'T DO NOW... Extricate this into a separate private function that utilizes sigmf_data to determine which paths default-or-SigMF should be validated (otherwise, SigMF usage will fail if the user just gives a basename)
+    # sample_dtype
+    _validate_dtype_like(sample_dtype, 'sample_dtype', must_be_complex=False)
+    # sigmf_data
+    validate_bool(sigmf_data, 'sigmf_data')
 
 
 def _validate_write_samples(filename: Path, samples: numpy.ndarray,

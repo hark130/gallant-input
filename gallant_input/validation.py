@@ -233,7 +233,7 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
         ValueError: Bad value.
     """
     # ARGUMENT VALIDATION
-    validate_bool(validate_this=array, param_name=array_name)
+    validate_bool(validate_this=can_be_empty, param_name='can_be_empty')
     validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
     if not can_be_empty and len(array) <= 0:
         raise ValueError(f'The "{array_name}" ndarray may not be empty')

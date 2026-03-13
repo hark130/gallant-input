@@ -74,6 +74,22 @@ class SigMFDTypeInfo():
     # In alphabetical order
 
     @property
+    def bit_width(self) -> int:
+        """Determines the dataset's bit width.
+
+        Returns:
+            An integer representing the bit width.
+
+        Raises:
+            KeyError: The necessary key was missing.
+            RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+            TypeError: Bad data type.
+            ValueError: Bad value.
+        """
+        self.validate_content()
+        return 7  # TO DO: DON'T DO NOW... IMPLEMENT THE ACTUAL LOGIC HERE
+
+    @property
     def get_dtype(self) -> numpy.dtype:
         """Determines the dataset's component data type.
 

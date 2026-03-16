@@ -294,10 +294,10 @@ class ErrorSigMFDTypeInfoBitWidthUnitTest(SigMFDTypeInfoBitWidthUnitTest):
         self.run_test_input_exception(test_input, exp_except, exp_except_msg)
 
     def test_e04_invalid_format(self):
-        """Bad ctor 'dataset' input value: empty string."""
-        test_input = 'complex floating-point 32 little-endian'  # cf32_le
-        exp_except = ValueError
-        exp_except_msg = 'argument should have been of type '
+        """Bad ctor 'dataset' input value: gibberish string."""
+        test_input = 'why does this library parse strings?!'
+        exp_except = RuntimeError
+        exp_except_msg = 'failed SigMF validation with a bespoke Exception'
         self.run_test_input_exception(test_input, exp_except, exp_except_msg)
 
 
@@ -398,6 +398,27 @@ class SpecialSigMFDTypeInfoBitWidthUnitTest(SigMFDTypeInfoBitWidthUnitTest):
         """Valid (uncommon?) SigMF Dataset Format (real unsigned_int w/out endianness): ru64."""
         exp_return = 64
         test_input = f'ru{exp_return}'
+        self.run_test_input_return(test_input, exp_return)
+
+    def test_s17_text_parsing_cf32_le(self):
+        """Undocumented(?!) string parsing: cf32_le."""
+        exp_return = 32
+        test_input = f'complex floating-point {exp_return} little-endian'  # cf32_le
+        self.run_test_input_return(test_input, exp_return)
+
+    def test_s18_text_parsing_cf32_le(self):
+        """Undocumented(?!) string parsing: ri16_be.
+
+        Apparently, sigmffile.dtype_info() can parse strings if you use the right keywords!.
+        """
+        exp_return = 16
+        test_input = f'real signed-integer {exp_return} big-endian'  # ri16_be
+        self.run_test_input_return(test_input, exp_return)
+
+    def test_s19_text_parsing_u8(self):
+        """Undocumented(?!) string parsing: u8."""
+        exp_return = 8
+        test_input = f'unsigned-integer {exp_return}'  # u8
         self.run_test_input_return(test_input, exp_return)
 
 

@@ -32,8 +32,9 @@ from gallant_input.validation import validate_bool, validate_string, validate_ty
 # SigMF dtype_info dictionary keys
 _SIG_DINFO_KEY_COMP_DTYPE: Final[str] = 'component_dtype'
 _SIG_DINFO_KEY_COMPLEX: Final[str] = 'is_complex'
-_SIG_DINFO_KEY_UNSIGNED: Final[str] = 'is_unsigned'
 _SIG_DINFO_KEY_MAP_TYPE: Final[str] = 'memmap_map_type'
+_SIG_DINFO_KEY_SAMP_SIZE: Final[str] = 'sample_size'
+_SIG_DINFO_KEY_UNSIGNED: Final[str] = 'is_unsigned'
 
 
 @dataclass()
@@ -87,7 +88,7 @@ class SigMFDTypeInfo():
             ValueError: Bad value.
         """
         self.validate_content()
-        return 7  # TO DO: DON'T DO NOW... IMPLEMENT THE ACTUAL LOGIC HERE
+        return self._get_bit_width()
 
     @property
     def get_dtype(self) -> numpy.dtype:
@@ -156,6 +157,20 @@ class SigMFDTypeInfo():
 
     # PRIVATE METHODS
     # In alphabetical order
+
+    def _get_bit_width(self) -> int:
+        """Parse the bit width from the dtype dictionary.
+
+        The sample_size dictionary is queried and adjusted if the dtype is complex.
+        """
+        num_components = 1  # The num of components for a given data type: 1 for real, 2 for complex
+        bit_width = None    # Bit width
+        # Sample size represents the total size of all sample components
+        samp_size = _get_safe_key(self._dtype_dict, _SIG_DINFO_KEY_SAMP_SIZE, silent=False)
+        if self.is_complex:
+            num_components = 2  # The bit width is doubled for complex samples b/c I & Q are read
+        bit_width = samp_size * int(8 / num_components)
+        return bit_width
 
     def _validate_dataset_format(self) -> None:
         """Validate the content of self.dataset utilizing sigmf and store the dictionary."""

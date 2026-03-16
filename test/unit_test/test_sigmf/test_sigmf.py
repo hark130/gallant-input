@@ -30,7 +30,6 @@ SigMFUnitTest is the parent class for sigmf ais sub-package related unit test cl
 """
 
 # Standard Imports
-from typing import Any
 # Third Party Imports
 from test.unit_test.root_unit_test import RootUnitTest
 # Local Imports

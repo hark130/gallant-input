@@ -1,9 +1,9 @@
 """Unit test module for SigMFDTypeInfo.bit_width.
 
 Typical Usage:
-    python -m test                                           # Run *all* the test cases
-    python -m test.unit_test                                 # Run *all* the unit test cases
-    python -m test.unit_test.test_sigmf                        # Run *all* ais sub-package test cases
+    python -m test                                      # Run *all* the test cases
+    python -m test.unit_test                            # Run *all* the unit test cases
+    python -m test.unit_test.test_sigmf                 # Run *all* ais sub-package test cases
     python -m test.unit_test.test_sigmf.test_dtypeinfo  # Run *all* SigMFDTypeInfo method tests
     # Run just these unit tests
     python -m test.unit_test.test_sigmf.test_dtypeinfo.test_dtypeinfo_bit_width
@@ -19,6 +19,8 @@ from tediousstart.tediousstart import execute_test_cases
 from test.unit_test.test_sigmf.test_dtypeinfo import SigMFDTypeInfoUnitTest
 
 
+# Calm down, Pylint.  They're just test cases!
+# pylint: disable=too-many-public-methods
 class SigMFDTypeInfoBitWidthUnitTest(SigMFDTypeInfoUnitTest):
     """Parent class for all SigMFDTypeInfo.bit_width unit tests.
 
@@ -420,6 +422,7 @@ class SpecialSigMFDTypeInfoBitWidthUnitTest(SigMFDTypeInfoBitWidthUnitTest):
         exp_return = 8
         test_input = f'unsigned-integer {exp_return}'  # u8
         self.run_test_input_return(test_input, exp_return)
+# pylint: enable=too-many-public-methods
 
 
 if __name__ == '__main__':

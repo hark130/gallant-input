@@ -106,169 +106,169 @@ class NormalSigMFDTypeInfoGetDTypeUnitTest(SigMFDTypeInfoGetDTypeUnitTest):
     def test_n01_complex_float_cf32_le(self):
         """Valid SigMF Dataset Format (complex float): cf32_le."""
         exp_return = numpy.complex64
-        test_input = f'cf32_le'
+        test_input = 'cf32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n02_complex_float_cf32_be(self):
         """Valid SigMF Dataset Format (complex float): cf32_be."""
         exp_return = '>c8'
-        test_input = f'cf32_be'
+        test_input = 'cf32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n03_complex_float_cf64_le(self):
         """Valid SigMF Dataset Format (complex float): cf64_le."""
         exp_return = numpy.complex128
-        test_input = f'cf64_le'
+        test_input = 'cf64_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n04_complex_float_cf64_be(self):
         """Valid SigMF Dataset Format (complex float): cf64_be."""
         exp_return = '>c16'
-        test_input = f'cf64_be'
+        test_input = 'cf64_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n05_real_float_rf32_le(self):
         """Valid SigMF Dataset Format (real float): rf32_le."""
         exp_return = numpy.float32
-        test_input = f'rf32_le'
+        test_input = 'rf32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n06_real_float_rf32_be(self):
         """Valid SigMF Dataset Format (real float): rf32_be."""
         exp_return = '>f4'
-        test_input = f'rf32_be'
+        test_input = 'rf32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n07_real_float_rf64_le(self):
         """Valid SigMF Dataset Format (real float): rf64_le."""
         exp_return = numpy.float64
-        test_input = f'rf64_le'
+        test_input = 'rf64_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n08_real_float_rf64_be(self):
         """Valid SigMF Dataset Format (real float): rf64_be."""
         exp_return = '>f8'
-        test_input = f'rf64_be'
+        test_input = 'rf64_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n09_complex_signed_int_ci32_le(self):
         """Valid SigMF Dataset Format (complex signed_int): ci32_le."""
         exp_return = numpy.int32
-        test_input = f'ci32_le'
+        test_input = 'ci32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n10_complex_signed_int_ci32_be(self):
         """Valid SigMF Dataset Format (complex signed_int): ci32_be."""
         exp_return = numpy.dtype('>i4')
-        test_input = f'ci32_be'
+        test_input = 'ci32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n11_complex_signed_int_ci16_le(self):
         """Valid SigMF Dataset Format (complex signed_int): ci16_le."""
         exp_return = numpy.int16
-        test_input = f'ci16_le'
+        test_input = 'ci16_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n12_complex_signed_int_ci16_be(self):
         """Valid SigMF Dataset Format (complex signed_int): ci16_be."""
         exp_return = numpy.dtype('>i2')
-        test_input = f'ci16_be'
+        test_input = 'ci16_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n13_real_signed_int_ri32_le(self):
         """Valid SigMF Dataset Format (real signed_int): ri32_le."""
         exp_return = numpy.int32
-        test_input = f'ri32_le'
+        test_input = 'ri32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n14_real_signed_int_ri32_be(self):
         """Valid SigMF Dataset Format (real signed_int): ri32_be."""
         exp_return = numpy.dtype('>i4')  # big-endian signed int 4 bytes
-        test_input = f'ri32_be'
+        test_input = 'ri32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n15_real_signed_int_ri16_le(self):
         """Valid SigMF Dataset Format (real signed_int): ri16_le."""
         exp_return = numpy.int16
-        test_input = f'ri16_le'
+        test_input = 'ri16_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n16_real_signed_int_ri16_be(self):
         """Valid SigMF Dataset Format (real signed_int): ri16_be."""
         exp_return = numpy.dtype('>i2')  # big-endian signed int 2 bytes
-        test_input = f'ri16_be'
+        test_input = 'ri16_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n17_complex_unsigned_int_cu32_le(self):
         """Valid SigMF Dataset Format (complex unsigned_int): cu32_le."""
         exp_return = numpy.uint32
-        test_input = f'cu32_le'
+        test_input = 'cu32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n18_complex_unsigned_int_cu32_be(self):
         """Valid SigMF Dataset Format (complex unsigned_int): cu32_be."""
         exp_return = numpy.dtype('>u4')
-        test_input = f'cu32_be'
+        test_input = 'cu32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n19_complex_unsigned_int_cu16_le(self):
         """Valid SigMF Dataset Format (complex unsigned_int): cu16_le."""
         exp_return = numpy.uint16
-        test_input = f'cu16_le'
+        test_input = 'cu16_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n20_complex_unsigned_int_cu16_be(self):
         """Valid SigMF Dataset Format (complex unsigned_int): cu16_be."""
         exp_return = numpy.dtype('>u2')
-        test_input = f'cu16_be'
+        test_input = 'cu16_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n21_real_unsigned_int_ru32_le(self):
         """Valid SigMF Dataset Format (real unsigned_int): ru32_le."""
         exp_return = numpy.uint32
-        test_input = f'ru32_le'
+        test_input = 'ru32_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n22_real_unsigned_int_ru32_be(self):
         """Valid SigMF Dataset Format (real unsigned_int): ru32_be."""
         exp_return = numpy.dtype('>u4')  # big-endian unsigned int 4 bytes
-        test_input = f'ru32_be'
+        test_input = 'ru32_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n23_real_unsigned_int_ru16_le(self):
         """Valid SigMF Dataset Format (real unsigned_int): ru16_le."""
         exp_return = numpy.uint16
-        test_input = f'ru16_le'
+        test_input = 'ru16_le'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n24_real_unsigned_int_ru16_be(self):
         """Valid SigMF Dataset Format (real unsigned_int): ru16_be."""
         exp_return = numpy.dtype('>u2')  # big-endian unsigned int 2 bytes
-        test_input = f'ru16_be'
+        test_input = 'ru16_be'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n25_complex_signed_int_ci8(self):
         """Valid SigMF Dataset Format (complex signed_int): ci8."""
         exp_return = numpy.int8
-        test_input = f'ci8'
+        test_input = 'ci8'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n26_complex_unsigned_int_cu8(self):
         """Valid SigMF Dataset Format (complex unsigned_int): cu8."""
         exp_return = numpy.uint8
-        test_input = f'cu8'
+        test_input = 'cu8'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n27_real_signed_int_ri8(self):
         """Valid SigMF Dataset Format (real signed_int): ri8."""
         exp_return = numpy.int8
-        test_input = f'ri8'
+        test_input = 'ri8'
         self.run_test_input_return(test_input, exp_return)
 
     def test_n28_real_unsigned_int_ru8(self):
         """Valid SigMF Dataset Format (real unsigned_int): ru8."""
         exp_return = numpy.uint8
-        test_input = f'ru8'
+        test_input = 'ru8'
         self.run_test_input_return(test_input, exp_return)
 
 

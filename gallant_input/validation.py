@@ -195,6 +195,44 @@ def validate_int(validate_this: Path, param_name: str) -> None:
     validate_type(validate_this, param_name, int)
 
 
+def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
+    """Validate an argument, which could be an int or float, on behalf of this package.
+
+    Many arguments are being implemented as int | float in this package
+    (e.g., sample rate, sample spacing) so this function will be used as a SPOT for validation.
+
+    Args:
+        validate_this: The parameter to validate as an int or float.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a string.
+        ValueError: validate_this is empty and can_be_empty is False.
+
+    """
+    # LOCAL VARIABLES
+    valid = False  # Flow control variable
+
+    # VALIDATE IT
+    # int?
+    try:
+        validate_int(validate_this, param_name)
+    except TypeError:
+        pass  # Ignoring one failure
+    else:
+        valid = True
+    # float?
+    if not valid:
+        try:
+            validate_float(validate_this, param_name)
+        except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
+            raise TypeError(f'The "{param_name}" argument must be an integer or floating point '
+                            f'data type instead of type {type(validate_this)}')
+            # pylint: enable=raise-missing-from
+
+
 def validate_list(validate_this: list, param_name: str, can_be_empty: bool = True) -> None:
     """Standardizes how this module validates list parameters.
 
@@ -216,7 +254,7 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
 
 
 def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False,
-                     num_dim: int | None = None) -> None:
+                     num_dim: int | None = None, must_be_complex: bool = False) -> None:
     """Validate numpy.ndarray objects on behalf of the module.
 
     Args:
@@ -227,6 +265,7 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
         num_dim: [OPTIONAL] If num_dim is an integer, the number of dimensions of array
             will be tested against this value.  Otherwise, the number of dimensions will
             be ignored.
+        must_be_complex: [OPTIONAL] If True, array will be verified to hold complex samples.
 
     Raises:
         TypeError: Bad data type.
@@ -234,6 +273,7 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
     """
     # ARGUMENT VALIDATION
     validate_bool(validate_this=can_be_empty, param_name='can_be_empty')
+    validate_bool(validate_this=must_be_complex, param_name='must_be_complex')
     validate_type(var=array, var_name=array_name, var_type=numpy.ndarray)
     if not can_be_empty and len(array) <= 0:
         raise ValueError(f'The "{array_name}" ndarray may not be empty')
@@ -242,6 +282,9 @@ def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool =
         if num_dim < 0:
             raise ValueError(f'The "num_dim" argument may not be negative: {num_dim}')
         _validate_arraylike_ndim(array, array_name, num_dim)
+    if must_be_complex:
+        if not numpy.iscomplexobj(array):
+            raise ValueError(f'The "{array_name}" ndarray must contain complex values')
 
 
 def validate_path(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
@@ -311,44 +354,6 @@ def validate_pos_int(validate_this: int, param_name: str) -> None:
     validate_int(validate_this, param_name)
     if validate_this <= 0:
         raise ValueError(f'The "{param_name}" argument is not positive')
-
-
-def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
-    """Validate an argument, which could be an int or float, on behalf of this package.
-
-    Many arguments are being implemented as int | float in this package
-    (e.g., sample rate, sample spacing) so this function will be used as a SPOT for validation.
-
-    Args:
-        validate_this: The parameter to validate as an int or float.
-        param_name: The name of the parameter to be used in exception messages.
-
-    Raises:
-        TypeError: validate_this is not a string.
-        ValueError: validate_this is empty and can_be_empty is False.
-
-    """
-    # LOCAL VARIABLES
-    valid = False  # Flow control variable
-
-    # VALIDATE IT
-    # int?
-    try:
-        validate_int(validate_this, param_name)
-    except TypeError:
-        pass  # Ignoring one failure
-    else:
-        valid = True
-    # float?
-    if not valid:
-        try:
-            validate_float(validate_this, param_name)
-        except TypeError:
-            # I don't want to "raise from" because this exception is shared by two try/excepts
-            # pylint: disable=raise-missing-from
-            raise TypeError(f'The "{param_name}" argument must be an integer or floating point '
-                            f'data type instead of type {type(validate_this)}')
-            # pylint: enable=raise-missing-from
 
 
 def validate_string(validate_this: str, param_name: str, can_be_empty: bool = False) -> None:

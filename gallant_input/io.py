@@ -2,6 +2,7 @@
 
 # Standard Imports
 from pathlib import Path
+from typing import Tuple
 # Third Party Imports
 from numpy.typing import DTypeLike
 from sigmf import SigMFFile
@@ -250,7 +251,7 @@ def _validate_read_raw_samples(filename: Path, sample_dtype: DTypeLike) -> None:
     _validate_dtype_like(sample_dtype, 'sample_dtype', must_be_complex=False)
 
 
-def _validate_sigmf_paths(basename: Path) -> tuple(Path, Path):
+def _validate_sigmf_paths(basename: Path) -> Tuple[Path, Path]:
     """Use basename to form the SigMF Path objects.
 
     1. Validate basename

@@ -20,6 +20,7 @@ USAGE:
 # Standard Imports
 from dataclasses import dataclass, field
 from typing import Any, Final
+import sys
 # Third Party Imports
 from sigmf import sigmffile
 from sigmf.error import SigMFError
@@ -116,12 +117,19 @@ class SigMFDTypeInfo():
         Raises:
             KeyError: The necessary key was missing.
             RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+                or there's an internal disagreement as to the endianness.
             TypeError: Bad data type.
             ValueError: Bad value.
         """
         self.validate_content()
-        map_type = _get_safe_key(self._dtype_dict, _SIG_DINFO_KEY_MAP_TYPE, silent=True)
-        return _determine_endianness(map_type)
+        map_type = _determine_endianness(_get_safe_key(self._dtype_dict, _SIG_DINFO_KEY_MAP_TYPE,
+                                                       silent=True))
+        byte_order = self._read_byteorder()
+        if map_type != byte_order:
+            raise RuntimeError(f'Endianness disagreement: The dtype_info[{_SIG_DINFO_KEY_MAP_TYPE}]'
+                               f' suggests {repr(map_type)} while the numpy.dtype().byteorder '
+                               f'suggests {repr(byte_order)}')
+        return byte_order
 
     @property
     def is_complex(self) -> bool:
@@ -155,6 +163,25 @@ class SigMFDTypeInfo():
         self.validate_content()
         return not _get_safe_key(self._dtype_dict, _SIG_DINFO_KEY_UNSIGNED, silent=False)
 
+    @property
+    def read_dtype(self) -> numpy.dtype:
+        """Determine the data type to read samples of this dataset (see: numpy.fromfile()).
+
+        This value is separate, but related to get_dtype in that complex values are made up
+        of two components (I & Q) instead of one.
+
+        Returns:
+            A numpy.dtype object.
+
+        Raises:
+            KeyError: The necessary key was missing.
+            RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+            TypeError: Bad data type.
+            ValueError: Bad value.
+        """
+        self.validate_content()
+        return self._read_dtype()
+
     # PRIVATE METHODS
     # In alphabetical order
 
@@ -171,6 +198,37 @@ class SigMFDTypeInfo():
             num_components = 2  # The bit width is doubled for complex samples b/c I & Q are read
         bit_width = samp_size * int(8 / num_components)
         return bit_width
+
+    def _read_byteorder(self) -> Endian:
+        """Use the numpy.dtype().byteorder attribute to determine the endianness."""
+        return _determine_endianness(self.get_dtype.byteorder)
+
+    def _read_dtype(self) -> numpy.dtype:
+        """Determine the data type to read samples of this dataset."""
+        # LOCAL VARIABLES
+        data_type = None  # The data type to use for reading samples of this dataset
+        # Component dtype
+        comp_dtype = numpy.dtype(_get_safe_key(self._dtype_dict, _SIG_DINFO_KEY_COMP_DTYPE,
+                                 silent=False))
+
+        # TRANSLATE DTYPE
+        if self.is_complex and numpy.issubdtype(comp_dtype, numpy.floating):
+            # Convert complex float -> numpy complex dtype
+            if comp_dtype in (numpy.dtype(numpy.float32), numpy.dtype('>f4')):
+                data_type = numpy.dtype(numpy.complex64)
+            elif comp_dtype in (numpy.dtype(numpy.float64), numpy.dtype('>f8')):
+                data_type = numpy.dtype(numpy.complex128)
+            else:
+                raise ValueError(f'Unsupported float width for complex dtype: {comp_dtype}')
+            # Preserve endianness
+            if self.get_endian == Endian.BIG:
+                data_type = data_type.newbyteorder('>')
+        else:
+            # All others
+            data_type = comp_dtype
+
+        # DONE
+        return data_type
 
     def _validate_dataset_format(self) -> None:
         """Validate the content of self.dataset utilizing sigmf and store the dictionary."""
@@ -194,6 +252,12 @@ def _determine_endianness(map_type) -> Endian:
     This function is intended to infer the endianness from the
     _SIG_DINFO_KEY_MAP_TYPE key's value in the dictionary returned by sigmf.sigmffile.dtype_info().
 
+    NOTE: numpy.dtype().byteorder indicates the byte-order of a data-type object:
+       '='  native
+       '<'  little-endian
+       '>'  big-endian
+       '|'  not applicable
+
     Returns:
         An Endian value indicating what was found.  Endian.UNSPECIFIED is used for all errors,
         exceptions, and (most?) 8-bit values.
@@ -214,9 +278,31 @@ def _determine_endianness(map_type) -> Endian:
             endianness = Endian.LITTLE
         elif map_type.startswith('>'):
             endianness = Endian.BIG
+        elif map_type.startswith('='):
+            endianness = _determine_native_endianness()
 
     # DONE
     return endianness
+
+
+def _determine_native_endianness() -> Endian:
+    """Determine the native endianness."""
+    # LOCAL VARIABLES
+    endianness = sys.byteorder       # The native endianness
+    endian_obj = Endian.UNSPECIFIED  # Sys result tranlated into an Endian IntEnum object
+
+    # RESULT VALIDATION
+    validate_string(endianness, 'sys.byteorder', can_be_empty=False)
+    endianness = endianness.lower()
+
+    # DETERMINE IT
+    if endianness == 'little':
+        endian_obj = Endian.LITTLE
+    elif endianness == 'big':
+        endian_obj = Endian.BIG
+
+    # DONE
+    return endian_obj
 
 
 # Leave me be, Pylint

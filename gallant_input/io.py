@@ -8,6 +8,7 @@ from sigmf import SigMFFile
 import numpy
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
+from gallant_input.sigmfmetaparser import SigMFMetaParser
 from gallant_input.validation import (validate_bool, validate_path, validate_ndarray,
                                       validate_string, validate_type)
 
@@ -30,7 +31,8 @@ def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64
         An array of the samples from filename.
 
     Raises:
-        FileNotFoundError: must_exist is True but validate_this is not found.
+        FileNotFoundError: filename is not found.
+        OSError: The filename exists but filename is not a file.
         TypeError: Bad data type.
         ValueError: Bad value.
     """
@@ -43,7 +45,8 @@ def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64
     # filename
     if isinstance(filename, str):
         file_path = Path(filename)
-    _validate_read_samples(filename=file_path, sample_dtype=sample_dtype, sigmf_data=sigmf_data)
+    validate_bool(sigmf_data, 'sigmf_data')
+    # Each of the private _read_*_samples() functions need to validate their own input
 
     # SETUP
     new_samp_dtype = numpy.dtype(sample_dtype)
@@ -52,7 +55,7 @@ def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64
     if sigmf_data:
         samples = _read_sigmf_samples(basename=file_path.with_suffix(''))
     else:
-        samples = numpy.fromfile(file=file_path, dtype=new_samp_dtype)
+        samples = _read_raw_samples(filename=file_path, sample_dtype=new_samp_dtype)
 
     # DONE
     return samples
@@ -115,21 +118,68 @@ def write_samples(filename: str | Path, samples: numpy.ndarray,
                              overwrite=overwrite)
 
 
+def _read_raw_samples(filename: Path, sample_dtype: numpy.dtype) -> numpy.ndarray:
+    """Read a raw IQ file into an array.
+
+    Args:
+        filename: The relative or absolute output file path to save the samples to.
+        sample_dtype: The data type of the samples to read.
+
+    Returns:
+        An array of the samples from filename.
+
+    Raises:
+        FileNotFoundError: filename is not found.
+        OSError: filename exists but is not a file.
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    samples = None  # The array of samples read from filename
+
+    # INPUT VALIDATION
+    _validate_read_raw_samples(filename=filename, sample_dtype=sample_dtype)
+
+    # READ IT
+    samples = numpy.fromfile(file=filename, dtype=sample_dtype)
+
+    # DONE
+    return samples
+
+
 def _read_sigmf_samples(basename: Path) -> numpy.ndarray:
     """Read a SigMF dataset into an array.
 
-    The dtype is read from the SigMF metadata.
+    1. Read the SigMF metadata
+    2. Convert the SIG_GLOB_DATATYPE_KEY value to a numpy.dtype object
+    3. Read the data
 
     Args:
         basename: The base filename of the SigMF dataset.
+
+    Raises:
+        FileNotFoundError: filename is not found.
+        OSError: The filename exists but filename is not a file.
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    samples = None  # The samples read from basename.SIGMF_DATA_FILE_EXT
+    samples = None     # The samples read from basename.SIGMF_DATA_FILE_EXT
+    data_path = None   # The SigMF data filename, derived from basename
+    meta_path = None   # The SigMF metadata filename, derived from basename
+    meta_data = None   # The SigMFMetaParser() object to parse SigMF metadata
+    read_dtype = None  # The numpy.dtype type to read the samples as
 
     # INPUT VALIDATION
-    validate_path(validate_this=basename, param_name='basename', must_exist=False)
+    data_path, meta_path = _validate_sigmf_paths(basename=basename)
 
-    # TO DO: DON'T DO NOW... DO THE LONG COMMENT FIRST IN SUCH A WAY AS TO MINIMIZE THE NUMBER OF TIMES THE PATH OBJECTS ARE MODIFIED
+    # READ IT
+    # 1. Read the SigMF metadata
+    meta_data = SigMFMetaParser(meta_filename=meta_path)
+    # 2. Convert the SIG_GLOB_DATATYPE_KEY value to a numpy.dtype object
+    read_dtype = meta_data.get_read_datatype()
+    # 3. Read the data
+    samples = _read_raw_samples(filename=data_path, sample_dtype=read_dtype)
 
     # DONE
     return samples
@@ -185,8 +235,8 @@ def _validate_dtype_like(dtlike: DTypeLike, param_name: str, must_be_complex: bo
                          f'of "{type(test_dtlike)}"')
 
 
-def _validate_read_samples(filename: Path, sample_dtype: DTypeLike, sigmf_data: bool) -> None:
-    """Validate the read_samples() arguments.
+def _validate_read_raw_samples(filename: Path, sample_dtype: DTypeLike) -> None:
+    """Validate the _read_raw_samples() arguments.
 
     Raises:
         FileNotFoundError: must_exist is True but validate_this is not found.
@@ -195,11 +245,45 @@ def _validate_read_samples(filename: Path, sample_dtype: DTypeLike, sigmf_data: 
     """
     # INPUT VALIDATION
     # filename
-    validate_path(filename, 'filename (converted)', must_exist=True)  # TO DO: DON'T DO NOW... Extricate this into a separate private function that utilizes sigmf_data to determine which paths default-or-SigMF should be validated (otherwise, SigMF usage will fail if the user just gives a basename)
+    validate_path(filename, 'filename', must_exist=True)
     # sample_dtype
     _validate_dtype_like(sample_dtype, 'sample_dtype', must_be_complex=False)
-    # sigmf_data
-    validate_bool(sigmf_data, 'sigmf_data')
+
+
+def _validate_sigmf_paths(basename: Path) -> tuple(Path, Path):
+    """Use basename to form the SigMF Path objects.
+
+    1. Validate basename
+    2. Form SigMF Path objects (using basename)
+    3. Validate both as files that exist
+
+    Args:
+        basename: The base filename of the SigMF dataset.
+
+    Returns:
+        A tuple containing the (data_path, meta_path).
+
+    Raises:
+        FileNotFoundError: filename is not found.
+        OSError: The filename exists but filename is not a file.
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    data_path = None  # The SigMF data filename, derived from basename
+    meta_path = None  # The SigMF metadata filename, derived from basename
+
+    # INPUT VALIDATION
+    validate_path(validate_this=basename, param_name='basename', must_exist=False)  # Data type
+    data_path = basename.with_suffix('.' + SIGMF_DATA_FILE_EXT)
+    meta_path = basename.with_suffix('.' + SIGMF_META_FILE_EXT)
+    validate_path(validate_this=data_path, param_name=f'basename.{SIGMF_DATA_FILE_EXT}',
+                  must_exist=True)
+    validate_path(validate_this=meta_path, param_name=f'basename.{SIGMF_META_FILE_EXT}',
+                  must_exist=True)
+
+    # DONE
+    return tuple((data_path, meta_path))
 
 
 def _validate_write_samples(filename: Path, samples: numpy.ndarray,

@@ -7,9 +7,11 @@ Open, parse, and answer questions about a sigmf-meta file.
 from pathlib import Path
 from typing import Any
 # Third Party Imports
+import numpy
 import sigmf
 # Local Imports
 from gallant_input.logger import Logger
+from gallant_input.sigmfdtypeinfo import SigMFDTypeInfo
 from gallant_input.validation import validate_path, validate_string, validate_type
 
 
@@ -363,7 +365,7 @@ class SigMFMetaParser:
                 cap_list = self._meta_data.get_captures()
                 try:
                     key_val = cap_list[index][key]
-                except (IndexError, KeyError) as err:
+                except (IndexError, KeyError):
                     pass  # Ignore these Exceptions and return None instead
             # annotations
             case sigmf.SigMFFile.ANNOTATION_KEY:

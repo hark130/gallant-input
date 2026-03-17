@@ -76,12 +76,11 @@ class SigMFDTypeInfoBitWidthUnitTest(SigMFDTypeInfoUnitTest):
         self.set_test_input(test_input)
         self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
-    def run_test_input_return(self, test_input: bytes, exp_return: int) -> None:
+    def run_test_input_return(self, test_input: str, exp_return: int) -> None:
         """Common method calls for a test case expected to return.
 
         Args:
-            test_input: Well-formed AIS payload as a binary bytes string to use as the
-                SigMFDTypeInfo() argument.
+            test_input: Well-formed string to use as the SigMFDTypeInfo() argument.
             exp_return: The expected value of SigMFDTypeInfo.bit_width.
         """
         self.set_test_input(test_input)

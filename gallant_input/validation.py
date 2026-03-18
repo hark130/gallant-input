@@ -208,7 +208,6 @@ def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
     Raises:
         TypeError: validate_this is not a string.
         ValueError: validate_this is empty and can_be_empty is False.
-
     """
     # LOCAL VARIABLES
     valid = False  # Flow control variable

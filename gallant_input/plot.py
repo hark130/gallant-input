@@ -15,6 +15,10 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     Args:
         signal: An array object which represents a complex signal to plot.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # INPUT VALIDATION
     validate_ndarray(samples, 'samples', must_be_complex=True)
@@ -34,13 +38,18 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
 
 
 def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
-                     shift_result: bool = True, title: str | None = 'Magnitude Spectrum') -> None:
+                  shift_result: bool = True, title: str | None = 'Magnitude Spectrum') -> None:
     """Plot magnitude spectrum of a signal.
 
     Args:
         signal: The signal to evaluate.
         samp_rate: The sampling frequency in Hz.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
+        title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
     freq_map = None  # Frequency mapping of signal
@@ -80,7 +89,6 @@ def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = Non
     num_samps = None          # The length of samples
     x_plot = None             # The x-axis
     x_label = 'Sample Index'  # The x-axis label
-    y_plot = None             # The y-axis
     y_label = 'Amplitude'     # The y-axis label
 
     # INPUT VALIDATION

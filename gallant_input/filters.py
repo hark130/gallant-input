@@ -23,7 +23,8 @@ def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
     See help(design_lpf) for more details on the arguments.
 
     Returns:
-        FIR filter coefficients in a numpy.ndarray object of length "numtaps".
+        FIR filter coefficients, AKA impulse response, in a numpy.ndarray object of
+        length "numtaps".
 
     Raises:
         TypeError: Bad data type.
@@ -59,7 +60,8 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
         fs: [OPTIONAL] The sampling frequency (AKA sample rate) of the signal in Hz.
 
     Returns:
-        FIR filter coefficients in a numpy.ndarray object of length "numtaps".
+        FIR filter coefficients, AKA impulse response, in a numpy.ndarray object of
+        length "numtaps".
 
     Raises:
         TypeError: Bad data type.

@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.signal import compute_spectrum
-from gallant_input.validation import validate_int_or_float, validate_ndarray, validate_string
+from gallant_input.validation import (validate_int_or_float, validate_ndarray, validate_pos_float,
+                                      validate_string)
 
 
 def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constellation') -> None:
@@ -32,6 +33,7 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
 
 def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
                   shift_result: bool = True, convert_db: bool = True,
+                  center_freq: float | None = None,
                   title: str | None = 'Magnitude Spectrum') -> None:
     """Plot magnitude spectrum of a signal.
 
@@ -40,6 +42,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
         samp_rate: The sampling frequency in Hz.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.
+        center_freq: [OPTIONAL] Specify a center frequency on the plot.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
 
     Raises:
@@ -47,20 +50,26 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    freq_map = None        # Frequency mapping of signal
-    mag_map = None         # Magnitude mapping of signal
-    y_label = 'Magnitude'  # The y-axis label
+    freq_map = None                  # Frequency mapping of signal
+    mag_map = None                   # Magnitude mapping of signal
+    x_label = 'Frequency (Hz, abs)'  # The x-axis label
+    y_label = 'Magnitude'            # The y-axis label
 
     # INPUT VALIDATION
+    if center_freq is not None:
+        validate_pos_float(center_freq, 'center_freq')
+        x_label = 'Frequency (Hz)'
     freq_map, mag_map = compute_spectrum(signal=signal, samp_rate=samp_rate,
                                          shift_result=shift_result, convert_db=convert_db)
+    if center_freq is not None:
+        freq_map = freq_map + center_freq
     if convert_db:
         y_label = y_label + ' (dB)'
 
     # PLOT IT
     plt.figure()
     plt.plot(freq_map, mag_map, label='FFT')
-    _plot_it(x_label='Frequency (Hz)', y_label=y_label, title=title)
+    _plot_it(x_label=x_label, y_label=y_label, title=title)
 
 
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,

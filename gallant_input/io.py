@@ -14,6 +14,26 @@ from gallant_input.validation import (validate_bool, validate_path, validate_nda
                                       validate_string, validate_type)
 
 
+def read_coeffs(filename: str | Path, sample_dtype: DTypeLike = numpy.float64) -> numpy.ndarray:
+    """Read filter coefficients from a file."""
+    # LOCAL VARIABLES
+    file_path = filename  # The filename argument positively changed to be a Path object
+    coeffs = None         # numpy.ndarray of coefficients read from filename
+
+    # INPUT VALIDATION
+    if isinstance(filename, str):
+        file_path = Path(filename)
+    validate_path(validate_this=file_path, param_name='filename (converted)', must_exist=False)
+    # sample_dtype
+    _validate_dtype_like(sample_dtype, 'sample_dtype', must_be_complex=False)
+
+    # READ IT
+    coeffs = numpy.loadtxt(file_path, dtype=sample_dtype)
+
+    # DONE
+    return coeffs
+
+
 def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64,
                  sigmf_data: bool = False) -> numpy.ndarray:
     """Read samples from an IQ file or SigMF dataset.
@@ -60,6 +80,31 @@ def read_samples(filename: str | Path, sample_dtype: DTypeLike = numpy.complex64
 
     # DONE
     return samples
+
+
+def write_coeffs(coeffs: numpy.ndarray, filename: str | Path, fmt: str = '%.10e') -> None:
+    """Write filter coefficients to a file (one per line).
+
+    Args:
+        coeffs: A 1-dimensional array of filter coefficients to write to filename.
+        filename: Output filename to save the coefficients to.
+        fmt: [OPTIONAL] The format to save the coefficients as.  The default value is a C-style
+            format specifier that specifies 10 digits of precision in scientific notation.
+            Numpy defaults to 18 digits of precision.  See: help(numpy.savetxt) for more info.
+    """
+    # LOCAL VARIABLES
+    file_path = filename  # The filename argument positively changed to be a Path object
+
+    # INPUT VALIDATION
+    validate_ndarray(array=coeffs, array_name='coeffs', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    if isinstance(filename, str):
+        file_path = Path(filename)
+    validate_path(validate_this=file_path, param_name='filename (converted)', must_exist=False)
+    validate_string(fmt, 'fmt', can_be_empty=False)
+
+    # WRITE IT
+    numpy.savetxt(file_path, coeffs, fmt=fmt)
 
 
 def write_samples(filename: str | Path, samples: numpy.ndarray,

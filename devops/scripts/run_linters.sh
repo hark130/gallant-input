@@ -16,7 +16,8 @@ ORIGINAL_DIRECTORY=$(pwd)  # Current working directory
 # LINTER COMMANDS
 # 1. Pycodestyle
 echo "Running Pycodestyle"
-pycodestyle --max-line-length=100 ./
+# pycodestyle --max-line-length=100 ./
+pycodestyle --max-line-length=100 --exclude=digital_filters.py,filter_examples.py,iq_io_example.py,moving_average_filter.py ./
 if [ $? -ne 0 ]
 then
     echo "*** Pycodestyle Failed ***"

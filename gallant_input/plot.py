@@ -22,19 +22,12 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     """
     # INPUT VALIDATION
     validate_ndarray(samples, 'samples', must_be_complex=True)
-    if title:
-        validate_string(title, 'title', can_be_empty=True)
 
     # PLOT IT
     plt.figure()
-    plt.scatter(samples.real, samples.imag, s=1)
-    plt.xlabel("In-phase (I)")
-    plt.ylabel("Quadrature (Q)")
-    if title:
-        plt.title(title)
-    plt.grid()
+    plt.scatter(samples.real, samples.imag, s=1, label='Samples')
     plt.axis('equal')
-    plt.show()
+    _plot_it(x_label='In-phase (I)', y_label='Quadrature (Q)', title=title)
 
 
 def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
@@ -56,20 +49,13 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
     mag_map = None   # Magnitude mapping of signal
 
     # INPUT VALIDATION
-    if title is not None:
-        validate_string(title, 'title')
     freq_map, mag_map = compute_spectrum(signal=signal, samp_rate=samp_rate,
                                          shift_result=shift_result)
 
     # PLOT IT
     plt.figure()
-    plt.plot(freq_map, mag_map)
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel('Magnitude')
-    if title:
-        plt.title(title)
-    plt.grid()
-    plt.show()
+    plt.plot(freq_map, mag_map, label='FFT')
+    _plot_it(x_label='Frequency (Hz)', y_label='Magnitude', title=title)
 
 
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,
@@ -108,13 +94,45 @@ def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = Non
 
     # PLOT IT
     plt.figure()
-    plt.plot(x_plot, samples.real, label="I (Real)")
+    plt.plot(x_plot, samples.real, label='I (Real)')
     if numpy.iscomplexobj(samples):
-        plt.plot(x_plot, samples.imag, label="Q (Imag)")
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
-    if title:
+        plt.plot(x_plot, samples.imag, label='Q (Imag)')
+    _plot_it(x_label=x_label, y_label=y_label, title=title)
+
+
+def _plot_it(x_label: str | None = None, y_label: str | None = None,
+             title: str | None = None) -> None:
+    """Create a modular SPOT for this module to display all 'open figrues'.
+
+    Calls:
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
         plt.title(title)
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+    Args:
+        x_label: [OPTIONAL] Set the label for the x-axis, if defined.
+        y_label: [OPTIONAL] Set the label for the y-axis, if defined.
+        title: [OPTIONAL] Set the text to use for the title, if defined.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # INPUT VALIDATION
+    if x_label is not None:
+        validate_string(x_label, 'x_label', can_be_empty=False)
+        plt.xlabel(x_label)
+    if y_label is not None:
+        validate_string(y_label, 'y_label', can_be_empty=False)
+        plt.ylabel(y_label)
+    if title is not None:
+        validate_string(title, 'title', can_be_empty=False)
+        plt.title(title)
+
+    # PLOT IT
     plt.legend()
     plt.grid()
     plt.show()

@@ -31,6 +31,8 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     _plot_it(x_label='In-phase (I)', y_label='Quadrature (Q)', title=title)
 
 
+# Maybe I'll refactor this later...
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
                   shift_result: bool = True, convert_db: bool = True,
                   center_freq: float | None = None,
@@ -70,6 +72,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
     plt.figure()
     plt.plot(freq_map, mag_map, label='FFT')
     _plot_it(x_label=x_label, y_label=y_label, title=title)
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,

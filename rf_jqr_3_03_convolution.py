@@ -1,0 +1,174 @@
+"""This script utilizes GALLANT INPUT (GAIN) to demonstrate RF JQR 3.03 Convolution.
+
+USAGE:
+    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
+    --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
+
+EXAMPLE:
+    cp ./data/qpsk_in_noise.sigmf-data /tmp/input.iq
+    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
+        --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
+"""
+
+# Standard Imports
+from pathlib import Path
+from typing import Any, Final
+import argparse
+# Third Party Imports
+import numpy
+# Local Imports
+from gallant_input.filters import design_lpf
+from gallant_input.io import write_coeffs
+from gallant_input.validation import validate_bool, validate_file, validate_type
+
+CLI_ARG_FREQ_CUT: Final[str] = 'freq_cutoff'
+CLI_ARG_INPUT_IQ: Final[str] = 'input_iq'
+CLI_ARG_LOWPASS: Final[str] = 'lowpass'
+CLI_ARG_NUM_TAPS: Final[str] = 'num_taps'
+CLI_ARG_TAP_OUTPUT: Final[str] = 'coeff_output'
+CLI_ARG_OUTPUT_IQ: Final[str] = 'output_iq'
+CLI_ARG_THRESH: Final[str] = 'threshold'
+
+
+def create_filter(lowpass: bool, numtaps: int, cutoff: float, out_file: Path) -> numpy.ndarray:
+    """Design a filter, save the coefficients to out_file, and return the coefficients.
+
+    Args:
+        lowpass: If True, design a lowpass filter.  If False, filter will be a highpass.
+        numtaps: Length of the filter.
+        cutoff: Cutoff frequency of the filter as a ratio (0 < cutoff < 1).
+        out_file: Output file to save the coefficients to.
+
+    Returns:
+        FIR filter coefficients in a numpy.ndarray object of length "numtaps".
+    """
+    # LOCAL VARIABLES
+    filter_taps = None  # FIR filter coefficients in a numpy.ndarray object of length "numtaps
+
+    # INPUT VALIDATION
+    validate_bool(lowpass, 'lowpass')
+
+    # CREATE IT
+    if lowpass:
+        filter_taps = design_lpf(numtaps=numtaps, cutoff=cutoff)
+    else:
+        raise NotImplementedError("TO DO: DON'T DO NOW... Implement support for highpass filters")
+
+    # SAVE IT
+    write_coeffs(coeffs=filter_taps, filename=out_file)
+
+    # DONE
+    return filter_taps
+
+
+def parse_args() -> dict[str:Any]:
+    """Parse the command line arguments.
+
+    Returns:
+        A dictionary of keys and their associataed values.
+    """
+    # LOCAL VARIABLES
+    parser = None  # ArgumentParser object
+    args = None    # Parsed argument Namespace
+
+    # SETUP
+    parser = argparse.ArgumentParser(prog='RF JQR 3.03',
+                                     description='Demonstrate Convolution')
+    # M: the number of taps in the filter
+    parser.add_argument(f'-{CLI_ARG_NUM_TAPS[0]}', f'--{CLI_ARG_NUM_TAPS}', type=int,
+                        action='store', help='The number of taps in the filter', required=True)
+    # f_c: cutoff frequency as a fraction between 0 and 0.5 of the Nyquist frequency.
+    parser.add_argument(f'-{CLI_ARG_FREQ_CUT[0]}', f'--{CLI_ARG_FREQ_CUT}', type=float,
+                        action='store', help='Cutoff frequency as fraction between 0 and 0.5 '
+                        'of the Nyquist frequency', required=True)
+    # iq_filename: relative path to the input signal as a iq file containing complex samples.
+    parser.add_argument(f'-{CLI_ARG_INPUT_IQ[0]}', f'--{CLI_ARG_INPUT_IQ}', type=str,
+                        action='store', help='IQ file containing a signal as complex samples.',
+                        required=True)
+    # threshold: if the input signal's magnitude exceeds this threshold, the code will print all
+    #   indices at which this occurs.
+    parser.add_argument(f'-{CLI_ARG_THRESH[0]}', f'--{CLI_ARG_THRESH}', type=float, action='store',
+                        help='Minimum magnitude, in decibels, to consider input signals.',
+                        required=True)
+    # lowpass: true if lowpass filter, false if highpass.
+    parser.add_argument(f'--{CLI_ARG_LOWPASS}', action='store_true', default=False,
+                        help='Create a lowpass filter (instead of a highpass filter).',
+                        required=False)
+    # test_filename: iq file containing the ideal filtered signal
+    parser.add_argument(f'-{CLI_ARG_OUTPUT_IQ[0]}', f'--{CLI_ARG_OUTPUT_IQ}', type=str,
+                        action='store', help='Output IQ file containing the filtered input signal.',
+                        required=True)
+    # tap_filename: name of the file where the filter coefficients will be written.
+    parser.add_argument(f'-{CLI_ARG_TAP_OUTPUT[0]}', f'--{CLI_ARG_TAP_OUTPUT}', type=str,
+                        action='store', help='Output file filter coefficients.', required=True)
+
+    # PARSE IT
+    args = parser.parse_args()
+
+    # DONE
+    return _construct_arg_dict(args=args)
+
+
+def main() -> None:
+    """Demonstrate convolution.
+
+    1. Read user input
+    2. Write FIR coefficients to a file
+    3. Display the impulse & frequency response of the filter
+    4. Plot the before & after, in the frequency domain, of the filter applied to an input signal.
+    """
+    # LOCAL VARIABLES
+    arg_dict = parse_args()  # 1. Read user input
+    input_iq = Path(arg_dict[CLI_ARG_INPUT_IQ])
+    output_iq = Path(arg_dict[CLI_ARG_OUTPUT_IQ])
+    output_taps = Path(arg_dict[CLI_ARG_TAP_OUTPUT])
+
+    # INPUT VALIDATION
+    validate_file(input_iq, f'--{CLI_ARG_INPUT_IQ} value', must_exist=True)
+
+    # DO IT
+    # 2. Write FIR coefficients to a file
+    create_filter(lowpass=arg_dict[CLI_ARG_LOWPASS], numtaps=arg_dict[CLI_ARG_NUM_TAPS],
+                  cutoff=arg_dict[CLI_ARG_FREQ_CUT], out_file=output_taps)
+
+    print(arg_dict)  # DEBUGGING
+    validate_file(output_taps, 'output_taps', must_exist=True)  # DEBUGGING / VALIDATION
+
+
+def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:
+    """Construct an ArgVals data class from the parsed args."""
+    # LOCAL VARIABLES
+    arg_dict = {}  # Dictionary of args and their values
+    arg_keys = [
+        CLI_ARG_FREQ_CUT, CLI_ARG_INPUT_IQ, CLI_ARG_LOWPASS, CLI_ARG_NUM_TAPS,
+        CLI_ARG_TAP_OUTPUT, CLI_ARG_OUTPUT_IQ, CLI_ARG_THRESH,
+    ]
+
+    # INPUT VALIDATION
+    validate_type(var=args, var_name='args', var_type=argparse.Namespace)
+
+    # GET IT
+    for arg_key in arg_keys:
+        arg_dict[arg_key] = _get_eafp_attr(args=args, attr=arg_key)
+
+    # DONE
+    return arg_dict
+
+
+def _get_eafp_attr(args: argparse.Namespace, attr: str) -> Any:
+    """Safely retrieve values from a Namespace (if they exist)."""
+    # LOCAL VARIABLES
+    value = None  # Retrieved value
+
+    # GET IT
+    try:
+        value = getattr(args, attr)
+    except AttributeError:
+        pass  # Easier to ask for forgiveness than permission (EAFP)
+
+    # DONE
+    return value
+
+
+if __name__ == '__main__':
+    main()

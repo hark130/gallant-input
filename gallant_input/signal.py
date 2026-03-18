@@ -96,8 +96,8 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
     return numpy.absolute(signal)
 
 
-def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
-                     shift_result: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float, shift_result: bool = True,
+                     convert_db: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
 
     1. Calculate FFT bins
@@ -108,6 +108,7 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
         signal: The signal to evaluate.
         samp_rate: The sampling frequency in Hz.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
+        convert_db: [OPTIONAL] Convert y-axis values to decibels.
 
     Returns:
         A tuple containing the mapped frequencies (x-axis?) and the magnitude of each (y-axis?).
@@ -123,6 +124,7 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
 
     # INPUT VALIDATION
     validate_bool(shift_result, 'shift_result')
+    validate_bool(convert_db, 'convert_db')
 
     # COMPUTE IT
     # 1. Calculate FFT bins
@@ -136,9 +138,33 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
     if shift_result:
         freq_map = fftshift(freq_map)
         mag_map = fftshift(mag_map)
+    if convert_db:
+        mag_map = convert_mag_to_db(mag_map)
 
     # DONE
     return tuple((freq_map, mag_map))
+
+
+def convert_mag_to_db(mag_map: numpy.ndarray) -> numpy.ndarray:
+    """Convert a magnitude mapping to decibels.
+
+    Args:
+        mag_map: An array of absolute magnitudes to convert to decibels.
+
+    Returns:
+        An ndarray of mag_map values converted to decibels.
+    """
+    # LOCAL VARIABLES
+    db_map = None  # The mag_map arg converted to decibels
+
+    # INPUT VALIDATION
+    validate_ndarray(mag_map, 'mag_map', can_be_empty=False)
+
+    # CONVERT IT
+    db_map = 20 * numpy.log10(mag_map + 1e-12)
+
+    # DONE
+    return db_map
 
 
 # It's not my fault.  It's NumPy!

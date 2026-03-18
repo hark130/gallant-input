@@ -31,13 +31,15 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
 
 
 def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
-                  shift_result: bool = True, title: str | None = 'Magnitude Spectrum') -> None:
+                  shift_result: bool = True, convert_db: bool = True,
+                  title: str | None = 'Magnitude Spectrum') -> None:
     """Plot magnitude spectrum of a signal.
 
     Args:
         signal: The signal to evaluate.
         samp_rate: The sampling frequency in Hz.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
+        convert_db: [OPTIONAL] Convert y-axis values to decibels.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
 
     Raises:
@@ -45,17 +47,20 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    freq_map = None  # Frequency mapping of signal
-    mag_map = None   # Magnitude mapping of signal
+    freq_map = None        # Frequency mapping of signal
+    mag_map = None         # Magnitude mapping of signal
+    y_label = 'Magnitude'  # The y-axis label
 
     # INPUT VALIDATION
     freq_map, mag_map = compute_spectrum(signal=signal, samp_rate=samp_rate,
-                                         shift_result=shift_result)
+                                         shift_result=shift_result, convert_db=convert_db)
+    if convert_db:
+        y_label = y_label + ' (dB)'
 
     # PLOT IT
     plt.figure()
     plt.plot(freq_map, mag_map, label='FFT')
-    _plot_it(x_label='Frequency (Hz)', y_label='Magnitude', title=title)
+    _plot_it(x_label='Frequency (Hz)', y_label=y_label, title=title)
 
 
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,

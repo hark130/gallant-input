@@ -10,12 +10,24 @@ import numpy
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.sigmfmetaparser import SigMFMetaParser
-from gallant_input.validation import (validate_bool, validate_path, validate_ndarray,
+from gallant_input.validation import (validate_bool, validate_file, validate_path, validate_ndarray,
                                       validate_string, validate_type)
 
 
 def read_coeffs(filename: str | Path, sample_dtype: DTypeLike = numpy.float64) -> numpy.ndarray:
-    """Read filter coefficients from a file."""
+    """Read filter coefficients from a file.
+
+    Args:
+        filename: Output filename to save the coefficients to.
+
+    Returns:
+        A 1-dimensional array of filter coefficients, AKA impulse response, read from filename.
+
+    Raises:
+        OSError: filename exists but is not a file (regardless of must_exist).
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
     # LOCAL VARIABLES
     file_path = filename  # The filename argument positively changed to be a Path object
     coeffs = None         # numpy.ndarray of coefficients read from filename
@@ -23,7 +35,7 @@ def read_coeffs(filename: str | Path, sample_dtype: DTypeLike = numpy.float64) -
     # INPUT VALIDATION
     if isinstance(filename, str):
         file_path = Path(filename)
-    validate_path(validate_this=file_path, param_name='filename (converted)', must_exist=False)
+    validate_file(validate_this=file_path, param_name='filename (converted)', must_exist=False)
     # sample_dtype
     _validate_dtype_like(sample_dtype, 'sample_dtype', must_be_complex=False)
 
@@ -86,7 +98,8 @@ def write_coeffs(coeffs: numpy.ndarray, filename: str | Path, fmt: str = '%.10e'
     """Write filter coefficients to a file (one per line).
 
     Args:
-        coeffs: A 1-dimensional array of filter coefficients to write to filename.
+        coeffs: A 1-dimensional array of filter coefficients, AKA impulse response, to write to
+            filename.
         filename: Output filename to save the coefficients to.
         fmt: [OPTIONAL] The format to save the coefficients as.  The default value is a C-style
             format specifier that specifies 10 digits of precision in scientific notation.

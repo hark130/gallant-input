@@ -7,11 +7,32 @@ from numpy.typing import ArrayLike
 from scipy.signal import firwin
 import numpy
 # Local Imports
-from gallant_input.validation import (validate_arraylike, validate_float, validate_string,
-                                      validate_pos_float, validate_pos_int, validate_type)
+from gallant_input.convolvemode import ConvolveMode
+from gallant_input.validation import (validate_arraylike, validate_float, validate_ndarray,
+                                      validate_pos_float, validate_pos_int, validate_string,
+                                      validate_type)
 
 # I didn't do it this time.  It was firwin()!
 # pylint: disable=too-many-arguments, too-many-positional-arguments
+
+
+def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
+              mode: ConvolveMode | None = ConvolveMode.SAME) -> numpy.ndarray:
+    """Apply a filter to a signal using convolution.
+
+    Args:
+        signal: The signal to apply a filter to.
+        coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
+        mode: [OPTIONAL] Specifies the method of convolution.  None will result in the default mode.
+    """
+    # LOCAL VARIABLES
+    result = None  # signal convoluted with coeffs
+
+    # APPLY IT
+    result = _call_convolve(signal=signal, coeffs=coeffs, mode=mode)
+
+    # DONE
+    return result
 
 
 def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
@@ -69,6 +90,42 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
     """
     return _call_firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
                         pass_zero=pass_zero, scale=scale, fs=fs)
+
+
+def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
+                   mode: ConvolveMode | None) -> numpy.ndarray:
+    """A SPOT to call numpy.convolve().
+
+    This function standardizes how this module validates the input to numpy.convolve()
+    and calls it.  This docstring has been paraphrased/derived/interpreted from
+    help(numpy.convolve).
+
+    Args:
+        signal: First one-dimensional input array.
+        coeffs: Second one-dimensional input array.
+        mode: If None, this kwarg will be ommitted from the function call.
+
+    Returns:
+        Discrete, linear convolution of `signal` and `coeffs`.
+    """
+    # LOCAL VARIABLES
+    result = None                                # Discrete linear convolution of signal and coeffs
+    dynamic_kwargs = {'a': signal, 'v': coeffs}  # Dynamic keyword arguments
+
+    # INPUT VALIDATION
+    validate_ndarray(array=signal, array_name='signal', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    validate_ndarray(array=coeffs, array_name='coeffs', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    if mode is not None:
+        validate_type(mode, 'mode', ConvolveMode)
+        dynamic_kwargs['mode'] = mode.translate  # Translate the IntEnum to the mode string value
+
+    # CALL IT
+    result = numpy.convolve(**dynamic_kwargs)
+
+    # DONE
+    return result
 
 
 def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,

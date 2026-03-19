@@ -5,9 +5,15 @@ USAGE:
     --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
 
 EXAMPLE:
+    # Linux
     cp ./data/qpsk_in_noise.sigmf-data /tmp/input.iq
     python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
         --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
+    # Windows
+    copy .\\data\\qpsk_in_noise.sigmf-data C:\\Temp\\input.iq
+    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 `
+        --input_iq C:\\Temp\\input.iq --threshold -20 --lowpass --output_iq C:\\Temp\\output.iq `
+        --coeff_output C:\\Temp\\taps.raw
 """
 
 # Standard Imports
@@ -19,6 +25,8 @@ import numpy
 # Local Imports
 from gallant_input.filters import design_lpf
 from gallant_input.io import write_coeffs
+from gallant_input.plot import plot_frequency_response, plot_impulse_response
+from gallant_input.signal import optimize_window_size
 from gallant_input.validation import validate_bool, validate_file, validate_type
 
 CLI_ARG_FREQ_CUT: Final[str] = 'freq_cutoff'
@@ -118,18 +126,26 @@ def main() -> None:
     4. Plot the before & after, in the frequency domain, of the filter applied to an input signal.
     """
     # LOCAL VARIABLES
-    arg_dict = parse_args()  # 1. Read user input
-    input_iq = Path(arg_dict[CLI_ARG_INPUT_IQ])
-    output_iq = Path(arg_dict[CLI_ARG_OUTPUT_IQ])
-    output_taps = Path(arg_dict[CLI_ARG_TAP_OUTPUT])
+    arg_dict = parse_args()                           # 1. Read user input
+    input_iq = Path(arg_dict[CLI_ARG_INPUT_IQ])       # Path object for the input IQ file
+    output_iq = Path(arg_dict[CLI_ARG_OUTPUT_IQ])     # Path object for the output IQ file
+    output_taps = Path(arg_dict[CLI_ARG_TAP_OUTPUT])  # Path object for the output taps file
+    imp_resp = None                                   # Impulse response designed from user input
+    freq_resp = None                                  # Frequency response of imp_resp
 
     # INPUT VALIDATION
     validate_file(input_iq, f'--{CLI_ARG_INPUT_IQ} value', must_exist=True)
 
     # DO IT
     # 2. Write FIR coefficients to a file
-    create_filter(lowpass=arg_dict[CLI_ARG_LOWPASS], numtaps=arg_dict[CLI_ARG_NUM_TAPS],
-                  cutoff=arg_dict[CLI_ARG_FREQ_CUT], out_file=output_taps)
+    imp_resp = create_filter(lowpass=arg_dict[CLI_ARG_LOWPASS], numtaps=arg_dict[CLI_ARG_NUM_TAPS],
+                             cutoff=arg_dict[CLI_ARG_FREQ_CUT], out_file=output_taps)
+
+    # 3. Display the impulse & frequency response of the filter
+    # Plot impulse response
+    plot_impulse_response(coeffs=imp_resp)
+    # Plot frequency response
+    plot_frequency_response(coeffs=imp_resp, win_size=optimize_window_size(coeffs=imp_resp))
 
     print(arg_dict)  # DEBUGGING
     validate_file(output_taps, 'output_taps', must_exist=True)  # DEBUGGING / VALIDATION

@@ -7,6 +7,7 @@ from numpy.fft import fftshift
 from scipy.fft import fft, fftfreq
 import numpy
 # Local Imports
+from gallant_input.oversamplefactor import OversampleFactor
 from gallant_input.validation import (validate_bool, validate_int, validate_int_or_float,
                                       validate_ndarray, validate_pos_int, validate_string,
                                       validate_type)
@@ -96,7 +97,8 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
     return numpy.absolute(signal)
 
 
-def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float, shift_result: bool = True,
+def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
+                     axis_len: int | None = None, shift_result: bool = True,
                      convert_db: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
 
@@ -107,6 +109,7 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float, shift_result
     Args:
         signal: The signal to evaluate.
         samp_rate: The sampling frequency in Hz.
+        axis_len: [OPTIONAL] See: help(compute_fft) (AKA 'n' in help(scipy.fft.fft)).
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.
 
@@ -118,20 +121,24 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float, shift_result
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    fft_arr = None   # Compute the 1-D discrete FFT of a signal
-    freq_map = None  # The Discrete Fourier Transform sample frequency bin centers
-    mag_map = None   # The absolute value of each element in signal
+    fft_arr = None       # Compute the 1-D discrete FFT of a signal
+    freq_map = None      # The Discrete Fourier Transform sample frequency bin centers
+    mag_map = None       # The absolute value of each element in signal
+    num_samp = axis_len  # Window length to compute the Discrete Fourier Transform sample freqs
 
     # INPUT VALIDATION
     validate_bool(shift_result, 'shift_result')
     validate_bool(convert_db, 'convert_db')
+    _validate_axis_len(axis_len=axis_len)
 
     # COMPUTE IT
     # 1. Calculate FFT bins
-    fft_arr = compute_basic_fft(signal)
+    fft_arr = compute_fft(signal=signal, axis_len=axis_len)
     # 2. Map FFT bins to frequencies
-    freq_map = compute_frequency_axis(num_samp=len(fft_arr), samp_rate=samp_rate)
-    # 3. Computer the strength of each frequency
+    if num_samp is None:
+        num_samp = len(fft_arr)
+    freq_map = compute_frequency_axis(num_samp=num_samp, samp_rate=samp_rate)
+    # 3. Compute the strength of each frequency
     mag_map = compute_magnitude_spectrum(signal=fft_arr)
 
     # SHIFT IT
@@ -165,6 +172,38 @@ def convert_mag_to_db(mag_map: numpy.ndarray) -> numpy.ndarray:
 
     # DONE
     return db_map
+
+
+def optimize_window_size(coeffs: numpy.ndarray,
+                         oversample: OversampleFactor = OversampleFactor.DEFAULT,
+                         min_size: int = 1024) -> int:
+    """Apply an algorithm to determine an optimal window size: smooth, yet fast.
+
+    Use this function to optimally pad the window sized, based on the number of coefficients,
+    so that the impulse response is padded with zeros before computing the frequency response.
+
+    Args:
+        coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
+        oversample: [OPTIONAL] An oversampling factor in the frequency domain (K).
+        min_size: [OPTIONAL] Ensures a minimum FFT window size.  If overriding the default value,
+            ensure the value is a power of 2.
+
+    Returns:
+        An optimal window size based on the oversampling value and the size of coeffs.
+    """
+    # LOCAL VARIABLES
+    next_pow = min_size  # Next power of 2
+
+    # INPUT VALIDATION
+    validate_ndarray(coeffs, 'coeffs', can_be_empty=False, num_dim=1, must_be_complex=False)
+    validate_type(oversample, 'oversample', OversampleFactor)
+    _validate_power_of_two(min_size, 'min_size')
+
+    # OPTIMIZE IT
+    next_pow = 1 << (int(len(coeffs) * oversample) - 1).bit_length()
+
+    # DONE
+    return max(min_size, next_pow)
 
 
 # It's not my fault.  It's NumPy!
@@ -223,6 +262,12 @@ def _call_fftfreq(win_len: int, spacing: int | float | complex = 1.0) -> numpy.n
     return fftfreq(n=win_len, d=spacing)
 
 
+def _validate_axis_len(axis_len: int | None = None) -> None:
+    """Validate a common keyword argument on behalf of this module."""
+    if axis_len is not None:
+        validate_int(axis_len, 'axis_len')
+
+
 # It's not my fault.  It's NumPy!
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
@@ -239,8 +284,7 @@ def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis:
     """
     # ARGUMENT VALIDATION
     validate_ndarray(signal, 'signal')
-    if axis_len is not None:
-        validate_int(axis_len, 'axis_len')
+    _validate_axis_len(axis_len=axis_len)
     validate_int(axis, 'axis')
     if norm is not None:
         validate_string(norm, 'norm', can_be_empty=False)
@@ -291,3 +335,10 @@ def _validate_fftfreq_scalar(spacing: int | float | complex) -> None:
             raise TypeError('The "spacing" argument must be a numerical scalar instead of '
                             f'type {type(spacing)}')
             # pylint: enable=raise-missing-from
+
+
+def _validate_power_of_two(validate_this: int, param_name: str) -> None:
+    """Validate that a value is a power of 2."""
+    validate_pos_int(validate_this, param_name)
+    if (validate_this & (validate_this - 1)) != 0:
+        raise ValueError(f'The value of "{validate_this}" is not a power of two')

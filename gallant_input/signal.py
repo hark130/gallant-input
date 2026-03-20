@@ -67,7 +67,7 @@ def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = 
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
-def compute_frequency_axis(num_samp: int, samp_rate: int | float) -> numpy.ndarray:
+def compute_frequency_axis(num_samp: int, samp_rate: int | float | None) -> numpy.ndarray:
     """Return the Discrete Fourier Transform sample frequency bin centers.
 
     Generate the frequency bin centers in cycles per unit of the sample spacing (1/samp_rate)
@@ -75,12 +75,16 @@ def compute_frequency_axis(num_samp: int, samp_rate: int | float) -> numpy.ndarr
 
     Args:
         num_samp: Number of samples.
-        samp_rate: The sampling frequency in Hz.
+        samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, fftfreq() will use a
+            default value.
 
     Returns:
         Array of frequency values in Hz.
     """
-    return _call_fftfreq(win_len=num_samp, spacing=1/samp_rate)
+    dynamic_kwargs = {'win_len': num_samp}  # Dynamic keyword arguments
+    if samp_rate is not None:
+        dynamic_kwargs['spacing'] = 1/samp_rate
+    return _call_fftfreq(**dynamic_kwargs)
 
 
 def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
@@ -97,7 +101,7 @@ def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
     return numpy.absolute(signal)
 
 
-def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
+def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
                      axis_len: int | None = None, shift_result: bool = True,
                      convert_db: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
@@ -108,7 +112,7 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float,
 
     Args:
         signal: The signal to evaluate.
-        samp_rate: The sampling frequency in Hz.
+        samp_rate: [Optional] The sampling frequency in Hz.  If None, library defaults will be used.
         axis_len: [OPTIONAL] See: help(compute_fft) (AKA 'n' in help(scipy.fft.fft)).
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.

@@ -52,7 +52,7 @@ def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
 
     # PLOT IT
     # 1. Compute it
-    freq_map, mag_map = compute_spectrum(signal=coeffs, samp_rate=1.0, axis_len=win_size,
+    freq_map, mag_map = compute_spectrum(signal=coeffs, samp_rate=None, axis_len=win_size,
                                          shift_result=True, convert_db=True)
     # 2. Plot it
     _plot_spectrum(freq_map=freq_map, mag_map=mag_map,
@@ -92,7 +92,7 @@ def plot_impulse_response(coeffs: numpy.ndarray) -> None:
 
 # Maybe I'll refactor this later...
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
+def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
                   shift_result: bool = True, convert_db: bool = True,
                   center_freq: float | None = None,
                   title: str | None = 'Magnitude Spectrum') -> None:
@@ -100,7 +100,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float,
 
     Args:
         signal: The signal to evaluate.
-        samp_rate: The sampling frequency in Hz.
+        samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, the library will use defaults.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.
         center_freq: [OPTIONAL] Specify a center frequency on the plot.

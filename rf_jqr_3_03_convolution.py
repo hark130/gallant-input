@@ -226,12 +226,12 @@ def _gently_resolve_details(filename: Path) -> Tuple[int, float]:
         meta_path = filename.with_suffix('.' + SIGMF_META_FILE_EXT)
         meta_data = SigMFMetaParser(meta_path)
         samp_rate = meta_data.get_sample_rate()
-        center_freq = meta_data.get_center_freq()
+        center_freq = meta_data.get_center_freq() * 1.0
     except (FileNotFoundError, KeyError, RuntimeError, SyntaxError, TypeError, ValueError) as err:
         pass  # We are ignoring all Exceptions in our pursuit of gently extracting information
 
     # DONE
-    return tuple((samp_rate, center_freq * 1.0))
+    return tuple((samp_rate, center_freq))
 
 
 def _get_eafp_attr(args: argparse.Namespace, attr: str) -> Any:

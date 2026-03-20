@@ -10,24 +10,28 @@ EXAMPLE:
     python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
         --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
     # Windows
-    copy .\\data\\qpsk_in_noise.sigmf-data C:\\Temp\\input.iq
+    copy .\\data\\qpsk_in_noise.sigmf-data C:\\Temp\\input.sigmf-data
+    copy .\\data\\qpsk_in_noise.sigmf-meta C:\\Temp\\input.sigmf-meta
     python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 `
-        --input_iq C:\\Temp\\input.iq --threshold -20 --lowpass --output_iq C:\\Temp\\output.iq `
-        --coeff_output C:\\Temp\\taps.raw
+        --input_iq C:\\Temp\\input.sigmf-data --threshold -20 --lowpass `
+        --output_iq C:\\Temp\\output.iq --coeff_output C:\\Temp\\taps.raw
+
 """
 
 # Standard Imports
 from pathlib import Path
-from typing import Any, Final
+from typing import Any, Final, Tuple
 import argparse
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.filters import design_lpf
-from gallant_input.io import write_coeffs
-from gallant_input.plot import plot_frequency_response, plot_impulse_response
+from gallant_input.constants import SIGMF_META_FILE_EXT
+from gallant_input.filters import apply_fir, design_lpf
+from gallant_input.io import read_samples, write_coeffs, write_samples
+from gallant_input.plot import plot_frequency_response, plot_impulse_response, plot_spectrum
+from gallant_input.sigmfmetaparser import SigMFMetaParser
 from gallant_input.signal import optimize_window_size
-from gallant_input.validation import validate_bool, validate_file, validate_type
+from gallant_input.validation import validate_bool, validate_file, validate_path, validate_type
 
 CLI_ARG_FREQ_CUT: Final[str] = 'freq_cutoff'
 CLI_ARG_INPUT_IQ: Final[str] = 'input_iq'
@@ -124,6 +128,7 @@ def main() -> None:
     2. Write FIR coefficients to a file
     3. Display the impulse & frequency response of the filter
     4. Plot the before & after, in the frequency domain, of the filter applied to an input signal.
+    5. Write the filtered signal to the output file
     """
     # LOCAL VARIABLES
     arg_dict = parse_args()                           # 1. Read user input
@@ -132,6 +137,10 @@ def main() -> None:
     output_taps = Path(arg_dict[CLI_ARG_TAP_OUTPUT])  # Path object for the output taps file
     imp_resp = None                                   # Impulse response designed from user input
     freq_resp = None                                  # Frequency response of imp_resp
+    in_signal = None                                  # numpy.ndarray read from input_iq
+    filt_signal = None                                # in_signal filtered with imp_resp
+    samp_rate = None                                  # in_signal sample rate
+    center_freq = None                                # in_signal center frequency
 
     # INPUT VALIDATION
     validate_file(input_iq, f'--{CLI_ARG_INPUT_IQ} value', must_exist=True)
@@ -147,7 +156,25 @@ def main() -> None:
     # Plot frequency response
     plot_frequency_response(coeffs=imp_resp, win_size=optimize_window_size(coeffs=imp_resp))
 
+    # 4. Plot the before & after, in the frequency domain, of the filter applied to an input signal.
+    # Read the input signal
+    in_signal = read_samples(input_iq)
+    # Apply the FIR filter to the input signal
+    filt_signal = apply_fir(signal=in_signal, coeffs=imp_resp)
+    # Plot before, in the frequency domain
+    # TO DO: DON'T DO NOW... Refactor center_freq args to also support integers
+    samp_rate, center_freq = _gently_resolve_details(input_iq)
+    plot_spectrum(signal=in_signal, samp_rate=samp_rate, center_freq=center_freq,
+                  title=f'Magnitude Spectrum: {input_iq.name}')
+    # Plot after, in the frequency domain
+    plot_spectrum(signal=filt_signal, samp_rate=samp_rate, center_freq=center_freq,
+                  title=f'Magnitude Spectrum: {output_iq.name}')
+
+    # 5. Write the filtered signal to the output file
+    write_samples(filename=output_iq, samples=filt_signal, overwrite=True)
+
     print(arg_dict)  # DEBUGGING
+    validate_file(output_iq, 'output_iq', must_exist=True)  # DEBUGGING / VALIDATION
     validate_file(output_taps, 'output_taps', must_exist=True)  # DEBUGGING / VALIDATION
 
 
@@ -169,6 +196,42 @@ def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:
 
     # DONE
     return arg_dict
+
+
+def _gently_resolve_details(filename: Path) -> Tuple[int, float]:
+    """Gently attempt to divine the sample rate and center frequency of filename.
+
+    Args:
+        filename: A Path object that may or may not be a SigMF file format.
+
+    Returns:
+        If filename can be parsed as a SigMF dataset then this function will
+        return tuple(samp_rate, center_freq).  Otherwise it returns tuple(None,None),
+        which still happens to be valid input for those two arguments.
+
+    Raises:
+        TypeError: Bad data type.
+    """
+    # LOCAL VARIABLES
+    samp_rate = None    # Sample rate divined from filename
+    center_freq = None  # Center frequency divined from filename
+    meta_path = None    # The SigMF metadata path, derived from filename
+    meta_data = None    # The SigMFMetaParser() object to parse SigMF metadata
+
+    # INPUT VALIDATION
+    validate_path(filename, 'filename', must_exist=False)
+
+    # RESOLVE IT
+    try:
+        meta_path = filename.with_suffix('.' + SIGMF_META_FILE_EXT)
+        meta_data = SigMFMetaParser(meta_path)
+        samp_rate = meta_data.get_sample_rate()
+        center_freq = meta_data.get_center_freq()
+    except (FileNotFoundError, KeyError, RuntimeError, SyntaxError, TypeError, ValueError) as err:
+        pass  # We are ignoring all Exceptions in our pursuit of gently extracting information
+
+    # DONE
+    return tuple((samp_rate, center_freq * 1.0))
 
 
 def _get_eafp_attr(args: argparse.Namespace, attr: str) -> Any:

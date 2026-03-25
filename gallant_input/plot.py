@@ -138,7 +138,7 @@ def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = Non
     """Plot real and imaginary components of a signal over time.
 
     Args:
-        signal: An array object which represents a signal to plot.  Can be real or complex.
+        samples: An array object which represents a signal to plot.  Can be real or complex.
         samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, uses the "samples" indices.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
 

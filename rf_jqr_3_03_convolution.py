@@ -33,7 +33,7 @@ import argparse
 import numpy
 # Local Imports
 from gallant_input.constants import SIGMF_META_FILE_EXT
-from gallant_input.filters import apply_fir, design_lpf
+from gallant_input.filters import apply_fir, design_hpf, design_lpf
 from gallant_input.io import read_samples, write_coeffs, write_samples
 from gallant_input.plot import plot_frequency_response, plot_impulse_response, plot_spectrum
 from gallant_input.sigmfmetaparser import SigMFMetaParser
@@ -56,7 +56,7 @@ def create_filter(lowpass: bool, numtaps: int, cutoff: float, out_file: Path) ->
 
     Args:
         lowpass: If True, design a lowpass filter.  If False, filter will be a highpass.
-        numtaps: Length of the filter.
+        numtaps: Length of the filter.  Must be odd if not a lowpass filter.
         cutoff: Cutoff frequency of the filter as a ratio (0 < cutoff < 1).
         out_file: Output file to save the coefficients to.
 
@@ -73,7 +73,7 @@ def create_filter(lowpass: bool, numtaps: int, cutoff: float, out_file: Path) ->
     if lowpass:
         filter_taps = design_lpf(numtaps=numtaps, cutoff=cutoff)
     else:
-        raise NotImplementedError("TO DO: DON'T DO NOW... Implement support for highpass filters")
+        filter_taps = design_hpf(numtaps=numtaps, cutoff=cutoff)
 
     # SAVE IT
     write_coeffs(coeffs=filter_taps, filename=out_file)

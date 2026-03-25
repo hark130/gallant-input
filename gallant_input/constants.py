@@ -34,6 +34,15 @@ GAIN_CLI_ARG_SIGMF_BASE: Final[str] = 'basename'  # Base filename for .sigmf-* f
 GAIN_CLI_ARG_DEBUG: Final[str] = 'debug'          # Debug logging
 
 
+#########################
+# gallant_input.filters #
+#########################
+FIRWIN_BPF: Final[str] = 'bandpass'
+FIRWIN_BSTOP: Final[str] = 'bandstop'
+FIRWIN_LPF: Final[str] = 'lowpass'
+FIRWIN_HPF: Final[str] = 'highpass'
+
+
 ####################
 # gallant_input.io #
 ####################

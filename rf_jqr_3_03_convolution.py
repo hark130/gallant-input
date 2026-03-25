@@ -185,7 +185,6 @@ def main() -> None:
     threshold = arg_dict[CLI_ARG_THRESH]              # The minimum threshold to print indices
     convert_db = True                                 # Convert magnitude to decibels
     imp_resp = None                                   # Impulse response designed from user input
-    freq_resp = None                                  # Frequency response of imp_resp
     in_signal = None                                  # numpy.ndarray read from input_iq
     filt_signal = None                                # in_signal filtered with imp_resp
     samp_rate = None                                  # in_signal sample rate
@@ -279,7 +278,7 @@ def _gently_resolve_details(filename: Path) -> Tuple[int, float]:
         meta_data = SigMFMetaParser(meta_path)
         samp_rate = meta_data.get_sample_rate()
         center_freq = meta_data.get_center_freq() * 1.0
-    except (FileNotFoundError, KeyError, RuntimeError, SyntaxError, TypeError, ValueError) as err:
+    except (FileNotFoundError, KeyError, RuntimeError, SyntaxError, TypeError, ValueError):
         pass  # We are ignoring all Exceptions in our pursuit of gently extracting information
 
     # DONE

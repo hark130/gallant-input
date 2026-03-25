@@ -7,6 +7,7 @@ from numpy.typing import ArrayLike
 from scipy.signal import firwin
 import numpy
 # Local Imports
+from gallant_input.constants import FIRWIN_HPF, FIRWIN_LPF
 from gallant_input.convolvemode import ConvolveMode
 from gallant_input.validation import (validate_arraylike, validate_float, validate_ndarray,
                                       validate_pos_float, validate_pos_int, validate_string,
@@ -35,10 +36,28 @@ def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
     return result
 
 
+def create_basic_hpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
+                     width: float | None = None, window: str | tuple = 'hamming',
+                     scale: bool = True, fs: float | None = None) -> numpy.ndarray:
+    """Create a basic high-pass filter, with good default values, using scipy.signal.firwin().
+
+    See help(design_hpf) for more details on the arguments.
+
+    Returns:
+        FIR filter coefficients, AKA impulse response, in a numpy.ndarray object of
+        length "numtaps".
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    return design_hpf(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
+                      scale=scale, fs=fs)
+
+
 def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
                      width: float | None = None, window: str | tuple = 'hamming',
-                     pass_zero: bool | str = True, scale: bool = True,
-                     fs: float | None = None) -> numpy.ndarray:
+                     scale: bool = True, fs: float | None = None) -> numpy.ndarray:
     """Create a basic low-pass filter, with good default values, using scipy.signal.firwin().
 
     See help(design_lpf) for more details on the arguments.
@@ -52,26 +71,23 @@ def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
         ValueError: Bad value.
     """
     return design_lpf(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
-                      pass_zero=pass_zero, scale=scale, fs=fs)
+                      scale=scale, fs=fs)
 
 
-def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
-               window: str | tuple = 'hamming', pass_zero: bool | str = True,
-               scale: bool = True, fs: float | None = None) -> numpy.ndarray:
-    """Design a low-pass filter using scipy.signal.firwin().
+def design_hpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
+               window: str | tuple = 'hamming', scale: bool = True,
+               fs: float | None = None) -> numpy.ndarray:
+    """Design a high-pass filter using scipy.signal.firwin().
 
     See help(scipy.signal.firwin) for more details on the arguments.
 
     Args:
-        numtaps: Length of the filter.
+        numtaps: Length of the filter; must be odd.
         cutoff: Cutoff frequency of the filter.  May be a ratio (0 < cutoff < 1) if fs is None.
             Also, may be an array of cutoff frequencies (AKA band edges).
         width: [OPTIONAL] Width of the transition region expressed in the same units as fs.
         window: [OPTIONAL] Desired window to use. See `scipy.signal.get_window` for a list
             of windows and required parameters.
-        pass_zero: [OPTIONAL] If True, the gain at the frequency 0 is 1.  If False, the DC
-            gain is 0. Can also be a string argument for the desired filter type.
-            See help(scipy.signal.firwin) for supported strings.
         scale: [OPTIONAL] If True, scale the coefficients so that the frequency response is
             exactly unity at a certain frequency.  That frequency is either:
             - 0 (DC) if the first passband starts at 0 (i.e. pass_zero is True)
@@ -89,7 +105,42 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
         ValueError: Bad value.
     """
     return _call_firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
-                        pass_zero=pass_zero, scale=scale, fs=fs)
+                        pass_zero=FIRWIN_HPF, scale=scale, fs=fs)
+
+
+def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
+               window: str | tuple = 'hamming', scale: bool = True,
+               fs: float | None = None) -> numpy.ndarray:
+    """Design a low-pass filter using scipy.signal.firwin().
+
+    See help(scipy.signal.firwin) for more details on the arguments.
+
+    Args:
+        numtaps: Length of the filter.  For a lowpass filter, consider an odd number of taps.
+            For all other filter types, numtaps must be odd.
+        cutoff: Cutoff frequency of the filter.  May be a ratio (0 < cutoff < 1) if fs is None.
+            Also, may be an array of cutoff frequencies (AKA band edges).
+        width: [OPTIONAL] Width of the transition region expressed in the same units as fs.
+        window: [OPTIONAL] Desired window to use. See `scipy.signal.get_window` for a list
+            of windows and required parameters.
+        scale: [OPTIONAL] If True, scale the coefficients so that the frequency response is
+            exactly unity at a certain frequency.  That frequency is either:
+            - 0 (DC) if the first passband starts at 0 (i.e. pass_zero is True)
+            - `fs/2` (the Nyquist frequency) if the first passband ends at
+              `fs/2` (i.e the filter is a single band highpass filter)
+            - Otherwise, center of first passband
+        fs: [OPTIONAL] The sampling frequency (AKA sample rate) of the signal in Hz.
+
+    Returns:
+        FIR filter coefficients, AKA impulse response, in a numpy.ndarray object of
+        length "numtaps".
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    return _call_firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
+                        pass_zero=FIRWIN_LPF, scale=scale, fs=fs)
 
 
 def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
@@ -139,7 +190,7 @@ def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = 
 
     Args:
         numtaps: Length of the filter (number of coefficients, i.e. the filter
-            order + 1).  Must be odd if a passband includes the Nyquist frequency.
+            order + 1).  Must be odd if the filter type is *not* a lowpass filter.
         cutoff: Cutoff frequency of filter (expressed in the same units as `fs`)
             OR an array of cutoff frequencies (that is, band edges). In the
             former case, as a float, the cutoff frequency should correspond
@@ -160,6 +211,7 @@ def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = 
             If True, the gain at the frequency 0 (i.e., the "DC gain") is 1.
             If False, the DC gain is 0. Can also be a string argument for the
             desired filter type (equivalent to ``btype`` in IIR design functions).
+            See: constants module for FIRWIN_*F macros.
         scale: [OPTIONAL] Set to True to scale the coefficients so that the frequency
             response is exactly unity at a certain frequency.  That frequency is either:
                 - 0 (DC) if the first passband starts at 0 (i.e. pass_zero is True)
@@ -264,6 +316,10 @@ def _validate_firwin_args(numtaps: int, cutoff: float | ArrayLike, width: float 
         validate_pos_float(width, 'width')
     # Let firwin() handle the "window" argument
     # Let firwin() handle the "pass_zero" argument
+    if pass_zero is not True and pass_zero is not FIRWIN_LPF:
+        # It's not a lowpassfilter
+        if numtaps % 2 == 0:
+            raise ValueError(f'The "numtaps" value of "{numtaps}" must be odd')
 
 
 def _validate_freqs(cutoff: float | ArrayLike, cutoff_name: str,

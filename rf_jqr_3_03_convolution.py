@@ -9,12 +9,19 @@ EXAMPLE:
     cp ./data/qpsk_in_noise.sigmf-data /tmp/input.iq
     python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
         --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
+
     # Windows
-    copy .\\data\\qpsk_in_noise.sigmf-data C:\\Temp\\input.sigmf-data
-    copy .\\data\\qpsk_in_noise.sigmf-meta C:\\Temp\\input.sigmf-meta
-    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 `
-        --input_iq C:\\Temp\\input.sigmf-data --threshold -20 --lowpass `
-        --output_iq C:\\Temp\\output.iq --coeff_output C:\\Temp\\taps.raw
+    copy .\\data\\qpsk_in_noise.sigmf-data C:\\Temp\\input1.sigmf-data
+    copy .\\data\\qpsk_in_noise.sigmf-meta C:\\Temp\\input1.sigmf-meta
+    python rf_jqr_3_03_convolution.py --num_taps 51 --freq_cutoff 0.25 `
+        --input_iq C:\\Temp\\input1.sigmf-data --threshold -20 --lowpass `
+        --output_iq C:\\Temp\\output1.iq --coeff_output C:\\Temp\\taps1.raw
+
+    copy .\\data\\really-distinct-signal.sigmf-data C:\\Temp\\input2.sigmf-data
+    copy .\\data\\really-distinct-signal.sigmf-meta C:\\Temp\\input2.sigmf-meta
+    python rf_jqr_3_03_convolution.py --num_taps 51 --freq_cutoff 0.25 `
+        --input_iq C:\\Temp\\input2.sigmf-data --threshold -17.5 `
+        --output_iq C:\\Temp\\output2.iq --coeff_output C:\\Temp\\taps2.raw
 
 """
 
@@ -30,8 +37,10 @@ from gallant_input.filters import apply_fir, design_lpf
 from gallant_input.io import read_samples, write_coeffs, write_samples
 from gallant_input.plot import plot_frequency_response, plot_impulse_response, plot_spectrum
 from gallant_input.sigmfmetaparser import SigMFMetaParser
-from gallant_input.signal import optimize_window_size
-from gallant_input.validation import validate_bool, validate_file, validate_path, validate_type
+from gallant_input.signal import convert_mag_to_db, compute_magnitude_spectrum, optimize_window_size
+from gallant_input.validation import (validate_bool, validate_file, validate_int_or_float,
+                                      validate_ndarray, validate_path, validate_string,
+                                      validate_type)
 
 CLI_ARG_FREQ_CUT: Final[str] = 'freq_cutoff'
 CLI_ARG_INPUT_IQ: Final[str] = 'input_iq'
@@ -121,6 +130,43 @@ def parse_args() -> dict[str:Any]:
     return _construct_arg_dict(args=args)
 
 
+def print_threshold_indices(signal: numpy.ndarray, threshold: int | float, use_db: bool = True,
+                            title: str | None = 'Signal exceeds threshold at indices: ',
+                            ) -> numpy.ndarray:
+    """Print the indices of samples whose magnitude exceeds the threshold.
+
+    Args:
+        signal: A 1-dimensional array of samples to evaluate against the threhold.
+        threshold: The minimum magnitude, linear or dB (as determined by use_db) for an index
+            to qualify.
+        use_db: [OPTIONAL] Convert the signal magnitude to decibels.
+        title: [OPTIONAL] A preface before printing indices.  Will be ommitted if None.
+    """
+    # LOCAL VARIABLES
+    mag_map = None  # Numpy.ndarray of magnitudes
+    # INPUT VALIDATION
+    validate_ndarray(array=signal, array_name='signal', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    validate_int_or_float(validate_this=threshold, param_name='threshold')
+    validate_bool(use_db, 'use_db')
+    if title is not None:
+        validate_string(title, 'title', can_be_empty=True)
+
+    # SETUP
+    mag_map = compute_magnitude_spectrum(signal)
+    if use_db:
+        mag_map = convert_mag_to_db(mag_map)
+
+    # PRINT IT
+    if title:
+        print(title, end='')
+    # My Way
+    for index, mag in enumerate(mag_map):
+        if mag > threshold:
+            print(index, end=' ')
+    print()
+
+
 def main() -> None:
     """Demonstrate convolution.
 
@@ -129,12 +175,15 @@ def main() -> None:
     3. Display the impulse & frequency response of the filter
     4. Plot the before & after, in the frequency domain, of the filter applied to an input signal.
     5. Write the filtered signal to the output file
+    6. Print the input signal's indices whose magnitude exceeds the threshold
     """
     # LOCAL VARIABLES
     arg_dict = parse_args()                           # 1. Read user input
     input_iq = Path(arg_dict[CLI_ARG_INPUT_IQ])       # Path object for the input IQ file
     output_iq = Path(arg_dict[CLI_ARG_OUTPUT_IQ])     # Path object for the output IQ file
     output_taps = Path(arg_dict[CLI_ARG_TAP_OUTPUT])  # Path object for the output taps file
+    threshold = arg_dict[CLI_ARG_THRESH]              # The minimum threshold to print indices
+    convert_db = True                                 # Convert magnitude to decibels
     imp_resp = None                                   # Impulse response designed from user input
     freq_resp = None                                  # Frequency response of imp_resp
     in_signal = None                                  # numpy.ndarray read from input_iq
@@ -164,14 +213,17 @@ def main() -> None:
     # Plot before, in the frequency domain
     # TO DO: DON'T DO NOW... Refactor center_freq args to also support integers
     samp_rate, center_freq = _gently_resolve_details(input_iq)
-    plot_spectrum(signal=in_signal, samp_rate=samp_rate, center_freq=center_freq,
-                  title=f'Magnitude Spectrum: {input_iq.name}')
+    plot_spectrum(signal=in_signal, samp_rate=samp_rate, convert_db=convert_db,
+                  center_freq=center_freq, title=f'Magnitude Spectrum: {input_iq.name}')
     # Plot after, in the frequency domain
-    plot_spectrum(signal=filt_signal, samp_rate=samp_rate, center_freq=center_freq,
-                  title=f'Magnitude Spectrum: {output_iq.name}')
+    plot_spectrum(signal=filt_signal, samp_rate=samp_rate, convert_db=convert_db,
+                  center_freq=center_freq, title=f'Magnitude Spectrum: {output_iq.name}')
 
     # 5. Write the filtered signal to the output file
     write_samples(filename=output_iq, samples=filt_signal, overwrite=True)
+
+    # 6. Print the input signal's indices whose magnitude exceeds the threshold
+    print_threshold_indices(signal=in_signal, threshold=threshold, use_db=convert_db)
 
     print(arg_dict)  # DEBUGGING
     validate_file(output_iq, 'output_iq', must_exist=True)  # DEBUGGING / VALIDATION

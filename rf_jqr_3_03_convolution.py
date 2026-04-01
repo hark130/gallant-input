@@ -1,13 +1,13 @@
 """This script utilizes GALLANT INPUT (GAIN) to demonstrate RF JQR 3.03 Convolution.
 
 USAGE:
-    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
+    python rf_jqr_3_03_convolution.py --num_taps 51 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
     --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
 
 EXAMPLE:
     # Linux
     cp ./data/qpsk_in_noise.sigmf-data /tmp/input.iq
-    python rf_jqr_3_03_convolution.py --num_taps 5 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
+    python rf_jqr_3_03_convolution.py --num_taps 51 --freq_cutoff 0.25 --input_iq /tmp/input.iq \
         --threshold -20 --lowpass --output_iq /tmp/output.iq --coeff_output /tmp/taps.raw
 
     # Windows
@@ -223,10 +223,6 @@ def main() -> None:
 
     # 6. Print the input signal's indices whose magnitude exceeds the threshold
     print_threshold_indices(signal=in_signal, threshold=threshold, use_db=convert_db)
-
-    print(arg_dict)  # DEBUGGING
-    validate_file(output_iq, 'output_iq', must_exist=True)  # DEBUGGING / VALIDATION
-    validate_file(output_taps, 'output_taps', must_exist=True)  # DEBUGGING / VALIDATION
 
 
 def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:

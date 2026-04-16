@@ -33,7 +33,7 @@ SigMFDTypeInfoUnitTest is the parent class for all ais.block SigMFDTypeInfo unit
 # Third Party Imports
 from test.unit_test.test_sigmf.test_sigmf import SigMFUnitTest
 # Local Imports
-from gallant_input.sigmfdtypeinfo import SigMFDTypeInfo
+from gallant_input.gain_sigmf.sigmfdtypeinfo import SigMFDTypeInfo
 
 
 class SigMFDTypeInfoUnitTest(SigMFUnitTest):

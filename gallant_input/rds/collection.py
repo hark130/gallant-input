@@ -8,7 +8,7 @@ from gallant_input.converters import convert_bin_bytes_to_hex_str
 from gallant_input.rds.exceptions import RDSIntegrityFailure, RDSPICodeMismatch
 from gallant_input.rds.group import RDSGroup
 from gallant_input.rds.picode import RDSPICode
-from gallant_input.validation import validate_type
+from gallant_input.validation import validate_bool, validate_type
 
 
 class RDSCollection:
@@ -89,7 +89,7 @@ class RDSCollection:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        validate_type(force, 'force', bool)
+        validate_bool(force, 'force')
         self._validate_internals(force=force)
 
     # CLASS HELPER METHODS
@@ -165,7 +165,7 @@ class RDSCollection:
         """Validate the private attributes once."""
         if self._validated is False or force is True:
             # self._validated
-            validate_type(var=self._validated, var_name='_validated attribute', var_type=bool)
+            validate_bool(self._validated, '_validated attribute')
             # self._picode_dict
             validate_type(var=self._picode_dict, var_name='internal dictionary', var_type=dict)
             for pi_code, rds_pi_code_obj in self._picode_dict.items():

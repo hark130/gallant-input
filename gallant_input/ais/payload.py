@@ -17,7 +17,7 @@ Example Usage:
 # Local Imports
 from gallant_input.ais.constants import AIS_PAYLOAD_MAX_SLOTS, AIS_PAYLOAD_SLOT_LEN
 from gallant_input.ais.payload_info import AISPayloadInfo
-from gallant_input.validation import validate_binary_bytes, validate_type
+from gallant_input.validation import validate_bool, validate_binary_bytes
 
 
 class AISPayload:
@@ -59,7 +59,7 @@ class AISPayload:
             ValueError: Invalid value.
         """
         # INPUT VALIDATION
-        validate_type(force, 'force', bool)
+        validate_bool(force, 'force')
 
         # VALIDATION
         if self._validated is False or force is True:

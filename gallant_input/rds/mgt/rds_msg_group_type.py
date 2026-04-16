@@ -40,7 +40,7 @@ class RDSMsgGroupType(ABC):
         # Functionality is defined in the sub-class when this method is overridden
         # Start with this code block...
         # if self._validated is not True:
-        #     validate_type(self._validated, 'internal attribute _validated', bool)  # Validate attr
+        #     validate_bool(self._validated, 'internal attribute _validated')  # Validate attr
         #     validate_binary_bytes(self.msg_ver, 'msg_ver', 1)  # Validate attr
         #     self._validated = True  # Done
 

@@ -9,7 +9,7 @@ from sigmf import SigMFFile
 import numpy
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
-from gallant_input.sigmfmetaparser import SigMFMetaParser
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.validation import (validate_bool, validate_file, validate_path, validate_ndarray,
                                       validate_string, validate_type)
 

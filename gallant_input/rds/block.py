@@ -8,7 +8,8 @@ from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.constants import (RDS_BLOCK_LEN, RDS_BLOCK_DATA_LEN, RDS_BLOCK_CWORD_LEN,
                                          RDS_CRC_POLY)
 from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
-from gallant_input.validation import validate_bool, validate_binary_bytes, validate_type
+from gallant_input.validation import (validate_bool, validate_binary_bytes, validate_int,
+                                      validate_type)
 
 
 class RDSBlock:
@@ -143,7 +144,7 @@ class RDSBlock:
         cwrd_int = convert_bin_bytes_to_int(self._rds_block_cwrd)  # Checkword as an int
 
         # INPUT VALIDATION
-        validate_type(crc, 'crc', int)
+        validate_int(crc, 'crc')
         validate_type(block_id, 'block_id', BlockID)
 
         # VALIDATE IT

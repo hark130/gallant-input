@@ -117,7 +117,7 @@ def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None)
     validate_string(validate_this=param_name, param_name='param_name', can_be_empty=False)
     # exact_len
     if exact_len is not None:
-        validate_type(exact_len, 'exact_len', int)
+        validate_int(exact_len, 'exact_len')
         if exact_len > -1:
             validate_len = True
     # validate_this
@@ -181,7 +181,7 @@ def validate_float(validate_this: float, param_name: str) -> None:
     validate_type(validate_this, param_name, float)
 
 
-def validate_int(validate_this: Path, param_name: str) -> None:
+def validate_int(validate_this: int, param_name: str) -> None:
     """Validate validate_this as an int object.
 
     Args:

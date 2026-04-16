@@ -12,7 +12,7 @@ import sigmf
 # Local Imports
 from gallant_input.logger import Logger
 from gallant_input.sigmfdtypeinfo import SigMFDTypeInfo
-from gallant_input.validation import validate_path, validate_string, validate_type
+from gallant_input.validation import validate_int, validate_path, validate_string
 
 
 class SigMFMetaParser:
@@ -351,7 +351,7 @@ class SigMFMetaParser:
         # obj_name && key
         self._validate_obj_name_key_pair(obj_name=obj_name, key=key)
         # index
-        validate_type(var=index, var_name='index', var_type=int)
+        validate_int(index, 'index')
         if index < 0:
             raise TypeError(f'The "index" value is invalid: {index}')
 

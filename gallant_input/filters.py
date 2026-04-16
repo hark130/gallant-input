@@ -9,9 +9,9 @@ import numpy
 # Local Imports
 from gallant_input.constants import FIRWIN_HPF, FIRWIN_LPF
 from gallant_input.convolvemode import ConvolveMode
-from gallant_input.validation import (validate_arraylike, validate_float, validate_ndarray,
-                                      validate_pos_float, validate_pos_int, validate_string,
-                                      validate_type)
+from gallant_input.validation import (validate_arraylike, validate_bool, validate_float,
+                                      validate_ndarray, validate_pos_float, validate_pos_int,
+                                      validate_string, validate_type)
 
 # I didn't do it this time.  It was firwin()!
 # pylint: disable=too-many-arguments, too-many-positional-arguments
@@ -254,7 +254,7 @@ def _validate_cutoff(cutoff: float | ArrayLike, cutoff_name: str, ratio: bool) -
     cutoff_limit = 0.99999999999999994  # The arbitrary upper end limit for a cutoff ratio
 
     # INPUT VALIDATION
-    validate_type(var=ratio, var_name='ratio', var_type=bool)
+    validate_bool(ratio, 'ratio')
     _validate_cutoff_type(cutoff, cutoff_name)
     validate_pos_float(cutoff, cutoff_name)  # Cutoff must be positive, regardless
     if ratio:

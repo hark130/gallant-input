@@ -5,11 +5,11 @@ validated.
 
     Typical usage example:
 
-    from gallant_input.validation import validate_list, validate_string, validate_type
+    from gallant_input.validation import validate_bool, validate_list, validate_string
 
+    validate_bool(self._as_root, 'as_root')
     validate_list(self._options, 'options', can_be_empty=True)
     validate_string(self._makefile_rule, 'makefile_rule')
-    validate_type(self._as_root, 'as_root', bool)
 """
 # Standard Imports
 from pathlib import Path
@@ -117,7 +117,7 @@ def validate_bytes(validate_this: bytes, param_name: str, exact_len: int = None)
     validate_string(validate_this=param_name, param_name='param_name', can_be_empty=False)
     # exact_len
     if exact_len is not None:
-        validate_type(exact_len, 'exact_len', int)
+        validate_int(exact_len, 'exact_len')
         if exact_len > -1:
             validate_len = True
     # validate_this
@@ -181,7 +181,7 @@ def validate_float(validate_this: float, param_name: str) -> None:
     validate_type(validate_this, param_name, float)
 
 
-def validate_int(validate_this: Path, param_name: str) -> None:
+def validate_int(validate_this: int, param_name: str) -> None:
     """Validate validate_this as an int object.
 
     Args:
@@ -300,7 +300,7 @@ def validate_path(validate_this: Path, param_name: str, must_exist: bool = True)
     """
     # INPUT VALIDATION
     validate_string(param_name, 'param_name', can_be_empty=True)
-    validate_type(must_exist, 'must_exist', bool)
+    validate_bool(must_exist, 'must_exist')
     validate_type(validate_this, param_name, Path)
     if must_exist and not validate_this.exists():
         raise FileNotFoundError(f'Unable to locate "{param_name}" path: '

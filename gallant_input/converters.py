@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import validate_bytes, validate_type
+from gallant_input.validation import validate_bytes, validate_int
 
 
 def convert_bin_bytes_to_int(binary: bytes) -> int:
@@ -69,8 +69,8 @@ def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:
         TypeError: Invalid data type.
         ValueError: Invalid value (e.g., min_width may not be negative).
     """
-    validate_type(var=number, var_name='number', var_type=int)
-    validate_type(var=min_width, var_name='min_width', var_type=int)
+    validate_int(number, 'number')
+    validate_int(min_width, 'min_width')
     if min_width < 0:
         raise ValueError(f'Invalid value for "min_width": {min_width}')
     return format(number, f'0{str(min_width)}b').encode('ascii')

@@ -8,8 +8,8 @@ from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 from gallant_input.rds.exceptions import (RDSIntegrityFailure, RDSMsgGroupTypeMissing,
                                           RDSPICodeMismatch)
 from gallant_input.rds.group import RDSGroup
-from gallant_input.validation import (validate_binary_bytes, validate_list, validate_string,
-                                      validate_type)
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int,
+                                      validate_list, validate_string, validate_type)
 
 
 class RDSPICode:
@@ -99,7 +99,7 @@ class RDSPICode:
 
         # VALIDATION
         self.verify_pi_code_integrity()
-        validate_type(sanitize, 'sanitize', bool)
+        validate_bool(sanitize, 'sanitize')
 
         # GET IT
         # Form the list of RDSMsgGroupType02()s
@@ -181,7 +181,7 @@ class RDSPICode:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        validate_type(force, 'force', bool)
+        validate_bool(force, 'force')
         self._validate_internals(force=force)
 
     # CLASS HELPER METHODS
@@ -255,7 +255,7 @@ class RDSPICode:
         """Validate the private attributes once."""
         if self._validated is False or force is True:
             # self._validated
-            validate_type(var=self._validated, var_name='_validated attribute', var_type=bool)
+            validate_bool(self._validated, '_validated attribute')
             # self._pi_code
             validate_binary_bytes(validate_this=self._pi_code, param_name='pi_code',
                                   exact_len=RDS_BLOCK_DATA_LEN)
@@ -290,7 +290,7 @@ def _combine_offset_dict(offset_dict: dict, num_keys: int, missing: str = '?') -
     validate_string(missing, 'missing', can_be_empty=True)
     validate_type(offset_dict, 'offset_dict', dict)
     for key, val in offset_dict.items():
-        validate_type(key, 'offset_dict key', int)
+        validate_int(key, 'offset_dict key')
         validate_string(val, 'offset_dict value', can_be_empty=False)
         if width is None:
             width = len(val)
@@ -373,6 +373,6 @@ def _pad_chunk(prev_offset: int | None, curr_offset: int, chunk: str, missing: s
 
 def _validate_not_negative_int(var: int, var_name: str) -> None:
     """Validate an integer as not negative (>= 0)."""
-    validate_type(var, var_name, int)
+    validate_int(var, var_name)
     if var < 0:
         raise ValueError(f'The "{var_name}" argument may not be negative: {var}')

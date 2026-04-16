@@ -12,7 +12,7 @@ from gallant_input.constants import (SIG_ANNO_START_INDEX_KEY, SIG_CAP_DATETIME_
                                      SIG_GLOB_DATATYPE_KEY, DEF_USERNAME,
                                      SIG_GLOB_DESCRIPTION_KEY, SIG_GLOB_SAMPLE_RATE_KEY,
                                      SIG_GLOB_VERSION_KEY)
-from gallant_input.sigmfdatatype import SigMFDataType
+from gallant_input.gain_sigmf.sigmfdatatype import SigMFDataType
 from gallant_input.validation import (validate_bool, validate_float, validate_int,
                                       validate_int_or_float, validate_string, validate_type)
 

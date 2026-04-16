@@ -11,7 +11,7 @@ import numpy
 import sigmf
 # Local Imports
 from gallant_input.logger import Logger
-from gallant_input.sigmfdtypeinfo import SigMFDTypeInfo
+from gallant_input.gain_sigmf.sigmfdtypeinfo import SigMFDTypeInfo
 from gallant_input.validation import validate_int, validate_path, validate_string
 
 

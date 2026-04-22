@@ -195,6 +195,42 @@ def validate_int(validate_this: int, param_name: str) -> None:
     validate_type(validate_this, param_name, int)
 
 
+def validate_float_or_complex(validate_this: float | complex, param_name: str) -> None:
+    """Validate an argument, which could be an float or complex, on behalf of this package.
+
+    The codec module will accept these data types within the mapper argument so this function will
+    be used as a SPOT for all(?) float or complex validation.
+
+    Args:
+        validate_this: The parameter to validate as an int or float.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a float or complex.
+    """
+    # LOCAL VARIABLES
+    valid = False  # Flow control variable
+
+    # VALIDATE IT
+    # int?
+    try:
+        validate_float(validate_this, param_name)
+    except TypeError:
+        pass  # Ignoring one failure
+    else:
+        valid = True
+    # float?
+    if not valid:
+        try:
+            validate_type(validate_this, param_name, complex)
+        except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
+            raise TypeError(f'The "{param_name}" argument must be a float or complex '
+                            f'data type instead of type {type(validate_this)}')
+            # pylint: enable=raise-missing-from
+
+
 def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
     """Validate an argument, which could be an int or float, on behalf of this package.
 
@@ -206,8 +242,7 @@ def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
         param_name: The name of the parameter to be used in exception messages.
 
     Raises:
-        TypeError: validate_this is not a string.
-        ValueError: validate_this is empty and can_be_empty is False.
+        TypeError: validate_this is not a int or float.
     """
     # LOCAL VARIABLES
     valid = False  # Flow control variable

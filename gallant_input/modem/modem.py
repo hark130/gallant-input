@@ -20,6 +20,9 @@ class Modem(ABC):
         """
         self.sample_rate = sample_rate
         self.symbol_rate = symbol_rate
+        self._parsed = False            # Input parsed
+        self._sps = 0                   # Samples per symbol
+        self._validated = False         # Validation status of attributes
 
     @abstractmethod
     def modulate(self, bin_bytes: bytes) -> numpy.ndarray:

@@ -5,7 +5,9 @@ import math
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import validate_binary_bytes, validate_float_or_complex
+from gallant_input.validation import (validate_binary_bytes, validate_float_or_complex,
+                                      validate_int, validate_ndarray, validate_pos_int,
+                                      validate_type)
 
 
 def convert_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
@@ -65,7 +67,7 @@ def decode_differential_binary(bin_bytes: bytes) -> bytes:
 
 
 def map_bits_to_symbols(bitstream: numpy.ndarray, bits_per_symbol: int,
-                        mapper: dict[int, float | complex]) -> np.ndarray:
+                        mapper: dict[int, float | complex]) -> numpy.ndarray:
     """Map binary data to symbols according to the mapper.
 
     The number of entries in mapper must equal 2^bits_per_symbol.

@@ -5,6 +5,8 @@
 # Third Party Imports
 import numpy
 # Local Imports
+from gallant_input.codec import convert_bytes_to_bits, map_bits_to_symbols
+from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.validation import validate_bool, validate_pos_float
 
@@ -88,4 +90,3 @@ class OOK(Modem):
         validate_bool(self._parsed, 'internal attribute _parsed')
         # self._sps may not be valid yet so skip it
         # Not checking self._validated here so skip it
-

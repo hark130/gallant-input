@@ -76,6 +76,13 @@ def map_bits_to_symbols(bitstream: numpy.ndarray, bits_per_symbol: int,
         bitstream: An array of binary data to map to symbols.
         bits_per_symbol: The number of bits included in each symbol.
         mapper: The bits --> symbol dictionary.
+
+    Returns:
+        Any array of symbols mapped according to the mapper dictionary.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
     """
     # LOCAL VARIABLES
     pad = 0         # The number of bits to pad to bitstream
@@ -102,6 +109,34 @@ def map_bits_to_symbols(bitstream: numpy.ndarray, bits_per_symbol: int,
 
     # DONE
     return mapping
+
+
+def upsample(symbols: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
+    """Convert symbols into samples.
+
+    Args:
+        symbols: An array of symbols.
+        samples_per_symbol: The number of samples required to represent one symbol.
+
+    Returns:
+        Each symbol in the symbols array repeated samples_per_symbol number of times.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    samples = None  # The symbols array, upsampled
+
+    # INPUT VALIDATION
+    validate_ndarray(symbols, 'symbols', can_be_empty=False, num_dim=None, must_be_complex=False)
+    validate_pos_int(samples_per_symbol, 'samples_per_symbol')
+
+    # UPSAMPLE IT
+    samples = numpy.repeat(symbols, samples_per_symbol)
+
+    # DONE
+    return samples
 
 
 def _validate_bps_to_mapper(bits_per_symbol: int, mapper: dict[int, float | complex]) -> None:

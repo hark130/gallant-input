@@ -5,7 +5,7 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.codec import convert_bytes_to_bits, map_bits_to_symbols
+from gallant_input.codec import convert_bytes_to_bits, map_bits_to_symbols, upsample
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.validation import validate_bool, validate_pos_float
@@ -29,8 +29,12 @@ class OOK(Modem):
             TypeError: Invalid data type.
             ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
         """
+        self.parse()  # Validate and parse
         bits = convert_bytes_to_bits(bin_bytes)
         symbols = map_bits_to_symbols(bits, bits_per_symbol=1, mapper=OOK_MAP)
+        waveform = upsample(symbols, self._sps)
+        iq = waveform.astype(numpy.complex64)
+        return iq
 
     def demodulate(self, samples: numpy.ndarray) -> bytes:
         """DEMoodulate binary data.
@@ -45,6 +49,7 @@ class OOK(Modem):
             TypeError: Invalid data type.
             ValueError: Bad value.
         """
+        self.parse()  # Validate and parse
 
     # PUBLIC METHODS
 

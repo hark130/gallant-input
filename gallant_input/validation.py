@@ -370,6 +370,50 @@ def validate_pos_float(validate_this: float, param_name: str, abs_tol: float = 1
         raise ValueError(f'The "{param_name}" argument *must* be > 0')
 
 
+def validate_pos_float_or_int(validate_this: float | int, param_name: str,
+                              abs_tol: float = 1e-9) -> None:
+    """Validate validate_this as a positive float or int.
+
+    IMPORTANT NOTE: Positive values are greater than zero.  To put it another way, zero is
+    *NOT* positive.
+
+    Args:
+        validate_this: The parameter to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        abs_tol: [OPTIONAL] The maximum difference for being considered "close" to zero,
+            regardless of the magnitude of the input values.  This value is used to test if
+            validate_this is equivalent to zero.  (see: math.isclose(abs_tol) for more information)
+
+    Raises:
+        TypeError: Not a float or int.
+        ValueError: validate_this is not positive or abs_tol is negative.
+    """
+    # LOCAL VARIABLES
+    valid = False  # Flow control variable
+
+    # VALIDATE IT
+    # positive int?
+    try:
+        validate_pos_int(validate_this, param_name)
+    except (TypeError, ValueError):
+        pass  # Ignoring one failure
+    else:
+        valid = True
+    # positive float?
+    if not valid:
+        try:
+            validate_pos_float(validate_this, param_name, abs_tol)
+        except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
+            raise TypeError(f'The "{param_name}" argument must be an integer or a '
+                            f'floating point data type instead of type {type(validate_this)}')
+        except ValueError:
+            raise ValueError(f'The "{param_name}" argument must be positive instead of '
+                             f'{validate_this}')
+            # pylint: enable=raise-missing-from
+
+
 def validate_pos_int(validate_this: int, param_name: str) -> None:
     """Validate validate_this as a positive integer.
 

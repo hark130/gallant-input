@@ -76,14 +76,30 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         Test author must call self.set_test_input().
 
         Args:
-            rds_block: Sets the rds_block argument input.  Accepts any input, including bad input.
-            block_id: Sets the block_id argument input.  Accepts any input, including bad input.
+            sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
+            symbol_rate: Sets the symbol_rate argument input.  Accepts any input, bad or otherwise.
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
         self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
+
+    def run_test_exception_input(self, sample_rate: Any, symbol_rate: Any, bin_bytes: Any,
+                                 exception_type: Exception, exception_msg: str) -> None:
+        """Common method calls for a test case expected to raise an exception.
+
+        Test author must call self.set_test_input().
+
+        Args:
+            sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
+            symbol_rate: Sets the symbol_rate argument input.  Accepts any input, bad or otherwise.
+            exception_type: An Exception type to expect (e.g., ValueError).
+            exception_msg: A sub-string, empty or not, to look for in the raised Exception.
+        """
+        self.set_test_input(bin_bytes)
+        self.run_test_exception(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                exception_type=exception_type, exception_msg=exception_msg)
 
     def run_test_return(self, sample_rate: float, symbol_rate: float,
                         exp_ret: numpy.ndarray) -> None:
@@ -157,15 +173,243 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
     """Error Test Cases."""
 
-    def test_e01_(self):
-        """."""
+    def test_e01_bad_sample_rate_type_none(self):
+        """Bad sample rate: wrong type - None."""
+        samp_rate = None
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument must be a')
+
+    def test_e02_bad_sample_rate_type_string(self):
+        """Bad sample rate: wrong type - string."""
+        samp_rate = '48000'
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument must be a')
+
+    def test_e03_bad_sample_rate_value_zero(self):
+        """Bad sample rate: bad value - zero."""
+        samp_rate = 0
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "sample_rate" argument is not positive')
+
+    def test_e04_bad_sample_rate_value_negative(self):
+        """Bad sample rate: bad value - negative."""
+        samp_rate = -48000
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "sample_rate" argument is not positive')
+
+    def test_e05_bad_sample_rate_value_zero_float(self):
+        """Bad sample rate: bad value - float(zero)."""
+        samp_rate = float(0.0)
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "sample_rate" argument may not be 0')
+
+    def test_e06_bad_sample_rate_value_negative_float(self):
+        """Bad sample rate: bad value - float(negative)."""
+        samp_rate = float(-48000.0)
+        sym_rate = 800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "sample_rate" argument *must* be > 0')
+
+    def test_e07_bad_symbol_rate_type_none(self):
+        """Bad sample rate: wrong type - None."""
+        samp_rate = 48000
+        sym_rate = None
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument must be a')
+
+    def test_e08_bad_symbol_rate_type_string(self):
+        """Bad sample rate: wrong type - string."""
+        samp_rate = 48000
+        sym_rate = '800'
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument must be a')
+
+    def test_e09_bad_symbol_rate_value_zero(self):
+        """Bad sample rate: bad value - zero."""
+        samp_rate = 48000
+        sym_rate = 0
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "symbol_rate" argument is not positive')
+
+    def test_e10_bad_symbol_rate_value_negative(self):
+        """Bad sample rate: bad value - negative."""
+        samp_rate = 48000
+        sym_rate = -800
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "symbol_rate" argument is not positive')
+
+    def test_e11_bad_symbol_rate_value_zero_float(self):
+        """Bad sample rate: bad value - float(zero)."""
+        samp_rate = 48000
+        sym_rate = float(0.0)
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "symbol_rate" argument may not be 0')
+
+    def test_e12_bad_symbol_rate_value_negative_float(self):
+        """Bad sample rate: bad value - float(negative)."""
+        samp_rate = 48000
+        sym_rate = float(-800.0)
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "symbol_rate" argument *must* be > 0')
+
+    def test_e13_bad_bin_bytes_type_none(self):
+        """Bad bin_bytes: bad type - None."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = None
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e14_bad_bin_bytes_type_string(self):
+        """Bad bin_bytes: bad type - None."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = '10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e15_bad_bin_bytes_value_empty(self):
+        """Bad bin_bytes: bad value - empty."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = b''
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'ndarray may not be empty')
+
+    def test_e16_bad_bin_bytes_value_non_binary(self):
+        """Bad bin_bytes: bad value - non-binary (AKA '...and I thought I saw a 2' -Bender)."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = b'101010100010101010121011110100101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'Invalid binary value detected')
 
 
-class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
-    """Error Test Cases."""
+class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
+    """Boundary Test Cases."""
 
-    def test_b01_(self):
-        """."""
+    def test_b01_one_bit_on(self):
+        """One bit: on."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        test_in = b'1'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b02_one_bit_off(self):
+        """One bit: off."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        test_in = b'0'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b03_lowest_sample_rate(self):
+        """Smallest valid sample rate.
+
+        Rounding this computed samples per symbol to an integer results in a value of 0 which is
+        not valid.
+        """
+        samp_rate = 1
+        sym_rate = 80
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "samples_per_symbol" argument is not positive')
+
+    def test_b04_lowest_symbol_rate(self):
+        """Smallest valid symbol rate."""
+        samp_rate = 4800
+        sym_rate = 1
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b05_lowest_samples_per_symbol(self):
+        """Smallest valid sample rate and symbol rate."""
+        samp_rate = 1
+        sym_rate = 1
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b06_lowest_sample_rate_floats(self):
+        """Smallest valid sample rate (as floats).
+
+        Rounding this computed samples per symbol to an integer results in a value of 0 which is
+        not valid.
+        """
+        samp_rate = float(1.0)
+        sym_rate = float(80.0)
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+                                      'The "samples_per_symbol" argument is not positive')
+
+    def test_b07_lowest_symbol_rate(self):
+        """Smallest valid symbol rate."""
+        samp_rate = float(4800.0)
+        sym_rate = float(1.0)
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b08_lowest_samples_per_symbol(self):
+        """Smallest valid sample rate and symbol rate."""
+        samp_rate = float(1.0)
+        sym_rate = float(1.0)
+        # Test case input
+        test_in = b'10101010'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b09_smallest_everything_on(self):
+        """All arguments are set to the smallest appropriate values: on."""
+        samp_rate = 1
+        sym_rate = 1
+        # Test case input
+        test_in = b'1'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b10_smallest_everything_off(self):
+        """All arguments are set to the smallest appropriate values: on."""
+        samp_rate = 1
+        sym_rate = 1
+        # Test case input
+        test_in = b'0'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b11_smallest_everything_on_floats(self):
+        """All arguments are set to the smallest appropriate values (as floats): on."""
+        samp_rate = float(1.0)
+        sym_rate = float(1.0)
+        # Test case input
+        test_in = b'1'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_b12_smallest_everything_off_floats(self):
+        """All arguments are set to the smallest appropriate values (as floats): off."""
+        samp_rate = float(1.0)
+        sym_rate = float(1.0)
+        # Test case input
+        test_in = b'0'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
 
 
 class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
@@ -177,6 +421,14 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800     # 5.03 Demod 101 FoI 2
         # Test case input
         test_in = b'10101010'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s02_real_data_rds_set_msg00_a(self):
+        """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A - Station Name 'KONO    '."""
+        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
+        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
+        # Test case input
+        test_in = self.RDS_SET1_MSG00A
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
 
 

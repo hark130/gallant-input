@@ -391,11 +391,16 @@ def validate_pos_float_or_int(validate_this: float | int, param_name: str,
     # LOCAL VARIABLES
     valid = False  # Flow control variable
 
+    # INPUT VALIDATION
+    validate_string(param_name, 'param_name', can_be_empty=True)
+    validate_pos_float(abs_tol, 'abs_tol')
+    validate_int_or_float(validate_this, param_name)
+
     # VALIDATE IT
     # positive int?
     try:
         validate_pos_int(validate_this, param_name)
-    except (TypeError, ValueError):
+    except TypeError:
         pass  # Ignoring one failure
     else:
         valid = True
@@ -403,14 +408,12 @@ def validate_pos_float_or_int(validate_this: float | int, param_name: str,
     if not valid:
         try:
             validate_pos_float(validate_this, param_name, abs_tol)
-        except TypeError:
+        # except TypeError:
+        except TypeError as err:
             # I don't want to "raise from" because this exception is shared by two try/excepts
             # pylint: disable=raise-missing-from
             raise TypeError(f'The "{param_name}" argument must be an integer or a '
                             f'floating point data type instead of type {type(validate_this)}')
-        except ValueError:
-            raise ValueError(f'The "{param_name}" argument must be positive instead of '
-                             f'{validate_this}')
             # pylint: enable=raise-missing-from
 
 

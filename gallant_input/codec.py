@@ -10,6 +10,32 @@ from gallant_input.validation import (validate_binary_bytes, validate_float_or_c
                                       validate_type)
 
 
+def convert_ascii_bin_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
+    """Convert ASCII bytes into a numpy array of bits.
+
+    b'10101010' --> array([1, 0, 1, 0, 1, 0, 1, 0], dtype=uint8)
+
+    Args:
+        bin_bytes: ASCII bytes containing only characters '0' and '1'.
+
+    Returns:
+        1D array of uint8 bits (0 or 1).
+    """
+    # LOCAL VARIABLES
+    array = None       # NumPy array of ASCII bytes from bin_bytes
+    bit_stream = None  # NumPy array of bits from array
+
+    # INPUT VALIDATION
+    validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
+
+    # CONVERT IT
+    array = numpy.frombuffer(bin_bytes, dtype=numpy.uint8)
+    bit_stream = (array - ord('0')).astype(numpy.uint8)
+
+    # DONE
+    return bit_stream
+
+
 def convert_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
     """Convert a bytes object containing binary data to an array object.
 
@@ -147,7 +173,7 @@ def _validate_bps_to_mapper(bits_per_symbol: int, mapper: dict[int, float | comp
     if len(mapper) != math.pow(2, bits_per_symbol):
         raise ValueError(f'The length of the "mapper" dictionary ({len(mapper)}) does not equal '
                          f'2^{bits_per_symbol}')
-    for key, value in mapper:
+    for key, value in mapper.items():
         validate_int(key, 'a key in the mapper dictionary')
         if key < 0:
             raise ValueError(f'Keys in the "mapper" dictionary may not be negative: {key}')

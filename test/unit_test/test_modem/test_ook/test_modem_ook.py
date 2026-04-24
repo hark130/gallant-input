@@ -55,11 +55,6 @@ class ModemOOKUnitTest(ModemUnitTest):
 
     # CORE CLASS METHODS
     # Methods listed in call order
-    def __init__(self, *args, **kwargs) -> None:
-        """ModemOOKUnitTest ctor."""
-        # ATTRIBUTES
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

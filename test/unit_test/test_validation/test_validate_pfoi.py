@@ -11,7 +11,6 @@ Typical Usage:
 """
 
 # Standard Imports
-from typing import Any
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 from test.unit_test.root_unit_test import RootUnitTest

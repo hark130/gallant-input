@@ -5,11 +5,10 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, convert_bytes_to_bits,
-                                 map_bits_to_symbols, upsample)
+from gallant_input.codec import convert_ascii_bin_bytes_to_bits, map_bits_to_symbols, upsample
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import validate_bool, validate_pos_float, validate_pos_float_or_int
+from gallant_input.validation import validate_bool, validate_pos_float_or_int
 
 
 class OOK(Modem):

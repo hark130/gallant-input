@@ -18,7 +18,6 @@ from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits
-from gallant_input.validation import validate_binary_bytes
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -61,7 +60,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
                                        f'but received {return_value.dtype} instead')
             # Final Catch All
             if not numpy.array_equal(return_value, self._exp_return):
-                self._add_test_failure(f'The expected array is not equal to the returned array')
+                self._add_test_failure('The expected array is not equal to the returned array')
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
@@ -85,6 +84,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def run_test_exception_input(self, sample_rate: Any, symbol_rate: Any, bin_bytes: Any,
                                  exception_type: Exception, exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
@@ -100,6 +100,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         self.set_test_input(bin_bytes)
         self.run_test_exception(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                 exception_type=exception_type, exception_msg=exception_msg)
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def run_test_return(self, sample_rate: float, symbol_rate: float,
                         exp_ret: numpy.ndarray) -> None:
@@ -478,7 +479,6 @@ def compute_exp_return(sample_rate: float, symbol_rate: float, bin_bytes: bytes)
     sps = int(sample_rate / symbol_rate)  # Samples per symbol
     samples = None                        # An array of the sample values
     array = None                          # The numpy.ndarray formed from the samples
-    bin_array = convert_ascii_bin_bytes_to_bits(bin_bytes)
 
     # COMPUTE IT
     samples = []

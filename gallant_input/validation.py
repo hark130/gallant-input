@@ -408,8 +408,7 @@ def validate_pos_float_or_int(validate_this: float | int, param_name: str,
     if not valid:
         try:
             validate_pos_float(validate_this, param_name, abs_tol)
-        # except TypeError:
-        except TypeError as err:
+        except TypeError:
             # I don't want to "raise from" because this exception is shared by two try/excepts
             # pylint: disable=raise-missing-from
             raise TypeError(f'The "{param_name}" argument must be an integer or a '

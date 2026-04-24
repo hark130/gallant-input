@@ -115,7 +115,7 @@ class ModemUnitTest(RootUnitTest):
     def set_ctor_args(self, sample_rate: Any, symbol_rate: Any) -> None:
         """Sets the Modem() argument values in the test class."""
         self.input_sample_rate = sample_rate
-        self.input_symbol_rate = symbol_rate        
+        self.input_symbol_rate = symbol_rate
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call.

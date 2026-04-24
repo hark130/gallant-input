@@ -11,7 +11,7 @@ import numpy
 class Modem(ABC):
     """Abstract base class (ABC) for modulation and demodulation."""
 
-    def __init__(self, sample_rate: float, symbol_rate: float):
+    def __init__(self, sample_rate: float | int, symbol_rate: float | int):
         """Class ctor.
 
         Args:

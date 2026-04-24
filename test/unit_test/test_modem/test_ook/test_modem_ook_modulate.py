@@ -417,8 +417,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s01_realistic_usage(self):
         """5.03 Demod 101 FoI 2."""
-        samp_rate = 48000  # 5.03 Demod 101 FoI 2
-        sym_rate = 800     # 5.03 Demod 101 FoI 2
+        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
         # Test case input
         test_in = b'10101010'
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
@@ -429,6 +429,46 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         # Test case input
         test_in = self.RDS_SET1_MSG00A
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s03_real_data_demod_101_foi_1_preamble(self):
+        """5.03 Demod 101 FoI 1 Preamble."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        # Test case input
+        test_in = self.DEMOD_101_FOI_1_PREAMBLE
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s04_real_data_demod_101_foi_1_pdu(self):
+        """5.03 Demod 101 FoI 1 PDU."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        # Test case input
+        test_in = self.DEMOD_101_FOI_1_PDU
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s05_real_data_demod_101_foi_2_preamble(self):
+        """5.03 Demod 101 FoI 2 Preamble."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
+        # Test case input
+        test_in = self.DEMOD_101_FOI_2_PREAMBLE
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s06_real_data_demod_101_foi_3_preamble(self):
+        """5.03 Demod 101 FoI 3 Preamble."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 3 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 3 symbol rate
+        # Test case input
+        test_in = self.DEMOD_101_FOI_3_PREAMBLE
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
+
+    def test_s07_real_data_fhss_chan_01_preamble(self):
+        """5.05 FHSS Channel 01 Preamble."""
+        samp_rate = 26000000  # 5.05 FHSS sample rate
+        sym_rate = 250000     # 5.05 FHSS symbol rate
+        # Test case input
+        test_in = self.FHSS_CHANNEL_01_PREAMBLE
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
 
 

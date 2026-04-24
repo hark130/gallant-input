@@ -5,10 +5,11 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.codec import convert_bytes_to_bits, map_bits_to_symbols, upsample
+from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, convert_bytes_to_bits,
+                                 map_bits_to_symbols, upsample)
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import validate_bool, validate_pos_float
+from gallant_input.validation import validate_bool, validate_pos_float, validate_pos_float_or_int
 
 
 class OOK(Modem):
@@ -30,7 +31,7 @@ class OOK(Modem):
             ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
         """
         self.parse()  # Validate and parse
-        bits = convert_bytes_to_bits(bin_bytes)
+        bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         symbols = map_bits_to_symbols(bits, bits_per_symbol=1, mapper=OOK_MAP)
         waveform = upsample(symbols, self._sps)
         iq = waveform.astype(numpy.complex64)
@@ -86,12 +87,12 @@ class OOK(Modem):
     def _parse(self) -> None:
         """Parse user input."""
         # PARSE IT
-        self._sps = int(self.sample_rate * self.symbol_rate)
+        self._sps = int(self.sample_rate / self.symbol_rate)
 
     def _validate(self) -> None:
         """Validate attribute values."""
-        validate_pos_float(self.sample_rate, 'sample_rate')
-        validate_pos_float(self.symbol_rate, 'symbol_rate')
+        validate_pos_float_or_int(self.sample_rate, 'sample_rate')
+        validate_pos_float_or_int(self.symbol_rate, 'symbol_rate')
         validate_bool(self._parsed, 'internal attribute _parsed')
         # self._sps may not be valid yet so skip it
         # Not checking self._validated here so skip it

@@ -8,7 +8,7 @@ import numpy
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, map_bits_to_symbols, upsample
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import validate_bool
+from gallant_input.validation import validate_bool, validate_ndarray
 
 
 class OOK(Modem):
@@ -36,11 +36,13 @@ class OOK(Modem):
         iq = waveform.astype(numpy.complex64)
         return iq
 
-    def demodulate(self, samples: numpy.ndarray) -> bytes:
+    def demodulate(self, samples: numpy.ndarray, threshold: float | None) -> bytes:
         """DEMoodulate binary data.
 
         Args:
             samples: Digital samples to demodulate.
+            threshold: [OPTIONAL] Magnitude threshold used to decide between binary results.
+                If None, automatically determine the threshold.
 
         Returns:
             The demodulated binary data.
@@ -49,7 +51,23 @@ class OOK(Modem):
             TypeError: Invalid data type.
             ValueError: Bad value.
         """
+        # LOCAL VARIABLES
+        num_symbols = 0  # Number of complete symbols, valid or not, available in samples
+        symbols = None   # ndarray of trimmed samples reshaped into symbols
+
+        # VALIDATION
         self.parse()  # Validate and parse
+        validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
+                         must_be_complex=False)
+
+        # DEMODULATE IT
+        # Trim it
+        num_symbols = len(samples) // self._sps
+        samples = samples[:num_symbols * self._sps]
+        # Reshape it
+        symbols = samples.reshape(-1, self._sps)
+
+
 
     # PUBLIC METHODS
 

@@ -1,4 +1,4 @@
-"""Unit test module for OOK.get_block_data().
+"""Unit test module for OOK.modulate().
 
 Typical Usage:
     python -m test                                # Run *all* the test cases
@@ -94,6 +94,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         Args:
             sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
             symbol_rate: Sets the symbol_rate argument input.  Accepts any input, bad or otherwise.
+            bin_bytes: Test case input.
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
@@ -279,7 +280,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
                                       'argument should have been of type')
 
     def test_e14_bad_bin_bytes_type_string(self):
-        """Bad bin_bytes: bad type - None."""
+        """Bad bin_bytes: bad type - string."""
         samp_rate = 48000
         sym_rate = 800
         test_in = '10101010'
@@ -473,7 +474,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, bin_bytes=test_in)
 
 
-def compute_exp_return(sample_rate: float, symbol_rate: float, bin_bytes: bytes) -> numpy.ndarray:
+def compute_exp_return(sample_rate: int | float, symbol_rate: int | float,
+                       bin_bytes: bytes) -> numpy.ndarray:
     """Compute the expected return based on the test case input."""
     # LOCAL VARIABLES
     sps = int(sample_rate / symbol_rate)  # Samples per symbol

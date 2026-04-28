@@ -8,7 +8,7 @@ import numpy
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, map_bits_to_symbols, upsample
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import validate_bool, validate_pos_float_or_int
+from gallant_input.validation import validate_bool
 
 
 class OOK(Modem):
@@ -85,13 +85,8 @@ class OOK(Modem):
 
     def _parse(self) -> None:
         """Parse user input."""
-        # PARSE IT
-        self._sps = int(self.sample_rate / self.symbol_rate)
+        self._parse_abc()
 
     def _validate(self) -> None:
         """Validate attribute values."""
-        validate_pos_float_or_int(self.sample_rate, 'sample_rate')
-        validate_pos_float_or_int(self.symbol_rate, 'symbol_rate')
-        validate_bool(self._parsed, 'internal attribute _parsed')
-        # self._sps may not be valid yet so skip it
-        # Not checking self._validated here so skip it
+        self._validate_abc()

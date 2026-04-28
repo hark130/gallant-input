@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 # Third Party Imports
 import numpy
 # Local Imports
+from gallant_input.validation import validate_bool, validate_pos_float_or_int
 
 
 class Modem(ABC):
@@ -53,3 +54,18 @@ class Modem(ABC):
             TypeError: Invalid data type.
             ValueError: Bad value.
         """
+
+    # PRIVATE METHODS
+
+    def _parse_abc(self) -> None:
+        """Parse user input defined in the ABC."""
+        # PARSE IT
+        self._sps = int(self.sample_rate / self.symbol_rate)
+
+    def _validate_abc(self) -> None:
+        """Validate attribute values in the ABC."""
+        validate_pos_float_or_int(self.sample_rate, 'sample_rate')
+        validate_pos_float_or_int(self.symbol_rate, 'symbol_rate')
+        validate_bool(self._parsed, 'internal attribute _parsed')
+        # self._sps may not be valid yet so skip it
+        # Not checking self._validated here so skip it

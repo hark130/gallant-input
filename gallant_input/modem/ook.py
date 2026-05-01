@@ -5,9 +5,12 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.codec import convert_ascii_bin_bytes_to_bits, map_bits_to_symbols, upsample
+from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
+                                 stringify_ndarray, upsample)
+from gallant_input.modem.calc import compute_threshold, extract_bits_from_samples, trim_samples
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
+from gallant_input.modem.threshold_scheme import ThresholdScheme
 from gallant_input.validation import validate_bool, validate_ndarray
 
 
@@ -52,21 +55,25 @@ class OOK(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        num_symbols = 0  # Number of complete symbols, valid or not, available in samples
-        symbols = None   # ndarray of trimmed samples reshaped into symbols
+        bits = None       # An array of bits extracted from samples
+        bit_stream = b''  # The bits as a bin bytes object
 
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
+        if threshold is not None:
+            validate_pos_float(threshold, 'threshold')
+        else:
+            # MIDRANGE is fine for OOK
+            threshold = compute_threshold(samples, self._sps, scheme=ThresholdScheme.MIDRANGE)
 
         # DEMODULATE IT
-        # Trim it
-        num_symbols = len(samples) // self._sps
-        samples = samples[:num_symbols * self._sps]
-        # Reshape it
-        symbols = samples.reshape(-1, self._sps)
+        bits = extract_bits_from_samples(samples, self._sps, threshold)
+        bit_stream = stringify_ndarray(bits)
 
+        # DONE
+        return bit_stream
 
 
     # PUBLIC METHODS

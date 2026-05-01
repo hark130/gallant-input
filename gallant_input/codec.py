@@ -137,6 +137,33 @@ def map_bits_to_symbols(bitstream: numpy.ndarray, bits_per_symbol: int,
     return mapping
 
 
+def stringify_ndarray(symbols: numpy.ndarray) -> bytes:
+    """Convert a 1-d NumPy ndarray of values to a byte string.
+
+    Args:
+        symbols: An array of symbols to convert to a byte string.
+
+    Returns:
+        The absolute value of symbols as a byte string.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    byte_str = b''  # The stringified symbols
+
+    # INPUT VALIDATION
+    validate_ndarray(symbols, 'symbols', can_be_empty=True, num_dim=None, must_be_complex=False)
+
+    # STRINGIFY IT
+    for symbol in symbols:
+        byte_str = byte_str + bytes(str(symbol), 'ascii')
+
+    # DONE
+    return byte_str
+
+
 def upsample(symbols: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
     """Convert symbols into samples.
 

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 # Third Party Imports
 import numpy
 # Local Imports
+from gallant_input.modem.calc import calculate_sps
 from gallant_input.validation import validate_bool, validate_pos_float_or_int
 
 
@@ -60,7 +61,7 @@ class Modem(ABC):
     def _parse_abc(self) -> None:
         """Parse user input defined in the ABC."""
         # PARSE IT
-        self._sps = int(self.sample_rate / self.symbol_rate)
+        self._sps = calculate_sps(self.sample_rate, self.symbol_rate)
 
     def _validate_abc(self) -> None:
         """Validate attribute values in the ABC."""

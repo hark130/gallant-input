@@ -43,33 +43,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call."""
-        # LOCAL VARIABLES
-        def_error = 'Array {} mismatch:'
-
-        # VALIDATE IT
-        # Type
-        if not isinstance(return_value, type(self._exp_return)):
-            self._add_test_failure(f'Expected type {type(self._exp_return)} '
-                                   f'but it was of type {type(return_value)}')
-        else:
-            # Number of dimensions
-            if return_value.ndim != self._exp_return.ndim:
-                self._add_test_failure(f'{def_error.format("dimension")} Expected '
-                                       f'{self._exp_return.ndim} dimensions '
-                                       f'but received {return_value.ndim} instead')
-            # Shape
-            if return_value.shape != self._exp_return.shape:
-                self._add_test_failure(f'{def_error.format("shape")} Expected '
-                                       f'{self._exp_return.shape} shape '
-                                       f'but received {return_value.shape} instead')
-            # Data Type
-            if return_value.dtype != self._exp_return.dtype:
-                self._add_test_failure(f'{def_error.format("dtype")} Expected '
-                                       f'{self._exp_return.dtype} shape '
-                                       f'but received {return_value.dtype} instead')
-            # Final Catch All
-            if not numpy.array_equal(return_value, self._exp_return):
-                self._add_test_failure('The expected array is not equal to the returned array')
+        self._validate_return_value(return_value=return_value)
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order

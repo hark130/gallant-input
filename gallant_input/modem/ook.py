@@ -36,7 +36,7 @@ class OOK(Modem):
         iq = waveform.astype(numpy.complex64)
         return iq
 
-    def demodulate(self, samples: numpy.ndarray, threshold: float | None) -> bytes:
+    def demodulate(self, samples: numpy.ndarray, threshold: float | None = None) -> bytes:
         """DEMoodulate binary data.
 
         Args:

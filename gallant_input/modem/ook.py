@@ -12,7 +12,7 @@ from gallant_input.modem.calc import (compute_threshold, extract_bits_from_sampl
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import validate_bool, validate_ndarray
+from gallant_input.validation import validate_bool, validate_ndarray, validate_pos_float
 
 
 class OOK(Modem):

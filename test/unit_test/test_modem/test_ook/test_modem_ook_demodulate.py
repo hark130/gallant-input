@@ -17,7 +17,8 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.codec import convert_ascii_bin_bytes_to_bits
+from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
+from gallant_input.modem.calc import calculate_sps
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -161,6 +162,33 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         # Test case input
         exp_ret = b'11111111'
         threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
+
+    def test_n04_single_byte_alt_bits_manual_valid_threshold(self):
+        """Single byte, alternating bits with a safe, valid manual threshold value."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'10101010'
+        threshold = 0.5
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
+
+    def test_n05_all_zeros_manual_valid_threshold(self):
+        """Single byte, all zeros with a safe, valid manual threshold value."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'00000000'
+        threshold = 0.5
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
+
+    def test_n06_all_ones_manual_valid_threshold(self):
+        """Single byte, all ones with a safe, valid manual threshold value."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'11111111'
+        threshold = 0.5
         self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
 
@@ -312,6 +340,33 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_ALL_10S.ndim}-dimensional')
 
+    def test_e17_bad_threshold_type_string(self):
+        """Bad threshold: wrong type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = self.SAMPLES_ALL_ONES
+        threshold = '0.5'
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
+                                      'argument should have been of type')
+
+    def test_e18_bad_threshold_type_int(self):
+        """Bad threshold: wrong type - int."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = self.SAMPLES_ALL_ZEROES
+        threshold = 1
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
+                                      'argument should have been of type')
+
+    def test_e19_bad_threshold_value_negative(self):
+        """Bad threshold: bad value - negative."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = self.SAMPLES_ALL_10S
+        threshold = -0.5
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
+                                      'The "threshold" argument *must* be > 0')
+
 
 class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
     """Boundary Test Cases."""
@@ -434,6 +489,45 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         threshold = None  # Automatically determine the threshold
         self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
+    def test_b13_bad_threshold_value_zero(self):
+        """Bad threshold: bad value - zero."""
+        samp_rate = 48000
+        sym_rate = 800
+        test_in = self.SAMPLES_ALL_10S
+        threshold = 0.0
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
+                                      'The "threshold" argument may not be 0')
+
+    def test_b14_miniscule_threshold_right_all_ones(self):
+        """Miniscule threshold value is tightly tuned: right - all ones."""
+        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 1.0 - 1e-7  # High, but valid
+        exp_ret = b'1' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_b15_miniscule_threshold_wrong_all_ones(self):
+        """Miniscule threshold value is tightly tuned: wrong - all ones."""
+        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 0.99999999 + 1e-18  # Too high
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_b16_equivalent_threshold_wrong_all_ones(self):
+        """Miniscule threshold value is tightly tuned: wrong - all ones."""
+        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 1.0  # Too equivalent to match
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
 
 class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
     """Special Test Cases."""
@@ -500,6 +594,92 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         exp_ret = self.FHSS_CHANNEL_01_PREAMBLE
         threshold = None  # Automatically determine the threshold
         self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
+
+    def test_s08_manual_threshold_right_all_ones(self):
+        """Manual threshold: right - all ones."""
+        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 0.9  # High, but valid
+        exp_ret = b'1' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s09_manual_threshold_wrong_all_ones(self):
+        """Manual threshold: wrong - all ones."""
+        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 9.0  # Too high
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s10_manual_threshold_barely_wrong_all_zeros(self):
+        """Manual threshold: (so small as to be) barely wrong - all zeros."""
+        orig_symbols = self.SAMPLES_ALL_ZEROES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 1e-9
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s11_manual_threshold_wrong_all_zeros(self):
+        """Manual threshold: wrong - all zeros."""
+        orig_symbols = self.SAMPLES_ALL_ZEROES  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 9.0  # Too high
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s12_manual_threshold_right_10s(self):
+        """Manual threshold: right - all 10s."""
+        orig_symbols = self.SAMPLES_ALL_10S  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 0.9  # High, but valid
+        exp_ret = b'10' * (int(len(orig_symbols) // 2))
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s13_manual_threshold_wrong_all_10s(self):
+        """Manual threshold: wrong - all 10s."""
+        orig_symbols = self.SAMPLES_ALL_10S  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 9.0  # Too high
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s14_manual_threshold_right_01s(self):
+        """Manual threshold: right - all 01s."""
+        orig_symbols = self.SAMPLES_ALL_01S  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 0.9  # High, but valid
+        exp_ret = b'01' * (int(len(orig_symbols) // 2))
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+    def test_s15_manual_threshold_wrong_all_01s(self):
+        """Manual threshold: wrong - all 01s."""
+        orig_symbols = self.SAMPLES_ALL_01S  # Origins of this test case input
+        samp_rate = 48000
+        sym_rate = 80
+        samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
+        threshold = 9.0  # Too high
+        exp_ret = b'0' * len(orig_symbols)
+        self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
+
+
+def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,
+                        symbol_rate: float | int) -> numpy.ndarray:
+    """Create a valid 'samples' array, using production code, for use as test case input."""
+    return upsample(symbols=samples, samples_per_symbol=calculate_sps(sample_rate, symbol_rate))
 
 
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,

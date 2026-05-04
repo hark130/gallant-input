@@ -7,7 +7,8 @@ import numpy
 # Local Imports
 from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
                                  stringify_ndarray, upsample)
-from gallant_input.modem.calc import compute_threshold, extract_bits_from_samples, trim_samples
+from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
+                                      extract_bits_from_single_cluster, trim_samples)
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
@@ -69,7 +70,10 @@ class OOK(Modem):
             threshold = compute_threshold(samples, self._sps, scheme=ThresholdScheme.MIDRANGE)
 
         # DEMODULATE IT
-        bits = extract_bits_from_samples(samples, self._sps, threshold)
+        if threshold is not None:
+            bits = extract_bits_from_samples(samples, self._sps, threshold)
+        else:
+            bits = extract_bits_from_single_cluster(samples, self._sps)
         bit_stream = stringify_ndarray(bits)
 
         # DONE

@@ -87,7 +87,6 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         self.set_test_input(samples, threshold)
         self.run_test_exception(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                 exception_type=exception_type, exception_msg=exception_msg)
-    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def run_test_return(self, sample_rate: float, symbol_rate: float,
                         exp_ret: bytes) -> None:
@@ -132,6 +131,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         """
         self.set_test_input(samples, threshold)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):

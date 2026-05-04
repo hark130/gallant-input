@@ -210,15 +210,17 @@ def trim_samples(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarr
 
 def _compute_kmeans_threshold(energies: numpy.ndarray) -> float:
     """Compute the optimum threshold using the k-means clustering."""
-    raise NotImplementedError('This module has not yet implemented threshold support for '
-                              'k-means clustering')
     # I'm not yet ready to add a new dependency to GAIN
     # pip install scikit-learn  # New depedency
     # from sklearn.cluster import KMeans  # Import statement
-    kmeans = KMeans(n_clusters=2).fit(energies)
-    centers = np.sort(kmeans.cluster_centers_.flatten())
-    threshold = centers.mean()
-    return float(threshold)  # Normalize numpy.float* values to floats
+    try:
+        kmeans = KMeans(n_clusters=2).fit(energies)
+        centers = np.sort(kmeans.cluster_centers_.flatten())
+        threshold = centers.mean()
+        return float(threshold)  # Normalize numpy.float* values to floats
+    except NameError as err:
+        raise NotImplementedError('This module has not yet implemented threshold support for '
+                                  'k-means clustering') from err
 
 
 def _test_two_clusters(energies: numpy.ndarray, epsilon: float) -> bool:

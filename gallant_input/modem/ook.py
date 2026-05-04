@@ -8,7 +8,7 @@ import numpy
 from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
                                  stringify_ndarray, upsample)
 from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
-                                      extract_bits_from_single_cluster, trim_samples)
+                                      extract_bits_from_single_cluster)
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
@@ -78,7 +78,6 @@ class OOK(Modem):
 
         # DONE
         return bit_stream
-
 
     # PUBLIC METHODS
 

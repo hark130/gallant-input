@@ -69,7 +69,8 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def run_test_exception_input(self, sample_rate: Any, symbol_rate: Any, samples: Any,
-                                 exception_type: Exception, exception_msg: str) -> None:
+                                 threshold: Any, exception_type: Exception,
+                                 exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
 
         Test author must call self.set_test_input().
@@ -78,10 +79,11 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
             sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
             symbol_rate: Sets the symbol_rate argument input.  Accepts any input, bad or otherwise.
             samples: Test case input.
+            threshold: Test case input.
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.set_test_input(samples)
+        self.set_test_input(samples, threshold)
         self.run_test_exception(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                 exception_type=exception_type, exception_msg=exception_msg)
     # pylint: enable=too-many-arguments,too-many-positional-arguments
@@ -89,6 +91,8 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
     def run_test_return(self, sample_rate: float, symbol_rate: float,
                         exp_ret: bytes) -> None:
         """Common method calls for a test case expected to return.
+
+        Test author must call self.set_test_input().
 
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
@@ -100,30 +104,32 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         self.run_test()
 
     def run_test_return_compute(self, sample_rate: float, symbol_rate: float,
-                                exp_ret: bytes) -> None:
+                                threshold: float | None, exp_ret: bytes) -> None:
         """Common method calls for a test case expected to return a computed result.
 
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
+            threshold: Test case input.
             exp_ret: Expected return value (also used to compute the test case input).
         """
         test_in = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                     bin_bytes=exp_ret)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                   samples=test_in, exp_ret=exp_ret)
+                                   samples=test_in, threshold=threshold, exp_ret=exp_ret)
 
     def run_test_return_input(self, sample_rate: float, symbol_rate: float, samples: numpy.ndarray,
-                              exp_ret: bytes) -> None:
+                              threshold: float | None, exp_ret: bytes) -> None:
         """Common method calls for a test case expected to return an expected result.
 
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
             samples: Test case input.
+            threshold: Test case input.
             exp_ret: The expected return value from the method call.
         """
-        self.set_test_input(samples)
+        self.set_test_input(samples, threshold)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
 
 
@@ -136,7 +142,8 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_n02_all_zeros(self):
         """Single byte, all zeros."""
@@ -144,7 +151,8 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         exp_ret = b'00000000'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_n03_all_ones(self):
         """Single byte, all ones."""
@@ -152,7 +160,8 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         exp_ret = b'11111111'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
 
 class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
@@ -163,7 +172,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = None
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
 
     def test_e02_bad_sample_rate_type_string(self):
@@ -171,7 +181,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = '48000'
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
 
     def test_e03_bad_sample_rate_value_zero(self):
@@ -179,7 +190,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 0
         sym_rate = 800
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e04_bad_sample_rate_value_negative(self):
@@ -187,7 +199,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = -48000
         sym_rate = 800
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e05_bad_sample_rate_value_zero_float(self):
@@ -195,7 +208,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = float(0.0)
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
     def test_e06_bad_sample_rate_value_negative_float(self):
@@ -203,7 +217,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = float(-48000.0)
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
     def test_e07_bad_symbol_rate_type_none(self):
@@ -211,7 +226,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = None
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
 
     def test_e08_bad_symbol_rate_type_string(self):
@@ -219,7 +235,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = '800'
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
 
     def test_e09_bad_symbol_rate_value_zero(self):
@@ -227,7 +244,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 0
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e10_bad_symbol_rate_value_negative(self):
@@ -235,7 +253,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = -800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e11_bad_symbol_rate_value_zero_float(self):
@@ -243,7 +262,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = float(0.0)
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
     def test_e12_bad_symbol_rate_value_negative_float(self):
@@ -251,7 +271,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = float(-800.0)
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
     def test_e13_bad_samples_type_none(self):
@@ -259,7 +280,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = None
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument should have been of type')
 
     def test_e14_bad_samples_type_complex_list(self):
@@ -267,7 +289,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = [0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j]
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument should have been of type')
 
     def test_e15_bad_samples_value_empty(self):
@@ -275,7 +298,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = numpy.array([], dtype=numpy.complex64)  # len(test_in) == 0
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'ndarray may not be empty')
 
     def test_e16_bad_samples_invalid_dimensions(self):
@@ -283,7 +307,8 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = numpy.resize(self.SAMPLES_ALL_10S, (2, 2))  # test_in.ndim == 2
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_ALL_10S.ndim}-dimensional')
 
@@ -297,7 +322,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         exp_ret = b'1'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b02_one_bit_off(self):
         """One bit: off."""
@@ -305,7 +331,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         exp_ret = b'0'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b03_lowest_sample_rate(self):
         """Smallest valid sample rate.
@@ -317,7 +344,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 80
         # Test case input
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "samples_per_symbol" argument is not positive')
 
     def test_b04_lowest_symbol_rate(self):
@@ -326,7 +354,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 1
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b05_lowest_samples_per_symbol(self):
         """Smallest valid sample rate and symbol rate."""
@@ -334,7 +363,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 1
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b06_lowest_sample_rate_floats(self):
         """Smallest valid sample rate (as floats).
@@ -346,7 +376,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(80.0)
         # Test case input
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        threshold = None  # Automatically determine the threshold
+        self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "samples_per_symbol" argument is not positive')
 
     def test_b07_lowest_symbol_rate(self):
@@ -355,7 +386,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(1.0)
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b08_lowest_samples_per_symbol(self):
         """Smallest valid sample rate and symbol rate."""
@@ -363,7 +395,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(1.0)
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b09_smallest_everything_on(self):
         """All arguments are set to the smallest appropriate values: on."""
@@ -371,7 +404,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 1
         # Test case input
         exp_ret = b'1'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b10_smallest_everything_off(self):
         """All arguments are set to the smallest appropriate values: on."""
@@ -379,7 +413,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 1
         # Test case input
         exp_ret = b'0'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b11_smallest_everything_on_floats(self):
         """All arguments are set to the smallest appropriate values (as floats): on."""
@@ -387,7 +422,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(1.0)
         # Test case input
         exp_ret = b'1'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_b12_smallest_everything_off_floats(self):
         """All arguments are set to the smallest appropriate values (as floats): off."""
@@ -395,7 +431,8 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(1.0)
         # Test case input
         exp_ret = b'0'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
 
 class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
@@ -407,7 +444,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
         # Test case input
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s02_real_data_rds_set_msg00_a(self):
         """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A - Station Name 'KONO    '."""
@@ -415,7 +453,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         # Test case input
         exp_ret = self.RDS_SET1_MSG00A
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s03_real_data_demod_101_foi_1_preamble(self):
         """5.03 Demod 101 FoI 1 Preamble."""
@@ -423,7 +462,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
         # Test case input
         exp_ret = self.DEMOD_101_FOI_1_PREAMBLE
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s04_real_data_demod_101_foi_1_pdu(self):
         """5.03 Demod 101 FoI 1 PDU."""
@@ -431,7 +471,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
         # Test case input
         exp_ret = self.DEMOD_101_FOI_1_PDU
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s05_real_data_demod_101_foi_2_preamble(self):
         """5.03 Demod 101 FoI 2 Preamble."""
@@ -439,7 +480,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
         # Test case input
         exp_ret = self.DEMOD_101_FOI_2_PREAMBLE
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s06_real_data_demod_101_foi_3_preamble(self):
         """5.03 Demod 101 FoI 3 Preamble."""
@@ -447,7 +489,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800      # 5.03 Demod 101 FoI 3 symbol rate
         # Test case input
         exp_ret = self.DEMOD_101_FOI_3_PREAMBLE
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
     def test_s07_real_data_fhss_chan_01_preamble(self):
         """5.05 FHSS Channel 01 Preamble."""
@@ -455,7 +498,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 250000     # 5.05 FHSS symbol rate
         # Test case input
         exp_ret = self.FHSS_CHANNEL_01_PREAMBLE
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        threshold = None  # Automatically determine the threshold
+        self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
 
 
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,

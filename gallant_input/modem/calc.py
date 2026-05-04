@@ -6,8 +6,8 @@
 import numpy
 # Local Imports
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import (validate_ndarray, validate_pos_float_or_int,
-                                      validate_pos_int, validate_type)
+from gallant_input.validation import (validate_ndarray, validate_pos_float,
+                                      validate_pos_float_or_int, validate_pos_int, validate_type)
 
 
 def calculate_sps(sample_rate: float | int, symbol_rate: float | int) -> int:
@@ -26,7 +26,7 @@ def calculate_sps(sample_rate: float | int, symbol_rate: float | int) -> int:
     """
     validate_pos_float_or_int(sample_rate, 'sample_rate')
     validate_pos_float_or_int(symbol_rate, 'symbol_rate')
-    return sample_rate // symbol_rate
+    return int(sample_rate // symbol_rate)
 
 
 def compute_symbol_energies(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
@@ -61,15 +61,22 @@ def compute_symbol_energies(samples: numpy.ndarray, samples_per_symbol: int) -> 
 
 
 def compute_threshold(samples: numpy.ndarray, samples_per_symbol: int,
-                      scheme: ThresholdScheme = ThresholdScheme.MEAN) -> float:
+                      scheme: ThresholdScheme = ThresholdScheme.MEAN,
+                      epsilon: float = 1e-6) -> float | None:
     """Compute the optimum threshold using the scheme indicated.
+
+    Tests samples for more than one energy level using epsilong.
 
     Args:
         samples: A 1-dimensional array to use to calculate the threshold.
         samples_per_symbol: The number of samples required to represent one symbol.
+        scheme: The intended threshold calculation scheme.
+        epsilon: [OPTIONAL] Used to verify a spread in energies (two clusters).
 
     Returns:
-        The calculated threshold as a float (numpy.float* values will be converted).\
+        The calculated threshold as a float (numpy.float* values will be converted) or None.
+        A return value of None indicates is a single cluster of samples energies and a threshold
+        is meaningless.
 
     Raises:
         NotImplementedError: Partially implemented ThresholdScheme values.
@@ -85,19 +92,23 @@ def compute_threshold(samples: numpy.ndarray, samples_per_symbol: int,
     validate_type(scheme, 'scheme', ThresholdScheme)
 
     # COMPUTE IT
-    match scheme:
-        case ThresholdScheme.MIDRANGE:
-            threshold = (energies.max() + energies.min()) / 2
-        case ThresholdScheme.MEAN:
-            threshold = energies.mean()
-        case ThresholdScheme.KMEANS:
-            threshold = _compute_kmeans_threshold(energies)
-        case _:
-            raise NotImplementedError('This function does not yet support ThresholdScheme.'
-                                      f'{scheme.name}')
+    if _test_two_clusters(energies, epsilon):
+        match scheme:
+            case ThresholdScheme.MIDRANGE:
+                threshold = (energies.max() + energies.min()) / 2
+            case ThresholdScheme.MEAN:
+                threshold = energies.mean()
+            case ThresholdScheme.KMEANS:
+                threshold = _compute_kmeans_threshold(energies)
+            case _:
+                raise NotImplementedError('This function does not yet support ThresholdScheme.'
+                                          f'{scheme.name}')
+        threshold = float(threshold)  # Normalize numpy.float* values to floats
+    else:
+        threshold = None
 
     # DONE
-    return float(threshold)  # Normalize numpy.float* values to floats
+    return threshold
 
 
 def extract_bits_from_samples(samples: numpy.ndarray, samples_per_symbol: int,
@@ -125,6 +136,42 @@ def extract_bits_from_samples(samples: numpy.ndarray, samples_per_symbol: int,
     avg_mag = compute_symbol_energies(samples, samples_per_symbol)
     # Compare values to the threshold
     bits = (avg_mag > threshold).astype(numpy.uint8)
+
+    # DONE
+    return bits
+
+
+def extract_bits_from_single_cluster(samples: numpy.ndarray,
+                                     samples_per_symbol: int) -> numpy.ndarray:
+    """Trim the samples, reshape them, avg them, and extract bits from single cluster energies.
+
+    Args:
+        samples: A 1-dimensional array to trim.
+        samples_per_symbol: The number of samples required to represent one symbol.
+
+    Returns:
+        A 1D array of uint8s representing the binary extracted from samples.
+
+    Raises:
+        RuntimeError: The samples argument appears to have more than one energy cluster.
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    avg_mag = None  # The samples array trimmed to match symbol sizes
+    bits = None     # Bits extracted from samples
+
+    # INPUT VALIDATION
+    if compute_threshold(samples, samples_per_symbol) is not None:
+        raise RuntimeError('These samples contain more than a single cluster')
+
+    # EXTRACT IT
+    # Trim, group, and compute average magnitude
+    avg_mag = compute_symbol_energies(samples, samples_per_symbol)
+    if avg_mag.mean() < 0.5:
+        bits = numpy.zeros_like(avg_mag, dtype=numpy.uint8)
+    else:
+        bits = numpy.ones_like(avg_mag, dtype=numpy.uint8)
 
     # DONE
     return bits
@@ -172,3 +219,27 @@ def _compute_kmeans_threshold(energies: numpy.ndarray) -> float:
     centers = np.sort(kmeans.cluster_centers_.flatten())
     threshold = centers.mean()
     return float(threshold)  # Normalize numpy.float* values to floats
+
+
+def _test_two_clusters(energies: numpy.ndarray, epsilon: float) -> bool:
+    """Test energies for more than one cluster.
+
+    Returns:
+        True if there is more than one cluster.  False otherwise (e.g., All the same value).
+    """
+    # LOCAL VARIABLES
+    spread = 0.0         # Spread between maximum and minimum values in energies
+    two_clusters = True  # Are there two clusters or not?
+
+    # INPUT VALIDATION
+    validate_ndarray(array=energies, array_name='energies', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    validate_pos_float(epsilon, 'epsilon', abs_tol=1e-18)
+
+    # TEST IT
+    spread = energies.max() - energies.min()
+    if spread < epsilon:
+        two_clusters = False  # The spread is less than epsilon so there's only one cluster
+
+    # DDNE
+    return two_clusters

@@ -17,8 +17,6 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
-from gallant_input.modem.calc import calculate_sps
 from test.modify import convert_bin_bytes_to_array, upsample_test_input
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 

@@ -21,8 +21,6 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
-from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.ook import OOK
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
 from test.modify import convert_bin_bytes_to_array, upsample_test_input
@@ -81,26 +79,26 @@ class OOKModemCompTest(ModemCompTest):
     # COMMON-USE METHODS
     # Methods listed in "suggested" call order
 
-    def run_test_exception_input(self, bin_bytes: Any, samples: Any, threshold: Any,
-                                 exception_type: Exception, exception_msg: str,
-                                 modem_order: bool = True) -> None:
-        """Common method calls for a test case expected to raise an exception.
+    # def run_test_exception_input(self, bin_bytes: Any, samples: Any, threshold: Any,
+    #                              exception_type: Exception, exception_msg: str,
+    #                              modem_order: bool = True) -> None:
+    #     """Common method calls for a test case expected to raise an exception.
 
-        Test author must first call self.set_modem_ctor_args().
+    #     Test author must first call self.set_modem_ctor_args().
 
-        Args:
-            bin_bytes: Test case input for the modulate method argument of the same name.
-            samples: Test case input for the demodulate method argument of the same name.
-            threshold: Test case input for the demodulate method argument of the same name.
-            exception_type: An Exception type to expect (e.g., ValueError).
-            exception_msg: A sub-string, empty or not, to look for in the raised Exception.
-            modem_order: [OPTIONAL] If True, the test case will call modulate() then demodulate().
-                Othersise, the call order is reversed.
-        """
-        self.set_test_input(bin_bytes=bin_bytes, samples=samples, threshold=threshold,
-                            modem_order=modem_order)
-        self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
-        self.run_test()
+    #     Args:
+    #         bin_bytes: Test case input for the modulate method argument of the same name.
+    #         samples: Test case input for the demodulate method argument of the same name.
+    #         threshold: Test case input for the demodulate method argument of the same name.
+    #         exception_type: An Exception type to expect (e.g., ValueError).
+    #         exception_msg: A sub-string, empty or not, to look for in the raised Exception.
+    #         modem_order: [OPTIONAL] If True, the test case will call modulate() then demodulate().
+    #             Othersise, the call order is reversed.
+    #     """
+    #     self.set_oob_test_input(bin_bytes=bin_bytes, samples=samples, threshold=threshold,
+    #                             modem_order=modem_order)
+    #     self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
+    #     self.run_test()
 
     def run_test_return_input(self, bin_bytes: Any, samples: Any, threshold: Any,
                               modem_order: bool = True) -> None:
@@ -143,9 +141,9 @@ class OOKModemCompTest(ModemCompTest):
         self._mod_arg_bb = bin_bytes
         self._defined_test_input = True
 
-    def set_test_input(self, bin_bytes: Any, samples: Any, threshold: Any,
-                       modem_order: bool = True) -> None:
-        """Sets test case input for both method calls and sets the test case call order.
+    def set_oob_test_input(self, bin_bytes: Any, samples: Any, threshold: Any,
+                           modem_order: bool = True) -> None:
+        """Sets out-of-band test case input for both method calls and sets the test case call order.
 
         Args:
             bin_bytes: Test case input for the modulate method argument of the same name.
@@ -172,7 +170,7 @@ class OOKModemCompTest(ModemCompTest):
             modem_order: [OPTIONAL] If True, the test case will call modulate() then demodulate().
                 Othersise, the call order is reversed.
         """
-        self.set_test_input(bin_bytes, samples, threshold, modem_order)
+        self.set_oob_test_input(bin_bytes, samples, threshold, modem_order)
         if modem_order:
             self.expect_return(bin_bytes)
         else:

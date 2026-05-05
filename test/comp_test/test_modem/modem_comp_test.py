@@ -12,7 +12,6 @@ Import ModemCompTest for more details and usage instructions.
 """
 
 # Standard Imports
-from typing import Any
 # Third Party Imports
 # Local Imports
 from test.base_unit_test import BaseUnitTest

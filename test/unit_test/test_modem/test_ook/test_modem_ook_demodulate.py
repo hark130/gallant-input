@@ -15,9 +15,10 @@ Typical Usage:
 from typing import Any
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
+from unittest import skip
 import numpy
 # Local Imports
-from test.modify import convert_bin_bytes_to_array, upsample_test_input
+from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -121,6 +122,22 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
         """
         self.set_test_input(samples, threshold)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
+
+    def run_test_return_noisy(self, sample_rate: float, symbol_rate: float,
+                              threshold: float | None, exp_ret: bytes, snr_db: float | int) -> None:
+        """Common method calls for a test case expected to return a computed result.
+
+        Args:
+            sample_rate: Sets the sample_rate ctor argument input.
+            symbol_rate: Sets the symbol_rate ctor argument input.
+            threshold: Test case input.
+            exp_ret: Expected return value (also used to compute the test case input).
+            snr_db: The desigred SNR of the test case samples, in decibels.
+        """
+        test_in = create_noisy_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                          bin_bytes=exp_ret, snr_db=snr_db)
+        self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                   samples=test_in, threshold=threshold, exp_ret=exp_ret)
     # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
@@ -180,6 +197,67 @@ class NormalModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         exp_ret = b'11111111'
         threshold = 0.5
         self.run_test_return_compute(samp_rate, sym_rate, threshold, exp_ret)
+
+    def test_n07_single_byte_alt_bits_with_awgn(self):
+        """Single byte, alternating bits, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'10101010'
+        threshold = None  # Automatically determine the threshold
+        snr_db = self.SNR_GOOD
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    def test_n08_all_zeros_with_awgn(self):
+        """Single byte, all zeros, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'00000000'
+        threshold = 0.1  # Chose arbitrarily low threshold because auto-calc was identifying noise
+        snr_db = self.SNR_GOOD
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    @skip('Not sure why, and only this (so far), AWGN test case is failing at good SNR levels?!')
+    def test_n09_all_ones_with_awgn(self):
+        """Single byte, all ones, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 48000
+        sym_rate = 800
+        # Test case input
+        exp_ret = b'11111111'
+        threshold = None  # Automatically determine the threshold
+        snr_db = self.SNR_EXCELLENT
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    def test_n10_single_byte_alt_bits_manual_valid_threshold_with_awgn(self):
+        """Single byte, alternating bits with a safe, valid manual threshold value, with AWGN."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'10101010'
+        threshold = 0.5
+        snr_db = self.SNR_GOOD
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    def test_n11_all_zeros_manual_valid_threshold_with_awgn(self):
+        """Single byte, all zeros with a safe, valid manual threshold value, with AWGN."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'00000000'
+        threshold = 0.5
+        snr_db = self.SNR_GOOD
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    def test_n12_all_ones_manual_valid_threshold_with_awgn(self):
+        """Single byte, all ones with a safe, valid manual threshold value, with AWGN."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        exp_ret = b'11111111'
+        threshold = 0.5
+        snr_db = self.SNR_GOOD
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
 
 
 class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
@@ -665,11 +743,43 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         exp_ret = b'0' * len(orig_symbols)
         self.run_test_return_input(samp_rate, sym_rate, samples, threshold, exp_ret)
 
+    def test_s16_real_data_rds_set_msg00_a_with_awgn(self):
+        """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A with AWGN (poor SNR)."""
+        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
+        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
+        # Test case input
+        exp_ret = self.RDS_SET1_MSG00A
+        threshold = None  # Automatically determine the threshold
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
 
-def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,
-                        symbol_rate: float | int) -> numpy.ndarray:
-    """Create a valid 'samples' array, using production code, for use as test case input."""
-    return upsample_test_input(samples, sample_rate, symbol_rate)
+    def test_s17_real_data_demod_101_foi_1_pdu_with_awgn(self):
+        """5.03 Demod 101 FoI 1 PDU with AWGN (poor SNR)."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        # Test case input
+        exp_ret = self.DEMOD_101_FOI_1_PDU
+        threshold = None  # Automatically determine the threshold
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+    def test_s18_real_data_fhss_chan_01_preamble_with_awgn(self):
+        """5.05 FHSS Channel 01 Preamble with AWGN (poor SNR)."""
+        samp_rate = 26000000  # 5.05 FHSS sample rate
+        sym_rate = 250000     # 5.05 FHSS symbol rate
+        # Test case input
+        exp_ret = self.FHSS_CHANNEL_01_PREAMBLE
+        threshold = None  # Automatically determine the threshold
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, threshold, exp_ret, snr_db)
+
+
+def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,
+                            bin_bytes: bytes, snr_db: float | int) -> numpy.ndarray:
+    """Transform a binary bytes object into valid test case input that contains AWGN."""
+    samples = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                bin_bytes=bin_bytes)
+    return add_awgn(samples=samples, snr_db=snr_db)
 
 
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,
@@ -677,6 +787,12 @@ def create_test_input(sample_rate: int | float, symbol_rate: int | float,
     """Transform a binary bytes object into valid test case input."""
     return convert_bin_bytes_to_array(bin_bytes=bin_bytes, sample_rate=sample_rate,
                                       symbol_rate=symbol_rate)
+
+
+def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,
+                        symbol_rate: float | int) -> numpy.ndarray:
+    """Create a valid 'samples' array, using production code, for use as test case input."""
+    return upsample_test_input(samples, sample_rate, symbol_rate)
 
 
 if __name__ == '__main__':

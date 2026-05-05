@@ -223,7 +223,59 @@ def _compute_kmeans_threshold(energies: numpy.ndarray) -> float:
                                   'k-means clustering') from err
 
 
-def _test_two_clusters(energies: numpy.ndarray, epsilon: float) -> bool:
+def _test_two_clusters(energies: numpy.ndarray, epsilon: float, ratio: float = 0.25) -> bool:
+    """Test energies for more than one cluster.
+
+    This function tests the energies twice: max/min spread vs epsilon, mean vs standard deviation.
+
+    Args:
+        energies: The array to test for clusters.
+        epsilon: The yardstick to determine if there's enough distance between max and min energies.
+        ratio: The coefficient of variation, a measurement of relative spread.
+
+    Returns:
+        True if there is more than one cluster.  False otherwise (e.g., All the same value).
+    """
+    # LOCAL VARIABLES
+    two_clusters = True  # Are there two clusters or not?
+
+    # INPUT VALIDATION
+    validate_ndarray(array=energies, array_name='energies', can_be_empty=False, num_dim=1,
+                     must_be_complex=False)
+    validate_pos_float(epsilon, 'epsilon', abs_tol=1e-18)
+    validate_pos_float(ratio, 'ratio', abs_tol=1e-18)
+
+    # TEST IT
+    two_clusters = _test_two_clusters_vs_spread(energies, epsilon)
+    if not two_clusters:
+        two_clusters = _test_two_clusters_vs_mean(energies, ratio)
+
+    # DDNE
+    return two_clusters
+
+
+def _test_two_clusters_vs_mean(energies: numpy.ndarray, ratio: float) -> bool:
+    """Test energies for more than one cluster by comparing the energy mean to std against a ratio.
+
+    Returns:
+        True if there is more than one cluster.  False otherwise (e.g., All the same value).
+    """
+    # LOCAL VARIABLES
+    mean = energies.mean()  # Mean value of the energies
+    std = energies.std()    # Standard deviation of the energy values
+    two_clusters = True  # Are there two clusters or not?
+
+    # TEST IT
+    try:
+        two_clusters = (std / mean) > ratio
+    except ZeroDivisionError:
+        two_clusters = False  # Mean is effectively 0 (e.g., 1e-1776)
+
+    # DDNE
+    return two_clusters
+
+
+def _test_two_clusters_vs_spread(energies: numpy.ndarray, epsilon: float) -> bool:
     """Test energies for more than one cluster.
 
     Returns:
@@ -232,11 +284,6 @@ def _test_two_clusters(energies: numpy.ndarray, epsilon: float) -> bool:
     # LOCAL VARIABLES
     spread = 0.0         # Spread between maximum and minimum values in energies
     two_clusters = True  # Are there two clusters or not?
-
-    # INPUT VALIDATION
-    validate_ndarray(array=energies, array_name='energies', can_be_empty=False, num_dim=1,
-                     must_be_complex=False)
-    validate_pos_float(epsilon, 'epsilon', abs_tol=1e-18)
 
     # TEST IT
     spread = energies.max() - energies.min()

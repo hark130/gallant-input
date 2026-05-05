@@ -18,6 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits
+from test.modify import convert_bin_bytes_to_array
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -34,33 +35,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call."""
-        # LOCAL VARIABLES
-        def_error = 'Array {} mismatch:'
-
-        # VALIDATE IT
-        # Type
-        if not isinstance(return_value, type(self._exp_return)):
-            self._add_test_failure(f'Expected type {type(self._exp_return)} '
-                                   f'but it was of type {type(return_value)}')
-        else:
-            # Number of dimensions
-            if return_value.ndim != self._exp_return.ndim:
-                self._add_test_failure(f'{def_error.format("dimension")} Expected '
-                                       f'{self._exp_return.ndim} dimensions '
-                                       f'but received {return_value.ndim} instead')
-            # Shape
-            if return_value.shape != self._exp_return.shape:
-                self._add_test_failure(f'{def_error.format("shape")} Expected '
-                                       f'{self._exp_return.shape} shape '
-                                       f'but received {return_value.shape} instead')
-            # Data Type
-            if return_value.dtype != self._exp_return.dtype:
-                self._add_test_failure(f'{def_error.format("dtype")} Expected '
-                                       f'{self._exp_return.dtype} shape '
-                                       f'but received {return_value.dtype} instead')
-            # Final Catch All
-            if not numpy.array_equal(return_value, self._exp_return):
-                self._add_test_failure('The expected array is not equal to the returned array')
+        self.validate_ndarray_return_value(return_value=return_value)
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
@@ -477,20 +452,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 def compute_exp_return(sample_rate: int | float, symbol_rate: int | float,
                        bin_bytes: bytes) -> numpy.ndarray:
     """Compute the expected return based on the test case input."""
-    # LOCAL VARIABLES
-    sps = int(sample_rate / symbol_rate)  # Samples per symbol
-    samples = None                        # An array of the sample values
-    array = None                          # The numpy.ndarray formed from the samples
-
-    # COMPUTE IT
-    samples = []
-    for bin_byte in bin_bytes:
-        samples += [int(chr(bin_byte))] * sps
-    samples = b''.join([bytes(str(sample), 'ascii') for sample in samples])
-    array = convert_ascii_bin_bytes_to_bits(samples).astype(numpy.complex64)
-
-    # DONE
-    return array
+    return convert_bin_bytes_to_array(bin_bytes=bin_bytes, sample_rate=sample_rate,
+                                      symbol_rate=symbol_rate)
 
 
 if __name__ == '__main__':

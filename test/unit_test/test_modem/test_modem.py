@@ -71,35 +71,8 @@ class ModemUnitTest(RootUnitTest):
     DEMOD_101_FOI_2_PREAMBLE = b'010101010101010101010101010101011101001110010001'
     DEMOD_101_FOI_3_PREAMBLE = b'010101010101010101010101010101011101001110010001'
 
-    # RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A - Station Name "KONO    "
-    RDS_SET1_GRP01_MSG00_OFF00 = \
-        b'0011011001011000100001101100000000111011001101011000' \
-        b'1110000110001000111110011001001011010011111111001100'  # "KO"
-    RDS_SET1_GRP02_MSG00_OFF01 = \
-        b'0011011001011000100001101100000000111010010110111100' \
-        b'1110000110001000111110011001001110010011110001100000'  # "NO"
-    RDS_SET1_GRP03_MSG00_OFF02 = \
-        b'0011011001011000100001101100000000111010101101110111' \
-        b'1110000110001000111110011000100000001000000011011100'  # "  "
-    RDS_SET1_GRP04_MSG00_OFF03 = \
-        b'0011011001011000100001101100000000111011110110010011' \
-        b'1110000110001000111110011000100000001000000011011100'  # "  "
-    # RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A - Station Name "KONO    "
-    RDS_SET1_MSG00A = RDS_SET1_GRP01_MSG00_OFF00 + RDS_SET1_GRP02_MSG00_OFF01 \
-        + RDS_SET1_GRP03_MSG00_OFF02 + RDS_SET1_GRP04_MSG00_OFF03
-
-    FHSS_CHANNEL_01_PREAMBLE = b'1100110101010101010011001101010101010100'  # RF JQR 5.05 FHSS
-
     # CORE CLASS METHODS
     # Methods listed in call order
-
-    def __init__(self, *args, **kwargs) -> None:
-        """ModemOOKUnitTest ctor."""
-        # ATTRIBUTES
-        self.input_sample_rate = None
-        self.input_symbol_rate = None
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.
@@ -114,8 +87,7 @@ class ModemUnitTest(RootUnitTest):
 
     def set_ctor_args(self, sample_rate: Any, symbol_rate: Any) -> None:
         """Sets the Modem() argument values in the test class."""
-        self.input_sample_rate = sample_rate
-        self.input_symbol_rate = symbol_rate
+        self.set_modem_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call.

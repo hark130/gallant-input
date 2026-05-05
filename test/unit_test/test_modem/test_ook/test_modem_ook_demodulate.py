@@ -19,20 +19,12 @@ import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
 from gallant_input.modem.calc import calculate_sps
+from test.modify import convert_bin_bytes_to_array, upsample_test_input
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
 class ModemOOKModulateUnitTest(ModemOOKUnitTest):
     """Parent class for all OOK.demodulate() unit tests."""
-
-    # array([0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j], dtype=complex64)
-    SAMPLES_ALL_ZEROES = numpy.zeros(8, dtype=numpy.complex64)
-    # array([1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j], dtype=complex64)
-    SAMPLES_ALL_ONES = numpy.ones(8, dtype=numpy.complex64)
-    # array([1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j], dtype=complex64)
-    SAMPLES_ALL_10S = numpy.resize([1, 0], 8).astype(numpy.complex64)
-    # array([0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j], dtype=complex64)
-    SAMPLES_ALL_01S = numpy.resize([0, 1], 8).astype(numpy.complex64)
 
     # CORE CLASS METHODS
     # Methods listed in call order
@@ -44,7 +36,7 @@ class ModemOOKModulateUnitTest(ModemOOKUnitTest):
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call."""
-        self._validate_return_value(return_value=return_value)
+        self.validate_bin_bytes_return_value(return_value=return_value)
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
@@ -679,26 +671,14 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,
                         symbol_rate: float | int) -> numpy.ndarray:
     """Create a valid 'samples' array, using production code, for use as test case input."""
-    return upsample(symbols=samples, samples_per_symbol=calculate_sps(sample_rate, symbol_rate))
+    return upsample_test_input(samples, sample_rate, symbol_rate)
 
 
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,
                       bin_bytes: bytes) -> numpy.ndarray:
     """Transform a binary bytes object into valid test case input."""
-    # LOCAL VARIABLES
-    sps = int(sample_rate / symbol_rate)  # Samples per symbol
-    samples = None                        # An array of the sample values
-    array = None                          # The numpy.ndarray formed from the samples
-
-    # COMPUTE IT
-    samples = []
-    for bin_byte in bin_bytes:
-        samples += [int(chr(bin_byte))] * sps
-    samples = b''.join([bytes(str(sample), 'ascii') for sample in samples])
-    array = convert_ascii_bin_bytes_to_bits(samples).astype(numpy.complex64)
-
-    # DONE
-    return array
+    return convert_bin_bytes_to_array(bin_bytes=bin_bytes, sample_rate=sample_rate,
+                                      symbol_rate=symbol_rate)
 
 
 if __name__ == '__main__':

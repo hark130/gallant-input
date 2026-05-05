@@ -46,6 +46,14 @@ class BaseUnitTest(TediousUnitTest):
         See: help(TediousUnitTest)
     """
 
+    # SNR defaults (dB)
+    SNR_VERY_POOR = -0.1
+    SNR_POOR = 5.0
+    SNR_MARGINAL = 15.0
+    SNR_GOOD = 25.0
+    SNR_VERY_GOOD = 35.0
+    SNR_EXCELLENT = 40.0
+
     # array([0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j], dtype=complex64)
     SAMPLES_ALL_ZEROES = numpy.zeros(8, dtype=numpy.complex64)
     # array([1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j], dtype=complex64)

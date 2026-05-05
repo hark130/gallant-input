@@ -675,6 +675,42 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
 
+    # def test_s13_real_data_rds_set_msg00_a_with_awgn(self):
+    #     """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A with AWGN (poor SNR)."""
+    #     # Modem.__init__() args
+    #     samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
+    #     sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
+    #     # modulate()/demodulate() args
+    #     bin_bytes = None  # Will be defined by dynamic test case execution
+    #     samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
+    #     threshold = 0.5
+    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+
+    # def test_s14_real_data_demod_101_foi_1_pdu_with_awgn(self):
+    #     """5.03 Demod 101 FoI 1 PDU with AWGN (poor SNR)."""
+    #     # Modem.__init__() args
+    #     samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
+    #     sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+    #     # modulate()/demodulate() args
+    #     bin_bytes = None  # Will be defined by dynamic test case execution
+    #     samples = convert_bin_bytes_to_array(self.DEMOD_101_FOI_1_PDU, samp_rate, sym_rate)
+    #     threshold = 0.5
+    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+
+    # def test_s15_real_data_fhss_chan_01_preamble_with_awgn(self):
+    #     """5.05 FHSS Channel 01 Preamble with AWGN (poor SNR)."""
+    #     # Modem.__init__() args
+    #     samp_rate = 26000000  # 5.05 FHSS sample rate
+    #     sym_rate = 250000     # 5.05 FHSS symbol rate
+    #     # modulate()/demodulate() args
+    #     bin_bytes = None  # Will be defined by dynamic test case execution
+    #     samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
+    #     threshold = 0.5
+    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+
 
 def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,
                         symbol_rate: float | int) -> numpy.ndarray:

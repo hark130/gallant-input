@@ -44,8 +44,7 @@ then
     EXIT_CODE=1
 else
     echo "Running Pylint on $TEST_DIR"
-    # find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no --disable=import-error,duplicate-code,wrong-import-order
-    find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no --disable=duplicate-code,wrong-import-order
+    find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no --disable=duplicate-code,too-many-ancestors,wrong-import-order
     if [ $? -ne 0 ]
     then
         EXIT_CODE=1

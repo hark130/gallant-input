@@ -31,12 +31,12 @@ RootUnitTest is the parent class for all GAIN related unit test classes.
 
 # Standard Imports
 # Third Party Imports
+from test.base_unit_test import BaseUnitTest
 from test.test_case_data import TestCaseData
-from tediousstart.tediousunittest import TediousUnitTest
 # Local Imports
 
 
-class RootUnitTest(TediousUnitTest):
+class RootUnitTest(BaseUnitTest):
     """Parent class for all GAIN related unit tests.
 
     Inherit from this class, define necessary functionality for the function you're testing and

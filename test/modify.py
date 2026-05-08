@@ -38,7 +38,7 @@ def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
 
     # INPUT VALIDATION
     validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
-                   must_be_complex=False)
+                     must_be_complex=False)
     validate_int_or_float(snr_db, 'snr_db')  # Ignore actual value since it could be anything
 
     # ADD IT

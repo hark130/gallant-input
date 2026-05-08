@@ -177,6 +177,7 @@ class OOKModemCompTest(ModemCompTest):
         self.set_demodulate_test_input(samples=samples, threshold=threshold)
         self._modem_call_order = modem_order
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def set_test_input_return(self, bin_bytes: Any, samples: Any, threshold: Any,
                               modem_order: bool = True, skip_exp_ret: bool = False) -> None:
         """Sets test case input for both method calls, test case call order, and expected results.
@@ -197,6 +198,7 @@ class OOKModemCompTest(ModemCompTest):
                 self.expect_return(bin_bytes)
             else:
                 self.expect_return(samples)
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def create_test_obj(self) -> OOK:
         """Create an OOK() test object.

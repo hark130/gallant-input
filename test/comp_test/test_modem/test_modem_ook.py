@@ -23,7 +23,7 @@ import numpy
 # Local Imports
 from gallant_input.modem.ook import OOK
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
-from test.modify import convert_bin_bytes_to_array, upsample_test_input
+from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
 
 
 class OOKModemCompTest(ModemCompTest):
@@ -118,6 +118,26 @@ class OOKModemCompTest(ModemCompTest):
                                    modem_order=modem_order)
         self.run_test()
 
+    def run_test_return_noisy_input(self, samples: Any, threshold: Any,
+                                    snr_db: float | int) -> None:
+        """Common method for a test case expected to return an expected result on noisy input.
+
+        The expected results depends on modem_order.  Test author must first call
+        self.set_modem_ctor_args().  The modem order will always be False and bin_bytes will
+        be None (or else, why create noisy samples just to ignore them?).
+
+        Args:
+            bin_bytes: Test case input for the modulate method argument of the same name.
+            samples: Test case input for the demodulate method argument of the same name.
+            threshold: Test case input for the demodulate method argument of the same name.
+            snr_db: The desigred SNR, in decibels, to add to samples.
+        """
+        noisy = add_awgn(samples, snr_db)
+        self.set_test_input_return(bin_bytes=None, samples=noisy, threshold=threshold,
+                                   modem_order=False, skip_exp_ret=True)
+        self.expect_return(samples)
+        self.run_test()
+
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
@@ -158,7 +178,7 @@ class OOKModemCompTest(ModemCompTest):
         self._modem_call_order = modem_order
 
     def set_test_input_return(self, bin_bytes: Any, samples: Any, threshold: Any,
-                              modem_order: bool = True) -> None:
+                              modem_order: bool = True, skip_exp_ret: bool = False) -> None:
         """Sets test case input for both method calls, test case call order, and expected results.
 
         The expected results depends on modem_order.
@@ -169,12 +189,14 @@ class OOKModemCompTest(ModemCompTest):
             threshold: Test case input for the demodulate method argument of the same name.
             modem_order: [OPTIONAL] If True, the test case will call modulate() then demodulate().
                 Othersise, the call order is reversed.
+            skip_exp_ret: [OPTIONAL] If True, the test author must call self.expect_return().
         """
         self.set_oob_test_input(bin_bytes, samples, threshold, modem_order)
-        if modem_order:
-            self.expect_return(bin_bytes)
-        else:
-            self.expect_return(samples)  # This may become a problem if ever I add gaussian noise
+        if not skip_exp_ret:
+            if modem_order:
+                self.expect_return(bin_bytes)
+            else:
+                self.expect_return(samples)
 
     def create_test_obj(self) -> OOK:
         """Create an OOK() test object.
@@ -675,41 +697,41 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
 
-    # def test_s13_real_data_rds_set_msg00_a_with_awgn(self):
-    #     """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A with AWGN (poor SNR)."""
-    #     # Modem.__init__() args
-    #     samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-    #     sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-    #     # modulate()/demodulate() args
-    #     bin_bytes = None  # Will be defined by dynamic test case execution
-    #     samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
-    #     threshold = 0.5
-    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
-    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+    def test_s13_real_data_rds_set_msg00_a_with_awgn(self):
+        """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A with AWGN (poor SNR)."""
+        # Modem.__init__() args
+        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
+        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
+        # modulate()/demodulate() args
+        samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
+        threshold = None
+        snr_db = self.SNR_POOR
+        self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+        self.run_test_return_noisy_input(samples, threshold, snr_db)
 
-    # def test_s14_real_data_demod_101_foi_1_pdu_with_awgn(self):
-    #     """5.03 Demod 101 FoI 1 PDU with AWGN (poor SNR)."""
-    #     # Modem.__init__() args
-    #     samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
-    #     sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
-    #     # modulate()/demodulate() args
-    #     bin_bytes = None  # Will be defined by dynamic test case execution
-    #     samples = convert_bin_bytes_to_array(self.DEMOD_101_FOI_1_PDU, samp_rate, sym_rate)
-    #     threshold = 0.5
-    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
-    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+    def test_s14_real_data_demod_101_foi_1_pdu_with_awgn(self):
+        """5.03 Demod 101 FoI 1 PDU with AWGN (poor SNR)."""
+        # Modem.__init__() args
+        samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        # modulate()/demodulate() args
+        samples = convert_bin_bytes_to_array(self.DEMOD_101_FOI_1_PDU, samp_rate, sym_rate)
+        threshold = None
+        snr_db = self.SNR_POOR
+        self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+        self.run_test_return_noisy_input(samples, threshold, snr_db)
 
-    # def test_s15_real_data_fhss_chan_01_preamble_with_awgn(self):
-    #     """5.05 FHSS Channel 01 Preamble with AWGN (poor SNR)."""
-    #     # Modem.__init__() args
-    #     samp_rate = 26000000  # 5.05 FHSS sample rate
-    #     sym_rate = 250000     # 5.05 FHSS symbol rate
-    #     # modulate()/demodulate() args
-    #     bin_bytes = None  # Will be defined by dynamic test case execution
-    #     samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
-    #     threshold = 0.5
-    #     self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
-    #     self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
+    def test_s15_real_data_fhss_chan_01_preamble_with_awgn(self):
+        """5.05 FHSS Channel 01 Preamble with AWGN (poor SNR)."""
+        # Modem.__init__() args
+        samp_rate = 26000000  # 5.05 FHSS sample rate
+        sym_rate = 250000     # 5.05 FHSS symbol rate
+        # modulate()/demodulate() args
+        samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
+        threshold = None
+        snr_db = self.SNR_POOR
+        self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
+        self.run_test_return_noisy_input(samples, threshold, snr_db)
 
 
 def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,

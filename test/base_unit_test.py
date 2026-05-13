@@ -144,17 +144,39 @@ class BaseUnitTest(TediousUnitTest):
         """Defines how the class will validate bin_bytes return values of the tested call."""
         self._validate_return_value(return_value=return_value)  # At least there's a SPOT now...
 
-    def validate_ndarray_return_value(self, return_value: numpy.ndarray):
-        """Defines how the class will validate numpy.ndarray return values of the tested call."""
+    def validate_ndarray_return_type(self, return_value: numpy.ndarray) -> bool:
+        """Completely validate numpy.ndarray return values of the tested call.
+
+        Tests type.
+
+        Returns:
+            True if valid, False otherwise.
+        """
         # LOCAL VARIABLES
         def_error = 'Array {} mismatch:'
+        valid = True
 
         # VALIDATE IT
         # Type
         if not isinstance(return_value, type(self._exp_return)):
             self._add_test_failure(f'Expected type {type(self._exp_return)} '
                                    f'but it was of type {type(return_value)}')
-        else:
+            valid = False
+
+        # DONE
+        return valid
+
+    def validate_ndarray_return_value(self, return_value: numpy.ndarray):
+        """Completely validate numpy.ndarray return values of the tested call.
+
+        Tests type, number of dimensions, shape, data type, and all values.
+        """
+        # LOCAL VARIABLES
+        def_error = 'Array {} mismatch:'
+
+        # VALIDATE IT
+        # Type
+        if self.validate_ndarray_return_type(return_value=return_value):
             # Number of dimensions
             if return_value.ndim != self._exp_return.ndim:
                 self._add_test_failure(f'{def_error.format("dimension")} Expected '

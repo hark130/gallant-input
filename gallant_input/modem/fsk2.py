@@ -12,7 +12,8 @@ from gallant_input.modem.calc import (compute_threshold, extract_bits_from_sampl
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import validate_bool, validate_ndarray, validate_pos_float
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_float,
+                                      validate_int_or_float, validate_ndarray, validate_pos_float)
 
 
 class FSK2(Modem):
@@ -27,7 +28,7 @@ class FSK2(Modem):
 
     # ABSTRACT METHODS
 
-    def modulate(self, bin_bytes: bytes, freq0: float | int, freq1: float,
+    def modulate(self, bin_bytes: bytes, freq0: float | int, freq1: float | int,
                  phase: float | None = None) -> numpy.ndarray:
         """MOdulate binary data.
 
@@ -55,6 +56,7 @@ class FSK2(Modem):
         # VALIDATION
         self.parse()  # Validate and parse
         self._validate_frequencies(freq0=freq0, freq1=freq1)
+        _validate_bin_bytes(bin_bytes=bin_bytes)
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         if phase is not None:
             self._update_phase(phase, pre_validate=True)
@@ -152,7 +154,7 @@ class FSK2(Modem):
         self._validate_abc()
         self._validate_phase()
 
-    def _validate_frequencies(freq0: float | int, freq1: float | int) -> None:
+    def _validate_frequencies(self, freq0: float | int, freq1: float | int) -> None:
         """Validate the frequencies under their own strength and against each other."""
         min_dev = 0.5 * self.symbol_rate  # Minimum deviation between the two freqs
         validate_int_or_float(freq0, 'freq0')
@@ -165,6 +167,13 @@ class FSK2(Modem):
     def _validate_phase(self) -> None:
         """Validate _phase attribute."""
         _validate_phase(phase=self._phase, param_name='internal attribute _phase')
+
+
+def _validate_bin_bytes(bin_bytes: bytes) -> None:
+    """Validate bin bytes prior to conversion."""
+    validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
+    if not bin_bytes:
+        raise ValueError('The "bin_bytes" argument may not be empty')
 
 def _validate_phase(phase: float, param_name: str) -> None:
     """Validate phase, as a SPOT, on behalf of this module."""

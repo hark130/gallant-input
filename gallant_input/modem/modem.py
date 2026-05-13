@@ -13,7 +13,7 @@ from gallant_input.validation import validate_bool, validate_pos_float_or_int
 class Modem(ABC):
     """Abstract base class (ABC) for modulation and demodulation."""
 
-    def __init__(self, sample_rate: float | int, symbol_rate: float | int):
+    def __init__(self, sample_rate: float | int, symbol_rate: float | int, *args, **kwargs):
         """Class ctor.
 
         Args:
@@ -25,6 +25,7 @@ class Modem(ABC):
         self._parsed = False            # Input parsed
         self._sps = 0                   # Samples per symbol
         self._validated = False         # Validation status of attributes
+        super().__init__(*args, **kwargs)
 
     @abstractmethod
     def modulate(self, bin_bytes: bytes) -> numpy.ndarray:

@@ -1,5 +1,4 @@
-"""Defines the abstract base class (ABC) for MOdulation/DEModulation."""
-
+"""Defines the class for On-Off Keying (OOK) MOdulation/DEModulation."""
 
 # Standard Imports
 # Third Party Imports

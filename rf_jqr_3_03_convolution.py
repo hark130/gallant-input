@@ -36,7 +36,7 @@ from gallant_input.constants import SIGMF_META_FILE_EXT
 from gallant_input.filters import apply_fir, design_hpf, design_lpf
 from gallant_input.io import read_samples, write_coeffs, write_samples
 from gallant_input.plot import plot_frequency_response, plot_impulse_response, plot_spectrum
-from gallant_input.sigmfmetaparser import SigMFMetaParser
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.signal import convert_mag_to_db, compute_magnitude_spectrum, optimize_window_size
 from gallant_input.validation import (validate_bool, validate_file, validate_int_or_float,
                                       validate_ndarray, validate_path, validate_string,

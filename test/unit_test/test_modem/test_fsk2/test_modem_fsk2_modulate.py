@@ -470,7 +470,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         phase = int(1)
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_exception(samp_rate, sym_rate, TypeError,
-                                'argument must be a')
+                                'argument should have been of type')
 
     def test_e22_bad_phase_value_negative(self):
         """Bad phase: value - negative."""
@@ -481,8 +481,8 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         f1 = sym_rate / 2
         phase = -1.0
         self.set_test_input(bits, f0, f1, phase)
-        self.run_test_exception(samp_rate, sym_rate, TypeError,
-                                'argument must be a')
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'value may not be negative')
 
     def test_e23_bad_phase_value_too_large(self):
         """Bad phase: value - too large."""
@@ -493,8 +493,8 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         f1 = sym_rate / 2
         phase = numpy.pi * 10
         self.set_test_input(bits, f0, f1, phase)
-        self.run_test_exception(samp_rate, sym_rate, TypeError,
-                                'argument must be a')
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'value may not be greater than')
 
 
 class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
@@ -665,7 +665,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         phase = numpy.pi * -10
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_exception(samp_rate, sym_rate, ValueError,
-                                'argument is not positive')
+                                'value may not be negative')
 
     def test_b14_phase_bounds_barely_negative(self):
         """Phase bounds test: barely negative value."""
@@ -675,10 +675,110 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         f0 = -sym_rate / 2
         f1 = sym_rate / 2
-        phase = -1.0 * 1e-16
+        phase = -1.0 * 1e-128
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_exception(samp_rate, sym_rate, ValueError,
-                                'argument is not positive')
+                                'value may not be negative')
+
+    def test_b15_phase_bounds_barely_valid_zero(self):
+        """Phase bounds test: barely valid at 0."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = float(0.0)
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_b16_phase_bounds_barely_valid_two_pi(self):
+        """Phase bounds test: barely valid at 2π."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = 2 * numpy.pi
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_b17_phase_bounds_barely_over_two_pi(self):
+        """Phase bounds test: barely > 2π."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = (2 * numpy.pi) + 1e-8
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'value may not be greater than')
+
+    def test_b18_f0_vs_f1_same(self):
+        """Freq0 vs Freq1: f0 == f1."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = f0
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'The deviation between')
+
+    def test_b18_f0_vs_f1_almost_the_same(self):
+        """Freq0 vs Freq1: math.isclose(f0, f1)."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = f0 + 1e-8
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'The deviation between')
+
+    def test_b19_f0_vs_f1_almost_half_sym_rate_separation(self):
+        """Freq0 vs Freq1: f1 == f0 + (symbol rate / 2) - a little bit."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = f0 + (sym_rate / 2) - 1e-8
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'The deviation between')
+
+    def test_b20_f0_vs_f1_half_sym_rate_separation(self):
+        """Freq0 vs Freq1: f1 == f0 + (symbol rate / 2) + a little bit."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = f0 + (sym_rate / 2) + 1e-128
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_b21_f0_vs_f1_very_different(self):
+        """Freq0 vs Freq1: f0 is far from f1."""
+        samp_rate = 480000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -samp_rate * sym_rate
+        f1 = samp_rate * sym_rate
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
 
 
 class SpecialModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
@@ -765,6 +865,42 @@ class SpecialModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         f0 = -sym_rate / 2
         f1 = sym_rate / 2
         phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_s08_f0_vs_f1_both_neg(self):
+        """Freq0 vs Freq1: valid deviation but both f0 and f1 are negative."""
+        samp_rate = 480000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -samp_rate * sym_rate * 2
+        f1 = -samp_rate * sym_rate
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_s09_f0_vs_f1_but_f1_is_lower(self):
+        """Freq0 vs Freq1: valid deviation but f1 < f0."""
+        samp_rate = 480000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = sym_rate / 2
+        f1 = -sym_rate / 2
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_s10_override_phase_with_default(self):
+        """Override phase with default value."""
+        samp_rate = 480000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = 0.0
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
 

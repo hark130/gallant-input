@@ -180,6 +180,42 @@ class NormalModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
 
+    def test_n04_single_byte_alt_bits_explicit_phase(self):
+        """Single byte, alternating bits, explicitly set the phase."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = float(1.0)
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_n05_all_zeros_explicit_phase(self):
+        """Single byte, all zeros, explicitly set the phase."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        bits = b'00000000'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = float(1.5)
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_n06_all_ones_explicit_phase(self):
+        """Single byte, all ones, explicitly set the phase."""
+        samp_rate = 4800
+        sym_rate = 80
+        # Test case input
+        bits = b'11111111'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = float(2.0)
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
 
 class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
     """Error Test Cases."""
@@ -376,6 +412,90 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         self.run_test_exception(samp_rate, sym_rate, ValueError,
                                 'Invalid binary value detected')
 
+    def test_e17_bad_freq0_type_none(self):
+        """Bad freq0: wrong type - None."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = None
+        f1 = sym_rate / 2
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e18_bad_freq0_type_string(self):
+        """Bad freq0: wrong type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = str(-sym_rate / 2)
+        f1 = sym_rate / 2
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e19_bad_freq1_type_none(self):
+        """Bad freq1: wrong type - None."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = None
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e20_bad_freq1_type_string(self):
+        """Bad freq1: wrong type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = str(sym_rate / 2)
+        phase = None
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e21_bad_phase_type_int(self):
+        """Bad phase: wrong type - int."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = int(1)
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e22_bad_phase_value_negative(self):
+        """Bad phase: value - negative."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = -1.0
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
+    def test_e23_bad_phase_value_too_large(self):
+        """Bad phase: value - too large."""
+        samp_rate = 48000
+        sym_rate = 800
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = numpy.pi * 10
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, TypeError,
+                                'argument must be a')
+
 
 class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
     """Boundary Test Cases."""
@@ -533,6 +653,32 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         phase = None
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+
+    def test_b13_phase_bounds_large_negative(self):
+        """Phase bounds test: large negative value."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = numpy.pi * -10
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'argument is not positive')
+
+    def test_b14_phase_bounds_barely_negative(self):
+        """Phase bounds test: barely negative value."""
+        samp_rate = 48000
+        sym_rate = 80
+        # Test case input
+        bits = b'10101010'
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = -1.0 * 1e-16
+        self.set_test_input(bits, f0, f1, phase)
+        self.run_test_exception(samp_rate, sym_rate, ValueError,
+                                'argument is not positive')
 
 
 class SpecialModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):

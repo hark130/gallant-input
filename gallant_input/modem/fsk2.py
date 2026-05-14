@@ -59,8 +59,7 @@ class FSK2(Modem):
         _validate_bin_bytes(bin_bytes=bin_bytes)
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         if phase is not None:
-            self._update_phase(phase, pre_validate=True)
-            self._validate_phase()  # Check it again now that it has been overridden
+            self._update_phase(phase, pre_validate=True)  # Check it prior to final update
 
         # MODULATE IT
         freqs = numpy.where(bits == 0, freq0, freq1)

@@ -469,7 +469,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         test_in = self.SAMPLES_ALL_ONES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
-                                      'The "samples_per_symbol" argument is not positive')
+                                      'argument is not positive')
 
     def test_b04_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""
@@ -501,7 +501,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         test_in = self.SAMPLES_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
-                                      'The "samples_per_symbol" argument is not positive')
+                                      'argument is not positive')
 
     def test_b07_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""

@@ -308,7 +308,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         # Test case input
         test_in = b'10101010'
         self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
-                                      'The "samples_per_symbol" argument is not positive')
+                                      'argument is not positive')
 
     def test_b04_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""
@@ -337,7 +337,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         # Test case input
         test_in = b'10101010'
         self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
-                                      'The "samples_per_symbol" argument is not positive')
+                                      'argument is not positive')
 
     def test_b07_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""

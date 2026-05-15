@@ -8,7 +8,7 @@ import numpy
 from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
                                  stringify_ndarray, upsample)
 from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
-                                      extract_bits_from_single_cluster)
+                                      extract_bits_from_single_cluster, reshape_to_symbols)
 from gallant_input.modem.constants import OOK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
@@ -78,8 +78,6 @@ class FSK2(Modem):
 
         Args:
             samples: Digital samples to demodulate.
-            threshold: [OPTIONAL] Magnitude threshold used to decide between binary results.
-                If None, automatically determine the threshold.
 
         Returns:
             The demodulated binary data.
@@ -90,11 +88,20 @@ class FSK2(Modem):
         """
         # LOCAL VARIABLES
         bit_stream = b''  # The bits as a bin bytes object
+        dphi = None       # The difference between angles
+        symbols = None    # An ndarray of trimmed samples reshaped to samples per symbol
+        bits = None       # An array of bits extracted from samples
 
         # VALIDATION
         self.parse()  # Validate and parse
+        validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
+                         must_be_complex=True)
 
         # DEMODULATE IT
+        dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))
+        symbols = reshape_to_symbols(samples, self._sps).mean(axis=1)
+        bits = (symbols > 0).astype(numpy.uint8)
+        bit_stream = stringify_ndarray(bits)
 
         # DONE
         return bit_stream
@@ -173,6 +180,7 @@ def _validate_bin_bytes(bin_bytes: bytes) -> None:
     validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
     if not bin_bytes:
         raise ValueError('The "bin_bytes" argument may not be empty')
+
 
 def _validate_phase(phase: float, param_name: str) -> None:
     """Validate phase, as a SPOT, on behalf of this module."""

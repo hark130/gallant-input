@@ -20,8 +20,8 @@ class Modem(ABC):
             sample_rate: The sample rate of the capture in Hz.
             symbol_rate: The number of symbols-per-second (1 / symbol time).
         """
-        self.sample_rate = sample_rate
-        self.symbol_rate = symbol_rate
+        self.sample_rate = sample_rate  # Sample rate
+        self.symbol_rate = symbol_rate  # Symbol rate
         self._parsed = False            # Input parsed
         self._sps = 0                   # Samples per symbol
         self._validated = False         # Validation status of attributes

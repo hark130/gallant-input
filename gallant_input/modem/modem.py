@@ -63,7 +63,8 @@ class Modem(ABC):
         """Parse user input defined in the ABC."""
         # PARSE IT
         self._sps = calculate_sps(self.sample_rate, self.symbol_rate)
-        validate_pos_int(self._sps, 'internal attribute _sps')  # Immediately validate the result
+        # Immediately validate it
+        validate_pos_int(self._sps, 'internally calculated samples per symbol')
 
     def _validate_abc(self) -> None:
         """Validate attribute values in the ABC."""

@@ -217,6 +217,8 @@ class NormalModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
 
 
+# Leave me be, Pylint.  These are test cases!
+# pylint: disable=too-many-public-methods
 class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
     """Error Test Cases."""
 
@@ -779,6 +781,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         phase = None
         self.set_test_input(bits, f0, f1, phase)
         self.run_test_return_def(sample_rate=samp_rate, symbol_rate=sym_rate)
+# pylint: enable=too-many-public-methods
 
 
 class SpecialModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):

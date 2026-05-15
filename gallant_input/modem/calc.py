@@ -44,16 +44,14 @@ def compute_symbol_energies(samples: numpy.ndarray, samples_per_symbol: int) -> 
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    trimmed_samples = None  # The samples array trimmed to match symbol sizes
-    symbols = None          # A multi-dimensional array split into symbol collections
-    energies = None         # Array of energies
+    symbols = None   # A multi-dimensional array split into symbol collections
+    energies = None  # Array of energies
 
     # INPUT VALIDATION
-    # Args validated by trim_samples()
+    # Args validated by reshape_to_symbols()
 
     # COMPUTE IT
-    trimmed_samples = trim_samples(samples, samples_per_symbol)
-    symbols = trimmed_samples.reshape(-1, samples_per_symbol)
+    symbols = reshape_to_symbols(samples, samples_per_symbol)
     energies = numpy.absolute(symbols).mean(axis=1)
 
     # DONE
@@ -177,6 +175,35 @@ def extract_bits_from_single_cluster(samples: numpy.ndarray,
     return bits
 
 
+def reshape_to_symbols(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
+    """Trim a 1-dimension array of samples and reshape it to a shape containing symbols.
+
+    Args:
+        samples: A 1-dimensional array to trim and reshape.
+        samples_per_symbol: The number of samples required to represent one symbol.
+
+    Returns:
+        A trimmed array with a number of dimensions equal to samples_per_symbol.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    trimmed_samples = None  # The samples array trimmed to match symbol sizes
+    symbols = None          # A multi-dimensional array split into symbol collections
+
+    # INPUT VALIDATION
+    # Args validated by trim_samples()
+
+    # COMPUTE IT
+    trimmed_samples = trim_samples(samples, samples_per_symbol)
+    symbols = trimmed_samples.reshape(-1, samples_per_symbol)
+
+    # DONE
+    return symbols
+
+
 def trim_samples(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
     """Trim a 1-dimension array of samples to hold a full collection of symbols.
 
@@ -215,7 +242,7 @@ def _compute_kmeans_threshold(energies: numpy.ndarray) -> float:
     # from sklearn.cluster import KMeans  # Import statement
     try:
         kmeans = KMeans(n_clusters=2).fit(energies)
-        centers = np.sort(kmeans.cluster_centers_.flatten())
+        centers = numpy.sort(kmeans.cluster_centers_.flatten())
         threshold = centers.mean()
         return float(threshold)  # Normalize numpy.float* values to floats
     except NameError as err:

@@ -153,7 +153,6 @@ class BaseUnitTest(TediousUnitTest):
             True if valid, False otherwise.
         """
         # LOCAL VARIABLES
-        def_error = 'Array {} mismatch:'
         valid = True
 
         # VALIDATE IT

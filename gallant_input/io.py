@@ -400,4 +400,4 @@ def _write_sigmf_samples(filename: Path, samples: numpy.ndarray, metadata: dict,
 
     # WRITE IT
     samples.tofile(data_path)
-    sigmf_obj.tofile(meta_path, overwrite=overwrite)
+    sigmf_obj.tofile(meta_path)

@@ -30,6 +30,7 @@ RootUnitTest is the parent class for all GAIN related unit test classes.
 """
 
 # Standard Imports
+from pathlib import Path
 # Third Party Imports
 from test.base_unit_test import BaseUnitTest
 from test.test_case_data import TestCaseData
@@ -58,8 +59,8 @@ class RootUnitTest(BaseUnitTest):
     def __init__(self, *args, **kwargs) -> None:
         """RootUnitTest ctor."""
         # ATTRIBUTES
-        self.test_input_dir = None   # Default directory for input files
-        self.test_output_dir = None  # Default directory for output files
+        self.test_input_dir = None   # Default directory for input files as a Path()
+        self.test_output_dir = None  # Default directory for output files as a Path()
         self.test_case_data = None   # Parse the test case names for discrete snippets
 
         super().__init__(*args, **kwargs)
@@ -70,9 +71,13 @@ class RootUnitTest(BaseUnitTest):
         Populates test_case_data with the test number, name, description, etc.
         """
         if self.test_input_dir is not None:
-            self._validate_directory(self.test_input_dir, 'test input dir', must_exist=True)
+            self._validate_type(self.test_input_dir, 'test_input_dir attribute', Path)
+            self._validate_directory(str(self.test_input_dir.absolute()),
+                                     'test_input_dir attribute', must_exist=True)
         if self.test_output_dir is not None:
-            self._validate_directory(self.test_output_dir, 'test output dir', must_exist=True)
+            self._validate_type(self.test_output_dir, 'test_output_dir attribute', Path)
+            self._validate_directory(str(self.test_output_dir.absolute()),
+                                     'test_output_dir attribute', must_exist=True)
         try:
             self.test_case_data = TestCaseData.generate_from_id(self.id())
         except (KeyError, TypeError, ValueError):

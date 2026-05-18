@@ -17,7 +17,6 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from test.modify import convert_bin_bytes_to_array
 from test.unit_test.test_modem.test_fsk2.test_modem_fsk2 import ModemFSK2UnitTest
 
 

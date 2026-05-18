@@ -24,7 +24,6 @@ from gallant_input.constants import SIG_GLOB_DESCRIPTION_KEY
 from gallant_input.io import read_samples
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from test import REPO_TL_DIR
-from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
 from test.unit_test.test_modem.test_fsk2.test_modem_fsk2 import ModemFSK2UnitTest
 
 
@@ -55,7 +54,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
     # Methods listed in alphabetical order
 
     def get_test_file_input(self, sigmf_input: Path, sample_dtype: DTypeLike = numpy.complex64
-        ) -> Tuple[numpy.ndarray, bytes]:
+                            ) -> Tuple[numpy.ndarray, bytes]:
         """Read a SigMF file to use as file-based test case input.
 
         Utilizes GAIN.io.read_samples() to read sigmf_input to get samples and the SigMF global
@@ -216,14 +215,14 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Single byte, alternating bits, SigMF input file, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        self.run_test_return_file(samp_rate, sym_rate. self.test_in1)  # TD:DDN - ADD AWGN
+        self.run_test_return_file(samp_rate, sym_rate, self.test_in1)  # TD:DDN - ADD AWGN
 
     @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
     def test_n00_valid_bfsk_sigmf_with_awgn(self):
         """Binary encoded text from a SigMF input file, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        self.run_test_return_file(samp_rate, sym_rate. self.test_in2)  # TD:DDN - ADD AWGN
+        self.run_test_return_file(samp_rate, sym_rate, self.test_in2)  # TD:DDN - ADD AWGN
 
 
 class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):

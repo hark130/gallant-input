@@ -10,6 +10,25 @@ from gallant_input.validation import (validate_ndarray, validate_pos_float,
                                       validate_pos_float_or_int, validate_pos_int, validate_type)
 
 
+def calculate_baud_rate(sample_rate: float | int, samples_per_symbol: int) -> float:
+    """Calculate the baud rate (AKA symbol rate).
+
+    Args:
+        sample_rate: The sample rate of the capture in Hz.
+        samples_per_symbol: The number of samples per symbol.
+
+    Returns:
+        The baud rate (AKA symbol rate).
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    validate_pos_float_or_int(sample_rate, 'sample_rate')
+    validate_pos_int(samples_per_symbol, 'samples_per_symbol')
+    return sample_rate / samples_per_symbol
+
+
 def calculate_sps(sample_rate: float | int, symbol_rate: float | int) -> int:
     """Calculate the samples per symbol.
 

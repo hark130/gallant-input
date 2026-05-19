@@ -38,8 +38,10 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
         self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'            # Dir for input files
-        self.test_in1 = self.test_input_dir / 'bfsk_mod1_4800hz.sigmf-meta'  # File-based test input
-        self.test_in2 = self.test_input_dir / 'bfsk_mod2_4800hz.sigmf-meta'  # File-based test input
+        # File-based test input
+        self.test_in1 = self.test_input_dir / 'bfsk_mod1_4800hz.sigmf-meta'
+        self.test_in2 = self.test_input_dir / 'bfsk_mod2_4800hz.sigmf-meta'
+        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000.sigmf-meta'
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -209,6 +211,12 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 4800
         sym_rate = 80
         self.run_test_return_file(samp_rate, sym_rate, self.test_in2)
+
+    def test_n03_valid_bfsk_sigmf(self):
+        """Binary encoded text modulated with 2-FSK from a SigMF input file."""
+        samp_rate = 480000
+        sym_rate = 800
+        self.run_test_return_file(samp_rate, sym_rate, self.test_in3)
 
     @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
     def test_n00_single_byte_alt_bits_sigmf_with_awgn(self):

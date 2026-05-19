@@ -89,6 +89,7 @@ class FSK2(Modem):
         # LOCAL VARIABLES
         bit_stream = b''  # The bits as a bin bytes object
         dphi = None       # The difference between angles
+        usable = None     # Reshaped angle diffs based on the samples per symbol
         symbols = None    # An ndarray of trimmed samples reshaped to samples per symbol
         bits = None       # An array of bits extracted from samples
 
@@ -98,8 +99,11 @@ class FSK2(Modem):
                          must_be_complex=True)
 
         # DEMODULATE IT
-        dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))
-        symbols = reshape_to_symbols(samples, self._sps).mean(axis=1)
+        # dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))  # ORIGINAL
+        dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))  # FIX(?)
+        dphi[0] = dphi[1]  # Padding the first sample
+        usable = len(dphi) // self._sps * self._sps
+        symbols = reshape_to_symbols(dphi, self._sps).mean(axis=1)
         bits = (symbols > 0).astype(numpy.uint8)
         bit_stream = stringify_ndarray(bits)
 

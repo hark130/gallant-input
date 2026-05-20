@@ -114,6 +114,7 @@ def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = Sig
         is_complex: [OPTIONAL] If True, 'c'.  Otherise it's real: 'r'.
         data_type: [OPTIONAL] SigMFDataType int enum indicating the dataset format data type.
         bit_width: [OPTIONAL] The number of bits in each sample.  Supported values: 8, 16, 32, 64.
+            Auto-adjusted for complex values.
         little_e: [OPTIONAL] If True, '_le' for little-endian.  Otherwise it's '_be' for big-endian.
             This argument is ignored if num_bits is 8.
 
@@ -135,9 +136,13 @@ def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = Sig
     validate_bool(is_complex, 'is_complex')
     validate_type(data_type, 'data_type', SigMFDataType)
     validate_int(bit_width, 'bit_width')
+    validate_bool(little_e, 'little_e')
+
+    # PREPARE
+    if is_complex:
+        bit_width = int(bit_width // 2)
     if bit_width not in valid_widths:
         raise ValueError(f'The "bit_width" value "{bit_width}" is not in {valid_widths}')
-    validate_bool(little_e, 'little_e')
 
     # BUILD IT
     # Complex or Real

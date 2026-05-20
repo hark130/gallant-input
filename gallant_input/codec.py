@@ -20,6 +20,10 @@ def convert_ascii_bin_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
 
     Returns:
         1D array of uint8 bits (0 or 1).
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
     """
     # LOCAL VARIABLES
     array = None       # NumPy array of ASCII bytes from bin_bytes

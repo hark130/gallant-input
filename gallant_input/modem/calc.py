@@ -14,7 +14,7 @@ def calculate_baud_rate(sample_rate: float | int, samples_per_symbol: int) -> fl
     """Calculate the baud rate (AKA symbol rate).
 
     Args:
-        sample_rate: The sample rate of the capture in Hz.
+        sample_rate: The sample rate of the capture in samples per second.
         samples_per_symbol: The number of samples per symbol.
 
     Returns:
@@ -33,7 +33,7 @@ def calculate_sps(sample_rate: float | int, symbol_rate: float | int) -> int:
     """Calculate the samples per symbol.
 
     Args:
-        sample_rate: The sample rate of the capture in Hz.
+        sample_rate: The sample rate of the capture in samples per second.
         symbol_rate: The number of symbols-per-second (1 / symbol time).
 
     Returns:

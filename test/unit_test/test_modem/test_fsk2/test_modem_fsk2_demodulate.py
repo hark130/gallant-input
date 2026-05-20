@@ -37,11 +37,11 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         """RootUnitTest ctor."""
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
-        self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'            # Dir for input files
+        self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
         # File-based test input
         self.test_in1 = self.test_input_dir / 'bfsk_mod1_4800hz.sigmf-meta'
         self.test_in2 = self.test_input_dir / 'bfsk_mod2_4800hz.sigmf-meta'
-        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000.sigmf-meta'
+        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-meta'
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -87,7 +87,11 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         # Description
         try:
             tmp_obj = SigMFMetaParser(meta_filename=sigmf_input)
-            description = bytes(tmp_obj.get_global_key(key=SIG_GLOB_DESCRIPTION_KEY), 'ascii')
+            description = tmp_obj.get_global_key(key=SIG_GLOB_DESCRIPTION_KEY)
+            if not description:
+                self.fail_test_case('The description (AKA expected result) is missing from '
+                                    f'{str(sigmf_input.absolute())}')
+            description = bytes(description, 'ascii')
         except (FileNotFoundError, KeyError, TypeError, ValueError) as err:
             self.fail_test_case(repr(err))
 

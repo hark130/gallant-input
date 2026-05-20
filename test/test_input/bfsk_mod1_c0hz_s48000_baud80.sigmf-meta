@@ -1,0 +1,21 @@
+{
+    "global": {
+        "core:author": "hark1",
+        "core:datatype": "cf64_le",
+        "core:description": "10101010",
+        "core:num_channels": 1,
+        "core:sample_rate": 48000,
+        "core:version": "1.2.5"
+    },
+    "captures": [
+        {
+            "core:datetime": "2026-05-20T12:32:31Z",
+            "core:sample_start": 0
+        }
+    ],
+    "annotations": [
+        {
+            "core:sample_start": 0
+        }
+    ]
+}

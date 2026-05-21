@@ -81,13 +81,6 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
 
         # GET IT
         # Samples
-        # GAIN has a SigMF-related BUG.  Reading the sigmf-data as an IQ file with the established sample data type default works as-is.
-        # All test cases are passing locally for valid reasons.  The SigMF files validity have been verified by Inspectrum and
-        # URH.  All that being said, changing read_samples(sigmf_data) to True causes the test cases to fail.
-        # As you might be able to see from the GAIN.io.py diff, even using a different method of reading the SigMF files
-        # (see: sigmf.fromfile()) is also not working (AKA test cases failing).  Does that mean I'm *forming* the SigMF files
-        # improperly?!  It's an important mystery to solve...
-        # TO DO: DON'T DO NOW... Future Hark will solve this mystery.
         try:
             samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=True)
         except (OSError, TypeError, ValueError) as err:

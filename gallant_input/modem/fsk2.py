@@ -1,15 +1,15 @@
 """Defines the class for Binary Frequency Shift Key (FSK) MOdulation/DEModulation."""
 
 # Standard Imports
-import math
 # Third Party Imports
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarray
 from gallant_input.modem.calc import reshape_to_symbols
+from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_float,
-                                      validate_int_or_float, validate_ndarray)
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
+                                      validate_ndarray, validate_phase)
 
 
 class FSK2(Modem):
@@ -17,10 +17,13 @@ class FSK2(Modem):
 
     # CORE METHODS
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, config: FSK2Config):
         """Class ctor."""
+        self._freq0 = None        # The 'off' frequency baseband deviation.
+        self._freq1 = None        # The 'on' frequency baseband deviation.
         self._phase = float(0.0)  # Phase state
-        super().__init__(*args, **kwargs)
+        self._parse_fsk2_config(config=config)  # Gently update instance attributes from config
+        super().__init__(config=config)
 
     # ABSTRACT METHODS
 
@@ -150,11 +153,23 @@ class FSK2(Modem):
         """Parse user input."""
         self._parse_abc()
 
+    def _parse_fsk2_config(self, config: FSK2Config) -> None:
+        """Gently extract config values into instance attributes."""
+        try:
+            if isinstance(config, FSK2Config):
+                config.validate_content()
+                self._freq0 = config.freq0
+                self._freq1 = config.freq1
+                if config.phase is not None:
+                    self._phase = config.phase
+        except (TypeError, ValueError):
+            pass  # Don't update or raise anything.  Subsequent method calls will catch it.
+
     def _update_phase(self, new_phase: float, pre_validate: bool = False) -> None:
         """Trim and update the phase attribute."""
         validate_bool(pre_validate, 'pre_validate')
         if pre_validate:
-            _validate_phase(new_phase, 'new_phase')
+            validate_phase(new_phase, 'new_phase')
         self._phase = numpy.mod(new_phase, 2 * numpy.pi)
 
     def _validate(self) -> None:
@@ -174,7 +189,7 @@ class FSK2(Modem):
 
     def _validate_phase(self) -> None:
         """Validate _phase attribute."""
-        _validate_phase(phase=self._phase, param_name='internal attribute _phase')
+        validate_phase(phase=self._phase, param_name='internal attribute _phase')
 
 
 def _validate_bin_bytes(bin_bytes: bytes) -> None:
@@ -182,14 +197,3 @@ def _validate_bin_bytes(bin_bytes: bytes) -> None:
     validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
     if not bin_bytes:
         raise ValueError('The "bin_bytes" argument may not be empty')
-
-
-def _validate_phase(phase: float, param_name: str) -> None:
-    """Validate phase, as a SPOT, on behalf of this module."""
-    upper_bound = 2 * math.pi  # Upper limit for self._phase
-    validate_float(phase, param_name)
-    if phase < 0:
-        raise ValueError(f'The {param_name} value may not be negative: {phase}')
-    if phase > upper_bound:
-        raise ValueError(f'The {param_name} value may not be greater than {upper_bound}: '
-                         f'{phase}')

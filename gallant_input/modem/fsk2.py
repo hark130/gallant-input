@@ -5,15 +5,11 @@ import math
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
-                                 stringify_ndarray, upsample)
-from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
-                                      extract_bits_from_single_cluster, reshape_to_symbols)
-from gallant_input.modem.constants import OOK_MAP
+from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarray
+from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.modem import Modem
-from gallant_input.modem.threshold_scheme import ThresholdScheme
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_float,
-                                      validate_int_or_float, validate_ndarray, validate_pos_float)
+                                      validate_int_or_float, validate_ndarray)
 
 
 class FSK2(Modem):
@@ -89,7 +85,6 @@ class FSK2(Modem):
         # LOCAL VARIABLES
         bit_stream = b''  # The bits as a bin bytes object
         dphi = None       # The difference between angles
-        usable = None     # Reshaped angle diffs based on the samples per symbol
         symbols = None    # An ndarray of trimmed samples reshaped to samples per symbol
         bits = None       # An array of bits extracted from samples
 
@@ -102,7 +97,6 @@ class FSK2(Modem):
         # dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))  # ORIGINAL
         dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))  # FIX(?)
         dphi[0] = dphi[1]  # Padding the first sample
-        usable = len(dphi) // self._sps * self._sps
         symbols = reshape_to_symbols(dphi, self._sps).mean(axis=1)
         bits = (symbols > 0).astype(numpy.uint8)
         bit_stream = stringify_ndarray(bits)
@@ -118,6 +112,9 @@ class FSK2(Modem):
         self._validate_phase()  # Check it again just to be sure
         return self._phase
 
+# I'm not (yet) comfortable moving this code up to Modem() because I suspect I'll have to
+# special-case something in a future child class.
+# pylint: disable = duplicate-code
     def parse(self) -> None:
         """Validate, parse and update attributes once.
 
@@ -145,6 +142,7 @@ class FSK2(Modem):
         if not self._validated:
             self._validate()
             self._validated = True
+# pylint: enable = duplicate-code
 
     # PRIVATE METHODS
 

@@ -80,6 +80,9 @@ class OOK(Modem):
 
     # PUBLIC METHODS
 
+# I'm not (yet) comfortable moving this code up to Modem() because I suspect I'll have to
+# special-case something in a future child class.
+# pylint: disable = duplicate-code
     def parse(self) -> None:
         """Validate, parse and update attributes once.
 
@@ -107,6 +110,7 @@ class OOK(Modem):
         if not self._validated:
             self._validate()
             self._validated = True
+# pylint: enable = duplicate-code
 
     # PRIVATE METHODS
 

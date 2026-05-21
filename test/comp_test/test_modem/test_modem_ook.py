@@ -22,6 +22,7 @@ from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
 from gallant_input.modem.ook import OOK
+from gallant_input.modem.ook_config import OOKConfig
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
 from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
 
@@ -205,7 +206,8 @@ class OOKModemCompTest(ModemCompTest):
 
         Strongly consider calling self.set_ctor_args() first.
         """
-        return OOK(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate)
+        config = OOKConfig(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate)
+        return OOK(config=config)
 
 
 class NormalOOKModemCompTest(OOKModemCompTest):

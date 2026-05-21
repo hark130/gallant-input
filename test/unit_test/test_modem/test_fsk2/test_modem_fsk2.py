@@ -30,10 +30,12 @@ ModemFSK2UnitTest is the parent class for all modem.fsk2 FSK2 unit test classes.
 """
 
 # Standard Imports
+from typing import Any
 # Third Party Imports
 from test.unit_test.test_modem.test_modem import ModemUnitTest
 # Local Imports
 from gallant_input.modem.fsk2 import FSK2
+from gallant_input.modem.fsk2_config import FSK2Config
 
 
 class ModemFSK2UnitTest(ModemUnitTest):
@@ -56,6 +58,15 @@ class ModemFSK2UnitTest(ModemUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
 
+    def __init__(self, *args, **kwargs) -> None:
+        """ModemFSK2UnitTest ctor."""
+        # ATTRIBUTES
+        self.input_freq0 = None
+        self.input_freq1 = None
+        self.input_phase = None
+
+        super().__init__(*args, **kwargs)
+
     def call_callable(self):
         """Defines how the class will invoke the function call.
 
@@ -68,6 +79,16 @@ class ModemFSK2UnitTest(ModemUnitTest):
             self._test_error.format('The child class must override the call_callable method with '
                                     'the function to test.'))
 
+# Leave me be, Pylint
+# pylint: disable = too-many-arguments, too-many-positional-arguments
+    def set_fsk2_ctor_args(self, sample_rate: Any, symbol_rate: Any, freq0: Any, freq1: Any,
+                           phase: Any) -> None:
+        """Sets the FSK2() argument values in the test class."""
+        self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
+        self.input_freq0 = freq0
+        self.input_freq1 = freq1
+        self.input_phase = phase
+
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call.
 
@@ -79,6 +100,7 @@ class ModemFSK2UnitTest(ModemUnitTest):
         raise NotImplementedError(
             self._test_error.format('The child class must override the validate_return_value '
                                     'method with the appropriate validation logic'))
+# pylint: enable = too-many-arguments, too-many-positional-arguments
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
@@ -86,9 +108,11 @@ class ModemFSK2UnitTest(ModemUnitTest):
     def create_test_obj(self) -> FSK2:
         """Create an FSK2() test object.
 
-        Strongly consider calling self.set_ctor_args() first.
+        Strongly consider calling self.set_fsk2_ctor_args() first.
         """
-        return FSK2(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate)
+        config = FSK2Config(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate,
+                            freq0=self.input_freq0, freq1=self.input_freq1, phase=self.input_phase)
+        return FSK2(config=config)
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

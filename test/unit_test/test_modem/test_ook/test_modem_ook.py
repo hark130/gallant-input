@@ -33,6 +33,7 @@ ModemOOKUnitTest is the parent class for all modem.ook OOK unit test classes.
 # Third Party Imports
 from test.unit_test.test_modem.test_modem import ModemUnitTest
 # Local Imports
+from gallant_input.modem.ook_config import OOKConfig
 from gallant_input.modem.ook import OOK
 
 
@@ -88,7 +89,8 @@ class ModemOOKUnitTest(ModemUnitTest):
 
         Strongly consider calling self.set_ctor_args() first.
         """
-        return OOK(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate)
+        config = OOKConfig(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate)
+        return OOK(config=config)
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

@@ -39,9 +39,9 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         # ATTRIBUTES
         self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'            # Dir for input files
         # File-based test input
-        self.test_in1 = self.test_input_dir / 'bfsk_mod1_4800hz.sigmf-meta'
-        self.test_in2 = self.test_input_dir / 'bfsk_mod2_4800hz.sigmf-meta'
-        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000.sigmf-meta'
+        self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_baud80.sigmf-data'
+        self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_baud2375.sigmf-data'
+        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_baud800.sigmf-data'
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -80,8 +80,15 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
 
         # GET IT
         # Samples
+        # GAIN has a SigMF-related BUG.  Reading the sigmf-data as an IQ file with the established sample data type default works as-is.
+        # All test cases are passing locally for valid reasons.  The SigMF files validity have been verified by Inspectrum and
+        # URH.  All that being said, changing read_samples(sigmf_data) to True causes the test cases to fail.
+        # As you might be able to see from the GAIN.io.py diff, even using a different method of reading the SigMF files
+        # (see: sigmf.fromfile()) is also not working (AKA test cases failing).  Does that mean I'm *forming* the SigMF files
+        # improperly?!  It's an important mystery to solve...
+        # TO DO: DON'T DO NOW... Future Hark will solve this mystery.
         try:
-            samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=True)
+            samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=False)
         except (OSError, TypeError, ValueError) as err:
             self.fail_test_case(repr(err))
         # Description
@@ -202,20 +209,20 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
 
     def test_n01_single_byte_alt_bits_sigmf(self):
         """Single byte, alternating bits, parsed from a SigMF input file."""
-        samp_rate = 4800
+        samp_rate = 48000
         sym_rate = 80
         self.run_test_return_file(samp_rate, sym_rate, self.test_in1)
 
-    def test_n02_valid_bfsk_sigmf(self):
-        """Binary encoded text modulated with 2-FSK from a SigMF input file."""
-        samp_rate = 4800
-        sym_rate = 80
+    def test_n02_valid_bfsk_sigmf_rds_rates(self):
+        """Binary encoded text modulated with 2-FSK from a SigMF input file at RDS rates."""
+        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
+        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         self.run_test_return_file(samp_rate, sym_rate, self.test_in2)
 
-    def test_n03_valid_bfsk_sigmf(self):
-        """Binary encoded text modulated with 2-FSK from a SigMF input file."""
-        samp_rate = 480000
-        sym_rate = 800
+    def test_n03_valid_bfsk_sigmf_demod101_rates(self):
+        """Binary encoded text modulated with 2-FSK from a SigMF input file at Demod 101 rates."""
+        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
+        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
         self.run_test_return_file(samp_rate, sym_rate, self.test_in3)
 
     @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")

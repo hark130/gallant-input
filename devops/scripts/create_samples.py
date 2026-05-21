@@ -1,6 +1,6 @@
 """Create samples from binary data.
 
-python ./devops/scripts/create_samples.py
+python -m devops.scripts.create_samples
 """
 
 
@@ -98,33 +98,106 @@ def modulate_bfsk(sample_rate: int | float, symbol_rate: int | float,
     return samples
 
 
+def create_bfsk_input1(preamble: str = 'bfsk_mod1') -> None:
+    """Build BFSK input 1 and write it to a file.
+
+    Args:
+        preamble: The beginning of the filename.  E.g., 'my_capture'
+    """
+    # LOCAL VARIABLES
+    samp_rate = 48000      # Test case sample rate
+    sym_rate = 80          # Test case symbol rate
+    samples = None         # An ndarray of modulated binary to write to disk
+    dataset_format = None  # SigMF metadata "global":"core:datatype" e.g., 'cf32_le'
+    metadata = {}          # SigMF metadata dictionary: dict[str:Any]
+    filename = None        # Path object with the output filename
+    # Digital data to modulate
+    bin_bytes = b'10101010'
+
+    # BUILT IT
+    samples = modulate_bfsk(samp_rate, sym_rate, bin_bytes)
+    data_format = build_dataset_format(is_complex=True, data_type=SigMFDataType.FLOAT,
+                                       bit_width=64, little_e=True)
+    metadata = build_metadata(dataset_format=data_format, samp_rate=samp_rate,
+                              center_freq=None, description=bin_bytes.decode('ascii'))
+    filename = Path(create_filename(preamble, samp_rate, sym_rate))
+    write_samples(filename=filename, samples=samples, sample_dtype=numpy.complex64,
+                  metadata=metadata, overwrite=True)
+
+
+def create_bfsk_input2(preamble: str = 'bfsk_mod2') -> None:
+    """Build BFSK input 2 and write it to a file.
+
+    Args:
+        preamble: The beginning of the filename.  E.g., 'my_capture'
+    """
+    # LOCAL VARIABLES
+    samp_rate = 57000      # Test case sample rate
+    sym_rate = 2375        # Test case symbol rate
+    samples = None         # An ndarray of modulated binary to write to disk
+    dataset_format = None  # SigMF metadata "global":"core:datatype" e.g., 'cf32_le'
+    metadata = {}          # SigMF metadata dictionary: dict[str:Any]
+    filename = None        # Path object with the output filename
+    # Digital data to modulate
+    bin_bytes = b'0100001101100001011011100010000001111001011011110111010100100000' \
+                b'0111001001100101011000010110010000100000011101000110100001101001' \
+                b'0111001100111111'
+
+    # BUILT IT
+    samples = modulate_bfsk(samp_rate, sym_rate, bin_bytes)
+    data_format = build_dataset_format(is_complex=True, data_type=SigMFDataType.FLOAT,
+                                       bit_width=64, little_e=True)
+    metadata = build_metadata(dataset_format=data_format, samp_rate=samp_rate,
+                              center_freq=None, description=bin_bytes.decode('ascii'))
+    filename = Path(create_filename(preamble, samp_rate, sym_rate))
+    write_samples(filename=filename, samples=samples, sample_dtype=numpy.complex64,
+                  metadata=metadata, overwrite=True)
+
+
+def create_bfsk_input3(preamble: str = 'bfsk_mod3') -> None:
+    """Build BFSK input 3 and write it to a file.
+
+    Args:
+        preamble: The beginning of the filename.  E.g., 'my_capture'
+    """
+    # LOCAL VARIABLES
+    samp_rate = 480000     # Test case sample rate
+    sym_rate = 800         # Test case symbol rate
+    samples = None         # An ndarray of modulated binary to write to disk
+    dataset_format = None  # SigMF metadata "global":"core:datatype" e.g., 'cf32_le'
+    metadata = {}          # SigMF metadata dictionary: dict[str:Any]
+    filename = None        # Path object with the output filename
+    # Digital data to modulate
+    bin_bytes = b'0010000000100000001000000010000001010111011010000110000101110100' \
+                b'0010000001101001011100110010000001101000011000010111000001110000' \
+                b'0110010101101110011010010110111001100111001111110010000100100000' \
+                b'001000000010000000100000'
+
+    # BUILT IT
+    samples = modulate_bfsk(samp_rate, sym_rate, bin_bytes)
+    data_format = build_dataset_format(is_complex=True, data_type=SigMFDataType.FLOAT,
+                                       bit_width=64, little_e=True)
+    metadata = build_metadata(dataset_format=data_format, samp_rate=samp_rate,
+                              center_freq=None, description=bin_bytes.decode('ascii'))
+    filename = Path(create_filename(preamble, samp_rate, sym_rate))
+    write_samples(filename=filename, samples=samples, sample_dtype=numpy.complex64,
+                  metadata=metadata, overwrite=True)
+
+
 def main() -> int:
     """Entry-level function."""
     # LOCAL VARIABLES
     exit_code = 0  # 0 for success, 1 for error
-    samp_rate3 = 480000
-    sym_rate3 = 800
-    metadata3 = {}     # SigMF metadata dictionary: dict[str:Any]
-    filename3 = None   # Path object with the output filename
-    bin_bytes3 = b'0010000000100000001000000010000001010111011010000110000101110100' \
-                 b'0010000001101001011100110010000001101000011000010111000001110000' \
-                 b'0110010101101110011010010110111001100111001111110010000100100000' \
-                 b'001000000010000000100000'
+
+    # CREATE SAMPLES
     try:
-        # numpy ndarray formed from binary in a bytes object
-        samples3 = modulate_bfsk(samp_rate3, sym_rate3, bin_bytes3)
-        # SigMF metadata "global":"core:datatype" e.g., 'cf32_le'
-        data_format3 = build_dataset_format(is_complex=True, data_type=SigMFDataType.FLOAT,
-                                            bit_width=64, little_e=True)
-        metadata3 = build_metadata(dataset_format=data_format3, samp_rate=samp_rate3,
-                                   center_freq=None, description=bin_bytes3.decode('ascii'))
-        filename3 = Path(create_filename('bfsk_mod3', samp_rate3, sym_rate3))
-        write_samples(filename=filename3, samples=samples3, sample_dtype=numpy.complex64,
-                      metadata=metadata3, overwrite=True)
+        create_bfsk_input1()
+        create_bfsk_input2()
+        create_bfsk_input3()
     except (LookupError, NotImplementedError, TypeError, ValueError) as err:
         print(f'Failed with: {repr(err)}')
         exit_code = 1  # Failed
-        raise err from err  # DEBUGGING
+        # raise err from err
 
     # DONE
     return exit_code

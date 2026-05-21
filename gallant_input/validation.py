@@ -342,6 +342,17 @@ def validate_path(validate_this: Path, param_name: str, must_exist: bool = True)
                                 f'"{str(validate_this.absolute())}"')
 
 
+def validate_phase(phase: float, param_name: str) -> None:
+    """Validate phase within the bounds of 0 and 2π, inclusive."""
+    upper_bound = 2 * math.pi  # Upper limit for phase
+    validate_float(phase, param_name)
+    if phase < 0:
+        raise ValueError(f'The {param_name} value may not be negative: {phase}')
+    if phase > upper_bound:
+        raise ValueError(f'The {param_name} value may not be greater than {upper_bound}: '
+                         f'{phase}')
+
+
 def validate_pos_float(validate_this: float, param_name: str, abs_tol: float = 1e-9) -> None:
     """Validate validate_this as a positive float.
 

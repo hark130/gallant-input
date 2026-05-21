@@ -8,7 +8,7 @@ from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.validation import validate_int_or_float, validate_phase
 
 
-@dataclass
+@dataclass(kw_only=True)  # Avoid linter false-negatives (e.g., Pylint's unexpected-keyword-arg)
 class FSK2Config(ModemConfig):
     """Dataclass for use with the FSK2() ctor."""
 

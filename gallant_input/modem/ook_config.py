@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from gallant_input.modem.modem_config import ModemConfig
 
 
-@dataclass
+@dataclass(kw_only=True)  # Avoid linter false-negatives (e.g., Pylint's unexpected-keyword-arg)
 class OOKConfig(ModemConfig):
     """Dataclass for use with the OOK() ctor."""
 

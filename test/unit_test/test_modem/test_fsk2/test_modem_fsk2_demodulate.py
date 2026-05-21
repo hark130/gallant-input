@@ -42,7 +42,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
 
         self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
         self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
-        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-meta'
+        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -89,7 +89,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         # improperly?!  It's an important mystery to solve...
         # TO DO: DON'T DO NOW... Future Hark will solve this mystery.
         try:
-            samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=False)
+            samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=True)
         except (OSError, TypeError, ValueError) as err:
             self.fail_test_case(repr(err))
         # Description

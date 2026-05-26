@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 # Third Party Imports
 # Local Imports
 from gallant_input.modem.modem_config import ModemConfig
-from gallant_input.validation import validate_int_or_float, validate_phase
+from gallant_input.validation import validate_bool, validate_int_or_float, validate_phase
 
 
 @dataclass(kw_only=True)  # Avoid linter false-negatives (e.g., Pylint's unexpected-keyword-arg)
@@ -20,6 +20,8 @@ class FSK2Config(ModemConfig):
     phase: float | None = field(default=None)  # Override the internal phase continuity.
 
     # Private
+
+    _demod: bool = field(default=False)        # Only validate attrs necessary for demodulation
 
     # ABSTRACT METHODS
     # In alphabetical order
@@ -36,9 +38,20 @@ class FSK2Config(ModemConfig):
     # PUBLIC METHODS
     # In alphabetical order
 
+    def set_demod(self, demod: bool = True) -> None:
+        """Set this config to demod-only.
+
+        Args:
+            demod: [OPTIONAL] Controls internal parsing/validation.  If True, internal validation
+            will only validate the attributes necessary to demodulate a signal.
+        """
+        self._demod = demod
+
     def validate_fsk2(self) -> None:
         """Validate all attributes defined in this child class regardless of internal status."""
-        validate_int_or_float(self.freq0, 'freq0')
-        validate_int_or_float(self.freq1, 'freq1')
-        if self.phase is not None:
-            validate_phase(self.phase, 'phase')
+        validate_bool(self._demod, 'internal demod attribute')
+        if self._demod is False:
+            validate_int_or_float(self.freq0, 'freq0')  # Necessary for modulation
+            validate_int_or_float(self.freq1, 'freq1')  # Necessary for modulation
+            if self.phase is not None:
+                validate_phase(self.phase, 'phase')  # Necessary for modulation, if defined

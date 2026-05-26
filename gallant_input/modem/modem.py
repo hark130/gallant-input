@@ -8,7 +8,8 @@ import numpy
 # Local Imports
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.modem_config import ModemConfig
-from gallant_input.validation import validate_bool, validate_pos_float_or_int, validate_pos_int
+from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_pos_int,
+                                      validate_type)
 
 
 class Modem(ABC):
@@ -26,7 +27,7 @@ class Modem(ABC):
         self._parsed = False     # Input parsed
         self._sps = 0            # Samples per symbol
         self._validated = False  # Validation status of attributes
-        self._parse_abc_config(config=config)  # Gently update instance attributes from config
+        self._config = config    # Class configuration
 
     @abstractmethod
     def modulate(self, bin_bytes: bytes) -> numpy.ndarray:
@@ -63,24 +64,26 @@ class Modem(ABC):
     def _parse_abc(self) -> None:
         """Parse user input defined in the ABC."""
         # PARSE IT
+        self._parse_abc_config()
         self._sps = calculate_sps(self.sample_rate, self.symbol_rate)
-        # Immediately validate it
+        # Immediately validate the sps attribute value
         validate_pos_int(self._sps, 'internally calculated samples per symbol')
 
-    def _parse_abc_config(self, config: ModemConfig) -> None:
+    def _parse_abc_config(self) -> None:
         """Gently extract config values into instance attributes."""
-        try:
-            if isinstance(config, ModemConfig):
-                config.validate_content()
-                self.sample_rate = config.sample_rate
-                self.symbol_rate = config.symbol_rate
-        except (TypeError, ValueError):
-            pass  # Don't update or raise anything.  Subsequent method calls will catch it.
+        if isinstance(self._config, ModemConfig):
+            # config.validate_content()
+            self.sample_rate = self._config.sample_rate
+            self.symbol_rate = self._config.symbol_rate
 
     def _validate_abc(self) -> None:
         """Validate attribute values in the ABC."""
-        validate_pos_float_or_int(self.sample_rate, 'sample_rate')
-        validate_pos_float_or_int(self.symbol_rate, 'symbol_rate')
+        self._validate_config()
         validate_bool(self._parsed, 'internal attribute _parsed')
         # self._sps may not be valid yet so skip it
         # Not checking self._validated here so skip it
+
+    def _validate_config(self) -> None:
+        """Validate the ModemConfig object (and/or it's children)."""
+        validate_type(self._config, 'config', ModemConfig)
+        self._config.validate_content()

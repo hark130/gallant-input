@@ -36,6 +36,7 @@ from test.unit_test.test_modem.test_modem import ModemUnitTest
 # Local Imports
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
+from gallant_input.modem.ook_config import OOKConfig
 
 
 class ModemFSK2UnitTest(ModemUnitTest):
@@ -105,13 +106,25 @@ class ModemFSK2UnitTest(ModemUnitTest):
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
-    def create_test_obj(self) -> FSK2:
+    def create_test_obj(self, demod: bool = False) -> FSK2:
         """Create an FSK2() test object.
+
+        Args:
+            demod: [OPTIONAL] If True, use a OOKConfig() object instead
+                (e.g., because demodulate() doesn't need an FSK2Config() object).
 
         Strongly consider calling self.set_fsk2_ctor_args() first.
         """
-        config = FSK2Config(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate,
-                            freq0=self.input_freq0, freq1=self.input_freq1, phase=self.input_phase)
+        config = None  # FSK2() ctor argument
+        self._validate_type(demod, 'demod', bool)
+        if demod:
+            config = OOKConfig(sample_rate=self.input_sample_rate,
+                               symbol_rate=self.input_symbol_rate)
+        else:
+            config = FSK2Config(sample_rate=self.input_sample_rate,
+                                symbol_rate=self.input_symbol_rate,
+                                freq0=self.input_freq0, freq1=self.input_freq1,
+                                phase=self.input_phase)
         return FSK2(config=config)
 
     # CLASS HELPER METHODS

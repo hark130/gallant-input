@@ -38,15 +38,15 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
         self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
+        self._demod = True                                         # Default demodulate() test state
         # File-based test input
-
         self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
         self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
         self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
-        test_obj = self.create_test_obj()
+        test_obj = self.create_test_obj(demod=self._demod)
         return test_obj.demodulate(*self._args, **self._kwargs)
 
     def validate_return_value(self, return_value):
@@ -124,11 +124,10 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
-    def run_test_exception(self, sample_rate: Any, symbol_rate: Any,
-                           exception_type: Exception, exception_msg: str) -> None:
+    def run_test_exception(self, exception_type: Exception, exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
 
-        Test author must call self.set_test_input().
+        Test author must call self.set_fsk2_ctor_args() *and* self.set_test_input().
 
         Args:
             sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
@@ -136,16 +135,15 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def run_test_exception_input(self, sample_rate: Any, symbol_rate: Any, samples: Any,
+    def run_test_exception_input(self, samples: Any,
                                  exception_type: Exception, exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
 
-        Test author must call self.set_test_input().
+        Test author must call self.set_fsk2_ctor_args().
 
         Args:
             sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
@@ -155,49 +153,47 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
         self.set_test_input(samples)
-        self.run_test_exception(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                exception_type=exception_type, exception_msg=exception_msg)
+        self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
-    def run_test_return(self, sample_rate: float, symbol_rate: float,
-                        exp_ret: bytes) -> None:
-        """Common method calls for a test case expected to return.
+    # def run_test_return(self, sample_rate: float, symbol_rate: float,
+    #                     exp_ret: bytes) -> None:
+    #     """Common method calls for a test case expected to return.
 
-        Test author must call self.set_test_input().
+    #     Test author must call self.set_test_input().
 
-        Args:
-            sample_rate: Sets the sample_rate ctor argument input.
-            symbol_rate: Sets the symbol_rate ctor argument input.
-            exp_ret: The expected return value from the method call.
-        """
-        self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
-        self.expect_return(exp_ret)
-        self.run_test()
+    #     Args:
+    #         sample_rate: Sets the sample_rate ctor argument input.
+    #         symbol_rate: Sets the symbol_rate ctor argument input.
+    #         exp_ret: The expected return value from the method call.
+    #     """
+    #     self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
+    #     self.expect_return(exp_ret)
+    #     self.run_test()
 
-    def run_test_return_input(self, sample_rate: float, symbol_rate: float, samples: numpy.ndarray,
-                              exp_ret: bytes) -> None:
-        """Common method calls for a test case expected to return an expected result.
+    # def run_test_return_input(self, sample_rate: float, symbol_rate: float, samples: numpy.ndarray,
+    #                           exp_ret: bytes) -> None:
+    #     """Common method calls for a test case expected to return an expected result.
 
-        Args:
-            sample_rate: Sets the sample_rate ctor argument input.
-            symbol_rate: Sets the symbol_rate ctor argument input.
-            samples: Test case input.
-            threshold: Test case input.
-            exp_ret: The expected return value from the method call.
-        """
-        self.set_test_input(samples)
-        self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
+    #     Args:
+    #         sample_rate: Sets the sample_rate ctor argument input.
+    #         symbol_rate: Sets the symbol_rate ctor argument input.
+    #         samples: Test case input.
+    #         threshold: Test case input.
+    #         exp_ret: The expected return value from the method call.
+    #     """
+    #     self.set_test_input(samples)
+    #     self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
 
-    def run_test_return_file(self, sample_rate: float, symbol_rate: float,
-                             sigmf_input: Path, sample_dtype: DTypeLike = numpy.complex64) -> None:
+    def run_test_return_file(self, sigmf_input: Path,
+                             sample_dtype: DTypeLike = numpy.complex64) -> None:
         """Common method calls for a test expected to return using file-based test input.
 
+        The test author *must* call set_fsk2_ctor_args().
+
         Args:
-            sample_rate: Sets the sample_rate ctor argument input.
-            symbol_rate: Sets the symbol_rate ctor argument input.
             sigmf_input: The file to use as a source of samples and expected result.
             sample_dtype: The samples data type.
         """
-        self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
         self.set_test_file_input(sigmf_input=sigmf_input, sample_dtype=sample_dtype)
         self.run_test()
 
@@ -209,33 +205,38 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Single byte, alternating bits, parsed from a SigMF input file."""
         samp_rate = 48000
         sym_rate = 80
-        self.run_test_return_file(samp_rate, sym_rate, self.test_in1)
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_return_file(self.test_in1)
 
     def test_n02_valid_bfsk_sigmf_rds_rates(self):
         """Binary encoded text modulated with 2-FSK from a SigMF input file at RDS rates."""
         samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        self.run_test_return_file(samp_rate, sym_rate, self.test_in2)
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_return_file(self.test_in2)
 
     def test_n03_valid_bfsk_sigmf_demod101_rates(self):
         """Binary encoded text modulated with 2-FSK from a SigMF input file at Demod 101 rates."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
-        self.run_test_return_file(samp_rate, sym_rate, self.test_in3)
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_return_file(self.test_in3)
 
     @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
     def test_n00_single_byte_alt_bits_sigmf_with_awgn(self):
         """Single byte, alternating bits, SigMF input file, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        self.run_test_return_file(samp_rate, sym_rate, self.test_in1)  # TD:DDN - ADD AWGN
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_return_file(self.test_in1)  # TD:DDN - ADD AWGN
 
     @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
     def test_n00_valid_bfsk_sigmf_with_awgn(self):
         """Binary encoded text from a SigMF input file, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        self.run_test_return_file(samp_rate, sym_rate, self.test_in2)  # TD:DDN - ADD AWGN
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_return_file(self.test_in2)  # TD:DDN - ADD AWGN
 
 
 class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
@@ -246,7 +247,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = None
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
     def test_e02_bad_sample_rate_type_string(self):
@@ -254,7 +256,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = '48000'
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
     def test_e03_bad_sample_rate_value_zero(self):
@@ -262,7 +265,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 0
         sym_rate = 800
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e04_bad_sample_rate_value_negative(self):
@@ -270,7 +274,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = -48000
         sym_rate = 800
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e05_bad_sample_rate_value_zero_float(self):
@@ -278,7 +283,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = float(0.0)
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
     def test_e06_bad_sample_rate_value_negative_float(self):
@@ -286,7 +292,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = float(-48000.0)
         sym_rate = 800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
     def test_e07_bad_symbol_rate_type_none(self):
@@ -294,7 +301,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = None
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
     def test_e08_bad_symbol_rate_type_string(self):
@@ -302,7 +310,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = '800'
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
     def test_e09_bad_symbol_rate_value_zero(self):
@@ -310,7 +319,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 0
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e10_bad_symbol_rate_value_negative(self):
@@ -318,7 +328,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = -800
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e11_bad_symbol_rate_value_zero_float(self):
@@ -326,7 +337,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = float(0.0)
         test_in = self.SAMPLES_ALL_10S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
     def test_e12_bad_symbol_rate_value_negative_float(self):
@@ -334,7 +346,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = float(-800.0)
         test_in = self.SAMPLES_ALL_01S
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
     def test_e13_bad_samples_type_none(self):
@@ -342,7 +355,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = None
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument should have been of type')
 
     def test_e14_bad_samples_type_complex_list(self):
@@ -350,7 +364,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = [0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j]
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, TypeError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, TypeError,
                                       'argument should have been of type')
 
     def test_e15_bad_samples_value_empty(self):
@@ -358,7 +373,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = numpy.array([], dtype=numpy.complex64)  # len(test_in) == 0
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'ndarray may not be empty')
 
     def test_e16_bad_samples_invalid_dimensions(self):
@@ -366,7 +382,8 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         test_in = numpy.resize(self.SAMPLES_ALL_10S, (2, 2))  # test_in.ndim == 2
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_ALL_10S.ndim}-dimensional')
 
@@ -384,7 +401,8 @@ class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         sym_rate = 80
         # Test case input
         test_in = self.SAMPLES_ALL_ONES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
 
     def test_b02_lowest_sample_rate_floats(self):
@@ -397,7 +415,8 @@ class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         sym_rate = float(80.0)
         # Test case input
         test_in = self.SAMPLES_ALL_ZEROES
-        self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
 
 

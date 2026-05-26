@@ -18,12 +18,11 @@ class FSK2(Modem):
 
     # CORE METHODS
 
-    def __init__(self, config: FSK2Config | OOKConfig):
+    def __init__(self, config: FSK2Config):
         """Class ctor.
 
         Args:
-            config: Necessary configuration.  Modulation requires FSK2Config but demodulation
-                only requires a OOKConfig.
+            config: Necessary configuration settings.
         """
         self.freq0 = None         # The 'off' frequency baseband deviation.
         self.freq1 = None         # The 'on' frequency baseband deviation.
@@ -131,16 +130,15 @@ class FSK2(Modem):
         self.validate(demod=demod)
         # PARSE IT
         if not self._parsed:
-            self._parse(demod=demod)
+            self._parse()
             self._parsed = True
 
     def validate(self, demod: bool = False) -> None:
         """Validate attribute values once.
 
         Args:
-            demod: [OPTIONAL] Controls internal parsing/validation.  If True, the ctor config
-                is parsed as a OOKConfig, instead of a FSK2Config, because demodulation doesn't
-                require FSK2Config-specific values.
+            demod: [OPTIONAL] Controls internal parsing/validation.  If True, FSK2Config only
+                validates the attributes necessary to demodulate a signal.
 
         Raises:
             TypeError: Bad data type.
@@ -149,17 +147,17 @@ class FSK2(Modem):
         # VALIDATION
         validate_bool(self._validated, 'internal attribute _validated')
         validate_bool(demod, 'demod')
+        self._config.set_demod(demod=demod)
         if not self._validated:
             self._validate(demod=demod)
             self._validated = True
 
     # PRIVATE METHODS
 
-    def _parse(self, demod: bool) -> None:
+    def _parse(self) -> None:
         """Parse user input."""
         self._parse_abc()
-        if not demod:
-            self._parse_fsk2_config()  # Get the rest of the data from the child object
+        self._parse_fsk2_config()  # Get the rest of the data from the child object
 
     def _parse_fsk2_config(self) -> None:
         """Gently extract config values into instance attributes."""
@@ -179,27 +177,19 @@ class FSK2(Modem):
     def _validate(self, demod: bool) -> None:
         """Validate attribute values."""
         self._validate_abc()
-        if not demod:
-            self._validate_fsk2_config()
-            self._validate_phase()
+        self._validate_fsk2_config(demod=demod)
+        self._validate_phase()
 
-    def _validate_frequencies(self, symbol_rate: float | int,
-                              freq0: float | int, freq1: float | int) -> None:
-        """Validate the frequencies under their own strength and against each other."""
-        min_dev = 0.5 * symbol_rate  # Minimum deviation between the two freqs
-        validate_int_or_float(freq0, 'freq0')
-        validate_int_or_float(freq1, 'freq1')
-        freq_dev = abs(freq0 - freq1)
-        if freq_dev < min_dev:
-            raise ValueError(f'The deviation between "{freq0}" and "{freq1}" must be at '
-                             f'*least* "{min_dev}"')
-
-    def _validate_fsk2_config(self) -> None:
+    def _validate_fsk2_config(self, demod: bool) -> None:
         """Validate the FSK2Config object."""
+        validate_bool(demod, 'demod')
         validate_type(self._config, 'config', FSK2Config)
+        self._config.set_demod(demod=demod)
         self._config.validate_content()
-        self._validate_frequencies(symbol_rate=self._config.symbol_rate,
-                                   freq0=self._config.freq0, freq1=self._config.freq1)
+        if demod is False:
+            # Frequencies don't matter for demodualation
+            _validate_frequencies(symbol_rate=self._config.symbol_rate,
+                                  freq0=self._config.freq0, freq1=self._config.freq1)
 
     def _validate_phase(self) -> None:
         """Validate _phase attribute."""
@@ -211,3 +201,14 @@ def _validate_bin_bytes(bin_bytes: bytes) -> None:
     validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
     if not bin_bytes:
         raise ValueError('The "bin_bytes" argument may not be empty')
+
+def _validate_frequencies(symbol_rate: float | int,
+                          freq0: float | int, freq1: float | int) -> None:
+    """Validate the frequencies under their own strength and against each other."""
+    min_dev = 0.5 * symbol_rate  # Minimum deviation between the two freqs
+    validate_int_or_float(freq0, 'freq0')
+    validate_int_or_float(freq1, 'freq1')
+    freq_dev = abs(freq0 - freq1)
+    if freq_dev < min_dev:
+        raise ValueError(f'The deviation between "{freq0}" and "{freq1}" must be at '
+                         f'*least* "{min_dev}"')

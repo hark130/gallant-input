@@ -40,4 +40,5 @@ class FSK2Config(ModemConfig):
         """Validate all attributes defined in this child class regardless of internal status."""
         validate_int_or_float(self.freq0, 'freq0')
         validate_int_or_float(self.freq1, 'freq1')
-        validate_phase(self.phase, 'phase')
+        if self.phase is not None:
+            validate_phase(self.phase, 'phase')

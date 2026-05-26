@@ -109,22 +109,19 @@ class ModemFSK2UnitTest(ModemUnitTest):
     def create_test_obj(self, demod: bool = False) -> FSK2:
         """Create an FSK2() test object.
 
-        Args:
-            demod: [OPTIONAL] If True, use a OOKConfig() object instead
-                (e.g., because demodulate() doesn't need an FSK2Config() object).
-
         Strongly consider calling self.set_fsk2_ctor_args() first.
+
+        Args:
+            demod: [OPTIONAL] If True, FSK2Config only validates the attributes necessary to
+                demodulate a signal.
         """
         config = None  # FSK2() ctor argument
         self._validate_type(demod, 'demod', bool)
-        if demod:
-            config = OOKConfig(sample_rate=self.input_sample_rate,
-                               symbol_rate=self.input_symbol_rate)
-        else:
-            config = FSK2Config(sample_rate=self.input_sample_rate,
-                                symbol_rate=self.input_symbol_rate,
-                                freq0=self.input_freq0, freq1=self.input_freq1,
-                                phase=self.input_phase)
+        config = FSK2Config(sample_rate=self.input_sample_rate,
+                            symbol_rate=self.input_symbol_rate,
+                            freq0=self.input_freq0, freq1=self.input_freq1,
+                            phase=self.input_phase)
+        config.set_demod(demod=demod)
         return FSK2(config=config)
 
     # CLASS HELPER METHODS

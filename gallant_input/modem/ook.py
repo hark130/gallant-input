@@ -88,7 +88,7 @@ class OOK(Modem):
 
         Raises:
             TypeError: Bad data type.
-            ValueError: Badd value.
+            ValueError: Bad value.
         """
         # VALIDATION
         validate_bool(self._parsed, 'internal attribute _parsed')

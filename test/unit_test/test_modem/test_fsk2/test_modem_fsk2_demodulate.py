@@ -38,7 +38,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
         self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
-        self._demod = True                                         # Default demodulate() test state
+        self._demod = True                                         # Update default test state
         # File-based test input
         self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
         self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
@@ -46,7 +46,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
-        test_obj = self.create_test_obj(demod=self._demod)
+        test_obj = self.create_test_obj()
         return test_obj.demodulate(*self._args, **self._kwargs)
 
     def validate_return_value(self, return_value):
@@ -418,6 +418,21 @@ class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
+
+
+class SpecialModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
+    """Special Test Cases."""
+
+    def test_s01_modulate_fsk2_config(self):
+        """FSK2Config() object configured to modulate, used to demodulate."""
+        samp_rate = 48000
+        sym_rate = 80
+        f0 = -sym_rate / 2
+        f1 = sym_rate / 2
+        phase = float(1.5)
+        self._demod = False  # Tell the test framework to disable(?) FSK2Config() demod mode
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
+        self.run_test_return_file(self.test_in1)
 
 
 if __name__ == '__main__':

@@ -114,9 +114,11 @@ class BaseUnitTest(TediousUnitTest):
         self.input_symbol_rate = None
         # File-based test input
         self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
-        self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
-        self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
-        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
+        self.test_bfsk_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
+        self.test_bfsk_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
+        self.test_bfsk_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
+        # Demod 101 FoI 3 filtered and decimated
+        self.test_bfsk_in4 = self.test_input_dir / 'bfsk_mod4_c0hz_s240k_b600.sigmf-data'
 
         super().__init__(*args, **kwargs)
 

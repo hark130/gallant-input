@@ -549,8 +549,11 @@ class BoundaryFSK2ModemCompTest(FSK2ModemCompTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_return_input(bin_bytes, samples, modem_order=False)
 
-    def test_b13_lowest_samples_per_symbol_mo_dem(self):
-        """Smallest samples per symbol, mo --> dem order."""
+    def test_b13_samples_per_symbol_too_small_mo_dem(self):
+        """Samples per symbol too small, mo --> dem order.
+
+        This is a symbol synchronization issue.
+        """
         # FSK2Config() args
         samp_rate = 1
         sym_rate = 1
@@ -558,14 +561,16 @@ class BoundaryFSK2ModemCompTest(FSK2ModemCompTest):
         f1 = sym_rate / 2
         phase = None
         # modulate()/demodulate() args
-        bin_bytes = b'0010101010'
+        bin_bytes = b'10101010'
         samples = None  # Will be defined by dynamic test case execution
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
+        self.set_test_input_return(bin_bytes, samples, modem_order=True, skip_exp_ret=True)
+        self.expect_return(b'11010101')
+        self.run_test()
 
     @skip('This test case needs some actual modulated samples')
-    def test_b14_lowest_samples_per_symbol_dem_mo(self):
-        """Smallest samples per symbol, dem --> mo order."""
+    def test_b14_samples_per_symbol_too_small_dem_mo(self):
+        """Samples per symbol too small, dem --> mo order."""
         # FSK2Config() args
         samp_rate = 1
         sym_rate = 1
@@ -578,10 +583,10 @@ class BoundaryFSK2ModemCompTest(FSK2ModemCompTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_return_input(bin_bytes, samples, modem_order=False)
 
-    def test_b15_lowest_samples_per_symbol_mo_dem(self):
-        """Smallest samples per symbol, mo --> dem order."""
+    def test_b15_samples_per_symbol_smallest_mo_dem(self):
+        """Samples per symbol smallest value to be successful, mo --> dem order."""
         # FSK2Config() args
-        samp_rate = 1
+        samp_rate = 3
         sym_rate = 1
         f0 = -sym_rate / 2
         f1 = sym_rate / 2
@@ -593,10 +598,10 @@ class BoundaryFSK2ModemCompTest(FSK2ModemCompTest):
         self.run_test_return_input(bin_bytes, samples, modem_order=True)
 
     @skip('This test case needs some actual modulated samples')
-    def test_b16_lowest_samples_per_symbol_dem_mo(self):
-        """Smallest samples per symbol, dem --> mo order."""
+    def test_b16_samples_per_symbol_smallest_dem_mo(self):
+        """Samples per symbol smallest value to be successful, dem --> mo order."""
         # FSK2Config() args
-        samp_rate = 1
+        samp_rate = 3
         sym_rate = 1
         f0 = -sym_rate / 2
         f1 = sym_rate / 2

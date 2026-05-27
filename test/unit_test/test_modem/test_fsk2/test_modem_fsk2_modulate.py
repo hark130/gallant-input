@@ -911,6 +911,15 @@ class SpecialModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_input_return_def(bits)
 
+    def test_s11_demodulate_fsk2_config(self):
+        """FSK2Config() object configured to demodulate, used to modulate."""
+        samp_rate = 480000
+        sym_rate = 80
+        bits = b'10101010'
+        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
+        self.run_test_exception_input(bits, TypeError,
+                                      'instead of type')  # ...None
+
 
 if __name__ == '__main__':
     execute_test_cases()

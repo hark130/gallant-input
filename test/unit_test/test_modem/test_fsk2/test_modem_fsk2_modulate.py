@@ -236,7 +236,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e02_bad_sample_rate_type_string(self):
         """Bad sample rate: wrong type - string."""
@@ -248,7 +248,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e03_bad_sample_rate_value_zero(self):
         """Bad sample rate: bad value - zero."""
@@ -260,7 +260,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "sample_rate" argument is not positive')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e04_bad_sample_rate_value_negative(self):
         """Bad sample rate: bad value - negative."""
@@ -272,7 +272,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "sample_rate" argument is not positive')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e05_bad_sample_rate_value_zero_float(self):
         """Bad sample rate: bad value - float(zero)."""
@@ -284,7 +284,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "sample_rate" argument may not be 0')
+                                      'The "sample_rate" argument may not be 0')
 
     def test_e06_bad_sample_rate_value_negative_float(self):
         """Bad sample rate: bad value - float(negative)."""
@@ -296,7 +296,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument *must* be > 0')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -308,7 +308,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e08_bad_symbol_rate_type_string(self):
         """Bad sample rate: wrong type - string."""
@@ -320,7 +320,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e09_bad_symbol_rate_value_zero(self):
         """Bad sample rate: bad value - zero."""
@@ -332,7 +332,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "symbol_rate" argument is not positive')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e10_bad_symbol_rate_value_negative(self):
         """Bad sample rate: bad value - negative."""
@@ -344,7 +344,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "symbol_rate" argument is not positive')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e11_bad_symbol_rate_value_zero_float(self):
         """Bad sample rate: bad value - float(zero)."""
@@ -356,7 +356,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "symbol_rate" argument may not be 0')
+                                      'The "symbol_rate" argument may not be 0')
 
     def test_e12_bad_symbol_rate_value_negative_float(self):
         """Bad sample rate: bad value - float(negative)."""
@@ -368,7 +368,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument *must* be > 0')
 
     def test_e13_bad_bin_bytes_type_none(self):
         """Bad bin_bytes: bad type - None."""
@@ -380,7 +380,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = None
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument should have been of type')
+                                      'argument should have been of type')
 
     def test_e14_bad_bin_bytes_type_string(self):
         """Bad bin_bytes: bad type - string."""
@@ -392,7 +392,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = '10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument should have been of type')
+                                      'argument should have been of type')
 
     def test_e15_bad_bin_bytes_value_empty(self):
         """Bad bin_bytes: bad value - empty."""
@@ -404,7 +404,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b''
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The "bin_bytes" argument may not be empty')
+                                      'The "bin_bytes" argument may not be empty')
 
     def test_e16_bad_bin_bytes_value_non_binary(self):
         """Bad bin_bytes: bad value - non-binary (AKA '...and I thought I saw a 2' -Bender)."""
@@ -416,7 +416,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'101010100010101010121011110100101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'Invalid binary value detected')
+                                      'Invalid binary value detected')
 
     def test_e17_bad_freq0_type_none(self):
         """Bad freq0: wrong type - None."""
@@ -428,7 +428,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e18_bad_freq0_type_string(self):
         """Bad freq0: wrong type - string."""
@@ -440,7 +440,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e19_bad_freq1_type_none(self):
         """Bad freq1: wrong type - None."""
@@ -452,7 +452,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e20_bad_freq1_type_string(self):
         """Bad freq1: wrong type - string."""
@@ -464,7 +464,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument must be a')
+                                      'argument must be a')
 
     def test_e21_bad_phase_type_int(self):
         """Bad phase: wrong type - int."""
@@ -476,7 +476,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, TypeError,
-                                'argument should have been of type')
+                                      'argument should have been of type')
 
     def test_e22_bad_phase_value_negative(self):
         """Bad phase: value - negative."""
@@ -488,7 +488,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'value may not be negative')
+                                      'value may not be negative')
 
     def test_e23_bad_phase_value_too_large(self):
         """Bad phase: value - too large."""
@@ -500,7 +500,7 @@ class ErrorModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'value may not be greater than')
+                                      'value may not be greater than')
 
 
 class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
@@ -545,7 +545,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'argument is not positive')
+                                      'argument is not positive')
 
     def test_b04_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""
@@ -586,7 +586,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'argument is not positive')
+                                      'argument is not positive')
 
     def test_b07_lowest_symbol_rate(self):
         """Smallest valid symbol rate."""
@@ -671,7 +671,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'value may not be negative')
+                                      'value may not be negative')
 
     def test_b14_phase_bounds_barely_negative(self):
         """Phase bounds test: barely negative value."""
@@ -684,7 +684,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'value may not be negative')
+                                      'value may not be negative')
 
     def test_b15_phase_bounds_barely_valid_zero(self):
         """Phase bounds test: barely valid at 0."""
@@ -721,7 +721,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'value may not be greater than')
+                                      'value may not be greater than')
 
     def test_b18_f0_vs_f1_same(self):
         """Freq0 vs Freq1: f0 == f1."""
@@ -734,7 +734,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The deviation between')
+                                      'The deviation between')
 
     def test_b18_f0_vs_f1_almost_the_same(self):
         """Freq0 vs Freq1: math.isclose(f0, f1)."""
@@ -747,7 +747,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The deviation between')
+                                      'The deviation between')
 
     def test_b19_f0_vs_f1_almost_half_sym_rate_separation(self):
         """Freq0 vs Freq1: f1 == f0 + (symbol rate / 2) - a little bit."""
@@ -760,7 +760,7 @@ class BoundaryModemFSK2ModulateUnitTest(ModemFSK2ModulateUnitTest):
         bits = b'10101010'
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_exception_input(bits, ValueError,
-                                'The deviation between')
+                                      'The deviation between')
 
     def test_b20_f0_vs_f1_half_sym_rate_separation(self):
         """Freq0 vs Freq1: f1 == f0 + (symbol rate / 2) + a little bit."""

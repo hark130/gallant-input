@@ -8,8 +8,7 @@ import numpy
 # Local Imports
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.modem_config import ModemConfig
-from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_pos_int,
-                                      validate_type)
+from gallant_input.validation import validate_bool, validate_pos_int, validate_type
 
 
 class Modem(ABC):

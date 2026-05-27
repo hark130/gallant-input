@@ -8,7 +8,6 @@ from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarr
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
-from gallant_input.modem.ook_config import OOKConfig
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
                                       validate_ndarray, validate_phase, validate_type)
 
@@ -200,6 +199,7 @@ def _validate_bin_bytes(bin_bytes: bytes) -> None:
     validate_binary_bytes(bin_bytes, 'bin_bytes', exact_len=None)
     if not bin_bytes:
         raise ValueError('The "bin_bytes" argument may not be empty')
+
 
 def _validate_frequencies(symbol_rate: float | int,
                           freq0: float | int, freq1: float | int) -> None:

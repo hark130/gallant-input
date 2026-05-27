@@ -36,7 +36,6 @@ from test.unit_test.test_modem.test_modem import ModemUnitTest
 # Local Imports
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
-from gallant_input.modem.ook_config import OOKConfig
 
 
 class ModemFSK2UnitTest(ModemUnitTest):

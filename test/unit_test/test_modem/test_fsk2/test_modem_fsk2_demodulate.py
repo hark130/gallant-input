@@ -155,35 +155,6 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         self.set_test_input(samples)
         self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
-    # def run_test_return(self, sample_rate: float, symbol_rate: float,
-    #                     exp_ret: bytes) -> None:
-    #     """Common method calls for a test case expected to return.
-
-    #     Test author must call self.set_test_input().
-
-    #     Args:
-    #         sample_rate: Sets the sample_rate ctor argument input.
-    #         symbol_rate: Sets the symbol_rate ctor argument input.
-    #         exp_ret: The expected return value from the method call.
-    #     """
-    #     self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
-    #     self.expect_return(exp_ret)
-    #     self.run_test()
-
-    # def run_test_return_input(self, sample_rate: float, symbol_rate: float, samples: numpy.ndarray,
-    #                           exp_ret: bytes) -> None:
-    #     """Common method calls for a test case expected to return an expected result.
-
-    #     Args:
-    #         sample_rate: Sets the sample_rate ctor argument input.
-    #         symbol_rate: Sets the symbol_rate ctor argument input.
-    #         samples: Test case input.
-    #         threshold: Test case input.
-    #         exp_ret: The expected return value from the method call.
-    #     """
-    #     self.set_test_input(samples)
-    #     self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
-
     def run_test_return_file(self, sigmf_input: Path,
                              sample_dtype: DTypeLike = numpy.complex64) -> None:
         """Common method calls for a test expected to return using file-based test input.

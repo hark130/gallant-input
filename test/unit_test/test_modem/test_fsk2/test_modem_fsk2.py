@@ -62,9 +62,10 @@ class ModemFSK2UnitTest(ModemUnitTest):
     def __init__(self, *args, **kwargs) -> None:
         """ModemFSK2UnitTest ctor."""
         # ATTRIBUTES
-        self.input_freq0 = None
-        self.input_freq1 = None
-        self.input_phase = None
+        self.input_freq0 = None  # Test case input: freq0
+        self.input_freq1 = None  # Test case input: freq1
+        self.input_phase = None  # Test case input: phase
+        self._demod = False      # Default mod/demod test state
 
         super().__init__(*args, **kwargs)
 
@@ -106,22 +107,18 @@ class ModemFSK2UnitTest(ModemUnitTest):
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
-    def create_test_obj(self, demod: bool = False) -> FSK2:
+    def create_test_obj(self) -> FSK2:
         """Create an FSK2() test object.
 
         Strongly consider calling self.set_fsk2_ctor_args() first.
-
-        Args:
-            demod: [OPTIONAL] If True, FSK2Config only validates the attributes necessary to
-                demodulate a signal.
         """
         config = None  # FSK2() ctor argument
-        self._validate_type(demod, 'demod', bool)
+        self._validate_type(self._demod, '_demod instance attribute', bool)
         config = FSK2Config(sample_rate=self.input_sample_rate,
                             symbol_rate=self.input_symbol_rate,
                             freq0=self.input_freq0, freq1=self.input_freq1,
                             phase=self.input_phase)
-        config.set_demod(demod=demod)
+        config.set_demod(demod=self._demod)
         return FSK2(config=config)
 
     # CLASS HELPER METHODS

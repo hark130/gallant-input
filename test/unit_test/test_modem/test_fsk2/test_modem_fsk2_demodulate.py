@@ -37,12 +37,12 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
         """RootUnitTest ctor."""
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
-        self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
-        self._demod = True                                         # Update default test state
+        self._demod = True                  # Update default test state
         # File-based test input
-        self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
-        self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
-        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
+        self.test_in1 = self.test_bfsk_in1  # BFSK test input 1
+        self.test_in2 = self.test_bfsk_in2  # BFSK test input 2
+        self.test_in3 = self.test_bfsk_in3  # BFSK test input 3
+        self.test_in4 = self.test_bfsk_in4  # BFSK test input 4
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -150,21 +150,14 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_return_file(self.test_in3)
 
-    @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
-    def test_n00_single_byte_alt_bits_sigmf_with_awgn(self):
-        """Single byte, alternating bits, SigMF input file, with AWGN at a reasonable SNR (dB)."""
-        samp_rate = 4800
-        sym_rate = 80
+    @skip("The demodulator isn't quite capturing all the symbols in this actual capture")
+    def test_n04_valid_bfsk_sigmf_demod101_foi3_rates(self):
+        """Demod 101 FoI 3 decimated, filtered, and exported."""
+        # CONTINUE HERE
+        samp_rate = 240000  # 5.03 Demod 101 FoI 3 sample rate (decimated)
+        sym_rate = 599.31   # 5.03 Demod 101 FoI 3 symbol rate (600?)
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
-        self.run_test_return_file(self.test_in1)  # TD:DDN - ADD AWGN
-
-    @skip("TO DO: DON'T DO NOW... Consider adding AWGN to file-based test input")
-    def test_n00_valid_bfsk_sigmf_with_awgn(self):
-        """Binary encoded text from a SigMF input file, with AWGN at a reasonable SNR (dB)."""
-        samp_rate = 4800
-        sym_rate = 80
-        self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
-        self.run_test_return_file(self.test_in2)  # TD:DDN - ADD AWGN
+        self.run_test_return_file(self.test_in4)
 
 
 class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):

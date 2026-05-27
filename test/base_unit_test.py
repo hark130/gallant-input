@@ -27,11 +27,17 @@ between the test.unit_test and test.comp_test sub-packages.
 """
 
 # Standard Imports
-from typing import Any
+from pathlib import Path
+from typing import Any, Tuple
 # Third Party Imports
 from tediousstart.tediousunittest import TediousUnitTest
+from numpy.typing import DTypeLike
 import numpy
 # Local Imports
+from gallant_input.constants import SIG_GLOB_DESCRIPTION_KEY
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
+from gallant_input.io import read_samples
+from test import REPO_TL_DIR
 
 
 class BaseUnitTest(TediousUnitTest):
@@ -106,6 +112,11 @@ class BaseUnitTest(TediousUnitTest):
         # ATTRIBUTES
         self.input_sample_rate = None
         self.input_symbol_rate = None
+        # File-based test input
+        self.test_input_dir = REPO_TL_DIR / 'test' / 'test_input'  # Dir for input files
+        self.test_in1 = self.test_input_dir / 'bfsk_mod1_c0hz_s48000_b80.sigmf-data'
+        self.test_in2 = self.test_input_dir / 'bfsk_mod2_c0hz_s57000_b2375.sigmf-data'
+        self.test_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
 
         super().__init__(*args, **kwargs)
 
@@ -134,6 +145,55 @@ class BaseUnitTest(TediousUnitTest):
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
+
+    def get_test_file_input(self, file_input: Path, sample_dtype: DTypeLike = numpy.complex64,
+                            sigmf_data: bool = True) -> Tuple[numpy.ndarray, bytes]:
+        """Read a SigMF file to use as file-based test case input.
+
+        Utilizes GAIN.io.read_samples() to read file_input to get samples and, if file_input
+        is a SigMF file format, the SigMF global descriptions (which should include the expected
+        demodulate return value).
+
+        Args:
+            file_input: The file to read samples (and maybe a description) from.
+            sample_dtype: [OPTIONAL] The samples data type.
+            sigmf_data: [OPTIONAL] If True, read file_input as a SigMF file.
+
+        Returns:
+            A tuple of the samples and the description (as a bytes object).  The description
+            will be None if sigmf_data is False (because there's no metadata to read from).
+        """
+        # LOCAL VARIABLES
+        samples = None      # ndarray read from file_input
+        description = None  # Description string, converted to bytes, parsed from SigMF metadata
+
+        # VALIDATION
+        self._validate_type(file_input, 'file_input', Path)
+        self._validate_file(str(file_input.absolute()), 'file_input', must_exist=True)
+        self._validate_type(sigmf_data, 'sigmf_data', bool)
+        # sample_dtype will be validated by subsequent calls to GAIN
+
+        # GET IT
+        # Samples
+        try:
+            samples = read_samples(filename=file_input, sample_dtype=sample_dtype,
+                                   sigmf_data=sigmf_data)
+        except (OSError, TypeError, ValueError) as err:
+            self.fail_test_case(repr(err))
+        # Description
+        try:
+            if sigmf_data is True:
+                tmp_obj = SigMFMetaParser(meta_filename=file_input)
+                description = tmp_obj.get_global_key(key=SIG_GLOB_DESCRIPTION_KEY)
+                if not description:
+                    self.fail_test_case('The description (AKA expected result) is missing from '
+                                        f'{str(file_input.absolute())}')
+                description = bytes(description, 'ascii')
+        except (FileNotFoundError, KeyError, TypeError, ValueError) as err:
+            self.fail_test_case(repr(err))
+
+        # DONE
+        return tuple((samples, description))
 
     def set_modem_ctor_args(self, sample_rate: Any, symbol_rate: Any) -> None:
         """Sets the Modem() argument values in the test class."""

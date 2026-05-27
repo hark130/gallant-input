@@ -21,8 +21,8 @@ from unittest import skip
 import numpy
 # Local Imports
 from gallant_input.constants import SIG_GLOB_DESCRIPTION_KEY
-from gallant_input.io import read_samples
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
+from gallant_input.io import read_samples
 from test import REPO_TL_DIR
 from test.unit_test.test_modem.test_fsk2.test_modem_fsk2 import ModemFSK2UnitTest
 
@@ -56,49 +56,6 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
 
-    def get_test_file_input(self, sigmf_input: Path, sample_dtype: DTypeLike = numpy.complex64
-                            ) -> Tuple[numpy.ndarray, bytes]:
-        """Read a SigMF file to use as file-based test case input.
-
-        Utilizes GAIN.io.read_samples() to read sigmf_input to get samples and the SigMF global
-        descriptions (which should include the expected demodulate return value).
-
-        Args:
-            sigmf_input: The file to use.
-            sample_dtype: The samples data type.
-
-        Returns:
-            A tuple of the samples and the description (as a bytes object).
-        """
-        # LOCAL VARIABLES
-        samples = None  # ndarray read from sigmf_input
-        description = b''  # Description string, converted to bytes, parsed from SigMF metadata
-
-        # VALIDATION
-        self._validate_type(sigmf_input, 'sigmf_input', Path)
-        self._validate_file(str(sigmf_input.absolute()), 'sigmf_input', must_exist=True)
-        # sample_dtype will be validated by subsequent calls to GAIN
-
-        # GET IT
-        # Samples
-        try:
-            samples = read_samples(filename=sigmf_input, sample_dtype=sample_dtype, sigmf_data=True)
-        except (OSError, TypeError, ValueError) as err:
-            self.fail_test_case(repr(err))
-        # Description
-        try:
-            tmp_obj = SigMFMetaParser(meta_filename=sigmf_input)
-            description = tmp_obj.get_global_key(key=SIG_GLOB_DESCRIPTION_KEY)
-            if not description:
-                self.fail_test_case('The description (AKA expected result) is missing from '
-                                    f'{str(sigmf_input.absolute())}')
-            description = bytes(description, 'ascii')
-        except (FileNotFoundError, KeyError, TypeError, ValueError) as err:
-            self.fail_test_case(repr(err))
-
-        # DONE
-        return tuple((samples, description))
-
     def set_test_file_input(self, sigmf_input: Path,
                             sample_dtype: DTypeLike = numpy.complex64) -> None:
         """Read a SigMF file, set the samples as test input, and description as expected results.
@@ -116,7 +73,7 @@ class ModemFSK2DemodulateUnitTest(ModemFSK2UnitTest):
 
         # SET IT
         # Get it
-        samples, description = self.get_test_file_input(sigmf_input, sample_dtype)
+        samples, description = self.get_test_file_input(sigmf_input, sample_dtype, sigmf_data=True)
         # Set it
         self.set_test_input(samples)
         self.expect_return(description)  # The "answer" should be in the SigMF metadata

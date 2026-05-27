@@ -94,8 +94,7 @@ class FSK2(Modem):
                          must_be_complex=True)
 
         # DEMODULATE IT
-        # dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))  # ORIGINAL
-        dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))  # FIX(?)
+        dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))
         dphi[0] = dphi[1]  # Padding the first sample
         symbols = reshape_to_symbols(dphi, self._sps).mean(axis=1)
         bits = (symbols > 0).astype(numpy.uint8)

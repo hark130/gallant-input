@@ -31,7 +31,7 @@ class OOKModemCompTest(ModemCompTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """AISUnitTest ctor."""
+        """OOKModemCompTest ctor."""
         # ATTRIBUTES
         self._demod_arg_s = None       # Test case input: OOK().demodulate(samples) arg
         self._demod_arg_t = None       # Test case input: OOK().demodulate(threshold) arg
@@ -353,7 +353,8 @@ class BoundaryOOKModemCompTest(OOKModemCompTest):
         sym_rate = 80
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ONES, 1), samp_rate, sym_rate)
+        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ONES, 1),
+                                      samp_rate, sym_rate)
         threshold = None  # Automatically determine the threshold
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -377,7 +378,8 @@ class BoundaryOOKModemCompTest(OOKModemCompTest):
         sym_rate = 80
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ONES, 1), samp_rate, sym_rate)
+        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ONES, 1),
+                                      samp_rate, sym_rate)
         threshold = 0.5
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -401,7 +403,8 @@ class BoundaryOOKModemCompTest(OOKModemCompTest):
         sym_rate = 80
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ZEROES, 1), samp_rate, sym_rate)
+        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ZEROES, 1),
+                                      samp_rate, sym_rate)
         threshold = None  # Automatically determine the threshold
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -425,7 +428,8 @@ class BoundaryOOKModemCompTest(OOKModemCompTest):
         sym_rate = 80
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ZEROES, 1), samp_rate, sym_rate)
+        samples = create_test_samples(numpy.resize(self.SAMPLES_OOK_ALL_ZEROES, 1),
+                                      samp_rate, sym_rate)
         threshold = 0.5
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)

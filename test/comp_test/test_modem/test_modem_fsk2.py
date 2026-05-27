@@ -14,14 +14,15 @@ from typing import Any
 from unittest import skip
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
-import numpy
 # Local Imports
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
-from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
+from test.modify import add_awgn
 
 
+# pylint: disable=too-many-instance-attributes
+# Leave me be, Pylint
 class FSK2ModemCompTest(ModemCompTest):
     """GAIN.modem.fsk2 FSK2() component test class.
 
@@ -32,7 +33,9 @@ class FSK2ModemCompTest(ModemCompTest):
     # Methods listed in call order
 
     def __init__(self, *args, **kwargs) -> None:
-        """AISUnitTest ctor."""
+        """FSK2ModemCompTest ctor."""
+        super().__init__(*args, **kwargs)
+
         # ATTRIBUTES
         self.input_freq0 = None        # Test case input: freq0
         self.input_freq1 = None        # Test case input: freq1
@@ -41,8 +44,6 @@ class FSK2ModemCompTest(ModemCompTest):
         self._demod_arg_s = None       # Test case input: FSK2().demodulate(samples) arg
         self._mod_arg_bb = None        # Test case input: FSK2().modulate(bin_bytes) arg
         self._modem_call_order = True  # Call order for the two methods: If True, mo --> dem
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -192,6 +193,7 @@ class FSK2ModemCompTest(ModemCompTest):
                             phase=self.input_phase)
         config.set_demod(demod=self._demod)
         return FSK2(config=config)
+# pylint: enable=too-many-instance-attributes
 
 
 class NormalFSK2ModemCompTest(FSK2ModemCompTest):

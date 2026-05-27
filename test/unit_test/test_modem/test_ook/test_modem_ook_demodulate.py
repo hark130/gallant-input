@@ -267,7 +267,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = None
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
@@ -276,7 +276,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = '48000'
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
@@ -285,7 +285,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 0
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument is not positive')
@@ -294,7 +294,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = -48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument is not positive')
@@ -303,7 +303,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = float(0.0)
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument may not be 0')
@@ -312,7 +312,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = float(-48000.0)
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
@@ -321,7 +321,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = 48000
         sym_rate = None
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
@@ -330,7 +330,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = 48000
         sym_rate = '800'
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument must be a')
@@ -339,7 +339,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 48000
         sym_rate = 0
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument is not positive')
@@ -348,7 +348,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = 48000
         sym_rate = -800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument is not positive')
@@ -357,7 +357,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = 48000
         sym_rate = float(0.0)
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument may not be 0')
@@ -366,7 +366,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = 48000
         sym_rate = float(-800.0)
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
@@ -402,17 +402,17 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad samples: wrong dimensions."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = numpy.resize(self.SAMPLES_ALL_10S, (2, 2))  # test_in.ndim == 2
+        test_in = numpy.resize(self.SAMPLES_OOK_ALL_10S, (2, 2))  # test_in.ndim == 2
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
-                                      f'{self.SAMPLES_ALL_10S.ndim}-dimensional')
+                                      f'{self.SAMPLES_OOK_ALL_10S.ndim}-dimensional')
 
     def test_e17_bad_threshold_type_string(self):
         """Bad threshold: wrong type - string."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         threshold = '0.5'
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument should have been of type')
@@ -421,7 +421,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad threshold: wrong type - int."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = 1
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, TypeError,
                                       'argument should have been of type')
@@ -430,7 +430,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad threshold: bad value - negative."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         threshold = -0.5
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "threshold" argument *must* be > 0')
@@ -466,7 +466,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = 1
         sym_rate = 80
         # Test case input
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'argument is not positive')
@@ -498,7 +498,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         samp_rate = float(1.0)
         sym_rate = float(80.0)
         # Test case input
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'argument is not positive')
@@ -561,14 +561,14 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         """Bad threshold: bad value - zero."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         threshold = 0.0
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
                                       'The "threshold" argument may not be 0')
 
     def test_b14_miniscule_threshold_right_all_ones(self):
         """Miniscule threshold value is tightly tuned: right - all ones."""
-        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ONES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -578,7 +578,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_b15_miniscule_threshold_wrong_all_ones(self):
         """Miniscule threshold value is tightly tuned: wrong - all ones."""
-        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ONES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -588,7 +588,7 @@ class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_b16_equivalent_threshold_wrong_all_ones(self):
         """Miniscule threshold value is tightly tuned: wrong - all ones."""
-        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ONES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -665,7 +665,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s08_manual_threshold_right_all_ones(self):
         """Manual threshold: right - all ones."""
-        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ONES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -675,7 +675,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s09_manual_threshold_wrong_all_ones(self):
         """Manual threshold: wrong - all ones."""
-        orig_symbols = self.SAMPLES_ALL_ONES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ONES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -685,7 +685,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s10_manual_threshold_barely_wrong_all_zeros(self):
         """Manual threshold: (so small as to be) barely wrong - all zeros."""
-        orig_symbols = self.SAMPLES_ALL_ZEROES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ZEROES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -695,7 +695,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s11_manual_threshold_wrong_all_zeros(self):
         """Manual threshold: wrong - all zeros."""
-        orig_symbols = self.SAMPLES_ALL_ZEROES  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_ZEROES  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -705,7 +705,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s12_manual_threshold_right_10s(self):
         """Manual threshold: right - all 10s."""
-        orig_symbols = self.SAMPLES_ALL_10S  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_10S  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -715,7 +715,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s13_manual_threshold_wrong_all_10s(self):
         """Manual threshold: wrong - all 10s."""
-        orig_symbols = self.SAMPLES_ALL_10S  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_10S  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -725,7 +725,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s14_manual_threshold_right_01s(self):
         """Manual threshold: right - all 01s."""
-        orig_symbols = self.SAMPLES_ALL_01S  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_01S  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)
@@ -735,7 +735,7 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 
     def test_s15_manual_threshold_wrong_all_01s(self):
         """Manual threshold: wrong - all 01s."""
-        orig_symbols = self.SAMPLES_ALL_01S  # Origins of this test case input
+        orig_symbols = self.SAMPLES_OOK_ALL_01S  # Origins of this test case input
         samp_rate = 48000
         sym_rate = 80
         samples = create_test_samples(orig_symbols, samp_rate, sym_rate)

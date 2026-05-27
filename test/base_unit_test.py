@@ -55,13 +55,13 @@ class BaseUnitTest(TediousUnitTest):
     SNR_EXCELLENT = 40.0
 
     # array([0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j], dtype=complex64)
-    SAMPLES_ALL_ZEROES = numpy.zeros(8, dtype=numpy.complex64)
+    SAMPLES_OOK_ALL_ZEROES = numpy.zeros(8, dtype=numpy.complex64)
     # array([1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j, 1.+0.j], dtype=complex64)
-    SAMPLES_ALL_ONES = numpy.ones(8, dtype=numpy.complex64)
+    SAMPLES_OOK_ALL_ONES = numpy.ones(8, dtype=numpy.complex64)
     # array([1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j], dtype=complex64)
-    SAMPLES_ALL_10S = numpy.resize([1, 0], 8).astype(numpy.complex64)
+    SAMPLES_OOK_ALL_10S = numpy.resize([1, 0], 8).astype(numpy.complex64)
     # array([0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j], dtype=complex64)
-    SAMPLES_ALL_01S = numpy.resize([0, 1], 8).astype(numpy.complex64)
+    SAMPLES_OOK_ALL_01S = numpy.resize([0, 1], 8).astype(numpy.complex64)
 
     # REALISTIC BINARY DATA
     DEMOD_101_FOI_1_PREAMBLE = b'010101010101010101010101010101011101001110010001'

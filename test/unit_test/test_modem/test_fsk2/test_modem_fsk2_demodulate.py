@@ -217,7 +217,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = None
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
@@ -226,7 +226,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = '48000'
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
@@ -235,7 +235,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 0
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
@@ -244,7 +244,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = -48000
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
@@ -253,7 +253,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = float(0.0)
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument may not be 0')
@@ -262,7 +262,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = float(-48000.0)
         sym_rate = 800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
@@ -271,7 +271,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = 48000
         sym_rate = None
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
@@ -280,7 +280,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = 48000
         sym_rate = '800'
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
@@ -289,7 +289,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 48000
         sym_rate = 0
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
@@ -298,7 +298,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = 48000
         sym_rate = -800
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
@@ -307,7 +307,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = 48000
         sym_rate = float(0.0)
-        test_in = self.SAMPLES_ALL_10S
+        test_in = self.SAMPLES_OOK_ALL_10S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument may not be 0')
@@ -316,7 +316,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = 48000
         sym_rate = float(-800.0)
-        test_in = self.SAMPLES_ALL_01S
+        test_in = self.SAMPLES_OOK_ALL_01S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
@@ -352,11 +352,11 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         """Bad samples: wrong dimensions."""
         samp_rate = 48000
         sym_rate = 800
-        test_in = numpy.resize(self.SAMPLES_ALL_10S, (2, 2))  # test_in.ndim == 2
+        test_in = numpy.resize(self.SAMPLES_OOK_ALL_10S, (2, 2))  # test_in.ndim == 2
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
-                                      f'{self.SAMPLES_ALL_10S.ndim}-dimensional')
+                                      f'{self.SAMPLES_OOK_ALL_10S.ndim}-dimensional')
 
 
 class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
@@ -371,7 +371,7 @@ class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = 1
         sym_rate = 80
         # Test case input
-        test_in = self.SAMPLES_ALL_ONES
+        test_in = self.SAMPLES_OOK_ALL_ONES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
@@ -385,7 +385,7 @@ class BoundaryModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         samp_rate = float(1.0)
         sym_rate = float(80.0)
         # Test case input
-        test_in = self.SAMPLES_ALL_ZEROES
+        test_in = self.SAMPLES_OOK_ALL_ZEROES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')

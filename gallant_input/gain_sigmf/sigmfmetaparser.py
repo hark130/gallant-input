@@ -7,10 +7,12 @@ Open, parse, and answer questions about a sigmf-meta file.
 from pathlib import Path
 from typing import Any
 # Third Party Imports
+import numpy
 import sigmf
 # Local Imports
 from gallant_input.logger import Logger
-from gallant_input.validation import validate_path, validate_string, validate_type
+from gallant_input.gain_sigmf.sigmfdtypeinfo import SigMFDTypeInfo
+from gallant_input.validation import validate_int, validate_path, validate_string
 
 
 class SigMFMetaParser:
@@ -130,6 +132,33 @@ class SigMFMetaParser:
         """
         return self.get_captures_key(key=sigmf.SigMFFile.FREQUENCY_KEY, index=index)
 
+    def get_datatype(self) -> numpy.dtype:
+        """Translate the SigMF datatype metadata into a numpy.dtype data type.
+
+        Parse the global core:datatype key into a numpy.dtype type for the purposes of positively
+        determining the data type.
+
+        Returns:
+            A numpy.dtype object based on the metadata's datatype field.
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
+            RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+            TypeError: Bad data type.
+            ValueError: Invalid value.
+        """
+        # LOCAL VARIBLES
+        np_dtype = None                       # The numpy dtype
+        smfdtypinfo = self._get_dtype_info()  # SigMFDTypeInfo obj
+
+        # GET IT
+        if smfdtypinfo is not None:
+            np_dtype = smfdtypinfo.get_dtype
+
+        # DONE
+        return np_dtype
+
     def get_freq_high(self, index: int = 0) -> float:
         """Fetch the maximum available frequency of the capture.
 
@@ -194,6 +223,35 @@ class SigMFMetaParser:
         # DONE
         return value
 
+    def get_read_datatype(self) -> numpy.dtype:
+        """Determine numpy.dtype data type necessary to read the SigMF file.
+
+        Parse the global core:datatype key into a numpy.dtype type for the purposes of reading
+        the data file contents.  There is no guarantee that the dataype necessary to read the
+        data is the same as the actual data type.  The return value will reflect the byteorder
+        of the data.
+
+        Returns:
+            A numpy.dtype data type to read the data file contents as.
+
+        Raises:
+            FileNotFoundError: The meta data file is not found.
+            KeyError: The object name is invalid or there's a mismatch between obj_name and key.
+            RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+            TypeError: Bad data type.
+            ValueError: Invalid value.
+        """
+        # LOCAL VARIBLES
+        np_dtype = None                       # The numpy dtype
+        smfdtypinfo = self._get_dtype_info()  # SigMFDTypeInfo obj
+
+        # GET IT
+        if smfdtypinfo is not None:
+            np_dtype = smfdtypinfo.read_dtype
+
+        # DONE
+        return np_dtype
+
     def get_sample_rate(self) -> int:
         """Fetch the global sample rate from the capture.
 
@@ -247,6 +305,29 @@ class SigMFMetaParser:
         # DONE
         return base_name
 
+    def _get_dtype_info(self) -> SigMFDTypeInfo:
+        """Construct a SigMFDTypeInfo object using the global DATATYPE_KEY.
+
+        Returns:
+            A validated SigMFDTypeInfo object constructed from the global DATATYPE_KEY.
+
+        Raises:
+            RuntimeError: A SigMF-specific exception was raised (see: help(sigmf.error) for details)
+            TypeError: Bad data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIBLES
+        datatype_val = self.get_global_key(key=sigmf.SigMFFile.DATATYPE_KEY)  # core:datatype
+        smfdtypinfo = None                                                    # SigMFDTypeInfo obj
+
+        # GET IT
+        if datatype_val is not None:
+            smfdtypinfo = SigMFDTypeInfo(datatype_val)
+            smfdtypinfo.validate_content()  # Validate the format sooner rather than later
+
+        # DONE
+        return smfdtypinfo
+
     def _get_obj_name_key_value(self, obj_name: str, key: str, index: int = 0) -> Any:
         """Fetch a key value from a SigMF metadata object.
 
@@ -259,15 +340,18 @@ class SigMFMetaParser:
             key: The key to fetch from the specified obj_name.  Use sigmf.SigMFFile macros
                 for this argument.
             index: [Optional] Only used for obj_names that contain lists (e.g., captures)
+
+        Returns:
+            The value on success, None on any IndexError/KeyError exceptions.
         """
         # LOCAL VARIABLES
-        key_val = None       # Key value from the obj_name dictionary
+        key_val = None  # Key value from the obj_name dictionary
 
         # INPUT VALIDATION
         # obj_name && key
         self._validate_obj_name_key_pair(obj_name=obj_name, key=key)
         # index
-        validate_type(var=index, var_name='index', var_type=int)
+        validate_int(index, 'index')
         if index < 0:
             raise TypeError(f'The "index" value is invalid: {index}')
 
@@ -279,7 +363,10 @@ class SigMFMetaParser:
             # captures
             case sigmf.SigMFFile.CAPTURE_KEY:
                 cap_list = self._meta_data.get_captures()
-                key_val = cap_list[index][key]
+                try:
+                    key_val = cap_list[index][key]
+                except (IndexError, KeyError):
+                    pass  # Ignore these Exceptions and return None instead
             # annotations
             case sigmf.SigMFFile.ANNOTATION_KEY:
                 key_val = self._meta_data.get_annotations(key)

@@ -1,8 +1,10 @@
 """Defines SPOT constants on behalf of the package."""
 
 # Standard Imports
+from getpass import getuser
 from typing import Final
 # Third Party Imports
+from sigmf import SigMFFile
 # Local Imports
 
 
@@ -32,6 +34,27 @@ GAIN_CLI_ARG_SIGMF_BASE: Final[str] = 'basename'  # Base filename for .sigmf-* f
 GAIN_CLI_ARG_DEBUG: Final[str] = 'debug'          # Debug logging
 
 
+#########################
+# gallant_input.filters #
+#########################
+FIRWIN_BPF: Final[str] = 'bandpass'
+FIRWIN_BSTOP: Final[str] = 'bandstop'
+FIRWIN_LPF: Final[str] = 'lowpass'
+FIRWIN_HPF: Final[str] = 'highpass'
+
+
+####################
+# gallant_input.io #
+####################
+# Default username
+try:
+    _USERNAME = getuser()
+except (KeyError, ImportError, OSError):
+    _USERNAME = 'UNKNOWN'
+finally:
+    DEF_USERNAME: Final[str] = _USERNAME  # Default username
+
+
 ######################
 # gallant_input.main #
 ######################
@@ -46,3 +69,25 @@ EXIT_CODE_ERROR: Final[int] = 2    # Error encountered during execution
 # Temporary directory constants
 TEMP_DIR_DEF_NIX: Final[str] = '/tmp'      # Default *nix temp dir
 TEMP_DIR_DEF_WIN: Final[str] = 'C:\\Temp'  # Default Windows temp dir
+
+
+########################
+# gallant_input.sigmf* #
+########################
+# SigMF Metadata Dictionary Keys
+# (Listed in documentation order)
+# https://sigmf.org/#subsec:GlobalObject
+SIG_FIELD_GLOBAL_KEY: Final[str] = SigMFFile.GLOBAL_KEY
+SIG_GLOB_AUTHOR_KEY: Final[str] = SigMFFile.AUTHOR_KEY
+SIG_GLOB_DATATYPE_KEY: Final[str] = SigMFFile.DATATYPE_KEY
+SIG_GLOB_DESCRIPTION_KEY: Final[str] = SigMFFile.DESCRIPTION_KEY
+SIG_GLOB_SAMPLE_RATE_KEY: Final[str] = SigMFFile.SAMPLE_RATE_KEY
+SIG_GLOB_VERSION_KEY: Final[str] = SigMFFile.VERSION_KEY
+# https://sigmf.org/#subsec:CapturesArray
+SIG_FIELD_CAPTURE_KEY: Final[str] = SigMFFile.CAPTURE_KEY
+SIG_CAP_START_INDEX_KEY: Final[str] = SigMFFile.START_INDEX_KEY
+SIG_CAP_DATETIME_KEY: Final[str] = SigMFFile.DATETIME_KEY
+SIG_CAP_FREQUENCY_KEY: Final[str] = SigMFFile.FREQUENCY_KEY
+# https://sigmf.org/#subsec:AnnotationsArray
+SIG_FIELD_ANNOTATION_KEY: Final[str] = SigMFFile.ANNOTATION_KEY
+SIG_ANNO_START_INDEX_KEY: Final[str] = SigMFFile.START_INDEX_KEY

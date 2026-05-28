@@ -1,6 +1,7 @@
 # PROJECT
 test/test_input/*
 test/test_output/*
+data/
 
 
 # PYTHON

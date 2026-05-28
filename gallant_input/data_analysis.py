@@ -6,8 +6,8 @@ from math import floor
 from typing import List
 # Third Party Imports
 # Local Imports
-from gallant_input.validation import (validate_bytes_or_str, validate_list, validate_pos_int,
-                                      validate_type)
+from gallant_input.validation import (validate_bool, validate_bytes_or_str, validate_list,
+                                      validate_pos_int)
 
 
 def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool = True) -> int:
@@ -41,7 +41,7 @@ def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool
     if not isinstance(stream1, type(stream2)):
         raise TypeError(f'The type of stream1 "{type(stream1)}" must be the same '
                         f'as stream2 "{type(stream2)}"')
-    validate_type(show_index, 'show_index', bool)
+    validate_bool(show_index, 'show_index')
 
     # PREPARE
     # Properly format the missing character
@@ -185,7 +185,7 @@ def find_dense_repeats(haystack: bytes | str,
     # haystack
     # Handled by find_common_repeats()
     # reverse
-    validate_type(reverse, 'reverse', bool)
+    validate_bool(reverse, 'reverse')
 
     # FIND THEM
     repeats = _find_dense_repeats(haystack)

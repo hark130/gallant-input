@@ -7,7 +7,7 @@ from pathlib import Path
 from gallant_input.analyze import print_signal_parameters
 from gallant_input.arg_parser import parse_args
 from gallant_input.logger import log_exception, Logger
-from gallant_input.sigmfmetaparser import SigMFMetaParser
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.validation import validate_file
 import gallant_input.constants as const
 

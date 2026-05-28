@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.rds.constants import RDS_BLOCK_DATA_LEN
 from gallant_input.rds.mgt.rds_msg_group_type import RDSMsgGroupType
-from gallant_input.validation import validate_binary_bytes, validate_type
+from gallant_input.validation import validate_binary_bytes, validate_bool
 
 
 # pylint: disable=duplicate-code
@@ -41,7 +41,7 @@ class RDSMsgGroupType02(RDSMsgGroupType):
     def validate_content(self) -> None:
         """Validate the contents of the dataclass: type, content, length, format."""
         if self._validated is not True:
-            validate_type(self._validated, 'internal attribute _validated', bool)
+            validate_bool(self._validated, 'internal attribute _validated')
             validate_binary_bytes(self.msg_ver, 'msg_ver', 1)
             validate_binary_bytes(self.char_seg, 'char_seg', 4)
             validate_binary_bytes(self.block3_data, 'block3_data', 16)

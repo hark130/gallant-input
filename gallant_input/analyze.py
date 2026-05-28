@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from gallant_input.sigmfmetaparser import SigMFMetaParser
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.validation import validate_type
 
 

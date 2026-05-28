@@ -11,7 +11,7 @@ from gallant_input.rds.exceptions import (RDSBlockIDMismatch, RDSIntegrityFailur
                                           RDSMsgGroupTypeMissing)
 from gallant_input.rds.mgt.rds_msg_group_type00 import RDSMsgGroupType00
 from gallant_input.rds.mgt.rds_msg_group_type02 import RDSMsgGroupType02
-from gallant_input.validation import validate_bytes, validate_type
+from gallant_input.validation import validate_bool, validate_bytes
 
 
 # pylint: disable=too-many-instance-attributes
@@ -136,7 +136,7 @@ class RDSGroup:
             TypeError: Invalid data type.
             ValueError: Invalid value.
         """
-        validate_type(force, 'force', bool)
+        validate_bool(force, 'force')
         if self._verified is False or force is True:
             # VALIDATION
             self._validate_internals()
@@ -197,9 +197,9 @@ class RDSGroup:
         """Validate the private attributes once."""
         if self._validated is False:
             # self._validated
-            validate_type(var=self._validated, var_name='_validated attribute', var_type=bool)
+            validate_bool(self._validated, '_validated attribute')
             # self._murica
-            validate_type(var=self._murica, var_name='assume_na', var_type=bool)
+            validate_bool(self._murica, 'assume_na')
             # self._rds_group
             self._validate_rds_group()
             self._validated = True

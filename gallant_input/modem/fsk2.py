@@ -93,14 +93,31 @@ class FSK2(Modem):
                          must_be_complex=True)
 
         # DEMODULATE IT
+        # Instantaneous frequency via differential phase
         dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))
-        dphi[0] = dphi[1]  # Padding the first sample
-        symbols = reshape_to_symbols(dphi, self._sps).mean(axis=1)
-        bits = (symbols > 0).astype(numpy.uint8)
-        bit_stream = stringify_ndarray(bits)
+        dphi[:self._sps] = dphi[self._sps]  # Pad entire first symbol
+        dphi = numpy.append(dphi, dphi[-1])  # Extend the tail to avoid dropping the last symbol
+
+        # Symbol timing: try all offsets, pick sharpest clustering
+        best_bits = None
+        best_score = -1
+        for offset in range(self._sps):
+            shifted = dphi[offset:]
+            n = len(shifted) // self._sps
+            if n == 0:
+                continue
+            seg = reshape_to_symbols(shifted[:n * self._sps], self._sps).mean(axis=1)
+            score = numpy.var(seg)
+            if score > best_score:
+                best_score = score
+                best_bits = seg
+
+        # Calculate the adaptive threshold
+        threshold = numpy.median(best_bits)
+        bits = (best_bits > threshold).astype(numpy.uint8)
 
         # DONE
-        return bit_stream
+        return stringify_ndarray(bits)
 
     # PUBLIC METHODS
 

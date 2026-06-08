@@ -150,7 +150,6 @@ class NormalModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_return_file(self.test_in3)
 
-    @skip("The demodulator isn't quite capturing all the symbols in this actual capture")
     def test_n04_valid_bfsk_sigmf_demod101_foi3_rates(self):
         """Demod 101 FoI 3 decimated, filtered, and exported."""
         # CONTINUE HERE

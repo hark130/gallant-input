@@ -57,6 +57,24 @@ def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
     return noisy.astype(samples.dtype)  # Cast back to original dtype
 
 
+def convert_bin_bytes_to_bpsk(bin_bytes: bytes, sample_rate: int | float, symbol_rate: int | float,
+                              bit_map: dict[int, complex]) -> numpy.ndarray:
+    """Convert a binary bytes object to a BPSK array given a mapping dictionary."""
+    # LOCAL VARIABLES
+    sps = int(sample_rate // symbol_rate)  # Samples per symbol
+    samples = None                         # An array of the sample values
+    array = None                           # The numpy.ndarray formed from the samples
+
+    # COMPUTE IT
+    samples = []
+    for bin_byte in bin_bytes:
+        samples += [int(chr(bin_byte))] * sps
+    array = numpy.array([bit_map[sample] for sample in samples], dtype=numpy.complex64)
+
+    # DONE
+    return array
+
+
 def convert_bin_bytes_to_ook(bin_bytes: bytes, sample_rate: int | float,
                              symbol_rate: int | float) -> numpy.ndarray:
     """Convert a binary bytes object to an OOK array."""

@@ -18,7 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
 # Local Imports
-from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
+from test.modify import add_awgn, convert_bin_bytes_to_ook, upsample_test_input
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -785,8 +785,8 @@ def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,
                       bin_bytes: bytes) -> numpy.ndarray:
     """Transform a binary bytes object into valid test case input."""
-    return convert_bin_bytes_to_array(bin_bytes=bin_bytes, sample_rate=sample_rate,
-                                      symbol_rate=symbol_rate)
+    return convert_bin_bytes_to_ook(bin_bytes=bin_bytes, sample_rate=sample_rate,
+                                    symbol_rate=symbol_rate)
 
 
 def create_test_samples(samples: numpy.ndarray, sample_rate: float | int,

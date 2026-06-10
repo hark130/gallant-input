@@ -57,9 +57,9 @@ def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
     return noisy.astype(samples.dtype)  # Cast back to original dtype
 
 
-def convert_bin_bytes_to_array(bin_bytes: bytes, sample_rate: int | float,
-                               symbol_rate: int | float) -> numpy.ndarray:
-    """Convert a binary bytes object to an array."""
+def convert_bin_bytes_to_ook(bin_bytes: bytes, sample_rate: int | float,
+                             symbol_rate: int | float) -> numpy.ndarray:
+    """Convert a binary bytes object to an OOK array."""
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
     samples = None                         # An array of the sample values

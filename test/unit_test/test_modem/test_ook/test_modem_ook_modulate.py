@@ -17,7 +17,7 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from test.modify import convert_bin_bytes_to_array
+from test.modify import convert_bin_bytes_to_ook
 from test.unit_test.test_modem.test_ook.test_modem_ook import ModemOOKUnitTest
 
 
@@ -451,8 +451,8 @@ class SpecialModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
 def compute_exp_return(sample_rate: int | float, symbol_rate: int | float,
                        bin_bytes: bytes) -> numpy.ndarray:
     """Compute the expected return based on the test case input."""
-    return convert_bin_bytes_to_array(bin_bytes=bin_bytes, sample_rate=sample_rate,
-                                      symbol_rate=symbol_rate)
+    return convert_bin_bytes_to_ook(bin_bytes=bin_bytes, sample_rate=sample_rate,
+                                    symbol_rate=symbol_rate)
 
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ import numpy
 from gallant_input.modem.ook import OOK
 from gallant_input.modem.ook_config import OOKConfig
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
-from test.modify import add_awgn, convert_bin_bytes_to_array, upsample_test_input
+from test.modify import add_awgn, convert_bin_bytes_to_ook, upsample_test_input
 
 
 class OOKModemCompTest(ModemCompTest):
@@ -601,7 +601,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
         threshold = None  # Automatically determine the threshold
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -625,7 +625,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
         threshold = 0.5
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -649,7 +649,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         sym_rate = 250000     # 5.05 FHSS symbol rate
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
         threshold = None  # Automatically determine the threshold
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -673,7 +673,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         sym_rate = 250000     # 5.05 FHSS symbol rate
         # modulate()/demodulate() args
         bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
         threshold = 0.5
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
         self.run_test_return_input(bin_bytes, samples, threshold, modem_order=False)
@@ -684,7 +684,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
         # modulate()/demodulate() args
-        samples = convert_bin_bytes_to_array(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.RDS_SET1_MSG00A, samp_rate, sym_rate)
         threshold = None
         snr_db = self.SNR_POOR
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
@@ -696,7 +696,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
         # modulate()/demodulate() args
-        samples = convert_bin_bytes_to_array(self.DEMOD_101_FOI_1_PDU, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.DEMOD_101_FOI_1_PDU, samp_rate, sym_rate)
         threshold = None
         snr_db = self.SNR_POOR
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)
@@ -708,7 +708,7 @@ class SpecialOOKModemCompTest(OOKModemCompTest):
         samp_rate = 26000000  # 5.05 FHSS sample rate
         sym_rate = 250000     # 5.05 FHSS symbol rate
         # modulate()/demodulate() args
-        samples = convert_bin_bytes_to_array(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
+        samples = convert_bin_bytes_to_ook(self.FHSS_CHANNEL_01_PREAMBLE, samp_rate, sym_rate)
         threshold = None
         snr_db = self.SNR_POOR
         self.set_modem_ctor_args(sample_rate=samp_rate, symbol_rate=sym_rate)

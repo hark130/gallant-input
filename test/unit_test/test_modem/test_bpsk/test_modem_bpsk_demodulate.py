@@ -25,7 +25,7 @@ from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.constants import BPSK_MAP
 from test import REPO_TL_DIR
-from test.modify import convert_bin_bytes_to_bpsk
+from test.modify import add_awgn, convert_bin_bytes_to_bpsk
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
 
 
@@ -40,10 +40,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         super().__init__(*args, **kwargs)
         # ATTRIBUTES
         # File-based test input
-        # self.test_in1 = '???'  # BFSK test input 1
-        # self.test_in2 = '???'  # BFSK test input 2
-        # self.test_in3 = '???'  # BFSK test input 3
-        # self.test_in4 = '???'  # BFSK test input 4
+        self.test_in1 = self.test_bpsk_in1  # BPSK test input 1
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -135,6 +132,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
             exp_ret: Expected return value (also used to compute the test case input).
+            bit_map: [OPTIONAL] The mapping of symbols to complex values to generate IQ.
         """
         test_in = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                     bin_bytes=exp_ret, bit_map=bit_map)
@@ -162,55 +160,81 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
             samples: Test case input.
-            threshold: Test case input.
             exp_ret: The expected return value from the method call.
         """
         self.set_test_input(samples)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
 
+    def run_test_return_noisy(self, sample_rate: float, symbol_rate: float,
+                              exp_ret: bytes, snr_db: float | int) -> None:
+        """Common method calls for a test case expected to return a computed result.
+
+        Args:
+            sample_rate: Sets the sample_rate ctor argument input.
+            symbol_rate: Sets the symbol_rate ctor argument input.
+            exp_ret: Expected return value (also used to compute the test case input).
+            snr_db: The desigred SNR of the test case samples, in decibels.
+        """
+        test_in = create_noisy_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                          bin_bytes=exp_ret, snr_db=snr_db)
+        self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                   samples=test_in, exp_ret=exp_ret)
+
 
 class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Normal Test Cases."""
 
-    def test_n01_single_byte_alt_bits_sigmf(self):
-        """Single byte, alternating bits, parsed from a SigMF input file."""
+    def test_n01_single_byte_alt_bits(self):
+        """Single byte, alternating bits."""
         samp_rate = 4800
         sym_rate = 80
         exp_ret = b'10101010'
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
 
-    @skip("TO DO: DON'T DO NOW... find/create valid BPSK samples for this test case.")
-    def test_n00_single_byte_alt_bits_sigmf(self):
-        """Single byte, alternating bits, parsed from a SigMF input file."""
-        samp_rate = 48000
+    def test_n02_all_zeros(self):
+        """Single byte, all zeros."""
+        samp_rate = 4800
         sym_rate = 80
+        exp_ret = b'00000000'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+
+    def test_n03_all_ones(self):
+        """Single byte, all ones."""
+        samp_rate = 4800
+        sym_rate = 80
+        exp_ret = b'11111111'
+        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+
+    def test_n04_single_byte_alt_bits_with_awgn(self):
+        """Single byte, alternating bits, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        exp_ret = b'10101010'
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+
+    def test_n05_all_zeros_with_awgn(self):
+        """Single byte, all zeros, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        exp_ret = b'00000000'
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+
+    def test_n06_all_ones_with_awgn(self):
+        """Single byte, all ones, with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        exp_ret = b'11111111'
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+
+    def test_n07_valid_bpsk_sigmf_demod101_foi1_rates(self):
+        """Demod 101 FoI 1 decimated, filtered, and exported."""
+        samp_rate = 4800  # 5.03 Demod 101 FoI 1 sample rate (decimated)
+        sym_rate = 1200   # 5.03 Demod 101 FoI 3 symbol rate
         self.set_bpsk_ctor_args(samp_rate, sym_rate)
         self.run_test_return_file(self.test_in1)
-
-    @skip("TO DO: DON'T DO NOW... find/create valid BPSK samples for this test case.")
-    def test_n00_valid_bfsk_sigmf_rds_rates(self):
-        """Binary encoded text modulated with 2-FSK from a SigMF input file at RDS rates."""
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
-        self.run_test_return_file(self.test_in2)
-
-    @skip("TO DO: DON'T DO NOW... find/create valid BPSK samples for this test case.")
-    def test_n00_valid_bfsk_sigmf_demod101_rates(self):
-        """Binary encoded text modulated with 2-FSK from a SigMF input file at Demod 101 rates."""
-        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
-        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
-        self.run_test_return_file(self.test_in3)
-
-    @skip("TO DO: DON'T DO NOW... find/create valid BPSK samples for this test case.")
-    def test_n00_valid_bfsk_sigmf_demod101_foi3_rates(self):
-        """Demod 101 FoI 3 decimated, filtered, and exported."""
-        # CONTINUE HERE
-        samp_rate = 240000  # 5.03 Demod 101 FoI 3 sample rate (decimated)
-        sym_rate = 599.31   # 5.03 Demod 101 FoI 3 symbol rate (600?)
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
-        self.run_test_return_file(self.test_in4)
 
 
 class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):

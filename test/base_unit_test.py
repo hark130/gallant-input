@@ -104,6 +104,12 @@ class BaseUnitTest(TediousUnitTest):
 
     FHSS_CHANNEL_01_PREAMBLE = b'1100110101010101010011001101010101010100'  # RF JQR 5.05 FHSS
 
+    RDS_BLOCK_A3 = bytes('01010111000111010101011100', 'utf-8')             # RF JQR 5.03 RDS group
+    RDS_BLOCK_B3 = bytes('00100001001001011011001000', 'utf-8')             # RF JQR 5.03 RDS group
+    RDS_BLOCK_C3 = bytes('11001101110011011010110011', 'utf-8')             # RF JQR 5.03 RDS group
+    RDS_BLOCK_D3 = bytes('01000110010011010001001011', 'utf-8')             # RF JQR 5.03 RDS group
+    RDS_GROUP1 = RDS_BLOCK_A3 + RDS_BLOCK_B3 + RDS_BLOCK_C3 + RDS_BLOCK_D3  # RF JQR 5.03 RDS
+
     # CORE CLASS METHODS
     # Methods listed in call order
 
@@ -119,6 +125,8 @@ class BaseUnitTest(TediousUnitTest):
         self.test_bfsk_in3 = self.test_input_dir / 'bfsk_mod3_c0hz_s480000_b800.sigmf-data'
         # Demod 101 FoI 3 filtered and decimated
         self.test_bfsk_in4 = self.test_input_dir / 'bfsk_mod4_c0hz_s240k_b600.sigmf-data'
+        # Demod 101 FoI 1 filtered and decimated
+        self.test_bpsk_in1 = self.test_input_dir / 'bpsk_mod1_c0hz_s4800_b1200.sigmf-data'
 
         super().__init__(*args, **kwargs)
 

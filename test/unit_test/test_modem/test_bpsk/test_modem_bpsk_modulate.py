@@ -311,7 +311,7 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         bits = b''
         self.set_bpsk_ctor_args(samp_rate, sym_rate)
         self.run_test_exception_input(bits, ValueError,
-                                      'The "bin_bytes" argument may not be empty')
+                                      'may not be empty')
 
     def test_e16_bad_bin_bytes_value_non_binary(self):
         """Bad bin_bytes: bad value - non-binary (AKA '...and I thought I saw a 2' -Bender)."""

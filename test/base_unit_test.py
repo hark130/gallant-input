@@ -127,6 +127,8 @@ class BaseUnitTest(TediousUnitTest):
         self.test_bfsk_in4 = self.test_input_dir / 'bfsk_mod4_c0hz_s240k_b600.sigmf-data'
         # Demod 101 FoI 1 filtered and decimated
         self.test_bpsk_in1 = self.test_input_dir / 'bpsk_mod1_c0hz_s4800_b1200.sigmf-data'
+        # really-distinct-signal RDS signal exported from GRC
+        self.test_bpsk_in2 = self.test_input_dir / 'bpsk_mod2_c0hz_s19k_b1187p5.sigmf-data'
 
         super().__init__(*args, **kwargs)
 

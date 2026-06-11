@@ -8,14 +8,26 @@ from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_sy
                                  stringify_ndarray, upsample)
 from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
                                       extract_bits_from_single_cluster)
+from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import validate_bool, validate_ndarray, validate_pos_float
+from gallant_input.validation import validate_bool, validate_ndarray, validate_pos_int
 
 
 class BPSK(Modem):
     """Modulate and demodulate BPSK digital signals."""
+
+    # CORE METHODS
+
+    def __init__(self, config: BPSKConfig):
+        """Class ctor.
+
+        Args:
+            config: Necessary configuration settings.
+        """
+        self._bits_per_sym = 1  # Bits per symbol
+        super().__init__(config=config)
 
     # ABSTRACT METHODS
 
@@ -41,7 +53,7 @@ class BPSK(Modem):
 
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
-        symbols = map_bits_to_symbols(bits, bits_per_symbol=1, mapper=BPSK_MAP)
+        symbols = map_bits_to_symbols(bits, bits_per_symbol=self._bits_per_sym, mapper=mapper)
         waveform = upsample(symbols, self._sps)
         iq = waveform.astype(numpy.complex64)
 
@@ -71,7 +83,7 @@ class BPSK(Modem):
                          must_be_complex=False)
 
         # DEMODULATE IT
-        # bits = extract_bits_from_single_cluster(samples, self._sps)
+
         # bit_stream = stringify_ndarray(bits)
 
         # DONE
@@ -120,3 +132,4 @@ class BPSK(Modem):
     def _validate(self) -> None:
         """Validate attribute values."""
         self._validate_abc()
+        validate_pos_int(self._bits_per_sym, 'internal attribute _bits_per_sym')

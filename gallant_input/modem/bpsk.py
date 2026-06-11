@@ -19,11 +19,12 @@ class BPSK(Modem):
 
     # ABSTRACT METHODS
 
-    def modulate(self, bin_bytes: bytes) -> numpy.ndarray:
+    def modulate(self, bin_bytes: bytes, mapper: dict[int, complex] = BPSK_MAP) -> numpy.ndarray:
         """MOdulate binary data.
 
         Args:
             bin_bytes: A bytes object containing binary to modulate.
+            mapper: [OPTIONAL] The bits --> symbol dictionary.
 
         Returns:
             The modulated binary data.
@@ -40,9 +41,9 @@ class BPSK(Modem):
 
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
-        # symbols = map_bits_to_symbols(bits, bits_per_symbol=1, mapper=BPSK_MAP)
-        # waveform = upsample(symbols, self._sps)
-        # iq = waveform.astype(numpy.complex64)
+        symbols = map_bits_to_symbols(bits, bits_per_symbol=1, mapper=BPSK_MAP)
+        waveform = upsample(symbols, self._sps)
+        iq = waveform.astype(numpy.complex64)
 
         # DONE
         return iq

@@ -41,6 +41,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         # ATTRIBUTES
         # File-based test input
         self.test_in1 = self.test_bpsk_in1  # BPSK test input 1
+        self.test_in2 = self.test_bpsk_in2  # BPSK test input 2
 
     def call_callable(self):
         """Defines how the class will invoke the function call."""
@@ -235,6 +236,13 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 1200   # 5.03 Demod 101 FoI 3 symbol rate
         self.set_bpsk_ctor_args(samp_rate, sym_rate)
         self.run_test_return_file(self.test_in1)
+
+    def test_n08_valid_bpsk_sigmf_rds_traffic(self):
+        """Really distinct signal (AKA Radio Data System) filtered, and exported."""
+        samp_rate = 19000  # Really distinct signal sample rate (*not* decimated)
+        sym_rate = 1187.5  # Really distinct signal symbol rate
+        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.run_test_return_file(self.test_in2)
 
 
 class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):

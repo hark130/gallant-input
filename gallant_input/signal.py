@@ -7,7 +7,10 @@ from numpy.fft import fftshift
 from scipy.fft import fft, fftfreq
 import numpy
 # Local Imports
+from gallant_input.detectedsignal import DetectedSignal
+from gallant_input.modscheme import ModScheme
 from gallant_input.oversamplefactor import OversampleFactor
+from gallant_input.spectrumanalysis import SpectrumAnalysis
 from gallant_input.validation import (validate_bool, validate_int, validate_int_or_float,
                                       validate_ndarray, validate_pos_int, validate_string,
                                       validate_type)
@@ -178,6 +181,48 @@ def convert_mag_to_db(mag_map: numpy.ndarray) -> numpy.ndarray:
     return db_map
 
 
+def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSignal:
+    """Select a signal of interest from a spectral analysis based on a modulation scheme.
+
+    Examines the peaks detected within a spectrum and identifies a candidate signal for reception.
+    Depending on the detection strategy, a signal may consist of one or more spectral peaks.
+
+    Examples include:
+        * OOK: one dominant peak
+        * BFSK: two dominant peaks
+        * BPSK: one broad lobe
+        * OFDM: many subcarriers
+
+    This function performs signal selection only. It does not modify the input samples.
+
+    Args:
+        analysis: Spectrum analysis (Call analyze_spectrum() first).
+
+    Returns:
+        A DetectedSignal describing the selected transmission.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    signal = None  # DetectedSignal obj
+
+    # INPUT VALIDATION
+    validate_type(analysis, 'analysis', SpectrumAnalysis)
+    validate_type(scheme, 'scheme', ModScheme)
+
+    # DETECT IT
+    match scheme:
+        case scheme.FSK2:
+            signal = _detect_signal_num_peaks(analysis=analysis, num_peaks=2)
+        case _:
+            raise UnimplementedError(f'This modulation scheme is not yet supported: {scheme}')
+
+    # DONE
+    return signal
+
+
 def optimize_window_size(coeffs: numpy.ndarray,
                          oversample: OversampleFactor = OversampleFactor.DEFAULT,
                          min_size: int = 1024) -> int:
@@ -264,6 +309,38 @@ def _call_fftfreq(win_len: int, spacing: int | float | complex = 1.0) -> numpy.n
     """
     _validate_fftfreq_args(win_len=win_len, spacing=spacing)
     return fftfreq(n=win_len, d=spacing)
+
+
+def _detect_signal_num_peaks(analysis: SpectrumAnalysis, num_peaks: int) -> DetectedSignal:
+    """Detect a given number of peaks."""
+    # LOCAL VARIABLES
+    act_peaks = len(analysis.peaks)  # The number of peaks in analysis
+    peak_list = []                   # The top peaks from analysis
+    center_frequency = 0             # Center frequency of the peaks
+    bandwidth = 0                    # Total bandwidth of the peaks
+    left = 0                         # Leftmost frequency
+    right = 0                        # Rightmost frequency
+
+    # INPUT VALIDATION
+    validate_pos_int(num_peaks, 'num_peaks')
+    if act_peaks < num_peaks:
+        raise ValueError(f'The "analysis" parameter only contains {act_peaks} which is not '
+                         f'enough to match {num_peaks}')
+
+    # DETECT IT
+    peak_list = analysis.peaks[:num_peaks]
+    # Center Frequency
+    for peak_entry in peak_list:
+        center_frequency += peak_entry.frequency
+    center_frequency = center_frequency / len(peak_list)
+    # Total Bandwidth
+    left = min(peak_entry.left_edge for peak_entry in peak_list)
+    right = max(peak_entry.right_edge for peak_entry in peak_list)
+    bandwidth = right - left
+    center_frequency = (left + right) / 2
+
+    # DONE
+    return DetectedSignal(center_frequency=center_frequency, bandwidth=bandwidth, peaks=peak_list)
 
 
 def _validate_axis_len(axis_len: int | None = None) -> None:

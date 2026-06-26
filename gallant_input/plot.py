@@ -98,6 +98,8 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
                   title: str | None = 'Magnitude Spectrum') -> None:
     """Plot magnitude spectrum of a signal.
 
+    Plot frequency vs. magnitude.
+
     Args:
         signal: The signal to evaluate.
         samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, the library will use defaults.

@@ -13,7 +13,9 @@ import sys
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.codec import upsample
+from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int
+from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.fsk2 import FSK2
@@ -47,17 +49,21 @@ def get_filename() -> Path:
 def main() -> None:
     """do_it()."""
     try:
-        filepath = get_filename()
-        samples = read_samples(filepath)    
-        spect_analysis = analyze_spectrum(samples, sample_rate=DEF_SAMP_RATE, max_peaks=2)
-        print(spect_analysis)
+        sig_meta_parser = None            # The SigMFMetaParser (if filepath is a SigMF file)
+        sample_rate = DEF_SAMP_RATE       # Capture sample rate
+        filepath = get_filename()         # CLI capture file
+        samples = read_samples(filepath)  # Samples read from the capture
+        if filepath.suffix.lower() == f'.{SIGMF_DATA_FILE_EXT}'.lower():
+            sig_meta_parser = SigMFMetaParser(filepath.with_suffix(f'.{SIGMF_META_FILE_EXT}'))
+            sample_rate = sig_meta_parser.get_sample_rate()
+        spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
+        print(spect_analysis)  # DEBUGGING
         signal = detect_signal(analysis=spect_analysis, scheme=ModScheme.FSK2)
-        print(signal)
-        # plot_constellation(samples)
-        plot_spectrum(samples, samp_rate=DEF_SAMP_RATE)
+        print(signal)  # DEBUGGING
+        plot_spectrum(samples, samp_rate=sample_rate)
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
-        # raise err from err
+        # raise err from err  # DEBUGGING
 
 
 if __name__ == '__main__':

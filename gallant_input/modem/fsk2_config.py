@@ -43,7 +43,7 @@ class FSK2Config(ModemConfig):
 
         Args:
             demod: [OPTIONAL] Controls internal parsing/validation.  If True, internal validation
-            will only validate the attributes necessary to demodulate a signal.
+                will only validate the attributes necessary to demodulate a signal.
         """
         self._demod = demod
 

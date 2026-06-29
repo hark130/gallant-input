@@ -11,9 +11,9 @@ from gallant_input.detectedsignal import DetectedSignal
 from gallant_input.modscheme import ModScheme
 from gallant_input.oversamplefactor import OversampleFactor
 from gallant_input.spectrumanalysis import SpectrumAnalysis
-from gallant_input.validation import (validate_bool, validate_int, validate_int_or_float,
-                                      validate_ndarray, validate_pos_int, validate_string,
-                                      validate_type)
+from gallant_input.validation import (validate_bool, validate_int, validate_pos_float_or_int,
+                                      validate_int_or_float, validate_ndarray, validate_pos_int,
+                                      validate_string, validate_type)
 
 
 def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
@@ -221,6 +221,46 @@ def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSign
 
     # DONE
     return signal
+
+
+def downconvert_signal(samples: numpy.ndarray, sample_rate: float | int,
+                       center_freq: float | int) -> numpy.ndarray:
+    """Frequency translate a sampled signal to complex baseband.
+
+    Multiplies the input samples by a complex exponential whose frequency matches the supplied
+    center frequency. The effect is to shift the selected signal to 0 Hz while preserving its
+    complex envelope.
+
+    Args:
+        samples: Complex-valued input samples.
+        sample_rate: Sampling rate of the input samples in Hz.
+        center_freq: Frequency offset to remove, in hertz.
+
+    Returns:
+        Frequency-translated complex samples.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    time_arr = None    # 0-N time array
+    osc = None         # Oscillator array
+    translated = None  # Downconverted signal
+
+    # INPUT VALIDATION
+    validate_ndarray(samples, 'samples', can_be_empty=False, num_dim=1, must_be_complex=True)
+    validate_pos_float_or_int(sample_rate, 'sample_rate')
+    validate_int_or_float(center_freq, 'center_freq')
+
+    # DOWNCONVERT IT
+    time_arr = numpy.arange(len(samples))
+    # Negate the oscillator (because multiplication adds frequencies)
+    osc = numpy.exp(-1j * 2 * numpy.pi * center_freq * time_arr / sample_rate)
+    translated = samples * osc
+
+    # DONE
+    return translated
 
 
 def optimize_window_size(coeffs: numpy.ndarray,

@@ -38,7 +38,7 @@ def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
     samples.
 
     Args:
-        symbols: Real or complex-valued input samples.
+        samples: Real or complex-valued input samples.
         sample_rate: Sampling rate of the input samples in Hz.
         max_peaks: [OPTIONAL] The number of SpectralPeak objs to add to SpectrumAnalysis.peaks.
 

@@ -2,6 +2,7 @@
 
 # Standard Imports
 from dataclasses import dataclass
+import numpy
 # Third Party Imports
 # Local Imports
 from gallant_input.spectralpeak import SpectralPeak

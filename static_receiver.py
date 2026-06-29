@@ -1,7 +1,12 @@
-"""Born from my shmelstone_receiver and refactored to escape CPT Fox Time (CFT)."""
+"""Born from my shmelstone_receiver and refactored to escape CPT Fox Time (CFT).
+
+Example Usage:
+    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg_not_short.sigmf-data
+"""
 
 # Standard Imports
 from pathlib import Path
+from typing import Final
 import numpy  # CFT
 import sys
 # Third Party Imports

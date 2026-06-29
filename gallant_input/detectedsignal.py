@@ -4,6 +4,7 @@
 from dataclasses import dataclass
 # Third Party Imports
 # Local Imports
+from gallant_input.spectralpeak import SpectralPeak
 
 
 @dataclass(frozen=True)

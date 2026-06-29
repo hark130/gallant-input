@@ -1,6 +1,7 @@
 """Defines functionality supporting the 'analyze' command."""
 
 # Standard Imports
+from typing import Tuple
 import numpy
 # Third Party Imports
 from scipy.signal import find_peaks, peak_widths

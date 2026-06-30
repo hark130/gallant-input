@@ -1,6 +1,12 @@
 """Born from my shmelstone_receiver and refactored to escape CPT Fox Time (CFT).
 
 Example Usage:
+    python static_receiver.py ./data/shmelstone_fake_ski1_c0hz_s2p4M_b2p4k.sigmf-data  # Injected
+    python static_receiver.py ./data/shmelstone_fake_tasha1_c0hz_s2p4M_b2p4k.sigmf-data  # Injected
+    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2m.sigmf-data  # Test message
+    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_hark1.sigmf-data
+    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg1_max.sigmf-data
+    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg2_long.sigmf-data
     python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg3_not_short.sigmf-data
 """
 
@@ -97,6 +103,19 @@ def get_filename() -> Path:
     return filename
 
 
+def parse_payload(payload: bytes) -> None:
+    """Parse and print the payload."""
+    # PARSE IT
+    msg_len = convert_bin_bytes_to_int(payload[:8])                          # Remaining payload len
+    msg_type = convert_bin_bytes_to_int(payload[8:16])                       # Message type
+    user_len = convert_bin_bytes_to_int(payload[16:24])                      # Len of the username
+    user_name = convert_bin_bytes_to_ascii(payload[24:24 + (user_len * 8)])  # Sender username
+    message = convert_bin_bytes_to_ascii(payload[24 + (user_len * 8):])      # Sender's message
+
+    # PRINT IT
+    print(f'User "{user_name}" sent message: {message}')
+
+
 def squelch_it(samples: numpy.ndarray, threshold: float | int) -> numpy.ndarray:
     """Squelch the samples given a threshold."""
     mag = numpy.abs(samples)        # Magnitude
@@ -145,13 +164,12 @@ def main() -> None:
         # DEMOD
         binary = demod_to_bytes(samples=translated, sample_rate=sample_rate,
                                 symbol_rate=symbol_rate)
-        print(f'BINARY: {binary}')  # DEBUGGING
+        # print(f'BINARY: {binary}')  # DEBUGGING
         index = correlate_it(binary, DEF_SYNCWORD)
         new_binary = binary[index + len(DEF_SYNCWORD):]
         print(f'FRAME SYNC BINARY: {new_binary}')  # DEBUGGING
-        print(f'DECODED (INDEX {index}): {convert_bin_bytes_to_ascii(new_binary)}')
+        parse_payload(new_binary)
         # TO DO: DON'T DO NOW...
-        #   - Write a decode_payload() function (replicating CFT)
         #   - Verify the integrity of the capture by manually decoding the message: Inspectrum, URH
         #   - Comment out/remove the janky timing attempt inside FSK2
         #   - Consider rolling back to the original FSK2.demod() attempt

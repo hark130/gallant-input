@@ -89,14 +89,10 @@ class FSK2(Modem):
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
-        validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
-                         must_be_complex=True)
 
         # DEMODULATE IT
         # Instantaneous frequency via differential phase
-        dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))
-        dphi[:self._sps] = dphi[self._sps]  # Pad entire first symbol
-        dphi = numpy.append(dphi, dphi[-1])  # Extend the tail to avoid dropping the last symbol
+        dphi = self.demodulate_to_samples(samples=samples)
 
         # Symbol timing: try all offsets, pick sharpest clustering
         best_bits = None
@@ -120,6 +116,36 @@ class FSK2(Modem):
         return stringify_ndarray(bits)
 
     # PUBLIC METHODS
+
+    def demodulate_to_samples(self, samples: numpy.ndarray) -> numpy.ndarray:
+        """DEMoodulate binary data to a real waveform.
+
+        Args:
+            samples: Digital samples to demodulate.
+
+        Returns:
+            The demodulated real waveform.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        dphi = None  # The difference between angles (instantaneous frequency)
+
+        # VALIDATION
+        self.parse(demod=True)  # Validate and parse
+        validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
+                         must_be_complex=True)
+
+        # DEMODULATE IT
+        # Instantaneous frequency via differential phase
+        dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))
+        dphi[:self._sps] = dphi[self._sps]  # Pad entire first symbol
+        dphi = numpy.append(dphi, dphi[-1])  # Extend the tail to avoid dropping the last symbol
+
+        # DONE
+        return dphi
 
     def get_phase(self) -> float:
         """Fetch the current phase."""

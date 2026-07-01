@@ -8,6 +8,7 @@ Example Usage:
     python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg1_max.sigmf-data
     python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg2_long.sigmf-data
     python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg3_not_short.sigmf-data
+
 """
 
 # Standard Imports
@@ -16,6 +17,7 @@ from typing import Any, Final
 import numpy  # CFT
 import sys
 # Third Party Imports
+import matplotlib.pyplot as plt
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.codec import upsample
@@ -27,7 +29,7 @@ from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import plot_constellation, plot_time_domain, plot_spectrum
+from gallant_input.plot import plot_constellation, plot_time_domain, plot_spectrum, plot_symbol_boundaries
 from gallant_input.signal import compute_basic_fft, detect_signal, downconvert_signal
 
 DEF_SAMP_RATE: Final[int] = 2400000
@@ -84,6 +86,23 @@ def demod_to_bytes(samples: numpy.ndarray, sample_rate: float | int,
     return bin_bytes
 
 
+def demod_to_waveform(samples: numpy.ndarray, sample_rate: float | int,
+                      symbol_rate: float | int) -> numpy.ndarray:
+    """Demodulate a signal to a real waveform."""
+    # LOCAL VARIABLES
+    config = FSK2Config(sample_rate=sample_rate, symbol_rate=symbol_rate, freq0=0, freq1=0)
+    modem = None     # The demodulator class
+    waveform = None  # The demodulated real waveform
+
+    # DEMODULATE IT
+    config.set_demod()  # Demodulate only
+    modem = FSK2(config=config)
+    waveform = modem.demodulate_to_samples(samples=samples)
+
+    # DONE
+    return waveform
+
+
 def get_filename() -> Path:
     """In lieu of an actual argument parser, just get the filename."""
     # LOCAL VARIABLES
@@ -131,12 +150,14 @@ def main() -> None:
         sig_meta_parser = None            # The SigMFMetaParser (if filepath is a SigMF file)
         sample_rate = DEF_SAMP_RATE       # Capture sample rate
         symbol_rate = DEF_SYMB_RATE       # Capture symbol rate
+        sps = 0                           # Samples per symbol
         filepath = get_filename()         # CLI capture file
         samples = read_samples(filepath)  # Samples read from the capture
         translated = samples              # Downshifted samples to 0 Hz center frequency
         spect_analysis = None             # SpectrumAnalysis obj
         signal = None                     # DetectedSignal obj
         binary = b''                      # Demodulated binary
+        waveform = None                   # Demodulated real waveform
         index = 0                         # Correlated index
         new_binary = b''                  # Frame synch'd binary
 
@@ -145,6 +166,7 @@ def main() -> None:
         if filepath.suffix.lower() == f'.{SIGMF_DATA_FILE_EXT}'.lower():
             sig_meta_parser = SigMFMetaParser(filepath.with_suffix(f'.{SIGMF_META_FILE_EXT}'))
             sample_rate = sig_meta_parser.get_sample_rate()
+        sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc the sps
         # Squelch!
         samples = squelch_it(samples=samples, threshold=-30)
         # Analyze Spectrum
@@ -161,16 +183,24 @@ def main() -> None:
         else:
             translated = samples
         #     plot_spectrum(translated, samp_rate=sample_rate, title='Original Freq vs. Mag')
+
         # DEMOD
+        # Attempt 1 - Frame Sync
         binary = demod_to_bytes(samples=translated, sample_rate=sample_rate,
                                 symbol_rate=symbol_rate)
-        # print(f'BINARY: {binary}')  # DEBUGGING
+        # # print(f'BINARY: {binary}')  # DEBUGGING
         index = correlate_it(binary, DEF_SYNCWORD)
-        new_binary = binary[index + len(DEF_SYNCWORD):]
-        print(f'FRAME SYNC BINARY: {new_binary}')  # DEBUGGING
-        parse_payload(new_binary)
+        print(f'INDEX: {index}')  # DEBUGGING
+        # new_binary = binary[index + len(DEF_SYNCWORD):]
+        # # print(f'FRAME SYNC BINARY: {new_binary}')  # DEBUGGING
+        # parse_payload(new_binary)
+        # Attemp 2 - Waveform Sync
+        waveform = demod_to_waveform(samples=translated, sample_rate=sample_rate,
+                                     symbol_rate=symbol_rate)
+        plot_symbol_boundaries(waveform, sps)
+        plot_time_domain(samples=waveform, samp_rate=sample_rate, title='Demod Real Waveform')
+
         # TO DO: DON'T DO NOW...
-        #   - Verify the integrity of the capture by manually decoding the message: Inspectrum, URH
         #   - Comment out/remove the janky timing attempt inside FSK2
         #   - Consider rolling back to the original FSK2.demod() attempt
         #   - Try to correlate on the real demod samples instead of the binary

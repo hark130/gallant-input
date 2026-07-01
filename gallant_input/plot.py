@@ -135,6 +135,34 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
+def plot_symbol_boundaries(real_wave: numpy.ndarray, sps: float | int) -> None:
+    """Plot symbol boundaries against a real (demodulated) waveform.
+
+    Args:
+        real_wave: The real waveform.
+        sps: Samples per symbol.
+    """
+    # LOCAL VARIABLES
+    num_samps = None             # The length of real_wave
+    x_label = 'Sample Index'     # The x-axis label
+    y_label = 'Inst. Freq'       # The y-axis label
+    title = 'Symbol Boundaries'  # The title
+
+    # INPUT VALIDATION
+    validate_ndarray(real_wave, 'samples', can_be_empty=False, num_dim=1)
+    validate_int_or_float(sps, 'sps')
+
+    # PREPARE
+    num_samps = len(real_wave)
+    sample_points = numpy.arange(0, num_samps, sps)
+    plt.plot(real_wave)
+    for sample_point in sample_points:
+        plt.axvline(sample_point, color='red', alpha=0.2)
+
+    # PLOT IT
+    _plot_it(x_label=x_label, y_label=y_label, title=title)
+
+
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,
                      title: str | None = 'Time Domain') -> None:
     """Plot real and imaginary components of a signal over time.

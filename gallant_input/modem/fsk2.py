@@ -8,6 +8,7 @@ from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarr
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
+from gallant_input.timing import estimate_symbol_clock
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
                                       validate_ndarray, validate_phase, validate_type)
 
@@ -26,6 +27,7 @@ class FSK2(Modem):
         self.freq0 = None         # The 'off' frequency baseband deviation.
         self.freq1 = None         # The 'on' frequency baseband deviation.
         self._phase = float(0.0)  # Phase state
+        self._est_sps = float(0.0)  # Estimated samples per symbol
         super().__init__(config=config)
 
     # ABSTRACT METHODS
@@ -84,8 +86,6 @@ class FSK2(Modem):
         # LOCAL VARIABLES
         bit_stream = b''  # The bits as a bin bytes object
         dphi = None       # The difference between angles
-        symbols = None    # An ndarray of trimmed samples reshaped to samples per symbol
-        bits = None       # An array of bits extracted from samples
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
@@ -93,20 +93,39 @@ class FSK2(Modem):
         # DEMODULATE IT
         # Instantaneous frequency via differential phase
         dphi = self.demodulate_to_samples(samples=samples)
+        # Make binary decisions from the soft bits
+        bit_stream = self.demodulate_to_bytes(dphi)
 
+        # DONE
+        return bit_stream
+
+    # PUBLIC METHODS
+
+    def demodulate_to_bytes(self, real_wave: numpy.ndarray) -> bytes:
+        """DEModulate a real wave to bit decisions."""
+        dphi = real_wave
         # Symbol timing: try all offsets, pick sharpest clustering
         best_bits = None
         best_score = -1
-        for offset in range(self._sps):
+
+        # VALIDATION
+        self.parse(demod=True)  # Validate and parse
+        validate_ndarray(array=real_wave, array_name='real_wave', can_be_empty=False, num_dim=1,
+                         must_be_complex=False)
+
+        for offset in range(int(self._sps)):
             shifted = dphi[offset:]
-            n = len(shifted) // self._sps
+            # n = len(shifted) // self._sps
+            n = len(shifted) / self._sps
             if n == 0:
                 continue
-            seg = reshape_to_symbols(shifted[:n * self._sps], self._sps).mean(axis=1)
+            seg = reshape_to_symbols(shifted[:int(n * self._sps)], self._sps).mean(axis=1)
+            best_bits = seg;  break;  # DEBUGGING
             score = numpy.var(seg)
             if score > best_score:
                 best_score = score
                 best_bits = seg
+            break  # DEBUGGING
 
         # Calculate the adaptive threshold
         threshold = numpy.median(best_bits)
@@ -115,10 +134,8 @@ class FSK2(Modem):
         # DONE
         return stringify_ndarray(bits)
 
-    # PUBLIC METHODS
-
     def demodulate_to_samples(self, samples: numpy.ndarray) -> numpy.ndarray:
-        """DEMoodulate binary data to a real waveform.
+        """DEModulate binary data to a real waveform.
 
         Args:
             samples: Digital samples to demodulate.
@@ -141,7 +158,7 @@ class FSK2(Modem):
         # DEMODULATE IT
         # Instantaneous frequency via differential phase
         dphi = numpy.angle(samples * numpy.conj(numpy.roll(samples, 1)))
-        dphi[:self._sps] = dphi[self._sps]  # Pad entire first symbol
+        dphi[:int(self._sps)] = dphi[int(self._sps)]  # Pad entire first symbol
         dphi = numpy.append(dphi, dphi[-1])  # Extend the tail to avoid dropping the last symbol
 
         # DONE

@@ -17,14 +17,14 @@ from gallant_input.validation import (validate_bool, validate_int, validate_pos_
                                       validate_string, validate_type)
 
 
-def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
+def compute_basic_fft(samples: numpy.ndarray) -> numpy.ndarray:
     """Compute the 1-D discrete FFT of a signal, with good default values, using scipy.fft.fft().
 
     Convert a time-domain signal into its complex frequency-domain representation using the
     Fast Fourier Transform (FFT).
 
     Args:
-        signal: An array object which represents a signal to transform.  Can be real or complex.
+        samples: An array object which represents a signal to transform.  Can be real or complex.
 
     Returns:
         The truncated or zero-padded input transformed along the last axis.
@@ -33,12 +33,12 @@ def compute_basic_fft(signal: numpy.ndarray) -> numpy.ndarray:
         TypeError: Bad data type.
         ValueError: Bad value.
     """
-    return compute_fft(signal=signal)
+    return compute_fft(samples=samples)
 
 
 # It's not my fault.  It's NumPy!
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
+def compute_fft(samples: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
                 norm: str | None = None, overwrite: bool = False,
                 workers: int | None = None) -> numpy.ndarray:
     """Compute the 1-D discrete FFT of a signal using scipy.fft.fft().
@@ -48,14 +48,14 @@ def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = 
     https://docs.scipy.org/doc/scipy-1.16.1/reference/generated/scipy.fft.fft.html.
 
     Args:
-        signal: An array object which represents a signal to transform.  Can be real or complex.
+        samples: An array object which represents a signal to transform.  Can be real or complex.
         axis_len: [OPTIONAL] (AKA 'n' in help(scipy.fft.fft))
         axis: [OPTIONAL] Axis over which to compute the FFT.  If not given, the last axis is used.
         norm: [OPTIONAL] {'backward', 'ortho', 'forward'}
             Normalization mode. Default is 'backward', meaning no normalization on the forward
             transforms and scaling by 1/n on the ifft. 'forward' instead applies the 1/n factor
             on the forward transform. For norm='ortho', both directions are scaled by 1/sqrt(n).
-        overwrite: [OPTIONAL] If True, the contents of signal can be destroyed.
+        overwrite: [OPTIONAL] If True, the contents of samples can be destroyed.
         workers: [OPTIONAL] Maximum number of workers to use for parallel computation.
             If negative, the value wraps around from os.cpu_count().
 
@@ -66,7 +66,7 @@ def compute_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = 
         TypeError: Bad data type.
         ValueError: Bad value.
     """
-    return _call_fft(signal=signal, axis_len=axis_len, axis=axis, norm=norm,
+    return _call_fft(samples=samples, axis_len=axis_len, axis=axis, norm=norm,
                      overwrite=overwrite, workers=workers)
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
@@ -91,31 +91,31 @@ def compute_frequency_axis(num_samp: int, samp_rate: int | float | None) -> nump
     return _call_fftfreq(**dynamic_kwargs)
 
 
-def compute_magnitude_spectrum(signal: numpy.ndarray) -> numpy.ndarray:
-    """Calculate the absolute value of each element in signal.
+def compute_magnitude_spectrum(samples: numpy.ndarray) -> numpy.ndarray:
+    """Calculate the absolute value of each element in samples.
 
     Args:
-        signal: An array object which represents a signal to transform.  Can be real or complex.
+        samples: An array object which represents a signal to transform.  Can be real or complex.
 
     Returns:
-        An ndarray containing the absolute value of each element in signal.  For complex input,
+        An ndarray containing the absolute value of each element in samples.  For complex input,
         a + ib, the absolute value is sqrt{ a^2 + b^2 }.
     """
-    validate_ndarray(array=signal, array_name='signal')
-    return numpy.absolute(signal)
+    validate_ndarray(array=samples, array_name='samples')
+    return numpy.absolute(samples)
 
 
-def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
+def compute_spectrum(samples: numpy.ndarray, samp_rate: int | float | None = None,
                      axis_len: int | None = None, shift_result: bool = True,
                      convert_db: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
-    """Calculate the frequencies of the FFT bins, from signal, and the strength of each.
+    """Calculate the frequencies of the FFT bins, from samples, and the strength of each.
 
     1. Calculate FFT bins
     2. Map FFT bins to frequencies
     3. Computer the strength of each frequency
 
     Args:
-        signal: The signal to evaluate.
+        samples: The signal to evaluate.
         samp_rate: [Optional] The sampling frequency in Hz.  If None, library defaults will be used.
         axis_len: [OPTIONAL] See: help(compute_fft) (AKA 'n' in help(scipy.fft.fft)).
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
@@ -131,7 +131,7 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None
     # LOCAL VARIABLES
     fft_arr = None       # Compute the 1-D discrete FFT of a signal
     freq_map = None      # The Discrete Fourier Transform sample frequency bin centers
-    mag_map = None       # The absolute value of each element in signal
+    mag_map = None       # The absolute value of each element in samples
     num_samp = axis_len  # Window length to compute the Discrete Fourier Transform sample freqs
 
     # INPUT VALIDATION
@@ -141,13 +141,13 @@ def compute_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None
 
     # COMPUTE IT
     # 1. Calculate FFT bins
-    fft_arr = compute_fft(signal=signal, axis_len=axis_len)
+    fft_arr = compute_fft(samples=samples, axis_len=axis_len)
     # 2. Map FFT bins to frequencies
     if num_samp is None:
         num_samp = len(fft_arr)
     freq_map = compute_frequency_axis(num_samp=num_samp, samp_rate=samp_rate)
     # 3. Compute the strength of each frequency
-    mag_map = compute_magnitude_spectrum(signal=fft_arr)
+    mag_map = compute_magnitude_spectrum(samples=fft_arr)
 
     # SHIFT IT
     if shift_result:
@@ -222,11 +222,12 @@ def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSign
         A DetectedSignal describing the selected transmission.
 
     Raises:
+        NotImplementedError: Unsupported scheme.
         TypeError: Invalid data type.
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    signal = None  # DetectedSignal obj
+    det_signal = None  # DetectedSignal obj
 
     # INPUT VALIDATION
     validate_type(analysis, 'analysis', SpectrumAnalysis)
@@ -235,12 +236,12 @@ def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSign
     # DETECT IT
     match scheme:
         case scheme.FSK2:
-            signal = _detect_signal_num_peaks(analysis=analysis, num_peaks=2)
+            det_signal = _detect_signal_num_peaks(analysis=analysis, num_peaks=2)
         case _:
-            raise UnimplementedError(f'This modulation scheme is not yet supported: {scheme}')
+            raise NotImplementedError(f'This modulation scheme is not yet supported: {scheme}')
 
     # DONE
-    return signal
+    return det_signal
 
 
 def downconvert_signal(samples: numpy.ndarray, sample_rate: float | int,
@@ -331,11 +332,11 @@ def interpolate_samples(samples: numpy.ndarray, interp: int) -> numpy.ndarray:
     return signal.resample_poly(x=samples, up=interp, down=1)
 
 
-def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarray:
+def squelch_signal(samples: numpy.ndarray, threshold: float | int) -> numpy.ndarray:
     """Squelch a signal's samples given a threshold.
 
     Args:
-        signal: The samples to be squelched.
+        samples: The signal to be squelched.
         threshold: The estimated noise floor in decibels.
 
     Raises:
@@ -348,13 +349,13 @@ def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarr
     squelched = None  # Samples from signal that exceed the threshold
 
     # VALIDATION
-    validate_ndarray(signal, 'signal', can_be_empty=False)
+    validate_ndarray(samples, 'samples', can_be_empty=False)
     validate_int_or_float(threshold, 'threshold')
 
     # SQUELCH IT
-    mag = numpy.abs(signal)
+    mag = numpy.abs(samples)
     mag_db = 10 * numpy.log10(mag)
-    squelched = signal[mag_db > threshold]
+    squelched = samples[mag_db > threshold]
 
     # DONE
     return squelched
@@ -362,7 +363,7 @@ def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarr
 
 # It's not my fault.  It's NumPy!
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
+def _call_fft(samples: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
               norm: str | None = None, overwrite: bool = False,
               workers: int | None = None) -> numpy.ndarray:
     """A SPOT to call scipy.fft.fft().
@@ -386,9 +387,9 @@ def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1
         TypeError: Bad data type.
         ValueError: Bad value.
     """
-    _validate_fft_args(signal=signal, axis_len=axis_len, axis=axis, norm=norm,
+    _validate_fft_args(samples=samples, axis_len=axis_len, axis=axis, norm=norm,
                        overwrite=overwrite, workers=overwrite)
-    return fft(signal, n=axis_len, axis=axis, norm=norm, overwrite_x=overwrite, workers=workers)
+    return fft(samples, n=axis_len, axis=axis, norm=norm, overwrite_x=overwrite, workers=workers)
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
@@ -456,7 +457,7 @@ def _validate_axis_len(axis_len: int | None = None) -> None:
 
 # It's not my fault.  It's NumPy!
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
+def _validate_fft_args(samples: numpy.ndarray, axis_len: int | None = None, axis: int = -1,
                        norm: str | None = None, overwrite: bool = False,
                        workers: int | None = None) -> None:
     """Validate scipy.fft.fft() arguments on behalf of the module.
@@ -469,7 +470,7 @@ def _validate_fft_args(signal: numpy.ndarray, axis_len: int | None = None, axis:
         ValueError: Bad value.
     """
     # ARGUMENT VALIDATION
-    validate_ndarray(signal, 'signal')
+    validate_ndarray(samples, 'samples')
     _validate_axis_len(axis_len=axis_len)
     validate_int(axis, 'axis')
     if norm is not None:

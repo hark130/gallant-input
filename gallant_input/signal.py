@@ -4,6 +4,7 @@
 from typing import Tuple
 # Third Party Imports
 from numpy.fft import fftshift
+from scipy import signal
 from scipy.fft import fft, fftfreq
 import numpy
 # Local Imports
@@ -327,7 +328,7 @@ def interpolate_samples(samples: numpy.ndarray, interp: int) -> numpy.ndarray:
     """
     validate_ndarray(samples, 'samples', can_be_empty=False)
     validate_pos_int(interp, 'interp')
-    return signal.resample_poly(x=samples, up=interp, down=0)
+    return signal.resample_poly(x=samples, up=interp, down=1)
 
 
 def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarray:
@@ -347,13 +348,13 @@ def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarr
     squelched = None  # Samples from signal that exceed the threshold
 
     # VALIDATION
-    validate_ndarray(samples, 'samples', can_be_empty=False)
+    validate_ndarray(signal, 'signal', can_be_empty=False)
     validate_int_or_float(threshold, 'threshold')
 
     # SQUELCH IT
-    mag = numpy.abs(samples)
+    mag = numpy.abs(signal)
     mag_db = 10 * numpy.log10(mag)
-    squelched = samples[mag_db > threshold]
+    squelched = signal[mag_db > threshold]
 
     # DONE
     return squelched

@@ -14,7 +14,7 @@ ORIGINAL_DIRECTORY=$(pwd)  # Current working directory
 TEST_DIR=test              # Directory containing the project test code
 DEVOPS_DIR=devops          # Directory containing the devops scripts
 # Directories containing the project source code
-SOURCE_DIRS="gallant_input"
+SOURCE_DIRS="rxtx gallant_input"
 
 
 # PYLINT COMMANDS

@@ -157,7 +157,7 @@ def main() -> None:
         sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc the sps
 
         # [ ] Squelch!
-        samples = squelch_signal(signal=samples, threshold=squelch_db)  # -48 is the sweet spot
+        samples = squelch_signal(samples=samples, threshold=squelch_db)  # -48 is the sweet spot
 
         # [ ] Analyze the Spectrum
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)

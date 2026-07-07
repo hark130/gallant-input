@@ -1,15 +1,10 @@
 """Born from my shmelstone_receiver and refactored to escape CPT Fox Time (CFT).
 
 Example Usage:
-    # Working
-    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_hark1.sigmf-data
-    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg1_max.sigmf-data
-    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg2_long.sigmf-data
-    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2p4m_msg3_not_short.sigmf-data
-    # Non-standard
-    python static_receiver.py ./data/shmelstone_fake_ski1_c0hz_s2p4M_b2p4k.sigmf-data  # Injected
-    python static_receiver.py ./data/shmelstone_fake_tasha1_c0hz_s2p4M_b2p4k.sigmf-data  # Injected
-    python static_receiver.py ./data/shmelstone_filt_cap_c912m_s2m.sigmf-data  # Test message
+    python -m rxtx.static_rx_shmelstone ./data/shmelstone_filt_cap_c912m_s2p4m_hark1.sigmf-data
+    python -m rxtx.static_rx_shmelstone ./data/shmelstone_filt_cap_c912m_s2p4m_msg1_max.sigmf-data
+    python -m rxtx.static_rx_shmelstone ./data/shmelstone_filt_cap_c912m_s2p4m_msg2_long.sigmf-data
+    python -m rxtx.static_rx_shmelstone ./data/shmelstone_filt_cap_c912m_s2p4m_msg3_med.sigmf-data
 """
 
 # Standard Imports

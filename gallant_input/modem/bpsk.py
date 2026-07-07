@@ -48,7 +48,7 @@ class BPSK(Modem):
         # LOCAL VARIABLES
         iq = None  # Complex samples modulated from bin_bytes
 
-        # VALIDATION        
+        # VALIDATION
         self.parse()  # Validate and parse
 
         # MODULATE IT

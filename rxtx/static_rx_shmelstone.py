@@ -19,15 +19,18 @@ import matplotlib.pyplot as plt
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
-from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray
+from gallant_input.converters import (convert_bin_bytes_to_ascii, convert_bin_bytes_to_int,
+                                      convert_bin_bytes_to_ndarray)
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import plot_constellation, plot_time_domain, plot_spectrum, plot_symbol_boundaries
-from gallant_input.signal import compute_basic_fft, decimate_samples, detect_signal, downconvert_signal, squelch_signal
+from gallant_input.plot import (plot_constellation, plot_time_domain, plot_spectrum,
+                                plot_symbol_boundaries)
+from gallant_input.signal import (compute_basic_fft, decimate_samples, detect_signal,
+                                  downconvert_signal, squelch_signal)
 from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.timing import estimate_symbol_clock
@@ -179,20 +182,17 @@ def main() -> None:
         # sps = est_sps  # DEBUGGING
         waveform = demod_to_waveform(samples=translated, sample_rate=sample_rate,
                                      symbol_rate=symbol_rate)  # Used by 2 & 3
-        # correlate_this = upsample(convert_ascii_bin_bytes_to_bits(DEF_PREAMBLE), sps)  # Preamble
-        # correlate_this = upsample(convert_ascii_bin_bytes_to_bits(DEF_PREAMWRD), sps)  # Pream + sw
-        correlate_this = upsample(convert_ascii_bin_bytes_to_bits(DEF_SYNCWORD), sps)  # Syncword (used by 3 & 4)
+        correlate_this = upsample(convert_ascii_bin_bytes_to_bits(DEF_SYNCWORD), sps)  # Syncword
 
         # DEMOD
         # Attempt 6 - Time Sync w/ Interpolation
-
 
         # Attempt 5 - M&M
         # print(f'WAVEFORM LEN: {len(waveform)}')  # DEBUGGING
         # plot_symbol_boundaries(waveform, sps)
         # timing = recover_symbol_centers(waveform, sps, 0.1)
         # mm_wave = recover_clock_mm(waveform, sps, interp=None)  # Do not interpolate
-        mm_wave = recover_clock_mm(waveform, sps, interp=16)  # Interpolate to better find boundaries
+        mm_wave = recover_clock_mm(waveform, sps, interp=16)  # Interpolate for better boundaries
         # binary = demod_to_bytes_partial(real_wave=mm_wave, sample_rate=sample_rate,
         #                                 symbol_rate=symbol_rate)
         threshold = numpy.median(mm_wave)
@@ -256,12 +256,6 @@ def main() -> None:
         # Attempt 2 - Waveform Sync
         # plot_symbol_boundaries(waveform, sps)
         # plot_time_domain(samples=waveform, samp_rate=sample_rate, title='Demod Real Waveform')
-
-        # TO DO: DON'T DO NOW...
-        #   - Comment out/remove the janky timing attempt inside FSK2  # DONE (by shunting to demod_to_waveform)
-        #   - Consider rolling back to the original FSK2.demod() attempt  # Maybe?
-        #   - Try to correlate on the real demod samples instead of the binary  # NEXT!
-        #   - Try the half-over coarse timing sync (on the real demod samples)  # ...if correlating on real samples doesn't work
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         raise err from err  # DEBUGGING

@@ -103,33 +103,20 @@ class FSK2(Modem):
 
     def demodulate_to_bytes(self, real_wave: numpy.ndarray) -> bytes:
         """DEModulate a real wave to bit decisions."""
-        dphi = real_wave
-        # Symbol timing: try all offsets, pick sharpest clustering
-        best_bits = None
-        best_score = -1
+        symbols = None  # The real_wave array reshaped to symbols dim
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
         validate_ndarray(array=real_wave, array_name='real_wave', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
 
-        for offset in range(int(self._sps)):
-            shifted = dphi[offset:]
-            # n = len(shifted) // self._sps
-            n = len(shifted) / self._sps
-            if n == 0:
-                continue
-            seg = reshape_to_symbols(shifted[:int(n * self._sps)], self._sps).mean(axis=1)
-            best_bits = seg;  break;  # DEBUGGING
-            score = numpy.var(seg)
-            if score > best_score:
-                best_score = score
-                best_bits = seg
-            break  # DEBUGGING
-
+        # DEMODULATE IT
+        # Reshape to symbol boundaries
+        symbols = reshape_to_symbols(real_wave, self._sps).mean(axis=1)
         # Calculate the adaptive threshold
-        threshold = numpy.median(best_bits)
-        bits = (best_bits > threshold).astype(numpy.uint8)
+        threshold = numpy.median(symbols)
+        # Make bit decisions
+        bits = (symbols > threshold).astype(numpy.uint8)
 
         # DONE
         return stringify_ndarray(bits)

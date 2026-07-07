@@ -4,7 +4,8 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import validate_binary_bytes, validate_bool, validate_bytes, validate_int
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_bytes,
+                                      validate_int)
 
 
 def convert_bin_bytes_to_ascii(binary: bytes) -> str:

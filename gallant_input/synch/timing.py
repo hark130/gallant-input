@@ -5,7 +5,8 @@
 import numpy
 # Local Imports
 from gallant_input.signal import interpolate_samples
-from gallant_input.validation import validate_pos_float, validate_pos_float_or_int, validate_pos_int, validate_ndarray
+from gallant_input.validation import (validate_pos_float, validate_pos_float_or_int,
+                                      validate_pos_int, validate_ndarray)
 
 
 def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
@@ -40,7 +41,6 @@ def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
     out_index = 2          # Output index
     loc_samples = samples  # Local copy of samples (which may be interpolated)
 
-
     # VALIDATION
     validate_ndarray(samples, 'samples', can_be_empty=False)
     validate_pos_float_or_int(samples_per_symbol, 'samples_per_symbol')
@@ -59,7 +59,7 @@ def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
         else:
             soft_bits[out_index] = loc_samples[(in_index * interp) + int(mu * interp)]
         out_rail[out_index] = int(numpy.real(soft_bits[out_index]) > 0) \
-                              + 1j*int(numpy.imag(soft_bits[out_index]) > 0)
+            + 1j*int(numpy.imag(soft_bits[out_index]) > 0)
         x = (out_rail[out_index] - out_rail[out_index-2]) * numpy.conj(soft_bits[out_index-1])
         y = (soft_bits[out_index] - soft_bits[out_index-2]) * numpy.conj(out_rail[out_index-1])
         mm_val = numpy.real(y - x)

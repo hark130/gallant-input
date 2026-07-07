@@ -8,7 +8,6 @@ from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarr
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
-from gallant_input.timing import estimate_symbol_clock
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
                                       validate_ndarray, validate_phase, validate_type)
 

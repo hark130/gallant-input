@@ -33,7 +33,6 @@ from gallant_input.signal import (compute_basic_fft, decimate_samples, detect_si
                                   downconvert_signal, squelch_signal)
 from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
-from gallant_input.timing import estimate_symbol_clock
 
 DEF_SAMP_RATE: Final[int] = 2400000
 DEF_SYMB_RATE: Final[int] = 2400
@@ -105,8 +104,7 @@ def get_filename() -> Path:
     except IndexError as err:
         print_help()
         raise err from err
-    else:
-        filename = Path(arg_val)
+    filename = Path(arg_val)
 
     # DONE
     return filename
@@ -123,6 +121,12 @@ def parse_payload(payload: bytes) -> None:
 
     # PRINT IT
     print(f'User "{user_name}" sent message: {message}')
+
+
+def print_help() -> None:
+    """Print a help message."""
+    # command_name [options/flags] <required_argument>
+    print(f'\n\nUSAGE: {sys.argv[0]} <SIGMF FILENAME>\n\n', file=sys.stderr)
 
 
 def main() -> None:

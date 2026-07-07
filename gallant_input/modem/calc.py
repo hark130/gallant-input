@@ -2,6 +2,7 @@
 
 
 # Standard Imports
+import warnings
 # Third Party Imports
 import numpy
 # Local Imports
@@ -309,12 +310,16 @@ def _test_two_clusters_vs_mean(energies: numpy.ndarray, ratio: float) -> bool:
     # LOCAL VARIABLES
     mean = energies.mean()  # Mean value of the energies
     std = energies.std()    # Standard deviation of the energy values
-    two_clusters = True  # Are there two clusters or not?
+    two_clusters = False    # Are there two clusters or not?
+
+    # SETUP
+    warnings.filterwarnings('error', category=RuntimeWarning)  # RuntimeWarnings from some input
 
     # TEST IT
     try:
-        two_clusters = (std / mean) > ratio
-    except ZeroDivisionError:
+        if (std / mean) > ratio:
+            two_clusters = True
+    except (RuntimeWarning, ZeroDivisionError):
         two_clusters = False  # Mean is effectively 0 (e.g., 1e-1776)
 
     # DDNE

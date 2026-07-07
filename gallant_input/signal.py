@@ -314,6 +314,51 @@ def optimize_window_size(coeffs: numpy.ndarray,
     return max(min_size, next_pow)
 
 
+def interpolate_samples(samples: numpy.ndarray, interp: int) -> numpy.ndarray:
+    """Upsample samples by a factor of interp.
+
+    Args:
+        samples: The data to be interpolated.
+        interp: The upsampling factor.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    validate_ndarray(samples, 'samples', can_be_empty=False)
+    validate_pos_int(interp, 'interp')
+    return signal.resample_poly(x=samples, up=interp, down=0)
+
+
+def squelch_signal(signal: numpy.ndarray, threshold: float | int) -> numpy.ndarray:
+    """Squelch a signal's samples given a threshold.
+
+    Args:
+        signal: The samples to be squelched.
+        threshold: The estimated noise floor in decibels.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    mag = None        # Magnitude of signal
+    mag_db = None     # Signal magnitude converted to power
+    squelched = None  # Samples from signal that exceed the threshold
+
+    # VALIDATION
+    validate_ndarray(samples, 'samples', can_be_empty=False)
+    validate_int_or_float(threshold, 'threshold')
+
+    # SQUELCH IT
+    mag = numpy.abs(samples)
+    mag_db = 10 * numpy.log10(mag)
+    squelched = samples[mag_db > threshold]
+
+    # DONE
+    return squelched
+
+
 # It's not my fault.  It's NumPy!
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def _call_fft(signal: numpy.ndarray, axis_len: int | None = None, axis: int = -1,

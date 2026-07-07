@@ -128,6 +128,7 @@ def print_signal_parameters(meta_obj: SigMFMetaParser) -> None:
 
 
 def _calc_width(mag: numpy.ndarray, peaks: numpy.ndarray, rel_height: float = 0.5) -> Tuple:
-    """Calculate the bandwidth of the peaks."""
-    widths, heights, left_ips, right_ips = peak_widths(mag, peaks, rel_height=rel_height)
+    """Calculate the bandwidth of the peaks: (left, right)."""
+    # widths, heights, left, right
+    _, _, left_ips, right_ips = peak_widths(mag, peaks, rel_height=rel_height)
     return (left_ips, right_ips)

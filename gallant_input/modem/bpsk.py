@@ -31,12 +31,13 @@ class BPSK(Modem):
 
     # ABSTRACT METHODS
 
-    def modulate(self, bin_bytes: bytes, mapper: dict[int, complex] = BPSK_MAP) -> numpy.ndarray:
+    def modulate(self, bin_bytes: bytes, mapper: dict[int, complex] = None) -> numpy.ndarray:
         """MOdulate binary data.
 
         Args:
             bin_bytes: A bytes object containing binary to modulate.
-            mapper: [OPTIONAL] The bits --> symbol dictionary.
+            mapper: [OPTIONAL] The bits --> symbol dictionary.  If None, defaults to
+                BPSK_MAP (see: gallant_input.modem.constants).
 
         Returns:
             The modulated binary data.
@@ -50,6 +51,10 @@ class BPSK(Modem):
 
         # VALIDATION
         self.parse()  # Validate and parse
+
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
 
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)

@@ -6,25 +6,25 @@
 from gallant_input.validation import validate_bytes, validate_int
 
 
-def convert_bin_bytes_to_int(binary: bytes) -> int:
-    """Convert a bytes-representation of a binary number to an integer.
+def convert_bin_bytes_to_ascii(binary: bytes) -> str:
+    """Convert a bytes-representation of a binary number to an ASCII string.
+
+    Example Usage:
+        convert_bin_bytes_to_ascii(b'01010111011010000110111100111111') -> 'Who?'
 
     Args:
         binary: A binary literal in a bytes object.
 
     Returns:
-        The integer value of the binary.
+        The binary values converted to ASCII, as a string.
 
     Raises:
         TypeError: Invalid data type.
         ValueError: The bytes object contains non-binary characters.
     """
-    validate_bytes(validate_this=binary, param_name='binary', exact_len=None)
-    if not binary:
-        raise ValueError('The "binary" argument may not be empty')
-    if not all(bin_chars in b'01' for bin_chars in binary):
-        raise ValueError(f'The "binary" argument contains non-binary values: {binary}')
-    return int(binary.decode('ascii'), 2)
+    validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
+    string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
+    return string
 
 
 def convert_bin_bytes_to_hex_str(binary: bytes, add_prefix: bool = True) -> str:
@@ -57,25 +57,54 @@ def convert_bin_bytes_to_hex_str(binary: bytes, add_prefix: bool = True) -> str:
     return bin_hex
 
 
-def convert_bin_bytes_to_ascii(binary: bytes) -> str:
-    """Convert a bytes-representation of a binary number to an ASCII string.
-
-    Example Usage:
-        convert_bin_bytes_to_ascii(b'01010111011010000110111100111111') -> 'Who?'
+def convert_bin_bytes_to_int(binary: bytes) -> int:
+    """Convert a bytes-representation of a binary number to an integer.
 
     Args:
         binary: A binary literal in a bytes object.
 
     Returns:
-        The binary values converted to ASCII, as a string.
+        The integer value of the binary.
 
     Raises:
         TypeError: Invalid data type.
         ValueError: The bytes object contains non-binary characters.
     """
-    validate_bytes(validate_this=binary, param_name='binary', exact_len=None)
-    string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
-    return string
+    validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
+    if not binary:
+        raise ValueError('The "binary" argument may not be empty')
+    return int(binary.decode('ascii'), 2)
+
+
+def convert_bin_bytes_to_ndarray(binary: bytes, bipolar: bool = False) -> numpy.ndarray:
+    """Convert binary bytes to an ndarray.
+
+    Args:
+        binary: A binary literal in a bytes object.
+        bipolar: [OPTIONAL] If True, the array will be made bipolar (e.g., for better correlation)
+
+    Returns:
+        The binary values converted to an numpy.ndarray of dtype numpy.int8.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: The bytes object contains non-binary characters.
+    """
+    # LOCAL VARIABLES
+    bits = None  # The ndarray
+
+    # VALIDATION
+    validate_binary_bytes(binary, 'binary', exact_len=None)
+    validate_bool(bipolar, 'bipolar')
+
+    # CONVERT IT
+    bits = (numpy.frombuffer(binary, dtype=numpy.uint8) == ord('1')).astype(numpy.int8)
+    # Bipolar?
+    if bipolar is True:
+        return bits * 2 - 1
+
+    # DONE
+    return bits
 
 
 def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:

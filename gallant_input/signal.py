@@ -1,4 +1,4 @@
-"""Manipulate signals."""
+"""Inspect and manipulate signals."""
 
 # Standard Imports
 from typing import Tuple
@@ -179,6 +179,25 @@ def convert_mag_to_db(mag_map: numpy.ndarray) -> numpy.ndarray:
 
     # DONE
     return db_map
+
+
+def decimate_samples(samples: numpy.ndarray, decimate: int = 10) -> numpy.ndarray:
+    """Downsample a signal after applying an anti-aliasing FIR filter.
+
+    Args:
+        samples: The samples to decimate.
+        decimate: [OPTIONAL] The downsampling factor (a positive integer).
+
+    Returns:
+        The down-sampled signal in an numpy.ndarray.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: Bad value.
+    """
+    validate_ndarray(samples, 'samples', can_be_empty=False)
+    validate_pos_int(decimate, 'decimate')
+    return signal.decimate(samples, q=decimate, ftype='fir', zero_phase=True)
 
 
 def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSignal:

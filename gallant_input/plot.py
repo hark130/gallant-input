@@ -14,7 +14,7 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     """Plot an IQ constellation (scatter plot of I vs Q).
 
     Args:
-        signal: An array object which represents a complex signal to plot.
+        samples: An array object which represents a complex signal to plot.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
 
     Raises:
@@ -52,7 +52,7 @@ def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
 
     # PLOT IT
     # 1. Compute it
-    freq_map, mag_map = compute_spectrum(signal=coeffs, samp_rate=None, axis_len=win_size,
+    freq_map, mag_map = compute_spectrum(samples=coeffs, samp_rate=None, axis_len=win_size,
                                          shift_result=True, convert_db=True)
     # 2. Plot it
     _plot_spectrum(freq_map=freq_map, mag_map=mag_map,
@@ -92,7 +92,7 @@ def plot_impulse_response(coeffs: numpy.ndarray) -> None:
 
 # Maybe I'll refactor this later...
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
+def plot_spectrum(samples: numpy.ndarray, samp_rate: int | float | None = None,
                   shift_result: bool = True, convert_db: bool = True,
                   center_freq: float | None = None,
                   title: str | None = 'Magnitude Spectrum') -> None:
@@ -101,7 +101,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
     Plot frequency vs. magnitude.
 
     Args:
-        signal: The signal to evaluate.
+        samples: The signal to evaluate.
         samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, the library will use defaults.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.
@@ -113,8 +113,8 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    freq_map = None                  # Frequency mapping of signal
-    mag_map = None                   # Magnitude mapping of signal
+    freq_map = None                  # Frequency mapping of samples
+    mag_map = None                   # Magnitude mapping of samples
     x_label = 'Frequency (Hz, abs)'  # The x-axis label
     y_label = 'Magnitude'            # The y-axis label
 
@@ -122,7 +122,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
     if center_freq is not None:
         validate_pos_float(center_freq, 'center_freq')
         x_label = 'Frequency (Hz)'
-    freq_map, mag_map = compute_spectrum(signal=signal, samp_rate=samp_rate,
+    freq_map, mag_map = compute_spectrum(samples=samples, samp_rate=samp_rate,
                                          shift_result=shift_result, convert_db=convert_db)
     if center_freq is not None:
         freq_map = freq_map + center_freq

@@ -123,6 +123,7 @@ def print_help() -> None:
     print(f'\n\nUSAGE: {sys.argv[0]} <SIGMF FILENAME>\n\n', file=sys.stderr)
 
 
+# pylint: disable=too-many-locals
 def main() -> None:
     """do_it()."""
     try:
@@ -195,6 +196,7 @@ def main() -> None:
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         raise err from err  # DEBUGGING
+# pylint: enable=too-many-locals
 
 
 if __name__ == '__main__':

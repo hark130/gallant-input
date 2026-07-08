@@ -40,6 +40,7 @@ from gallant_input.io import read_samples
 from test import REPO_TL_DIR
 
 
+# pylint: disable=too-many-instance-attributes
 class BaseUnitTest(TediousUnitTest):
     """Parent class for all GAIN related unit tests.
 
@@ -269,3 +270,5 @@ class BaseUnitTest(TediousUnitTest):
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
+
+# pylint: enable=too-many-instance-attributes

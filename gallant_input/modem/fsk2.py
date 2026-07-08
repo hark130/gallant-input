@@ -70,7 +70,16 @@ class FSK2(Modem):
         return iq
 
     def demodulate(self, samples: numpy.ndarray) -> bytes:
-        """DEMoodulate binary data.
+        """DEModulate complex baseband samples into binary data (Demod Steps 1-3).
+
+        Demodulation process:
+            Step 1: self.demodulate_to_metric()
+            Step 2: self.recover_symbols()
+            Step 3: self.decide_symbols()
+
+        Step 2 assumes ideal symbol timing by sampling at the configured samples-per-symbol.
+        If not, consider replacing this step with an external timing synchronization algorithm
+        (e.g., synch.timing.recover_clock_mm()).
 
         Args:
             samples: Digital samples to demodulate.
@@ -83,51 +92,76 @@ class FSK2(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        bit_stream = b''  # The bits as a bin bytes object
-        dphi = None       # The difference between angles
+        metric = None          # Continuous-valued symbol metric sampled at the input sample rate
+        symbol_metrics = None  # One recovered symbol metric for each transmitted symbol
+        bit_stream = b''       # The bits as a bin bytes object
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
 
         # DEMODULATE IT
-        # Instantaneous frequency via differential phase
-        dphi = self.demodulate_to_samples(samples=samples)
-        # Make binary decisions from the soft bits
-        bit_stream = self.demodulate_to_bytes(dphi)
+        # Step 1: Demodulate to metrics (instantaneous frequency via differential phase)
+        metric = self.demodulate_to_metric(samples=samples)
+        # Step 2: Recover symbols
+        symbol_metrics = self.recover_symbols(metric=metric)
+        # Step 3: Decide symbols (make binary decisions from the soft bits)
+        bit_stream = self.decide_symbols(symbol_metrics)
 
         # DONE
         return bit_stream
 
     # PUBLIC METHODS
 
-    def demodulate_to_bytes(self, real_wave: numpy.ndarray) -> bytes:
-        """DEModulate a real wave to bit decisions."""
-        symbols = None  # The real_wave array reshaped to symbols dim
+    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+        """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
+
+        Maps each recovered symbol metric to its nearest valid symbol.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+
+        Returns:
+            The demodulated binary data.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        threshold = 0.0  # The bit decision threshold
+        bits = None      # The final array of 1s and 0s to convert to a bytes object
+        bin_bytes = b''  # The final binary as a bytes object
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
-        validate_ndarray(array=real_wave, array_name='real_wave', can_be_empty=False, num_dim=1,
-                         must_be_complex=False)
+        validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
+                         num_dim=1, must_be_complex=False)
 
-        # DEMODULATE IT
-        # Reshape to symbol boundaries
-        symbols = reshape_to_symbols(real_wave, self._sps).mean(axis=1)
-        # Calculate the adaptive threshold
-        threshold = numpy.median(symbols)
-        # Make bit decisions
-        bits = (symbols > threshold).astype(numpy.uint8)
+        # DECIDE IT
+        threshold = numpy.median(symbol_metrics)  # Calculate the adaptive threshold
+        bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        bin_bytes = stringify_ndarray(bits)
 
         # DONE
-        return stringify_ndarray(bits)
+        return bin_bytes
 
-    def demodulate_to_samples(self, samples: numpy.ndarray) -> numpy.ndarray:
-        """DEModulate binary data to a real waveform.
+    def demodulate_to_metric(self, samples: numpy.ndarray) -> numpy.ndarray:
+        """DEModulate complex baseband samples to continuous-valued symbol metrics (Demod Step 1/3).
+
+        This method performs the modulation-specific front-end of the demodulation process.
+        The returned symbol metric retains the input sample rate and typically contains multiple
+        samples per transmitted symbol.
+
+        No symbol timing recovery or symbol decisions are performed by this method.
+        The output is intended to be processed by a timing synchronization algorithm
+        (e.g., synch.timing.recover_clock_mm(), self.recover_symbols()) before being converted
+        into bits or symbols.
 
         Args:
-            samples: Digital samples to demodulate.
+            samples: Complex baseband IQ samples to demodulate.
 
         Returns:
-            The demodulated real waveform.
+            A continuous-valued symbol metric sampled at the input sample rate.
 
         Raises:
             TypeError: Invalid data type.
@@ -176,6 +210,44 @@ class FSK2(Modem):
         if not self._parsed:
             self._parse()
             self._parsed = True
+
+    def recover_symbols(self, metric: numpy.ndarray) -> numpy.ndarray:
+        """Recover one symbol metric for each transmitted symbol (Demod Step 2/3).
+
+        This method performs symbol timing recovery by selecting a single, representative metric
+        value for each transmitted symbol.  The returned array is reduced from the input sample
+        rate to the symbol rate.
+
+        The default implementation assumes ideal symbol timing by sampling at the configured
+        samples-per-symbol.  If not, consider using an external timing synchronization algorithm
+        (e.g., synch.timing.recover_clock_mm()) in lieu of this step.
+
+        No symbol decisions are made by this method. The returned values remain continuous-valued
+        and are intended to be passed to self.decide_symbols().
+
+        Args:
+            metric: Continuous-valued symbol metrics.
+
+        Returns:
+            One recovered symbol metric for each transmitted symbol.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        symbol_metrics = None  # The recovered symbol metrics
+
+        # VALIDATION
+        self.parse(demod=True)  # Validate and parse
+        validate_ndarray(array=metric, array_name='metric', can_be_empty=False, num_dim=1,
+                         must_be_complex=False)
+
+        # RECOVER IT
+        symbol_metrics = reshape_to_symbols(metric, self._sps).mean(axis=1)
+
+        # DONE
+        return symbol_metrics
 
     def validate(self, demod: bool = False) -> None:
         """Validate attribute values once.

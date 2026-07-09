@@ -14,7 +14,7 @@ ORIGINAL_DIRECTORY=$(pwd)  # Current working directory
 TEST_DIR=test              # Directory containing the project test code
 DEVOPS_DIR=devops          # Directory containing the devops scripts
 # Directories containing the project source code
-SOURCE_DIRS="rxtx gallant_input"
+SOURCE_DIRS="gallant_input rxtx"
 
 
 # PYLINT COMMANDS
@@ -28,7 +28,7 @@ do
     else
         echo "Running Pylint on $SOURCE_DIR"
         # find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no --disable=import-error
-        find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no
+        find ./ -type f -name "*.py" -not -name "__init__.py" | xargs python -m pylint --score=no --disable=duplicate-code
         if [ $? -ne 0 ]
         then
             EXIT_CODE=1

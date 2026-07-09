@@ -13,11 +13,10 @@ import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
-from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int
+from gallant_input.converters import convert_bin_bytes_to_ascii
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
-from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
@@ -34,18 +33,24 @@ DEF_SYNCWORD: Final[bytes] = b'11010011100100011101001110010001'  # Example sync
 DEF_PREAMWRD: Final[bytes] = DEF_PREAMBLE[-8:] + DEF_SYNCWORD  # Some preamble + sw (if necessary?)
 
 
+# Remove this Pylint disable once these functions have been implemented
+# pylint: disable=unused-argument
 def build_modem(config: ModemConfig) -> Modem:
     """Build a Modem child class object."""
     modem_obj = None  # Modem child class object
     # modem_obj = OOK(config=config)  # Example
     return modem_obj
+# pylint: enable=unused-argument
 
 
+# Remove this Pylint disable once these functions have been implemented
+# pylint: disable=unused-argument
 def build_modem_config(sample_rate: float | int, symbol_rate: float | int, **kwargs) -> ModemConfig:
     """Build a ModemConfig child class object."""
     config = None  # ModemConfig child class object
     # config = OOKConfig(sample_rate=sample_rate, symbol_rate=symbol_rate, **kwargs)
     return config
+# pylint: enable=unused-argument
 
 
 def decide_symbols(symbol_metrics: numpy.ndarray, sample_rate: float | int,
@@ -153,7 +158,7 @@ def parse_payload(payload: bytes) -> None:
     print(f'MESSAGE: {message}')
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=broad-exception-caught,too-many-locals
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -230,7 +235,7 @@ def main() -> None:
         print_help()
         if arg_vals and arg_vals.debug is True:
             raise err from err
-# pylint: enable=too-many-locals
+# pylint: enable=broad-exception-caught,too-many-locals
 
 
 if __name__ == '__main__':

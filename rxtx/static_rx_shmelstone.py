@@ -53,7 +53,8 @@ def build_modem(config: ModemConfig) -> Modem:
 
 def build_modem_config(sample_rate: float | int, symbol_rate: float | int, **kwargs) -> ModemConfig:
     """Build a ModemConfig child class object."""
-    config = FSK2Config(sample_rate=sample_rate, symbol_rate=symbol_rate, freq0=0, freq1=0)
+    config = FSK2Config(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                        freq0=0, freq1=0, **kwargs)
     return config
 
 
@@ -166,7 +167,7 @@ def parse_payload(payload: bytes) -> None:
     print(f'User "{user_name}" sent message type {msg_type}: {message}')
 
 
-# pylint: disable=too-many-locals
+# pylint: disable=broad-exception-caught,too-many-locals
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -243,7 +244,7 @@ def main() -> None:
         print_help()
         if arg_vals and arg_vals.debug is True:
             raise err from err
-# pylint: enable=too-many-locals
+# pylint: enable=broad-exception-caught,too-many-locals
 
 
 if __name__ == '__main__':

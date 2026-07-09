@@ -7,8 +7,9 @@ import warnings
 import numpy
 # Local Imports
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import (validate_ndarray, validate_pos_float,
-                                      validate_pos_float_or_int, validate_pos_int, validate_type)
+from gallant_input.validation import (validate_binary_bytes, validate_bytes, validate_ndarray,
+                                      validate_pos_float, validate_pos_float_or_int,
+                                      validate_pos_int, validate_type)
 
 
 def calculate_baud_rate(sample_rate: float | int, samples_per_symbol: int) -> float:
@@ -28,6 +29,50 @@ def calculate_baud_rate(sample_rate: float | int, samples_per_symbol: int) -> fl
     validate_pos_float_or_int(sample_rate, 'sample_rate')
     validate_pos_int(samples_per_symbol, 'samples_per_symbol')
     return sample_rate / samples_per_symbol
+
+
+def calculate_ber(exp_bin: bytes, act_bin: bytes) -> float:
+    """Calculate the bit error rate (BER) by comparing the expected binary to the actual binary.
+
+    If exp_bin is longer than act_bin, each missing bit will count towards the BER.  If act_bin
+    is longer than exp_bin, it will be truncated to match the len.
+
+    Args:
+        exp_bin: Expected binary.
+        act_bin: Actual binary.
+
+    Returns:
+         Number of incorrect bits / total number of transmitted bits (AKA BER).
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    exp_binary = exp_bin  # Local copy of the expected binary
+    act_binary = act_bin  # Local copy of the actual binary
+    expected = None       # Expected binary in an numpy.ndarray
+    actual = None         # Actual binary in an numpy.ndarray
+    filler = b'2'         # Filler byte to guarantee an error
+
+    # VALIDATION
+    validate_binary_bytes(exp_bin, 'exp_bin', exact_len=None)
+    validate_binary_bytes(act_bin, 'act_bin', exact_len=None)
+    validate_bytes(filler, 'local variable "filler"', exact_len=1)  # Filler must be one byte
+
+    # SETUP
+    if len(exp_binary) > len(act_binary):
+        act_binary = act_binary + filler * (len(exp_binary) - len(act_binary))  # Pad the actual bin
+    elif len(act_binary) > len(exp_binary):
+        act_binary = act_binary[:len(exp_binary)]  # Truncate the actual binary
+    validate_bytes(act_binary, 'act_bin (modified)', exact_len=len(exp_binary))  # Final test
+
+    # CALCULATE IT
+    expected = numpy.frombuffer(exp_binary, dtype=numpy.uint8)
+    actual = numpy.frombuffer(act_binary, dtype=numpy.uint8)
+
+    # DONE
+    return numpy.count_nonzero(expected != actual) / expected.size
 
 
 def calculate_sps(sample_rate: float | int, symbol_rate: float | int) -> int:

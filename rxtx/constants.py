@@ -6,16 +6,16 @@ from typing import Final
 # Local Imports
 
 
-##############
-### rxtx.* ###
-##############
+##########
+# rxtx.* #
+##########
 # Temporary directory constants
 PKG_SHORT_TITLE: Final[str] = 'rxtx'  # Receive/Transmit
 
 
-#######################
-### rxtx.arg_parser ###
-#######################
+###################
+# rxtx.arg_parser #
+###################
 # Arguments
 RXTX_CLI_ARG_BAUD_RATE: Final[str] = 'baud'      # Symbol rate
 RXTX_CLI_ARG_DEBUG: Final[str] = 'debug'         # Debug behavior

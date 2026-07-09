@@ -2,14 +2,13 @@
 # Standard Imports
 from typing import Any
 import argparse
-import os
 # Third Party Imports
 # Local Imports
 from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_string,
                                       validate_type)
 from rxtx.argvals import ArgVals
-from rxtx.constants import (PKG_SHORT_TITLE, RXTX_CLI_ARG_BAUD_RATE, RXTX_CLI_ARG_DEBUG,
-                            RXTX_CLI_ARG_FILENAME, RXTX_CLI_ARG_SAMP_RATE)
+from rxtx.constants import (RXTX_CLI_ARG_BAUD_RATE, RXTX_CLI_ARG_DEBUG, RXTX_CLI_ARG_FILENAME,
+                            RXTX_CLI_ARG_SAMP_RATE)
 
 
 def parse_args() -> ArgVals:
@@ -42,7 +41,7 @@ def _create_parser() -> argparse.ArgumentParser:
     """SPOT to create the argument parser."""
     parser = argparse.ArgumentParser(description='Static Receiver/Transmitters.')
     parser.add_argument(f'--{RXTX_CLI_ARG_DEBUG}', action='store_true',
-                        help=f'Allow exception traceback on error', required=False)
+                        help='Allow exception traceback on error and auto-plot', required=False)
     parser.add_argument(f'-{RXTX_CLI_ARG_FILENAME[0]}', f'--{RXTX_CLI_ARG_FILENAME}',
                         action='store', help='The data filename to read samples from')
     parser.add_argument(f'-{RXTX_CLI_ARG_BAUD_RATE[0]}', f'--{RXTX_CLI_ARG_BAUD_RATE}',
@@ -128,6 +127,7 @@ def _get_eafp_number(args: argparse.Namespace, attr: str) -> float | int:
 
     # DONE
     return result
+
 
 def _validate_arg_vals(arg_vals: ArgVals) -> None:
     """Validate the results."""

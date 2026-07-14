@@ -17,12 +17,12 @@ from gallant_input.validation import (validate_arraylike, validate_bool, validat
 # pylint: disable=too-many-arguments, too-many-positional-arguments
 
 
-def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
+def apply_fir(samples: numpy.ndarray, coeffs: numpy.ndarray,
               mode: ConvolveMode | None = ConvolveMode.SAME) -> numpy.ndarray:
     """Apply a filter to a signal using convolution.
 
     Args:
-        signal: The signal to apply a filter to.
+        samples: The signal to apply a filter to.
         coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
         mode: [OPTIONAL] Specifies the method of convolution.  None will result in the default mode.
     """
@@ -30,7 +30,7 @@ def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
     result = None  # signal convoluted with coeffs
 
     # APPLY IT
-    result = _call_convolve(signal=signal, coeffs=coeffs, mode=mode)
+    result = _call_convolve(samples=samples, coeffs=coeffs, mode=mode)
 
     # DONE
     return result
@@ -143,7 +143,7 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
                         pass_zero=FIRWIN_LPF, scale=scale, fs=fs)
 
 
-def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
+def _call_convolve(samples: numpy.ndarray, coeffs: numpy.ndarray,
                    mode: ConvolveMode | None) -> numpy.ndarray:
     """A SPOT to call numpy.convolve().
 
@@ -152,19 +152,19 @@ def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
     help(numpy.convolve).
 
     Args:
-        signal: First one-dimensional input array.
+        samples: First one-dimensional input array.
         coeffs: Second one-dimensional input array.
         mode: If None, this kwarg will be ommitted from the function call.
 
     Returns:
-        Discrete, linear convolution of `signal` and `coeffs`.
+        Discrete, linear convolution of `samples` and `coeffs`.
     """
     # LOCAL VARIABLES
     result = None                                # Discrete linear convolution of signal and coeffs
-    dynamic_kwargs = {'a': signal, 'v': coeffs}  # Dynamic keyword arguments
+    dynamic_kwargs = {'a': samples, 'v': coeffs}  # Dynamic keyword arguments
 
     # INPUT VALIDATION
-    validate_ndarray(array=signal, array_name='signal', can_be_empty=False, num_dim=1,
+    validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                      must_be_complex=False)
     validate_ndarray(array=coeffs, array_name='coeffs', can_be_empty=False, num_dim=1,
                      must_be_complex=False)

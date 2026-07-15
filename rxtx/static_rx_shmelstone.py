@@ -1,4 +1,4 @@
-"""Reimplemented rxtx.static_rx_shmelstone as rxtx.static_rx_template.
+"""Reimplemented my static shmelstone receiver (again) from rxtx.static_rx_template.
 
 Example Usage:
     # Windows
@@ -17,19 +17,23 @@ from pathlib import Path
 from typing import Final
 import sys
 # Third Party Imports
+import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int
+from gallant_input.data_analysis import compare_streams
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
-from gallant_input.modem.calc import calculate_sps
+from gallant_input.modem.calc import calculate_ber, calculate_sps
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
+from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
+                                plot_welch_psd)
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.synch.frame import correlate_it
@@ -38,11 +42,10 @@ from gallant_input.validation import validate_file, validate_type
 from rxtx.arg_parser import parse_args, print_help
 from rxtx.argvals import ArgVals
 
-DEF_SAMP_RATE: Final[int] = 2400000
-DEF_SYMB_RATE: Final[int] = 2400
 DEF_PREAMBLE: Final[bytes] = b'01' * 32
 DEF_SYNCWORD: Final[bytes] = b'11010011100100011101001110010001'  # 0xD391 0xD391
 DEF_PREAMWRD: Final[bytes] = DEF_PREAMBLE[-8:] + DEF_SYNCWORD  # Some preamble + sw
+EXP_PAYLOAD: Final[bytes] = b''  # File docstrings have different payloads to skip this check
 
 
 def build_modem(config: ModemConfig) -> Modem:
@@ -167,7 +170,8 @@ def parse_payload(payload: bytes) -> None:
     print(f'User "{user_name}" sent message type {msg_type}: {message}')
 
 
-# pylint: disable=broad-exception-caught,too-many-locals
+# Don't you know it's CFT, Pylint?!
+# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -180,12 +184,13 @@ def main() -> None:
         sps = 0                             # Samples per symbol
         samples = None                      # Samples read from the capture
         decimate = 20                       # Decimation
-        squelch_db = -48                    # Squelch threshold in db (e.g., -48)
+        squelch_db = -48                    # Squelch threshold in db (e.g., -48, -55) or None
         spect_analysis = None               # SpectrumAnalysis obj
         det_signal = None                   # DetectedSignal obj
         metric = None                       # Step 1 - Continuous symbol metric at orig. sample rate
         symbol_metrics = None               # Step 2 - Recovered symbol metric for each orig. symbol
         binary = b''                        # Step 3 - Demodulated binary
+        needle = b''                        # The needle being correlated to the package (e.g., sw)
         index = 0                           # Correlated index into the binary
         payload = b''                       # Frame synch'd binary
 
@@ -194,6 +199,14 @@ def main() -> None:
         sample_rate = get_sample_rate(arg_vals, filepath)
         # [!] Get Samples
         samples = read_samples(filepath)
+        # [!] Establish samples-per-symbol
+        sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
+        if arg_vals.debug:
+            plot_time_domain(samples=samples, samp_rate=sample_rate,
+                             title='Time Domain (original)', now=False)
+            plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                          convert_db=True, center_freq=None,
+                          title='Magnitude Spectrum (original)', now=False)
 
         # [?] Clean Up
         # Decimate!
@@ -201,10 +214,25 @@ def main() -> None:
             samples = decimate_samples(samples=samples, decimate=decimate)
             sample_rate = sample_rate / decimate  # Update the sample rate
             sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc new sps
+        if arg_vals.debug:
+            plot_time_domain(samples=samples, samp_rate=sample_rate,
+                             title='Time Domain (post-decimation)', now=False)
+            plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                          convert_db=True, center_freq=None,
+                          title='Magnitude Spectrum (post-decimation)', now=False)
 
         # [?] Squelch!
+        # Identify noise floor
+        if arg_vals.debug:
+            plot_welch_psd(samples=samples, sample_rate=sample_rate,
+                           title='Welch Power Spectral Density (pre-squelch)', now=False)
+        # Squelch?
         if squelch_db is not None:
             samples = squelch_signal(samples=samples, threshold=squelch_db)
+            # Squelch Results
+            if arg_vals.debug:
+                plot_welch_psd(samples=samples, sample_rate=sample_rate,
+                               title='Welch Power Spectral Density (post-squelch)', now=False)
 
         # [?] Analyze the Spectrum
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
@@ -216,6 +244,10 @@ def main() -> None:
         if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
             samples = downconvert_signal(samples=samples, sample_rate=sample_rate,
                                          center_freq=det_signal.center_frequency)
+            if arg_vals.debug:
+                plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                              convert_db=True, center_freq=None,
+                              title='Magnitude Spectrum (post-baseband translation)', now=False)
 
         # DEMOD
         # [?] Steps 1 - 3?
@@ -226,25 +258,48 @@ def main() -> None:
             # Step 1 - Demod to Metrics
             metric = demod_to_metric(samples=samples, sample_rate=sample_rate,
                                      symbol_rate=symbol_rate)  # Reshaped to symbol boundaries
-            # Step 2 - Time Sync w/ Interpolation
+            if arg_vals.debug:
+                plot_time_domain(samples=metric, samp_rate=sample_rate,
+                                 title='Time Domain (Demod Step 1: Metrics)', now=False)
+                plot_symbol_boundaries(real_wave=metric, sps=sps,
+                                       title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
+            # Step 2 - Time Sync w/ Interpolation(?)
             # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
             symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
+            if arg_vals.debug:
+                plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
+                                 title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
+                plot_symbol_boundaries(real_wave=symbol_metrics, sps=1,
+                                       title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
+                                       now=False)
             # Step 3 - Symbol Decisions
             binary = decide_symbols(symbol_metrics=symbol_metrics, sample_rate=sample_rate,
                                     symbol_rate=symbol_rate)
+        if arg_vals.debug:
+            print(f'Demod Final Step: {binary}')
 
         # [?] Frame Sync
-        index = correlate_it(binary, DEF_SYNCWORD)
-        payload = binary[index + len(DEF_SYNCWORD):]
+        needle = DEF_SYNCWORD
+        index = correlate_it(binary, needle)
+        payload = binary[index + len(needle):]
 
         # [!] Parse Payload
+        if arg_vals.debug:
+            print(f'\nPAYLOAD: {payload}')
         parse_payload(payload)
+        if arg_vals.debug and EXP_PAYLOAD and EXP_PAYLOAD != payload:
+            print(f'\nBER: {calculate_ber(EXP_PAYLOAD, payload)}')
+            print('\nComparing the expected payload to the actual payload...')
+            compare_streams(EXP_PAYLOAD, payload)
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()
-        if arg_vals and arg_vals.debug is True:
+        if arg_vals is None or arg_vals.debug is True:
             raise err from err
-# pylint: enable=broad-exception-caught,too-many-locals
+    finally:
+        if arg_vals is not None and arg_vals.debug is True:
+            plt.show()  # Plot them all *now*
+# pylint: enable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 
 
 if __name__ == '__main__':

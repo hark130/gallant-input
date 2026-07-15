@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Final
 import sys
 # Third Party Imports
+import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
@@ -192,9 +193,9 @@ def main() -> None:
         # [!] Establish samples-per-symbol
         sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
         if arg_vals.debug:
-            plot_time_domain(samples=samples, samp_rate=sample_rate)
+            plot_time_domain(samples=samples, samp_rate=sample_rate, now=False)
             plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                          convert_db=True, center_freq=None)
+                          convert_db=True, center_freq=None, now=False)
 
         # [?] Clean Up
         # Decimate!
@@ -204,14 +205,23 @@ def main() -> None:
             sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc new sps
         if arg_vals.debug:
             plot_time_domain(samples=samples, samp_rate=sample_rate,
-                             title='Time Domain (post-decimation)')
+                             title='Time Domain (post-decimation)', now=False)
             plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
                           convert_db=True, center_freq=None,
-                          title='Magnitude Spectrum (post-decimation)')
+                          title='Magnitude Spectrum (post-decimation)', now=False)
 
         # [?] Squelch!
+        # Identify noise floor
+        if arg_vals.debug:
+            plot_welch_psd(samples=samples, sample_rate=sample_rate,
+                           title='Welch Power Spectral Density (pre-squelch)', now=False)
+        # Squelch?
         if squelch_db is not None:
             samples = squelch_signal(samples=samples, threshold=squelch_db)
+            # Squelch Results
+            if arg_vals.debug:
+                plot_welch_psd(samples=samples, sample_rate=sample_rate,
+                               title='Welch Power Spectral Density (post-squelch)', now=False)
 
         # [?] Analyze the Spectrum
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
@@ -226,7 +236,7 @@ def main() -> None:
             if arg_vals.debug:
                 plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
                               convert_db=True, center_freq=None,
-                              title='Magnitude Spectrum (post-baseband translation)')
+                              title='Magnitude Spectrum (post-baseband translation)', now=False)
 
         # DEMOD
         # [?] Steps 1 - 3?
@@ -239,13 +249,15 @@ def main() -> None:
                                      symbol_rate=symbol_rate)  # Reshaped to symbol boundaries
             if arg_vals.debug:
                 plot_time_domain(samples=metric, samp_rate=sample_rate,
-                                 title='Time Domain (Demod Step 1: Metrics)')
-            # Step 2 - Time Sync w/ Interpolation
+                                 title='Time Domain (Demod Step 1: Metrics)', now=False)
+                plot_symbol_boundaries(real_wave=metric, sps=sps, now=False)
+            # Step 2 - Time Sync w/ Interpolation(?)
             # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
             symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
             if arg_vals.debug:
                 plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
-                                 title='Time Domain (Demod Step 2: Symbol Metrics)')
+                                 title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
+                plot_symbol_boundaries(real_wave=symbol_metrics, sps=1, now=False)
             # Step 3 - Symbol Decisions
             binary = decide_symbols(symbol_metrics=symbol_metrics, sample_rate=sample_rate,
                                     symbol_rate=symbol_rate)
@@ -272,6 +284,9 @@ def main() -> None:
             raise err from err
         elif arg_vals.debug is True:
             raise err from err
+    finally:
+        if arg_vals is not None and arg_vals.debug is True:
+            plot.show()
 # pylint: enable=broad-exception-caught,too-many-locals
 
 

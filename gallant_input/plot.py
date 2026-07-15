@@ -63,7 +63,7 @@ def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
                                          shift_result=True, convert_db=True)
     # 2. Plot it
     _plot_spectrum(freq_map=freq_map, mag_map=mag_map,
-                   x_label=x_label, y_label=y_label, title=title)
+                   x_label=x_label, y_label=y_label, title=title, now=now)
 
 
 def plot_impulse_response(coeffs: numpy.ndarray, now: bool = True) -> None:
@@ -289,6 +289,7 @@ def _plot_it(x_label: str | None = None, y_label: str | None = None,
         plt.show()
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def _plot_spectrum(freq_map: numpy.ndarray, mag_map: numpy.ndarray, x_label: str | None = None,
                    y_label: str | None = None, title: str | None = None, now: bool = True) -> None:
     """Share common functionality between plot_spectrum() and plot_frequency_response().
@@ -305,3 +306,4 @@ def _plot_spectrum(freq_map: numpy.ndarray, mag_map: numpy.ndarray, x_label: str
     plt.figure()
     plt.plot(freq_map, mag_map, label='FFT')
     _plot_it(x_label=x_label, y_label=y_label, title=title, now=now)
+# pylint: enable=too-many-arguments,too-many-positional-arguments

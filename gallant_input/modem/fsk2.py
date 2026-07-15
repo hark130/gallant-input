@@ -147,7 +147,7 @@ class FSK2(Modem):
         # aren't equally distributed.
         reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
         kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
-        labels = kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
+        kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
         centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
         threshold = centers.mean()  # Average the center of the two clusters
         bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions

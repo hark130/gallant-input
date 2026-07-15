@@ -15,12 +15,15 @@ import numpy
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.converters import convert_bin_bytes_to_ascii
+from gallant_input.data_analysis import compare_streams
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_ber, calculate_sps
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
+from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
+                                plot_welch_psd)
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.synch.frame import correlate_it
@@ -162,7 +165,8 @@ def parse_payload(payload: bytes) -> None:
     print(f'\nMESSAGE: {message}')
 
 
-# pylint: disable=broad-exception-caught,too-many-locals
+# Don't you know it's CFT, Pylint?!
+# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -283,14 +287,12 @@ def main() -> None:
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()
-        if arg_vals is None:
-            raise err from err
-        elif arg_vals.debug is True:
+        if arg_vals is None or arg_vals.debug is True:
             raise err from err
     finally:
         if arg_vals is not None and arg_vals.debug is True:
-            plot.show()
-# pylint: enable=broad-exception-caught,too-many-locals
+            plt.show()  # Plot them all *now*
+# pylint: enable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 
 
 if __name__ == '__main__':

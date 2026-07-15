@@ -2,9 +2,12 @@
 
 Example Usage:
     python -m rxtx.static_rx_demod101_fsk --help
-    python -m rxtx.static_rx_demod101_fsk --filename ./test/test_input/bfsk_c434p1_s240k_b600.iq --baud 600 --samprate 240000
-    python -m rxtx.static_rx_demod101_fsk --filename ./test/test_input/bfsk_c434p1_s240k_b600.sigmf-data --baud 600
-    python -m rxtx.static_rx_demod101_fsk --filename ./test/test_input/bfsk_mod4_c0hz_s240k_b600.sigmf-data --baud 600
+    python -m rxtx.static_rx_demod101_fsk --baud 600 --samprate 240000 `
+        --filename ./test/test_input/bfsk_c434p1_s240k_b600.iq
+    python -m rxtx.static_rx_demod101_fsk --baud 600 `
+        --filename ./test/test_input/bfsk_c434p1_s240k_b600.sigmf-data
+    python -m rxtx.static_rx_demod101_fsk --baud 600 `
+        --filename ./test/test_input/bfsk_mod4_c0hz_s240k_b600.sigmf-data
 """
 
 # Standard Imports
@@ -24,11 +27,9 @@ from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_ber, calculate_sps
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
-from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
-                                plot_welch_psd)
+from gallant_input.plot import plot_spectrum, plot_symbol_boundaries, plot_time_domain
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.synch.frame import correlate_it
@@ -170,7 +171,8 @@ def parse_payload(payload: bytes) -> None:
     print(f'\nMESSAGE: {message}')
 
 
-# pylint: disable=broad-exception-caught,too-many-locals
+# Don't you know it's CFT, Pylint?!
+# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -294,14 +296,12 @@ def main() -> None:
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()
-        if arg_vals is None:
-            raise err from err
-        elif arg_vals.debug is True:
+        if arg_vals is None or arg_vals.debug is True:
             raise err from err
     finally:
         if arg_vals is not None and arg_vals.debug is True:
-            plt.show()
-# pylint: enable=broad-exception-caught,too-many-locals
+            plt.show()  # Plot them all *now*
+# pylint: enable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 
 
 if __name__ == '__main__':

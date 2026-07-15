@@ -3,7 +3,9 @@
 1. Save the template with a unique module name and update the example usage in the module docstring.
 2. Import the relevant Modem and ModemConfig child classes.
 3. Update the build_modem() and build_modem_config() functions as appropriate.
-4. Run the module w/ --debug: fiddle with main() variables, disable unwanted plots, etc.
+4. Update the DEF_* and EXP_* macros.
+5. Update parse_payload() as appropriate.
+6. Run the module w/ --debug: fiddle with main() variables, disable unwanted plots, etc.
 
 Example Usage:
     python -m rxtx.static_rx_template --help

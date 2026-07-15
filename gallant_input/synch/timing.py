@@ -19,7 +19,7 @@ def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
     sample, so the peak of the symbol may not actually happen on a sample.
 
     Args:
-        samples: A signal to synchronize against.
+        samples: A real or complex signal to synchronize against.
         samples_per_symbol: The number of samples required to represent one symbol.
         interp: [OPTIONAL] If not None, the input samples will be interpolated.  If used, this
             value must be a positive integer.
@@ -27,7 +27,7 @@ def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
             make it react faster but with higher risk of stability issues.
 
     Returns:
-        An array of symbol 'soft decisions' (AKA soft bits).
+        An array of symbol 'soft decisions' (AKA soft bits) at the same data type as samples.
 
     Raises:
         TypeError: Bad data type.
@@ -51,7 +51,7 @@ def recover_clock_mm(samples: numpy.ndarray, samples_per_symbol: float | int,
         loc_samples = interpolate_samples(samples=loc_samples, interp=interp)
 
     # RECOVER IT
-    soft_bits = numpy.zeros(len(samples) + 10, dtype=numpy.complex64)
+    soft_bits = numpy.zeros(len(samples) + 10, dtype=samples.dtype)
     out_rail = numpy.zeros(len(samples) + 10, dtype=numpy.complex64)
     while out_index < len(samples) and in_index+16 < len(samples):
         if interp is None:

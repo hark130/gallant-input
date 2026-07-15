@@ -147,12 +147,14 @@ def plot_spectrum(samples: numpy.ndarray, samp_rate: int | float | None = None,
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
-def plot_symbol_boundaries(real_wave: numpy.ndarray, sps: float | int, now: bool = True) -> None:
+def plot_symbol_boundaries(real_wave: numpy.ndarray, sps: float | int,
+                           title: str | None = 'Symbol Boundaries', now: bool = True) -> None:
     """Plot symbol boundaries against a real (demodulated) waveform.
 
     Args:
         real_wave: The real waveform.
         sps: Samples per symbol.
+        title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
         now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
             matplotlib.pyplot.show().
     """
@@ -160,10 +162,9 @@ def plot_symbol_boundaries(real_wave: numpy.ndarray, sps: float | int, now: bool
     num_samps = None             # The length of real_wave
     x_label = 'Sample Index'     # The x-axis label
     y_label = 'Inst. Freq'       # The y-axis label
-    title = 'Symbol Boundaries'  # The title
 
     # INPUT VALIDATION
-    validate_ndarray(real_wave, 'samples', can_be_empty=False, num_dim=1)
+    validate_ndarray(real_wave, 'real_wave', can_be_empty=False, num_dim=1)
     validate_int_or_float(sps, 'sps')
 
     # PREPARE
@@ -221,7 +222,7 @@ def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = Non
     _plot_it(x_label=x_label, y_label=y_label, title=title, now=now)
 
 
-def plot_welch_psd(samples: np.ndarray, sample_rate: float | int,
+def plot_welch_psd(samples: numpy.ndarray, sample_rate: float | int,
                    title: str | None = 'Welch Power Spectral Density', now: bool = True) -> None:
     """Plot the estimated Welch Power Spectral Density.
 

@@ -289,7 +289,7 @@ def main() -> None:
         if arg_vals.debug:
             print(f'\nPAYLOAD: {payload}')
         parse_payload(payload)
-        if arg_vals.debug and EXP_PAYLOAD != payload:
+        if arg_vals.debug and EXP_PAYLOAD and EXP_PAYLOAD != payload:
             print(f'\nBER: {calculate_ber(EXP_PAYLOAD, payload)}')
             print('\nComparing the expected payload to the actual payload...')
             compare_streams(EXP_PAYLOAD, payload)

@@ -250,14 +250,17 @@ def main() -> None:
             if arg_vals.debug:
                 plot_time_domain(samples=metric, samp_rate=sample_rate,
                                  title='Time Domain (Demod Step 1: Metrics)', now=False)
-                plot_symbol_boundaries(real_wave=metric, sps=sps, now=False)
+                plot_symbol_boundaries(real_wave=metric, sps=sps,
+                                       title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
             # Step 2 - Time Sync w/ Interpolation(?)
             # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
             symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
             if arg_vals.debug:
                 plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
                                  title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
-                plot_symbol_boundaries(real_wave=symbol_metrics, sps=1, now=False)
+                plot_symbol_boundaries(real_wave=symbol_metrics, sps=1,
+                                       title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
+                                       now=False)
             # Step 3 - Symbol Decisions
             binary = decide_symbols(symbol_metrics=symbol_metrics, sample_rate=sample_rate,
                                     symbol_rate=symbol_rate)

@@ -2,6 +2,7 @@
 
 # Standard Imports
 # Third Party Imports
+from sklearn.cluster import KMeans
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarray
@@ -131,6 +132,8 @@ class FSK2(Modem):
         threshold = 0.0  # The bit decision threshold
         bits = None      # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''  # The final binary as a bytes object
+        reshaped = None  # Reshaped symbol_metrics into a single column
+        kmeans = None    # K-Means clustering object
 
         # VALIDATION
         self.parse(demod=True)  # Validate and parse
@@ -138,7 +141,15 @@ class FSK2(Modem):
                          num_dim=1, must_be_complex=False)
 
         # DECIDE IT
-        threshold = numpy.median(symbol_metrics)  # Calculate the adaptive threshold
+        # NOTE: Using the "mean()" of the symbol metrics wasn't sufficient to find the
+        # best decision boundary between the two populations of symbol metrics for some
+        # live captures.  Why?  The median shifts towards a dominant cluster if the bit counts
+        # aren't equally distributed.
+        reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
+        kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
+        labels = kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
+        centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
+        threshold = centers.mean()  # Average the center of the two clusters
         bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
         bin_bytes = stringify_ndarray(bits)
 

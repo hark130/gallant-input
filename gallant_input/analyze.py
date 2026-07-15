@@ -72,8 +72,6 @@ def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
     freqs = numpy.fft.fftshift(numpy.fft.fftfreq(len(samples), d=1/sample_rate))  # Frequencies
     mag = numpy.abs(fft)  # Magnitude of the FFT bins
     peaks, props = find_peaks(mag, prominence=numpy.max(mag) * 0.10)
-    # print(f'PEAKS: {peaks}')  # DEBUGGING
-    # print(f'PROPS: {props}')  # DEBUGGING
 
     # STORE IT
     left_ips, right_ips = _calc_width(mag, peaks)

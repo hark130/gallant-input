@@ -216,6 +216,8 @@ def main() -> None:
             samples = decimate_samples(samples=samples, decimate=decimate)
             sample_rate = sample_rate / decimate  # Update the sample rate
             sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc new sps
+        if sps > 20 and arg_vals.debug:
+            print(f'Consider decimating the samples-per-symbol, currently "{sps}", below 20')
         # if arg_vals.debug:
         #     plot_time_domain(samples=samples, samp_rate=sample_rate,
         #                      title='Time Domain (post-decimation)', now=False)

@@ -1,5 +1,10 @@
 """Intended as a menu of GAIN options for use in a static receiver.
 
+1. Save the template with a unique module name and update the example usage in the module docstring.
+2. Import the relevant Modem and ModemConfig child classes.
+3. Update the build_modem() and build_modem_config() functions as appropriate.
+4. Run the module w/ --debug: fiddle with main() variables, disable unwanted plots, etc.
+
 Example Usage:
     python -m rxtx.static_rx_template --help
 """
@@ -197,9 +202,11 @@ def main() -> None:
         # [!] Establish samples-per-symbol
         sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
         if arg_vals.debug:
-            plot_time_domain(samples=samples, samp_rate=sample_rate, now=False)
+            plot_time_domain(samples=samples, samp_rate=sample_rate,
+                             title='Time Domain (original)', now=False)
             plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                          convert_db=True, center_freq=None, now=False)
+                          convert_db=True, center_freq=None,
+                          title='Magnitude Spectrum (original)', now=False)
 
         # [?] Clean Up
         # Decimate!

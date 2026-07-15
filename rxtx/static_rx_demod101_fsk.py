@@ -267,7 +267,7 @@ def main() -> None:
                                        title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
             # Step 2 - Time Sync w/ Interpolation(?)
             symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
-            # symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
+            # symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp == better boundary
             if arg_vals.debug:
                 plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
                                  title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)

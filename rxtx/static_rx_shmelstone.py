@@ -2,13 +2,13 @@
 
 Example Usage:
     # Windows
-    python -m rxtx.static_rx_shmelstone2 --baud 2400 `
+    python -m rxtx.static_rx_shmelstone --baud 2400 `
         --filename ./data/shmelstone_filt_cap_c912m_s2p4m_hark1.sigmf-data
-    python -m rxtx.static_rx_shmelstone2 --baud 2400 `
+    python -m rxtx.static_rx_shmelstone --baud 2400 `
         --filename ./data/shmelstone_filt_cap_c912m_s2p4m_msg1_max.sigmf-data
-    python -m rxtx.static_rx_shmelstone2 --baud 2400 `
+    python -m rxtx.static_rx_shmelstone --baud 2400 `
         --filename ./data/shmelstone_filt_cap_c912m_s2p4m_msg2_long.sigmf-data
-    python -m rxtx.static_rx_shmelstone2 --baud 2400 `
+    python -m rxtx.static_rx_shmelstone --baud 2400 `
         --filename ./data/shmelstone_filt_cap_c912m_s2p4m_msg3_med.sigmf-data
 """
 

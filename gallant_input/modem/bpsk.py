@@ -2,17 +2,24 @@
 
 # Standard Imports
 # Third Party Imports
+from sklearn.cluster import KMeans
 import numpy
 # Local Imports
+from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
                                  stringify_ndarray, upsample)
+from gallant_input.convolvemode import ConvolveMode
+from gallant_input.filters import apply_fir
 from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
                                       extract_bits_from_single_cluster)
 from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
+from gallant_input.synch.costas_loop import CostasLoop
+from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.modem.threshold_scheme import ThresholdScheme
-from gallant_input.validation import validate_bool, validate_ndarray, validate_pos_int
+from gallant_input.validation import (validate_bool, validate_ndarray, validate_pos_int,
+                                      validate_type)
 
 
 class BPSK(Modem):
@@ -65,11 +72,14 @@ class BPSK(Modem):
         # DONE
         return iq
 
-    def demodulate(self, samples: numpy.ndarray) -> bytes:
+    def demodulate(self, samples: numpy.ndarray,
+                   filt: MatchedFilter = MatchedFilter.RECT_FIR) -> bytes:
         """DEMoodulate binary data.
 
         Args:
             samples: Digital samples to demodulate.
+            filt: [OPTIONAL] The matched filter to apply.  Defaults to a rectangular FIR, the
+                optimal matched filter for a modulator that did not do any pulse shaping.
 
         Returns:
             The demodulated binary data.
@@ -86,13 +96,153 @@ class BPSK(Modem):
         self.parse()  # Validate and parse
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
+        validate_type(filt, 'filt', MatchedFilter)
 
         # DEMODULATE IT
-
-        # bit_stream = stringify_ndarray(bits)
+        # Step 1: Demodulate to metrics (???)
+        metric = self.demodulate_to_metric(samples=samples, filt=filt)
+        # Step 2: Recover symbols
+        symbol_metrics = self.recover_symbols(metric=metric)
+        # Step 3: Decide symbols (???)
+        bit_stream = self.decide_symbols(symbol_metrics)
 
         # DONE
         return bit_stream
+
+    # DEMODULATION STEPS
+    # Step 1: Demodulate to metrics
+
+    def demodulate_to_metric(self, samples: numpy.ndarray,
+                             filt: MatchedFilter = MatchedFilter.RECT_FIR) -> numpy.ndarray:
+        """DEModulate complex baseband samples to continuous-valued symbol metrics (Demod Step 1/3).
+
+        This method performs the modulation-specific front-end of the demodulation process.
+        The returned symbol metric retains the input sample rate and typically contains multiple
+        samples per transmitted symbol.
+
+        No symbol timing recovery or symbol decisions are performed by this method.
+        The output is intended to be processed by a timing synchronization algorithm
+        (e.g., synch.timing.recover_clock_mm(), self.recover_symbols()) before being converted
+        into bits or symbols.
+
+        Args:
+            samples: Complex baseband IQ samples to demodulate.
+            filt: [OPTIONAL] The matched filter to apply.  Defaults to a rectangular FIR, the
+                optimal matched filter for a modulator that did not do any pulse shaping.
+
+        Returns:
+            A continuous-valued symbol metric sampled at the input sample rate.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        costas = None     # CostasLoop object
+        corrected = None  # 
+        filtered = None   #
+        metric = None     # Continuous-valued symbol metric
+
+        # INPUT VALIDATION
+        self.parse()  # Validate and parse
+        validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
+                         must_be_complex=True)
+        validate_type(filt, 'filt', MatchedFilter)
+
+        # DEMODULATE IT
+        # Carrier recovery (Costas loop)
+        costas = CostasLoop()
+        corrected = costas.process(samples)
+        # Receiver matched filter
+        filtered = self._apply_matched_filter(samples=corrected, filt=filt)
+        # Continuous decision metric
+        metric = filtered.real.astype(numpy.float32)
+
+        # DONE
+        return metric
+
+    # Step 2: Recover symbols
+
+    def recover_symbols(self, metric: numpy.ndarray) -> numpy.ndarray:
+        """Recover one symbol metric for each transmitted symbol (Demod Step 2/3).
+
+        This method performs symbol timing recovery by selecting a single, representative metric
+        value for each transmitted symbol.  The returned array is reduced from the input sample
+        rate to the symbol rate.
+
+        The default implementation assumes ideal symbol timing by sampling at the configured
+        samples-per-symbol.  If not, consider using an external timing synchronization algorithm
+        (e.g., synch.timing.recover_clock_mm()) in lieu of this step.
+
+        No symbol decisions are made by this method. The returned values remain continuous-valued
+        and are intended to be passed to self.decide_symbols().
+
+        Args:
+            metric: Continuous-valued symbol metrics.
+
+        Returns:
+            One recovered symbol metric for each transmitted symbol.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        symbol_metrics = None  # The recovered symbol metrics
+
+        # VALIDATION
+        self.parse()  # Validate and parse
+        validate_ndarray(array=metric, array_name='metric', can_be_empty=False, num_dim=1,
+                         must_be_complex=False)
+
+        # RECOVER IT
+        symbol_metrics = reshape_to_symbols(metric, self._sps).mean(axis=1)
+        # NOTE TO THE FUTURE: Consider future support for aligning to the center of symbols...
+        # symbol_metrics = reshape_to_symbols(metric, self._sps)[:, self.sps // 2]
+
+        # DONE
+        return symbol_metrics
+
+    # Step 3: Decide symbols
+
+    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+        """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
+
+        Maps each recovered symbol metric to its nearest valid symbol.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+
+        Returns:
+            The demodulated binary data.
+
+        Raises:
+            TypeError: Invalid data type.
+            ValueError: Bad value.
+        """
+        # LOCAL VARIABLES
+        threshold = 0.0  # The bit decision threshold
+        bits = None      # The final array of 1s and 0s to convert to a bytes object
+        bin_bytes = b''  # The final binary as a bytes object
+        reshaped = None  # Reshaped symbol_metrics into a single column
+        kmeans = None    # K-Means clustering object
+
+        # VALIDATION
+        self.parse()  # Validate and parse
+        validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
+                         num_dim=1, must_be_complex=False)
+
+        # DECIDE IT
+        reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
+        kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
+        kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
+        centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
+        threshold = centers.mean()  # Average the center of the two clusters
+        bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        bin_bytes = stringify_ndarray(bits)
+
+        # DONE
+        return bin_bytes
 
     # PUBLIC METHODS
 
@@ -129,6 +279,28 @@ class BPSK(Modem):
 # pylint: enable = duplicate-code
 
     # PRIVATE METHODS
+
+    def _apply_matched_filter(self, samples: numpy.ndarray, filt: MatchedFilter) -> numpy.ndarray:
+        """Apply a matched filter to samples."""
+        # LOCAL VARIABLES
+        filtered = None  # The samples array with a filter applied
+
+        # APPLY IT
+        match filt:
+            case MatchedFilter.NONE:
+                filtered = samples
+            case MatchedFilter.RECT_FIR:
+                taps = numpy.ones(self._sps, dtype=numpy.float32)
+                taps /= taps.sum()
+                filtered = apply_fir(samples=samples, coeffs=taps, mode=ConvolveMode.SAME)
+            # case MatchedFilter.RRC:
+            # case MatchedFilter.RAIS_COS:
+            # case MatchedFilter.GAUSS:
+            case _:
+                raise NotImplementedError(f'No support for "MatchedFilter.{filt.name}" yet')
+
+        # DONE
+        return filtered
 
     def _parse(self) -> None:
         """Parse user input."""

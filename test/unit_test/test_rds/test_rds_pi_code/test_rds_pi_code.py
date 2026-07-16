@@ -184,7 +184,7 @@ class RDSPICodeUnitTest(RDSUnitTest):
 
         # ATTRIBUTES
         self.input_pi_code = None                                  # Test input: RDSPICode(pi_code)
-        self.def_good_pic = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
+        self.def_good_pic = self.good_group1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
         self.test_obj = None                                       # PICode() test object
 
     def call_callable(self):

@@ -87,12 +87,14 @@ class RDSUnitTest(RootUnitTest):
         # ATTRIBUTES
         # SPOT moved to BaseUnitTest() parent class (see: test.base_unit_test.py)
         # KNOWN GOOD BLOCK VALUES
-        self.GOOD_BLOCK_A3 = self.RDS_BLOCK_A3  # RF JQR 5.03 RDS group
-        self.GOOD_BLOCK_B3 = self.RDS_BLOCK_B3  # RF JQR 5.03 RDS group
-        self.GOOD_BLOCK_C3 = self.RDS_BLOCK_C3  # RF JQR 5.03 RDS group
-        self.GOOD_BLOCK_D3 = self.RDS_BLOCK_D3  # RF JQR 5.03 RDS group
+        self.good_block_a1 = self.GOOD_BLOCK_A1  # RF JQR 5.03 RDS output
+        self.good_block_a3 = self.RDS_BLOCK_A3   # RF JQR 5.03 RDS group
+        self.good_block_b3 = self.RDS_BLOCK_B3   # RF JQR 5.03 RDS group
+        self.good_block_c1 = self.GOOD_BLOCK_C1  # RF JQR 5.03 RDS output
+        self.good_block_c3 = self.RDS_BLOCK_C3   # RF JQR 5.03 RDS group
+        self.good_block_d3 = self.RDS_BLOCK_D3   # RF JQR 5.03 RDS group
         # GOOD GROUP VALUES
-        self.GOOD_GROUP1 = self.RDS_GROUP1      # RF JQR 5.03 RDS
+        self.good_group1 = self.RDS_GROUP1      # RF JQR 5.03 RDS
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

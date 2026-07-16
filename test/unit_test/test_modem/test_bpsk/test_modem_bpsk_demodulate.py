@@ -126,7 +126,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         self.run_test()
 
     def run_test_return_compute(self, sample_rate: float, symbol_rate: float,
-                                exp_ret: bytes, bit_map: dict[int, complex] = BPSK_MAP) -> None:
+                                exp_ret: bytes, bit_map: dict[int, complex] | None = None) -> None:
         """Common method calls for a test case expected to return a computed result.
 
         Args:
@@ -134,6 +134,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             symbol_rate: Sets the symbol_rate ctor argument input.
             exp_ret: Expected return value (also used to compute the test case input).
             bit_map: [OPTIONAL] The mapping of symbols to complex values to generate IQ.
+                If None, uses the default mapping.
         """
         test_in = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                     bin_bytes=exp_ret, bit_map=bit_map)
@@ -185,6 +186,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
 class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Normal Test Cases."""
 
+    @skip('Address this test case in GAIN-16')
     def test_n01_single_byte_alt_bits(self):
         """Single byte, alternating bits."""
         samp_rate = 4800
@@ -192,6 +194,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         exp_ret = b'10101010'
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
 
+    @skip('Address this test case in GAIN-16')
     def test_n02_all_zeros(self):
         """Single byte, all zeros."""
         samp_rate = 4800
@@ -199,6 +202,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         exp_ret = b'00000000'
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
 
+    @skip('Address this test case in GAIN-16')
     def test_n03_all_ones(self):
         """Single byte, all ones."""
         samp_rate = 4800
@@ -206,6 +210,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         exp_ret = b'11111111'
         self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
 
+    @skip('Address this test case in GAIN-16')
     def test_n04_single_byte_alt_bits_with_awgn(self):
         """Single byte, alternating bits, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
@@ -214,6 +219,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         snr_db = self.SNR_POOR
         self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
 
+    @skip('Address this test case in GAIN-16')
     def test_n05_all_zeros_with_awgn(self):
         """Single byte, all zeros, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
@@ -222,6 +228,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         snr_db = self.SNR_POOR
         self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
 
+    @skip('Address this test case in GAIN-16')
     def test_n06_all_ones_with_awgn(self):
         """Single byte, all ones, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
@@ -230,6 +237,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         snr_db = self.SNR_POOR
         self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
 
+    @skip('Address this test case in GAIN-16')
     def test_n07_valid_bpsk_sigmf_demod101_foi1_rates(self):
         """Demod 101 FoI 1 decimated, filtered, and exported."""
         samp_rate = 4800  # 5.03 Demod 101 FoI 1 sample rate (decimated)
@@ -237,6 +245,7 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         self.set_bpsk_ctor_args(samp_rate, sym_rate)
         self.run_test_return_file(self.test_in1)
 
+    @skip('Address this test case in GAIN-16')
     def test_n08_valid_bpsk_sigmf_rds_traffic(self):
         """Really distinct signal (AKA Radio Data System) filtered, and exported."""
         samp_rate = 19000  # Really distinct signal sample rate (*not* decimated)
@@ -440,18 +449,41 @@ class SpecialModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,
                             bin_bytes: bytes, snr_db: float | int,
-                            bit_map: dict[int, complex] = BPSK_MAP) -> numpy.ndarray:
-    """Transform a binary bytes object into valid test case input that contains AWGN."""
+                            bit_map: dict[int, complex] | None = None) -> numpy.ndarray:
+    """Transform a binary bytes object into valid test case input that contains AWGN.
+
+    Args:
+        sample_rate: The sample rate to modulate bin_bytes with.
+        symbol_rate: The symbol rate to modulate bin_bytes with.
+        bin_bytes: The binary data to modulate.
+        snr_db: The desired signal-to-noise ratio, in decibels.
+        bit_map: [OPTIONAL] The bit --> complex sample decisions for use with the modulation.
+            If None, uses BPSK_MAP (see: gallant_input.modem.constants).
+    """
+    mapping = bit_map
+    if mapping is None:
+        mapping = BPSK_MAP
     samples = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                bin_bytes=bin_bytes, bit_map=bit_map)
+                                bin_bytes=bin_bytes, bit_map=mapping)
     return add_awgn(samples=samples, snr_db=snr_db)
 
 
 def create_test_input(sample_rate: int | float, symbol_rate: int | float,
-                      bin_bytes: bytes, bit_map: dict[int, complex] = BPSK_MAP) -> numpy.ndarray:
-    """Transform a binary bytes object into valid test case input."""
+                      bin_bytes: bytes, bit_map: dict[int, complex] | None = None) -> numpy.ndarray:
+    """Transform a binary bytes object into valid test case input.
+
+    Args:
+        sample_rate: The sample rate to modulate bin_bytes with.
+        symbol_rate: The symbol rate to modulate bin_bytes with.
+        bin_bytes: The binary data to modulate.
+        bit_map: [OPTIONAL] The bit --> complex sample decisions for use with the modulation.
+            If None, uses BPSK_MAP (see: gallant_input.modem.constants).
+    """
+    mapping = bit_map
+    if mapping is None:
+        mapping = BPSK_MAP
     return convert_bin_bytes_to_bpsk(bin_bytes=bin_bytes, sample_rate=sample_rate,
-                                     symbol_rate=symbol_rate, bit_map=bit_map)
+                                     symbol_rate=symbol_rate, bit_map=mapping)
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@
 # Standard Imports
 # Third Party Imports
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.modem.calc import reshape_to_symbols
@@ -15,6 +16,7 @@ from gallant_input.modem.calc import (compute_threshold, extract_bits_from_sampl
 from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
+from gallant_input.plot import plot_symbol_boundaries
 from gallant_input.synch.costas_loop import CostasLoop
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.modem.threshold_scheme import ThresholdScheme
@@ -33,7 +35,8 @@ class BPSK(Modem):
         Args:
             config: Necessary configuration settings.
         """
-        self._bits_per_sym = 1  # Bits per symbol
+        self._bits_per_sym = 1         # Bits per symbol
+        self._carrier_recovery = None  # Optional carrier recovery object
         super().__init__(config=config)
 
     # ABSTRACT METHODS
@@ -99,11 +102,11 @@ class BPSK(Modem):
         validate_type(filt, 'filt', MatchedFilter)
 
         # DEMODULATE IT
-        # Step 1: Demodulate to metrics (???)
+        # Step 1: Demodulate to metrics
         metric = self.demodulate_to_metric(samples=samples, filt=filt)
         # Step 2: Recover symbols
         symbol_metrics = self.recover_symbols(metric=metric)
-        # Step 3: Decide symbols (???)
+        # Step 3: Decide symbols
         bit_stream = self.decide_symbols(symbol_metrics)
 
         # DONE
@@ -115,6 +118,9 @@ class BPSK(Modem):
     def demodulate_to_metric(self, samples: numpy.ndarray,
                              filt: MatchedFilter = MatchedFilter.RECT_FIR) -> numpy.ndarray:
         """DEModulate complex baseband samples to continuous-valued symbol metrics (Demod Step 1/3).
+
+        Summary: Produces a continuous-valued representation in which the modulation's symbol
+        information is explicit.
 
         This method performs the modulation-specific front-end of the demodulation process.
         The returned symbol metric retains the input sample rate and typically contains multiple
@@ -131,16 +137,16 @@ class BPSK(Modem):
                 optimal matched filter for a modulator that did not do any pulse shaping.
 
         Returns:
-            A continuous-valued symbol metric sampled at the input sample rate.
+            A continuous-valued symbol metric sampled at the input sample rate
+            (e.g., one value per original sample).
 
         Raises:
             TypeError: Invalid data type.
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        costas = None     # CostasLoop object
-        corrected = None  # 
-        filtered = None   #
+        corrected = None  # A carrier-recovered copy of samples (if an object was provided)
+        filtered = None   # A match filtered applied to the samples (as specified)
         metric = None     # Continuous-valued symbol metric
 
         # INPUT VALIDATION
@@ -150,9 +156,11 @@ class BPSK(Modem):
         validate_type(filt, 'filt', MatchedFilter)
 
         # DEMODULATE IT
-        # Carrier recovery (Costas loop)
-        costas = CostasLoop()
-        corrected = costas.process(samples)
+        # Carrier recovery?
+        if self._carrier_recovery is not None:
+            corrected = self._carrier_recovery.process(samples)
+        else:
+            corrected = samples  # No recovery object
         # Receiver matched filter
         filtered = self._apply_matched_filter(samples=corrected, filt=filt)
         # Continuous decision metric
@@ -165,6 +173,9 @@ class BPSK(Modem):
 
     def recover_symbols(self, metric: numpy.ndarray) -> numpy.ndarray:
         """Recover one symbol metric for each transmitted symbol (Demod Step 2/3).
+
+        Summary: Determines the optimal sampling instants and produces one value per
+        transmitted symbol.
 
         This method performs symbol timing recovery by selecting a single, representative metric
         value for each transmitted symbol.  The returned array is reduced from the input sample
@@ -197,8 +208,6 @@ class BPSK(Modem):
 
         # RECOVER IT
         symbol_metrics = reshape_to_symbols(metric, self._sps).mean(axis=1)
-        # NOTE TO THE FUTURE: Consider future support for aligning to the center of symbols...
-        # symbol_metrics = reshape_to_symbols(metric, self._sps)[:, self.sps // 2]
 
         # DONE
         return symbol_metrics
@@ -207,6 +216,8 @@ class BPSK(Modem):
 
     def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
         """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
+
+        Summary: Map each recovered symbol value to the discrete symbol/bit representation.
 
         Maps each recovered symbol metric to its nearest valid symbol.
 
@@ -305,6 +316,13 @@ class BPSK(Modem):
     def _parse(self) -> None:
         """Parse user input."""
         self._parse_abc()
+        self._parse_bpsk_config()  # Get the rest of the data from the child object
+
+    def _parse_bpsk_config(self) -> None:
+        """Gently extract config values into instance attributes."""
+        validate_type(self._config, 'config', BPSKConfig)
+        self._config.validate_content()
+        self._carrier_recovery = self._config.carrier_recovery
 
     def _validate(self) -> None:
         """Validate attribute values."""

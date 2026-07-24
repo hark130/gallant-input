@@ -7,7 +7,8 @@ from enum import auto, IntEnum
 
 
 class ModScheme(IntEnum):
-    """Communicate Radio Data System (RDS) block IDs among the rds sub-package."""
-    OOK = auto()
-    FSK2 = auto()
-    BPSK = auto()
+    """Communicates anticipated modulation scheme."""
+    NONE = auto()  # Unknown
+    OOK = auto()   # On-Off Keying
+    FSK2 = auto()  # Binary Frequency Shift Key
+    BPSK = auto()  # Binary Phase Shift Key

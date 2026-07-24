@@ -116,6 +116,17 @@ def demodulate(samples: numpy.ndarray, sample_rate: float | int,
     return bin_bytes
 
 
+def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool) -> None:
+    """Evaluate the actual payload against the expected payload with regard to the debug status."""
+    if debug:
+        print(f'\nPAYLOAD: {act_payload}')
+    parse_payload(act_payload)
+    if debug and exp_payload and exp_payload != act_payload:
+        print(f'\nBER: {calculate_ber(exp_payload, act_payload)}')
+        print('\nComparing the expected payload to the actual payload...')
+        compare_streams(exp_payload, act_payload)
+
+
 def get_filename(arg_vals: ArgVals) -> Path:
     """Form the filename argument into a Path object."""
     # LOCAL VARIABLES
@@ -247,18 +258,24 @@ def main() -> None:
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
 
         # [?] Detect Signal
-        det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
+        if spect_analysis is not None:
+            det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
 
         # [?] Downconvert
-        if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
-            samples = downconvert_signal(samples=samples, sample_rate=sample_rate,
-                                         center_freq=det_signal.center_frequency)
-            if arg_vals.debug:
-                plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                              convert_db=True, center_freq=None,
-                              title='Magnitude Spectrum (post-baseband translation)', now=False)
+        if det_signal is not None:
+            if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
+                samples = downconvert_signal(samples=samples, sample_rate=sample_rate,
+                                             center_freq=det_signal.center_frequency)
+                if arg_vals.debug:
+                    plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                                  convert_db=True, center_freq=None,
+                                  title='Magnitude Spectrum (post-baseband translation)', now=False)
 
         # DEMOD
+        # NOTE: Modem() and ModemConfig() objects are (essentially) reset between these
+        # non-demodulate() helper function calls.  If your Modem*() objects need to maintain
+        # state (e.g., recovering carrier phase over chunked samples) then consider skipping the
+        # helper functions and calling direct to the source.
         # [?] Steps 1 - 3?
         binary = demodulate(samples=samples, sample_rate=sample_rate, symbol_rate=symbol_rate)
         # -or-
@@ -266,7 +283,7 @@ def main() -> None:
         if not binary:
             # Step 1 - Demod to Metrics
             metric = demod_to_metric(samples=samples, sample_rate=sample_rate,
-                                     symbol_rate=symbol_rate)  # Reshaped to symbol boundaries
+                                     symbol_rate=symbol_rate)
             if arg_vals.debug:
                 plot_time_domain(samples=metric, samp_rate=sample_rate,
                                  title='Time Domain (Demod Step 1: Metrics)', now=False)
@@ -293,13 +310,7 @@ def main() -> None:
         payload = binary[index + len(needle):]
 
         # [!] Parse Payload
-        if arg_vals.debug:
-            print(f'\nPAYLOAD: {payload}')
-        parse_payload(payload)
-        if arg_vals.debug and EXP_PAYLOAD and EXP_PAYLOAD != payload:
-            print(f'\nBER: {calculate_ber(EXP_PAYLOAD, payload)}')
-            print('\nComparing the expected payload to the actual payload...')
-            compare_streams(EXP_PAYLOAD, payload)
+        evaluate_payload(act_payload=payload, exp_payload=EXP_PAYLOAD, debug=arg_vals.debug)
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()

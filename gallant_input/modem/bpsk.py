@@ -70,13 +70,14 @@ class BPSK(Modem):
         return iq
 
     def demodulate(self, samples: numpy.ndarray,
-                   filt: MatchedFilter = MatchedFilter.RECT_FIR) -> bytes:
+                   filt: MatchedFilter = MatchedFilter.NONE) -> bytes:
         """DEMoodulate binary data.
 
         Args:
             samples: Digital samples to demodulate.
-            filt: [OPTIONAL] The matched filter to apply.  Defaults to a rectangular FIR, the
-                optimal matched filter for a modulator that did not do any pulse shaping.
+            filt: [OPTIONAL] The matched filter to apply.  MatchedFilter.RECT_FIR may be the
+                optimal matched filter for a modulator that did not do any pulse shaping but
+                the default is MatchedFilter.NONE (no matched filter applied).
 
         Returns:
             The demodulated binary data.
@@ -111,7 +112,7 @@ class BPSK(Modem):
     # Step 1: Demodulate to metrics
 
     def demodulate_to_metric(self, samples: numpy.ndarray,
-                             filt: MatchedFilter = MatchedFilter.RECT_FIR) -> numpy.ndarray:
+                             filt: MatchedFilter = MatchedFilter.NONE) -> numpy.ndarray:
         """DEModulate complex baseband samples to continuous-valued symbol metrics (Demod Step 1/3).
 
         Summary: Produces a continuous-valued representation in which the modulation's symbol
@@ -128,8 +129,9 @@ class BPSK(Modem):
 
         Args:
             samples: Complex baseband IQ samples to demodulate.
-            filt: [OPTIONAL] The matched filter to apply.  Defaults to a rectangular FIR, the
-                optimal matched filter for a modulator that did not do any pulse shaping.
+            filt: [OPTIONAL] The matched filter to apply.  MatchedFilter.RECT_FIR may be the
+                optimal matched filter for a modulator that did not do any pulse shaping but
+                the default is MatchedFilter.NONE (no matched filter applied).
 
         Returns:
             A continuous-valued symbol metric sampled at the input sample rate

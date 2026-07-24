@@ -235,10 +235,14 @@ def detect_signal(analysis: SpectrumAnalysis, scheme: ModScheme) -> DetectedSign
 
     # DETECT IT
     match scheme:
-        case scheme.FSK2:
+        # See: GAIN-24 for for BPSK support
+        # case ModScheme.BPSK:
+        #     det_signal = _detect_signal_num_peaks(analysis=analysis, num_peaks=1)
+        case ModScheme.FSK2:
             det_signal = _detect_signal_num_peaks(analysis=analysis, num_peaks=2)
         case _:
-            raise NotImplementedError(f'This modulation scheme is not yet supported: {scheme}')
+            raise NotImplementedError('This modulation scheme is not yet supported: '
+                                      f'ModScheme.{scheme.name}')
 
     # DONE
     return det_signal

@@ -3,7 +3,6 @@
 # Standard Imports
 # Third Party Imports
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.modem.calc import reshape_to_symbols
@@ -11,15 +10,10 @@ from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_sy
                                  stringify_ndarray, upsample)
 from gallant_input.convolvemode import ConvolveMode
 from gallant_input.filters import apply_fir
-from gallant_input.modem.calc import (compute_threshold, extract_bits_from_samples,
-                                      extract_bits_from_single_cluster)
 from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
-from gallant_input.plot import plot_symbol_boundaries
-from gallant_input.synch.costas_loop import CostasLoop
 from gallant_input.modem.matched_filter import MatchedFilter
-from gallant_input.modem.threshold_scheme import ThresholdScheme
 from gallant_input.validation import (validate_bool, validate_ndarray, validate_pos_int,
                                       validate_type)
 
@@ -92,8 +86,9 @@ class BPSK(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        bits = None       # An array of bits extracted from samples
-        bit_stream = b''  # The bits as a bin bytes object
+        metric = None          # A continuous-valued symbol metric sampled at the input sample rate
+        symbol_metrics = None  # One recovered symbol metric for each transmitted symbol
+        bit_stream = b''       # The demodulated binary as a bytes object
 
         # VALIDATION
         self.parse()  # Validate and parse

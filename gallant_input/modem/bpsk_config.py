@@ -29,7 +29,6 @@ class BPSKConfig(ModemConfig):
         Call this method first in each method/property defined in the sub-class.
         """
         if self._validated is not True:
-            # No additional validation required (yet)
             self.validate_abc()  # Which will complete the validation and set _validated
             self.validate_bpsk()  # Validate the BPSK-specific data
 
@@ -47,6 +46,6 @@ class BPSKConfig(ModemConfig):
         if self.carrier_recovery is not None:
             try:
                 validate_type(self.carrier_recovery, 'carrier_recovery', CostasLoop)
-            except TypeError:
+            except TypeError as err:
                 raise NotImplementedError('Received an unsupported "carrier recovery" object: '
-                                          f'{type(self.carrier_recovery)}')
+                                          f'{type(self.carrier_recovery)}') from err

@@ -152,24 +152,27 @@ class NormalModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Single byte, alternating bits."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_n02_all_zeros(self):
         """Single byte, all zeros."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         bits = b'00000000'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_n03_all_ones(self):
         """Single byte, all ones."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         bits = b'11111111'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
 
@@ -182,8 +185,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = None
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument must be a')
 
@@ -191,8 +195,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = '48000'
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument must be a')
 
@@ -200,8 +205,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 0
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "sample_rate" argument is not positive')
 
@@ -209,8 +215,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = -48000
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "sample_rate" argument is not positive')
 
@@ -218,8 +225,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = float(0.0)
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
@@ -227,8 +235,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = float(-48000.0)
         sym_rate = 800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
@@ -236,8 +245,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = 48000
         sym_rate = None
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument must be a')
 
@@ -245,8 +255,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = 48000
         sym_rate = '800'
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument must be a')
 
@@ -254,8 +265,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 48000
         sym_rate = 0
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
@@ -263,8 +275,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = 48000
         sym_rate = -800
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
@@ -272,8 +285,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = 48000
         sym_rate = float(0.0)
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
@@ -281,8 +295,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = 48000
         sym_rate = float(-800.0)
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
@@ -290,8 +305,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad bin_bytes: bad type - None."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         bits = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument should have been of type')
 
@@ -299,8 +315,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad bin_bytes: bad type - string."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         bits = '10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, TypeError,
                                       'argument should have been of type')
 
@@ -308,8 +325,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad bin_bytes: bad value - empty."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         bits = b''
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'may not be empty')
 
@@ -317,8 +335,9 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Bad bin_bytes: bad value - non-binary (AKA '...and I thought I saw a 2' -Bender)."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         bits = b'101010100010101010121011110100101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'Invalid binary value detected')
 
@@ -330,16 +349,18 @@ class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """One bit: on."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         bits = b'1'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b02_one_bit_off(self):
         """One bit: off."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         bits = b'0'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b03_lowest_sample_rate(self):
@@ -350,8 +371,9 @@ class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """
         samp_rate = 1
         sym_rate = 80
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'argument is not positive')
 
@@ -359,16 +381,18 @@ class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Smallest valid symbol rate."""
         samp_rate = 4800
         sym_rate = 1
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b05_lowest_samples_per_symbol(self):
         """Smallest valid sample rate and symbol rate."""
         samp_rate = 1
         sym_rate = 1
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b06_lowest_sample_rate_floats(self):
@@ -379,8 +403,9 @@ class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """
         samp_rate = float(1.0)
         sym_rate = float(80.0)
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, ValueError,
                                       'argument is not positive')
 
@@ -388,48 +413,54 @@ class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """Smallest valid symbol rate."""
         samp_rate = float(4800.0)
         sym_rate = float(1.0)
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b08_lowest_samples_per_symbol(self):
         """Smallest valid sample rate and symbol rate."""
         samp_rate = float(1.0)
         sym_rate = float(1.0)
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b09_smallest_everything_on(self):
         """All arguments are set to the smallest appropriate values: on."""
         samp_rate = 1
         sym_rate = 1
+        carr_rec = None
         bits = b'1'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b10_smallest_everything_off(self):
         """All arguments are set to the smallest appropriate values: on."""
         samp_rate = 1
         sym_rate = 1
+        carr_rec = None
         bits = b'0'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b11_smallest_everything_on_floats(self):
         """All arguments are set to the smallest appropriate values (as floats): on."""
         samp_rate = float(1.0)
         sym_rate = float(1.0)
+        carr_rec = None
         bits = b'1'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_b12_smallest_everything_off_floats(self):
         """All arguments are set to the smallest appropriate values (as floats): off."""
         samp_rate = float(1.0)
         sym_rate = float(1.0)
+        carr_rec = None
         bits = b'0'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
 
@@ -440,64 +471,72 @@ class SpecialModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         """5.03 Demod 101 FoI 2."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
+        carr_rec = None
         bits = b'10101010'
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s02_real_data_rds_set_msg00_a(self):
         """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A - Station Name 'KONO    '."""
         samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
         sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
+        carr_rec = None
         bits = self.RDS_SET1_MSG00A
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s03_real_data_demod_101_foi_1_preamble(self):
         """5.03 Demod 101 FoI 1 Preamble."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        carr_rec = None
         bits = self.DEMOD_101_FOI_1_PREAMBLE
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s04_real_data_demod_101_foi_1_pdu(self):
         """5.03 Demod 101 FoI 1 PDU."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
+        carr_rec = None
         bits = self.DEMOD_101_FOI_1_PDU
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s05_real_data_demod_101_foi_2_preamble(self):
         """5.03 Demod 101 FoI 2 Preamble."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
+        carr_rec = None
         bits = self.DEMOD_101_FOI_2_PREAMBLE
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s06_real_data_demod_101_foi_3_preamble(self):
         """5.03 Demod 101 FoI 3 Preamble."""
         samp_rate = 480000  # 5.03 Demod 101 FoI 3 sample rate
         sym_rate = 800      # 5.03 Demod 101 FoI 3 symbol rate
+        carr_rec = None
         bits = self.DEMOD_101_FOI_3_PREAMBLE
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s07_real_data_fhss_chan_01_preamble(self):
         """5.05 FHSS Channel 01 Preamble."""
         samp_rate = 26000000  # 5.05 FHSS sample rate
         sym_rate = 250000     # 5.05 FHSS symbol rate
+        carr_rec = None
         bits = self.FHSS_CHANNEL_01_PREAMBLE
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
     def test_s08_valid_rds_group(self):
         """RF JQR 5.03 RDS group."""
         samp_rate = 19000  # RDS sample rate
         sym_rate = 1187.5  # RDS symbol rate
+        carr_rec = None
         bits = self.RDS_GROUP1
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)
 
 

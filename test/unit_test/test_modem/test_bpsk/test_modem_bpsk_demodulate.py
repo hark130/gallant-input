@@ -24,6 +24,7 @@ from gallant_input.constants import SIG_GLOB_DESCRIPTION_KEY
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.constants import BPSK_MAP
+from gallant_input.synch.costas_loop import CostasLoop
 from test import REPO_TL_DIR
 from test.modify import add_awgn, convert_bin_bytes_to_bpsk
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
@@ -111,7 +112,8 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         self.set_test_input(samples)
         self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
-    def run_test_return(self, sample_rate: float, symbol_rate: float, exp_ret: bytes) -> None:
+    def run_test_return(self, sample_rate: float, symbol_rate: float,
+                        carrier_recovery: CostasLoop | None, exp_ret: bytes) -> None:
         """Common method calls for a test case expected to return.
 
         Test author must call self.set_test_input().
@@ -119,19 +121,23 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
+            carrier_recovery: Sets the carrier_recovery ctor argument input.
             exp_ret: The expected return value from the method call.
         """
-        self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
+        self.set_bpsk_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                carrier_recovery=carrier_recovery)
         self.expect_return(exp_ret)
         self.run_test()
 
     def run_test_return_compute(self, sample_rate: float, symbol_rate: float,
-                                exp_ret: bytes, bit_map: dict[int, complex] | None = None) -> None:
+                                carrier_recovery: CostasLoop | None, exp_ret: bytes,
+                                bit_map: dict[int, complex] | None = None) -> None:
         """Common method calls for a test case expected to return a computed result.
 
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
+            carrier_recovery: Sets the carrier_recovery ctor argument input.
             exp_ret: Expected return value (also used to compute the test case input).
             bit_map: [OPTIONAL] The mapping of symbols to complex values to generate IQ.
                 If None, uses the default mapping.
@@ -139,7 +145,8 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         test_in = create_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                     bin_bytes=exp_ret, bit_map=bit_map)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                   samples=test_in, exp_ret=exp_ret)
+                                   carrier_recovery=carrier_recovery, samples=test_in,
+                                   exp_ret=exp_ret)
 
     def run_test_return_file(self, sigmf_input: Path,
                              sample_dtype: DTypeLike = numpy.complex64) -> None:
@@ -154,20 +161,24 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         self.set_test_file_input(sigmf_input=sigmf_input, sample_dtype=sample_dtype)
         self.run_test()
 
-    def run_test_return_input(self, sample_rate: float, symbol_rate: float, samples: numpy.ndarray,
+    def run_test_return_input(self, sample_rate: float, symbol_rate: float,
+                              carrier_recovery: CostasLoop | None, samples: numpy.ndarray,
                               exp_ret: bytes) -> None:
         """Common method calls for a test case expected to return an expected result.
 
         Args:
             sample_rate: Sets the sample_rate ctor argument input.
             symbol_rate: Sets the symbol_rate ctor argument input.
+            carrier_recovery: Sets the carrier_recovery ctor argument input.
             samples: Test case input.
             exp_ret: The expected return value from the method call.
         """
         self.set_test_input(samples)
-        self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate, exp_ret=exp_ret)
+        self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                             carrier_recovery=carrier_recovery, exp_ret=exp_ret)
 
     def run_test_return_noisy(self, sample_rate: float, symbol_rate: float,
+                              carrier_recovery: CostasLoop | None,
                               exp_ret: bytes, snr_db: float | int) -> None:
         """Common method calls for a test case expected to return a computed result.
 
@@ -180,77 +191,80 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         test_in = create_noisy_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                           bin_bytes=exp_ret, snr_db=snr_db)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                   samples=test_in, exp_ret=exp_ret)
+                                   samples=test_in, carrier_recovery=carrier_recovery,
+                                   exp_ret=exp_ret)
 
 
 class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Normal Test Cases."""
 
-    @skip('Address this test case in GAIN-16')
     def test_n01_single_byte_alt_bits(self):
         """Single byte, alternating bits."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         exp_ret = b'10101010'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret)
 
-    @skip('Address this test case in GAIN-16')
-    def test_n02_all_zeros(self):
-        """Single byte, all zeros."""
+    def test_n02_one_byte_off_one_byte_on(self):
+        """One pair of alternating bytes: off, on."""
         samp_rate = 4800
         sym_rate = 80
-        exp_ret = b'00000000'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        carr_rec = None
+        exp_ret = b'0000000011111111'
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret)
 
-    @skip('Address this test case in GAIN-16')
-    def test_n03_all_ones(self):
-        """Single byte, all ones."""
+    def test_n03_one_byte_on_one_byte_off(self):
+        """One pair of alternating bytes: on, off."""
         samp_rate = 4800
         sym_rate = 80
-        exp_ret = b'11111111'
-        self.run_test_return_compute(sample_rate=samp_rate, symbol_rate=sym_rate, exp_ret=exp_ret)
+        carr_rec = None
+        exp_ret = b'1111111100000000'
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret)
 
-    @skip('Address this test case in GAIN-16')
     def test_n04_single_byte_alt_bits_with_awgn(self):
         """Single byte, alternating bits, with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
+        carr_rec = None
         exp_ret = b'10101010'
         snr_db = self.SNR_POOR
-        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
 
-    @skip('Address this test case in GAIN-16')
-    def test_n05_all_zeros_with_awgn(self):
-        """Single byte, all zeros, with AWGN at a reasonable SNR (dB)."""
+    def test_n05_one_byte_off_one_byte_on_with_awgn(self):
+        """One pair of alternating bytes: off, on; with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        exp_ret = b'00000000'
+        carr_rec = None
+        exp_ret = b'0000000011111111'
         snr_db = self.SNR_POOR
-        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
 
-    @skip('Address this test case in GAIN-16')
-    def test_n06_all_ones_with_awgn(self):
-        """Single byte, all ones, with AWGN at a reasonable SNR (dB)."""
+    def test_n06_one_byte_on_one_byte_off_with_awgn(self):
+        """One pair of alternating bytes: on, off; with AWGN at a reasonable SNR (dB)."""
         samp_rate = 4800
         sym_rate = 80
-        exp_ret = b'11111111'
+        carr_rec = None
+        exp_ret = b'1111111100000000'
         snr_db = self.SNR_POOR
-        self.run_test_return_noisy(samp_rate, sym_rate, exp_ret, snr_db)
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
 
-    @skip('Address this test case in GAIN-16')
+    @skip('This input requires symbol synch and carrier recovery to pass')
     def test_n07_valid_bpsk_sigmf_demod101_foi1_rates(self):
         """Demod 101 FoI 1 decimated, filtered, and exported."""
         samp_rate = 4800  # 5.03 Demod 101 FoI 1 sample rate (decimated)
         sym_rate = 1200   # 5.03 Demod 101 FoI 3 symbol rate
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        carr_rec = None
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_file(self.test_in1)
 
-    @skip('Address this test case in GAIN-16')
+    @skip('This input requires symbol synch, carrier recover, and differential decoding to pass')
     def test_n08_valid_bpsk_sigmf_rds_traffic(self):
         """Really distinct signal (AKA Radio Data System) filtered, and exported."""
         samp_rate = 19000  # Really distinct signal sample rate (*not* decimated)
         sym_rate = 1187.5  # Really distinct signal symbol rate
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        carr_rec = None
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_file(self.test_in2)
 
 
@@ -261,8 +275,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = None
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
@@ -270,8 +285,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = '48000'
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
@@ -279,8 +295,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 0
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
@@ -288,8 +305,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = -48000
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
@@ -297,8 +315,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = float(0.0)
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
@@ -306,8 +325,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = float(-48000.0)
         sym_rate = 800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
@@ -315,8 +335,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: wrong type - None."""
         samp_rate = 48000
         sym_rate = None
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
@@ -324,8 +345,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: wrong type - string."""
         samp_rate = 48000
         sym_rate = '800'
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument must be a')
 
@@ -333,8 +355,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - zero."""
         samp_rate = 48000
         sym_rate = 0
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
@@ -342,8 +365,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - negative."""
         samp_rate = 48000
         sym_rate = -800
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
@@ -351,8 +375,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - float(zero)."""
         samp_rate = 48000
         sym_rate = float(0.0)
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
@@ -360,8 +385,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad sample rate: bad value - float(negative)."""
         samp_rate = 48000
         sym_rate = float(-800.0)
+        carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
@@ -369,8 +395,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad samples: bad type - None."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         test_in = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument should have been of type')
 
@@ -378,8 +405,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad samples: bad type - list of complex values (almost an ndarray)."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         test_in = [0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j]
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, TypeError,
                                       'argument should have been of type')
 
@@ -387,8 +415,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad samples: bad value - empty."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         test_in = numpy.array([], dtype=numpy.complex64)  # len(test_in) == 0
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'ndarray may not be empty')
 
@@ -396,8 +425,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """Bad samples: wrong dimensions."""
         samp_rate = 48000
         sym_rate = 800
+        carr_rec = None
         test_in = numpy.resize(self.SAMPLES_OOK_ALL_10S, (2, 2))  # test_in.ndim == 2
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_OOK_ALL_10S.ndim}-dimensional')
@@ -414,9 +444,10 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """
         samp_rate = 1
         sym_rate = 80
+        carr_rec = None
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ONES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
 
@@ -428,9 +459,10 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """
         samp_rate = float(1.0)
         sym_rate = float(80.0)
+        carr_rec = None
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ZEROES
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, ValueError,
                                       'argument is not positive')
 
@@ -443,7 +475,8 @@ class SpecialModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         """BPSKConfig() object configured to modulate, used to demodulate."""
         samp_rate = 48000
         sym_rate = 80
-        self.set_bpsk_ctor_args(samp_rate, sym_rate)
+        carr_rec = None
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_file(self.test_in1)
 
 

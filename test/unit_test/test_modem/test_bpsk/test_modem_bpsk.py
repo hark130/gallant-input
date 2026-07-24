@@ -58,6 +58,12 @@ class ModemBPSKUnitTest(ModemUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
 
+    def __init__(self, *args, **kwargs) -> None:
+        """ModemBPSKUnitTest ctor."""
+        # ATTRIBUTES
+        self.input_carr_recover = None  # The optional carrier recovery value
+        super().__init__(*args, **kwargs)
+
     def call_callable(self):
         """Defines how the class will invoke the function call.
 
@@ -70,9 +76,10 @@ class ModemBPSKUnitTest(ModemUnitTest):
             self._test_error.format('The child class must override the call_callable method with '
                                     'the function to test.'))
 
-    def set_bpsk_ctor_args(self, sample_rate: Any, symbol_rate: Any) -> None:
+    def set_bpsk_ctor_args(self, sample_rate: Any, symbol_rate: Any, carrier_recovery: Any) -> None:
         """Sets the BPSK() argument values in the test class."""
         self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
+        self.input_carr_recover = carrier_recovery
 
     def validate_return_value(self, return_value):
         """Defines how the class will validate the return value of the tested call.
@@ -94,9 +101,10 @@ class ModemBPSKUnitTest(ModemUnitTest):
 
         Strongly consider calling self.set_bpsk_ctor_args() first.
         """
-        config = None  # BPSK() ctor argument
+        # BPSK() ctor argument
         config = BPSKConfig(sample_rate=self.input_sample_rate,
-                            symbol_rate=self.input_symbol_rate)
+                            symbol_rate=self.input_symbol_rate,
+                            carrier_recovery=self.input_carr_recover)
         return BPSK(config=config)
 
     # CLASS HELPER METHODS

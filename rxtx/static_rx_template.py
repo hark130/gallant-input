@@ -5,7 +5,11 @@
 3. Update the build_modem() and build_modem_config() functions as appropriate.
 4. Update the DEF_* and EXP_* macros.
 5. Update parse_payload() as appropriate.
-6. Run the module w/ --debug: fiddle with main() variables, disable unwanted plots, etc.
+6. Update the mod_scheme variable in main() with the anticipated modulation scheme.
+7. Run the module w/ --debug:
+    - fiddle with main() variables (e.g., decimate, squelch_db)
+    - disable unwanted plots
+    - etc.
 
 Example Usage:
     python -m rxtx.static_rx_template --help
@@ -185,8 +189,9 @@ def main() -> None:
         symbol_rate = arg_vals.symbol_rate  # Capture symbol rate
         sps = 0                             # Samples per symbol
         samples = None                      # Samples read from the capture
-        decimate = 20                       # Decimation
-        squelch_db = None                   # Squelch threshold in db (e.g., -48, -55) or None
+        decimate = 1                        # Decimation (e.g., 1 to skip decimation)
+        squelch_db = None                   # Squelch threshold in db (e.g., -48, -55); skip w/ None
+        mod_scheme = ModScheme.NONE         # Communicates anticipated modulation to detect_signal()
         spect_analysis = None               # SpectrumAnalysis obj
         det_signal = None                   # DetectedSignal obj
         metric = None                       # Step 1 - Continuous symbol metric at orig. sample rate
@@ -242,7 +247,7 @@ def main() -> None:
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
 
         # [?] Detect Signal
-        det_signal = detect_signal(analysis=spect_analysis, scheme=ModScheme.FSK2)
+        det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
 
         # [?] Downconvert
         if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:

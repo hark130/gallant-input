@@ -16,11 +16,10 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 # Local Imports
-from gallant_input.analyze import analyze_spectrum
+# from gallant_input.analyze import analyze_spectrum
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.converters import convert_bin_bytes_to_ascii
 from gallant_input.data_analysis import compare_streams
-from gallant_input.filters import apply_fir, create_basic_lpf
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_ber, calculate_sps
@@ -30,8 +29,8 @@ from gallant_input.modem.bpsk import BPSK
 from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
-                                plot_welch_psd)
+from gallant_input.plot import plot_spectrum, plot_symbol_boundaries, plot_time_domain
+# from gallant_input.plot import plot_welch_psd
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.synch.costas_loop import CostasLoop
@@ -94,7 +93,7 @@ def demod_to_metric(samples: numpy.ndarray, sample_rate: float | int,
     symbol_metrics = None                                                    # Symbol metrics
 
     # DEMODULATE IT
-    symbol_metrics = modem.demodulate_to_metric(samples=samples)
+    symbol_metrics = modem.demodulate_to_metric(samples=samples, filt=MatchedFilter.NONE)
 
     # DONE
     return symbol_metrics
@@ -267,7 +266,7 @@ def main() -> None:
                     print(f'No support for this modulation scheme yet (see: GAIN-24): {err}')
             else:
                 if arg_vals.debug:
-                    print(f'Any support for this modulation scheme is likely wrong (see: GAIN-24)')
+                    print('Any support for this modulation scheme is likely wrong (see: GAIN-24)')
 
         # [?] Downconvert
         if det_signal is not None:

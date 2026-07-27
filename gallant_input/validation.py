@@ -12,6 +12,7 @@ validated.
     validate_string(self._makefile_rule, 'makefile_rule')
 """
 # Standard Imports
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Final
 import math
@@ -145,6 +146,20 @@ def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
     # VALIDATE IT
     if not _validate_type(validate_this, bytes) and not _validate_type(validate_this, str):
         raise TypeError(_BAD_TYPE.format(param_name, exp_type, type(validate_this)))
+
+
+def validate_callable(validate_this: Callable, param_name: str) -> None:
+    """Validate validate_this as a callable.
+
+    Args:
+        validate_this: A callable.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a callable.
+    """
+    if not callable(validate_this):
+        raise TypeError(_BAD_TYPE.format(param_name, Callable, type(validate_this)))
 
 
 def validate_file(validate_this: Path, param_name: str, must_exist: bool = True) -> None:

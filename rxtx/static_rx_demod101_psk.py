@@ -9,7 +9,6 @@ Example Usage:
 """
 
 # Standard Imports
-from pathlib import Path
 from typing import Final
 import sys
 # Third Party Imports
@@ -17,17 +16,14 @@ import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 # from gallant_input.analyze import analyze_spectrum
-from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
 from gallant_input.converters import convert_bin_bytes_to_ascii
-from gallant_input.data_analysis import compare_streams
-from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
-from gallant_input.modem.calc import calculate_ber, calculate_sps
-from gallant_input.modem.modem import Modem
-from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modem.bpsk import BPSK
 from gallant_input.modem.bpsk_config import BPSKConfig
+from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.matched_filter import MatchedFilter
+from gallant_input.modem.modem import Modem
+from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
 from gallant_input.plot import plot_spectrum, plot_symbol_boundaries, plot_time_domain
 # from gallant_input.plot import plot_welch_psd
@@ -36,9 +32,8 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
 from gallant_input.synch.costas_loop import CostasLoop
 from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
-from gallant_input.validation import validate_file, validate_type
 from rxtx.arg_parser import parse_args, print_help
-from rxtx.argvals import ArgVals
+from rxtx.utilities import evaluate_payload, get_filename, get_sample_rate
 
 DEF_PREAMBLE: Final[bytes] = b'01' * 16  # Actual preamble
 DEF_SYNCWORD: Final[bytes] = b'1101001110010001'  # Syncword
@@ -112,68 +107,6 @@ def demodulate(samples: numpy.ndarray, sample_rate: float | int,
 
     # DONE
     return bin_bytes
-
-
-def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool) -> None:
-    """Evaluate the actual payload against the expected payload with regard to the debug status."""
-    if debug:
-        print(f'\nPAYLOAD: {act_payload}')
-    parse_payload(act_payload)
-    if debug and exp_payload and exp_payload != act_payload:
-        print(f'\nBER: {calculate_ber(exp_payload, act_payload)}')
-        print('\nComparing the expected payload to the actual payload...')
-        compare_streams(exp_payload, act_payload)
-
-
-def get_filename(arg_vals: ArgVals) -> Path:
-    """Form the filename argument into a Path object."""
-    # LOCAL VARIABLES
-    filename = None  # CLI argument filename as a Path obj
-
-    # VALIDATION
-    validate_type(arg_vals, 'arg_vals', ArgVals)
-
-    # GET IT
-    try:
-        filename = Path(arg_vals.filename)
-    except (ValueError, TypeError) as err:
-        raise err from err
-
-    # DONE
-    return filename
-
-
-def get_sample_rate(arg_vals: ArgVals, filepath: Path) -> float | int:
-    """Get the sample rate, in order of priority, from: CLI args, filepath SigMF metadata."""
-    # LOCAL VARIABLES
-    sample_rate = None                                                # Sample rate
-    meta_path = None                                                  # SigMF metadata filepath
-    except_msg = 'Unable to fetch the sample rate from the CLI args'  # Base Exception message
-
-    # VALIDATION
-    validate_type(arg_vals, 'arg_vals', ArgVals)
-    validate_file(filepath, 'filepath', must_exist=True)
-
-    # GET IT
-    # 1. CLI args?
-    sample_rate = arg_vals.sample_rate
-    # 2. SigMF?
-    if sample_rate is None:
-        # Fetch SigMF metadata (if available)
-        if filepath.suffix.lower() == f'.{SIGMF_META_FILE_EXT}'.lower():
-            meta_path = filepath
-        elif filepath.suffix.lower() == f'.{SIGMF_DATA_FILE_EXT}'.lower():
-            meta_path = filepath.with_suffix(f'.{SIGMF_META_FILE_EXT}')
-        if meta_path:
-            sig_meta_parser = SigMFMetaParser(meta_path)
-            sample_rate = sig_meta_parser.get_sample_rate()
-
-    # DONE
-    if sample_rate is None:
-        if meta_path is not None:
-            except_msg = except_msg + f' or "{meta_path.absolute()}"'
-        raise RuntimeError(except_msg)
-    return sample_rate
 
 
 def parse_payload(payload: bytes) -> None:
@@ -327,7 +260,8 @@ def main() -> None:
         payload = binary[index + len(needle):]
 
         # [!] Parse Payload
-        evaluate_payload(act_payload=payload, exp_payload=EXP_PAYLOAD, debug=arg_vals.debug)
+        evaluate_payload(act_payload=payload, exp_payload=EXP_PAYLOAD, debug=arg_vals.debug,
+                         parse_payload=parse_payload)
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()

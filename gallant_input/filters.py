@@ -74,6 +74,96 @@ def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
                       scale=scale, fs=fs)
 
 
+def create_rect_fir(sps: int, force_odd: bool = False) -> numpy.ndarray:
+    """Create a rectangular finite infinite response (FIR) filter.
+
+    Args:
+        sps: samples per symbol.
+        force_odd: [OPTIONAL] The sps value is used for the length of the taps, which probably
+            should be odd.  If True, adds one to even values.
+
+    Returns:
+        Rectangular FIR filter coefficients in a numpy.ndarray.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    taps = None  # The rectangular FIR
+
+    # INPUT VALIDATION
+    validate_pos_int(sps, 'sps')
+    validate_bool(force_odd, 'force_odd')
+
+    # SETUP
+    if force_odd is True and 0 == sps % 2:
+        sps += 1  # Make it odd
+
+    # CREATE IT
+    taps = numpy.ones(sps, dtype=numpy.float32)
+    taps /= taps.sum()
+
+    # DONE
+    return taps
+
+
+def create_rrc_fir(sps: int, span: int = 8, beta: float = 1.0) -> numpy.ndarray:
+    """Generate Root Raised Cosine (RRC) FIR taps.
+
+    Args:
+        sps: samples per symbol.
+        span: [OPTIONAL] Length of the filter in symbols.
+        beta: [OPTIONAL] Rolloff factor in [0, 1].
+
+    Returns:
+        RRC FIR filter coefficients in a numpy.ndarray.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    num = 0           # Number of sample intervals spanned by the filter
+    time_vect = None  # Time vector expressed in symbol times
+    taps = None       # FIR coefficients
+
+    # INPUT VALIDATION
+    validate_pos_int(sps, 'sps')
+    validate_pos_int(span, 'span')
+    validate_float(beta, 'beta')
+    if not (0.0 <= beta <= 1.0):
+        raise ValueError('The "beta" argument must be between 0 and 1, inclusive, '
+                         f'instead of {beta}')
+
+    # SETUP
+    # Time vector (units of symbols)
+    num = span * sps
+    time_vect = numpy.arange(-num / 2, num / 2 + 1) / sps
+    taps = numpy.zeros_like(time_vect)
+
+    for index, time_val in enumerate(time_vect):
+        # Special case: time_vect == 0
+        if numpy.isclose(time_val, 0.0):
+            taps[index] = (1.0 + beta * (4 / numpy.pi - 1))
+        # Special case: |t| = T / (4β)
+        elif (beta != 0 and numpy.isclose(abs(time_val), 1 / (4 * beta))):
+            taps[index] = (beta / numpy.sqrt(2) * ((1 + 2 / numpy.pi) \
+                       * numpy.sin(numpy.pi / (4 * beta)) \
+                       + (1 - 2 / numpy.pi)* numpy.cos(numpy.pi / (4 * beta))))
+        # General case
+        else:
+            numerator = (numpy.sin(numpy.pi * time_val * (1 - beta)) + 4 * beta * time_val \
+                         * numpy.cos(numpy.pi * time_val * (1 + beta)))
+            denominator = (numpy.pi * time_val * (1 - (4 * beta * time_val) ** 2 ))
+            taps[index] = numerator / denominator
+    # Normalize to unit energy
+    taps /= numpy.sqrt(numpy.sum(taps**2))
+
+    # DONE
+    return taps.astype(numpy.float32)
+
+
 def design_hpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
                window: str | tuple = 'hamming', scale: bool = True,
                fs: float | None = None) -> numpy.ndarray:

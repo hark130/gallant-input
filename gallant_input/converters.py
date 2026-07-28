@@ -4,10 +4,11 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import validate_binary_bytes, validate_bool, validate_int
+from gallant_input.validation import (validate_binary_bytes, validate_bytes_or_str, validate_bool,
+                                      validate_int)
 
 
-def convert_bin_bytes_to_ascii(binary: bytes) -> str:
+def convert_bin_bytes_to_ascii(binary: bytes, clean_it: bool = False) -> str:
     """Convert a bytes-representation of a binary number to an ASCII string.
 
     Example Usage:
@@ -15,6 +16,7 @@ def convert_bin_bytes_to_ascii(binary: bytes) -> str:
 
     Args:
         binary: A binary literal in a bytes object.
+        clean_it: [OPTIONAL] Remove characters that aren't: printable ASCII, tabs, newlines.
 
     Returns:
         The binary values converted to ASCII, as a string.
@@ -24,7 +26,10 @@ def convert_bin_bytes_to_ascii(binary: bytes) -> str:
         ValueError: The bytes object contains non-binary characters.
     """
     validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
+    validate_bool(clean_it, 'clean_it')
     string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
+    if clean_it:
+        string = sanitize_ascii(string)
     return string
 
 
@@ -127,3 +132,44 @@ def convert_int_to_bin_bytes(number: int, min_width: int = 8) -> bytes:
     if min_width < 0:
         raise ValueError(f'Invalid value for "min_width": {min_width}')
     return format(number, f'0{str(min_width)}b').encode('ascii')
+
+
+def sanitize_ascii(text: bytes | str, replace: bytes | str = b'.') -> bytes | str:
+    """Preserves printable ASCII, tabs, and newlines.
+
+    Args:
+        text: ASCII text to sanitize.
+        replace: [OPTIONAL] The character to replace characters with.  This character may be empty.
+            This will be converted to the right type prior to replacements.
+
+    Raises:
+        TypeError: Invalid data type.
+        RuntimeError: Edge case exception if, somehow, text passes validation.
+
+    Returns:
+        Sanitized copy of text with the data type preserved.
+    """
+    # LOCAL VARIABLES
+    sanitized = None    # A sanitized version of text to return
+    new_char = replace  # Local modified copy of the replacement character
+
+    # INPUT VALIDATION
+    validate_bytes_or_str(text, 'text')
+    validate_bytes_or_str(replace, 'replace')
+
+    # SANITIZE IT
+    if isinstance(text, bytes):
+        if not isinstance(new_char, bytes):
+            new_char = new_char.encode('ascii')
+        sanitized = b''.join(char if char.isprintable() or char in b'\t\n' else new_char
+                             for char in text)
+    elif isinstance(text, str):
+        if not isinstance(new_char, str):
+            new_char = new_char.decode('ascii')
+        sanitized = ''.join(char if char.isprintable() or char in '\t\n' else new_char
+                            for char in text)
+    else:
+        raise RuntimeError(f'How did we get here?! The "text" parameter is of type "{type(text)}".')
+
+    # DONE
+    return sanitized

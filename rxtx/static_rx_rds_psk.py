@@ -20,10 +20,9 @@ import sys
 import matplotlib.pyplot as plt
 import numpy
 # Local Imports
-from gallant_input.analyze import analyze_spectrum
+# from gallant_input.analyze import analyze_spectrum
 from gallant_input.codec import decode_differential_binary
-from gallant_input.converters import convert_bin_bytes_to_ascii, sanitize_ascii
-from gallant_input.data_analysis import find_common_repeats
+from gallant_input.converters import sanitize_ascii
 from gallant_input.io import read_samples
 from gallant_input.modem.bpsk import BPSK
 from gallant_input.modem.bpsk_config import BPSKConfig
@@ -32,21 +31,22 @@ from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
-                                plot_welch_psd)
+from gallant_input.plot import plot_spectrum, plot_welch_psd
+# from gallant_input.plot import plot_symbol_boundaries, plot_time_domain
 from gallant_input.rds.block import RDSBlock
 from gallant_input.rds.block_id import BlockID
 from gallant_input.rds.collection import RDSCollection
 from gallant_input.rds.constants import RDS_BLOCK_LEN, RDS_GROUP_LEN
-from gallant_input.rds.exceptions import RDSBlockIDMismatch, RDSIntegrityFailure
+# from gallant_input.rds.exceptions import RDSBlockIDMismatch
+from gallant_input.rds.exceptions import RDSIntegrityFailure
 from gallant_input.rds.group import RDSGroup
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.synch.costas_loop import CostasLoop
-from gallant_input.synch.frame import correlate_it
+# from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
 from rxtx.arg_parser import parse_args, print_help
-from rxtx.utilities import evaluate_payload, get_filename, get_sample_rate
+from rxtx.utilities import get_filename, get_sample_rate
 
 DEF_PREAMBLE: Final[bytes] = b'01' * 32  # Example preamble (if necessary)
 DEF_SYNCWORD: Final[bytes] = b'11010011100100011101001110010001'  # Example syncword (frame sync)
@@ -194,11 +194,12 @@ def demodulate(samples: numpy.ndarray, sample_rate: float | int,
     return bin_bytes
 
 
+# Don't you know it's CFT, Pylint?!
+# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 def parse_rds_traffic(payload: bytes, exp_num_picodes: int,
                       exp_num_groups: int, debug: bool) -> None:
     """Parse and print the RDS traffic from the payload."""
     # PARSE IT
-    message = payload             # Parse the payload into a collection of RDS Groups
     collection = RDSCollection()  # Collection of valid RDS Groups
     act_num_groups = 0            # Actual number of RDS Groups parsed
 
@@ -210,30 +211,28 @@ def parse_rds_traffic(payload: bytes, exp_num_picodes: int,
         tmp_block = RDSBlock(payload[index:index+RDS_BLOCK_LEN], BlockID.GUESS)
         try:
             tmp_block.verify_block_integrity(force=True)  # Valid?
-            tmp_block_data = tmp_block.get_block_data()
         except RDSIntegrityFailure:
             continue  # It's not an RDS Block.  Quietly keep looking...
         except ValueError:
             break  # Ran out of bits
         # else:
-        #     print(f'Index "{index}" contains an RDS Block of ID "{tmp_block.get_block_id().name}" '
-        #           f'with data: {tmp_block_data} '
+        #     tmp_block_data = tmp_block.get_block_data()
+        #     print(f'Index "{index}" contains an RDS Block of ID '
+        #           f'"{tmp_block.get_block_id().name}" with data: {tmp_block_data} '
         #           f'({convert_bin_bytes_to_ascii(tmp_block_data, clean_it=True)})')
         # Is this an RDSGroup?
         tmp_group = RDSGroup(payload[index:index+RDS_GROUP_LEN])
         try:
             tmp_group.verify_group_integrity(force=True)
             tmp_group_info = tmp_group.get_group_info()
-        except RDSIntegrityFailure as err:
-            # print(err)
+        except RDSIntegrityFailure:
             continue  # It's not an RDS Group.  Quietly keep looking...
         except ValueError:
             break  # Ran out of bits
         else:
             if first_index is None:
                 first_index = index
-            if index > last_index:
-                last_index = index
+            last_index = max(last_index, index)
             if debug is True:
                 print(f'Index "{index}" contains an RDS Group of PI Code '
                       f'"{tmp_group_info.pi_code}" and Group Type: {tmp_group_info.group_type}')
@@ -246,7 +245,7 @@ def parse_rds_traffic(payload: bytes, exp_num_picodes: int,
     pic_strs = collection.fetch_pic_strs()
     if pic_strs:
         if debug is True:
-            print(f'Found PI Codes in this sample!')
+            print('Found PI Codes in this sample!')
             for pic_str in pic_strs:
                 print(f'\t{pic_str}')
             print()
@@ -257,18 +256,16 @@ def parse_rds_traffic(payload: bytes, exp_num_picodes: int,
             print(f'PI Code:\t{sanitize_ascii(rdspicodes.get_pi_code_str())}\n'
                   f'Station Name:\t{sanitize_ascii(rdspicodes.get_station_name())}\n'
                   f'Radio Text:\t{sanitize_ascii(rdspicodes.get_radio_text())}\n\n')
-        if debug is True:
-            act_num_picodes = payload.count(pic_byte)
-            print(f'\nRDS PI Codes Detected = Actual {act_num_picodes} / '
-                  f'Expected {exp_num_picodes}: '
-                  f'{calculate_success_rate(exp_num_groups, act_num_groups)}%')
-            print(f'\nRDS Group Success Rate = Actual {act_num_groups} / '
-                  f'Expected {exp_num_groups}: '
-                  f'{calculate_success_rate(exp_num_groups, act_num_groups)}%')
+            if debug is True:
+                act_num_picodes = payload.count(pic_byte)
+                print(f'\nRDS PI Codes Detected = Actual {act_num_picodes} / '
+                      f'Expected {exp_num_picodes}: '
+                      f'{calculate_success_rate(exp_num_groups, act_num_groups)}%')
+                print(f'\nRDS Group Success Rate = Actual {act_num_groups} / '
+                      f'Expected {exp_num_groups}: '
+                      f'{calculate_success_rate(exp_num_groups, act_num_groups)}%')
 
 
-# Don't you know it's CFT, Pylint?!
-# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -290,9 +287,9 @@ def main() -> None:
         metric = None                       # Step 1 - Continuous symbol metric at orig. sample rate
         symbol_metrics = None               # Step 2 - Recovered symbol metric for each orig. symbol
         binary = b''                        # Step 3 - Demodulated binary
-        needle = b''                        # The needle being correlated to the package (e.g., sw)
-        index = 0                           # Correlated index into the binary
-        payload = b''                       # Frame synch'd binary
+        # needle = b''                        # The needle being correlated to the package
+        # index = 0                           # Correlated index into the binary
+        # payload = b''                       # Frame synch'd binary
 
         # PREPARE
         # [!] Determine sample rate
@@ -388,7 +385,8 @@ def main() -> None:
             #     plot_time_domain(samples=metric, samp_rate=sample_rate,
             #                      title='Time Domain (Demod Step 1: Metrics)', now=False)
             #     plot_symbol_boundaries(real_wave=metric, sps=sps,
-            #                            title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
+            #                            title='Symbol Boundaries (Demod Step 1: Metrics)',
+            #                            now=False)
             # Step 2 - Time Sync w/ Interpolation(?)
             # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
             symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary

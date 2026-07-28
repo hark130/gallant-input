@@ -132,7 +132,7 @@ def create_rrc_fir(sps: int, span: int = 8, beta: float = 1.0) -> numpy.ndarray:
     validate_pos_int(sps, 'sps')
     validate_pos_int(span, 'span')
     validate_float(beta, 'beta')
-    if not (0.0 <= beta <= 1.0):
+    if not 0.0 <= beta <= 1.0:
         raise ValueError('The "beta" argument must be between 0 and 1, inclusive, '
                          f'instead of {beta}')
 
@@ -145,17 +145,17 @@ def create_rrc_fir(sps: int, span: int = 8, beta: float = 1.0) -> numpy.ndarray:
     for index, time_val in enumerate(time_vect):
         # Special case: time_vect == 0
         if numpy.isclose(time_val, 0.0):
-            taps[index] = (1.0 + beta * (4 / numpy.pi - 1))
+            taps[index] = 1.0 + beta * (4 / numpy.pi - 1)
         # Special case: |t| = T / (4β)
         elif (beta != 0 and numpy.isclose(abs(time_val), 1 / (4 * beta))):
-            taps[index] = (beta / numpy.sqrt(2) * ((1 + 2 / numpy.pi) \
-                       * numpy.sin(numpy.pi / (4 * beta)) \
-                       + (1 - 2 / numpy.pi)* numpy.cos(numpy.pi / (4 * beta))))
+            taps[index] = (beta / numpy.sqrt(2) * ((1 + 2 / numpy.pi)
+                           * numpy.sin(numpy.pi / (4 * beta))
+                           + (1 - 2 / numpy.pi) * numpy.cos(numpy.pi / (4 * beta))))
         # General case
         else:
-            numerator = (numpy.sin(numpy.pi * time_val * (1 - beta)) + 4 * beta * time_val \
+            numerator = (numpy.sin(numpy.pi * time_val * (1 - beta)) + 4 * beta * time_val
                          * numpy.cos(numpy.pi * time_val * (1 + beta)))
-            denominator = (numpy.pi * time_val * (1 - (4 * beta * time_val) ** 2 ))
+            denominator = (numpy.pi * time_val * (1 - (4 * beta * time_val) ** 2))
             taps[index] = numerator / denominator
     # Normalize to unit energy
     taps /= numpy.sqrt(numpy.sum(taps**2))

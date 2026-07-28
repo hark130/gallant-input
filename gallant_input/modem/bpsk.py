@@ -9,7 +9,7 @@ from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_symbols,
                                  stringify_ndarray, upsample)
 from gallant_input.convolvemode import ConvolveMode
-from gallant_input.filters import apply_fir
+from gallant_input.filters import apply_fir, create_rect_fir, create_rrc_fir
 from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
@@ -291,6 +291,7 @@ class BPSK(Modem):
     def _apply_matched_filter(self, samples: numpy.ndarray, filt: MatchedFilter) -> numpy.ndarray:
         """Apply a matched filter to samples."""
         # LOCAL VARIABLES
+        taps = None      # An array of matched filter taps
         filtered = None  # The samples array with a filter applied
 
         # APPLY IT
@@ -298,14 +299,15 @@ class BPSK(Modem):
             case MatchedFilter.NONE:
                 filtered = samples
             case MatchedFilter.RECT_FIR:
-                taps = numpy.ones(self._sps, dtype=numpy.float32)
-                taps /= taps.sum()
-                filtered = apply_fir(samples=samples, coeffs=taps, mode=ConvolveMode.SAME)
-            # case MatchedFilter.RRC:
+                taps = create_rect_fir(self._sps)
+            case MatchedFilter.RRC:
+                taps = create_rrc_fir(self._sps)
             # case MatchedFilter.RAIS_COS:
             # case MatchedFilter.GAUSS:
             case _:
                 raise NotImplementedError(f'No support for "MatchedFilter.{filt.name}" yet')
+        if taps is not None:
+            filtered = apply_fir(samples=samples, coeffs=taps, mode=ConvolveMode.SAME)
 
         # DONE
         return filtered

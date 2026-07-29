@@ -21,8 +21,9 @@ from unittest import skip
 import numpy
 # Local Imports
 from gallant_input.modem.constants import BPSK_MAP
+from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.synch.costas_loop import CostasLoop
-from test.modify import add_awgn, convert_bin_bytes_to_bpsk
+from test.modify import add_awgn, convert_bin_bytes_to_bpsk, generate_bin_bytes
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
 
 
@@ -92,7 +93,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         self.run_test()
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def run_test_exception_input(self, samples: Any,
+    def run_test_exception_input(self, samples: Any, filt: Any,
                                  exception_type: Exception, exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
 
@@ -105,7 +106,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.set_test_input(samples)
+        self.set_test_input(samples, filt)
         self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
     def run_test_return(self, sample_rate: float, symbol_rate: float,
@@ -127,6 +128,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
 
     def run_test_return_compute(self, sample_rate: float, symbol_rate: float,
                                 carrier_recovery: CostasLoop | None, exp_ret: bytes,
+                                filt: MatchedFilter = MatchedFilter.NONE,
                                 bit_map: dict[int, complex] | None = None) -> None:
         """Common method calls for a test case expected to return a computed result.
 
@@ -142,7 +144,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
                                     bin_bytes=exp_ret, bit_map=bit_map)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                    carrier_recovery=carrier_recovery, samples=test_in,
-                                   exp_ret=exp_ret)
+                                   exp_ret=exp_ret, filt=filt)
 
     def run_test_return_file(self, sigmf_input: Path,
                              sample_dtype: DTypeLike = numpy.complex64) -> None:
@@ -159,7 +161,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
 
     def run_test_return_input(self, sample_rate: float, symbol_rate: float,
                               carrier_recovery: CostasLoop | None, samples: numpy.ndarray,
-                              exp_ret: bytes) -> None:
+                              exp_ret: bytes, filt: MatchedFilter = MatchedFilter.NONE) -> None:
         """Common method calls for a test case expected to return an expected result.
 
         Args:
@@ -169,13 +171,14 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             samples: Test case input.
             exp_ret: The expected return value from the method call.
         """
-        self.set_test_input(samples)
+        self.set_test_input(samples, filt)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate,
                              carrier_recovery=carrier_recovery, exp_ret=exp_ret)
 
     def run_test_return_noisy(self, sample_rate: float, symbol_rate: float,
                               carrier_recovery: CostasLoop | None,
-                              exp_ret: bytes, snr_db: float | int) -> None:
+                              exp_ret: bytes, snr_db: float | int,
+                              filt: MatchedFilter = MatchedFilter.NONE) -> None:
         """Common method calls for a test case expected to return a computed result.
 
         Args:
@@ -187,7 +190,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         test_in = create_noisy_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                           bin_bytes=exp_ret, snr_db=snr_db)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                   samples=test_in, carrier_recovery=carrier_recovery,
+                                   samples=test_in, filt=filt, carrier_recovery=carrier_recovery,
                                    exp_ret=exp_ret)
 
 
@@ -263,6 +266,23 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_file(self.test_in2)
 
+    def test_n09_random_bits(self):
+        """Random bits."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        exp_ret = generate_bin_bytes(num_bits=128)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret)
+
+    def test_n10_random_bits_with_awgn(self):
+        """Random bits with AWGN at a reasonable SNR (dB)."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        exp_ret = generate_bin_bytes(num_bits=128)
+        snr_db = self.SNR_POOR
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
+
 
 class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Error Test Cases."""
@@ -273,8 +293,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument must be a')
 
     def test_e02_bad_sample_rate_type_string(self):
@@ -283,8 +304,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument must be a')
 
     def test_e03_bad_sample_rate_value_zero(self):
@@ -293,8 +315,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e04_bad_sample_rate_value_negative(self):
@@ -303,8 +326,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e05_bad_sample_rate_value_zero_float(self):
@@ -313,8 +337,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
     def test_e06_bad_sample_rate_value_negative_float(self):
@@ -323,8 +348,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
     def test_e07_bad_symbol_rate_type_none(self):
@@ -333,8 +359,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = None
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument must be a')
 
     def test_e08_bad_symbol_rate_type_string(self):
@@ -343,8 +370,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = '800'
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument must be a')
 
     def test_e09_bad_symbol_rate_value_zero(self):
@@ -353,8 +381,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 0
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e10_bad_symbol_rate_value_negative(self):
@@ -363,8 +392,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = -800
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e11_bad_symbol_rate_value_zero_float(self):
@@ -373,8 +403,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = float(0.0)
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
     def test_e12_bad_symbol_rate_value_negative_float(self):
@@ -383,8 +414,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = float(-800.0)
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
     def test_e13_bad_samples_type_none(self):
@@ -393,8 +425,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = None
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument should have been of type')
 
     def test_e14_bad_samples_type_complex_list(self):
@@ -403,8 +436,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = [0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j]
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument should have been of type')
 
     def test_e15_bad_samples_value_empty(self):
@@ -413,8 +447,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = numpy.array([], dtype=numpy.complex64)  # len(test_in) == 0
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'ndarray may not be empty')
 
     def test_e16_bad_samples_invalid_dimensions(self):
@@ -423,10 +458,77 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         sym_rate = 800
         carr_rec = None
         test_in = numpy.resize(self.SAMPLES_OOK_ALL_10S, (2, 2))  # test_in.ndim == 2
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_OOK_ALL_10S.ndim}-dimensional')
+
+    def test_e17_bad_carrier_recovery_type_complex_str(self):
+        """Bad carrier_recover: bad type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = 'CostasLoop'
+        test_in = b'10101010'
+        filt_in = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, NotImplementedError,
+                                      'Received an unsupported "carrier recovery" object')
+
+    def test_e18_bad_carrier_recovery_content_loop_band(self):
+        """Bad carrier_recover: bad content - loop bandwidth."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = CostasLoop(loop_bandwidth='0.01')
+        test_in = b'10101010'
+        filt_in = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e19_bad_carrier_recovery_content_damp_fact(self):
+        """Bad carrier_recover: bad content - damping factor."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = CostasLoop(damping_factor='0.707')
+        test_in = b'10101010'
+        filt_in = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e13_bad_filt_type_none(self):
+        """Bad filt: bad type - None."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = b'10101010'
+        filt_in = None  # As opposed to MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e14_bad_filt_type_str(self):
+        """Bad filt: bad type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = b'10101010'
+        filt_in = MatchedFilter.RRC.name  # As opposed to MatchedFilter.RRC
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, TypeError,
+                                      'argument should have been of type')
+
+    def test_e15_bad_filt_type_int(self):
+        """Bad filt: bad type - int."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = b'10101010'
+        filt_in = MatchedFilter.RECT_FIR.real  # As opposed to MatchedFilter.RECT_FIR
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, TypeError,
+                                      'argument should have been of type')
 
 
 class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
@@ -443,8 +545,9 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ONES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'argument is not positive')
 
     def test_b02_lowest_sample_rate_floats(self):
@@ -458,22 +561,43 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ZEROES
+        filt_in = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, ValueError,
                                       'argument is not positive')
 
 
 class SpecialModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Special Test Cases."""
 
-    @skip("TO DO: DON'T DO NOW... define this test case.")
-    def test_s01_(self):
-        """BPSKConfig() object configured to modulate, used to demodulate."""
-        samp_rate = 48000
+    def test_s01_carrier_recovery_costas_loop(self):
+        """Random bits; carrier recovery: Costas Loop."""
+        samp_rate = 4800
         sym_rate = 80
-        carr_rec = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_return_file(self.test_in1)
+        carr_rec = CostasLoop()
+        exp_ret = generate_bin_bytes(num_bits=128)
+        filt_in = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret, filt=filt_in)
+
+    def test_s02_carrier_recovery_of_random_bits_with_awgn(self):
+        """Random bits with AWGN at a reasonable SNR (dB) using a Costas Loop."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = CostasLoop()
+        exp_ret = generate_bin_bytes(num_bits=128)
+        snr_db = self.SNR_POOR
+        filt_in = MatchedFilter.NONE
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt_in)
+
+    def test_s03_everything_everywhere_all_at_once(self):
+        """Random AWGN bits, at a reasonable SNR (dB), using a Costas Loop and rectangular FIR."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = CostasLoop()
+        exp_ret = generate_bin_bytes(num_bits=256)
+        snr_db = self.SNR_POOR
+        filt_in = MatchedFilter.RECT_FIR
+        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt_in)
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

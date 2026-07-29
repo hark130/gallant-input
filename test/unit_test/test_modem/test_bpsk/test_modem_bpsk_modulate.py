@@ -17,6 +17,7 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
+from gallant_input.synch.costas_loop import CostasLoop
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
 
 
@@ -535,6 +536,15 @@ class SpecialModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         samp_rate = 19000  # RDS sample rate
         sym_rate = 1187.5  # RDS symbol rate
         carr_rec = None
+        bits = self.RDS_GROUP1
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits)
+
+    def test_s09_superfluous_carrier_recovery_obj(self):
+        """Added an unnecessary carrier recovery object to the config."""
+        samp_rate = 480000       # 5.03 Demod 101 FoI 1 sample rate
+        sym_rate = 800           # 5.03 Demod 101 FoI 1 symbol rate
+        carr_rec = CostasLoop()  # Default settings
         bits = self.RDS_GROUP1
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits)

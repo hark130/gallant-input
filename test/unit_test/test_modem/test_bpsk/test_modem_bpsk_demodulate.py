@@ -84,8 +84,6 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         Test author must call self.set_bpsk_ctor_args() *and* self.set_test_input().
 
         Args:
-            sample_rate: Sets the sample_rate argument input.  Accepts any input, bad or otherwise.
-            symbol_rate: Sets the symbol_rate argument input.  Accepts any input, bad or otherwise.
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """

@@ -1,12 +1,13 @@
 """This module defines common-use functionality to modify test input/create expected output."""
 
 # Standard Imports
+import random
 # Third Party Imports
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
 from gallant_input.modem.calc import calculate_sps
-from gallant_input.validation import validate_int_or_float, validate_ndarray
+from gallant_input.validation import validate_int_or_float, validate_ndarray, validate_pos_int
 
 
 def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
@@ -92,6 +93,23 @@ def convert_bin_bytes_to_ook(bin_bytes: bytes, sample_rate: int | float,
 
     # DONE
     return array
+
+
+def generate_bin_bytes(num_bits: int) -> bytes:
+    """Generate a random binary string as ASCII bytes.
+
+    Args:
+        num_bits: Number of random bits to generate.
+
+    Returns:
+        A bytes object containing ASCII '0' and '1' characters.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    validate_pos_int(num_bits, 'num_bits')
+    return f'{random.getrandbits(num_bits):0{num_bits}b}'.encode('ascii')
 
 
 def upsample_test_input(samples: numpy.ndarray, sample_rate: float | int,

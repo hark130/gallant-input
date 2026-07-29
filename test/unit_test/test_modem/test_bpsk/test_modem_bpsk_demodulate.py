@@ -284,6 +284,8 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
 
 
+# They're test cases, Pylint.  Leave me be.
+# pylint: disable=too-many-public-methods
 class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
     """Error Test Cases."""
 
@@ -529,6 +531,7 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(test_in, filt_in, TypeError,
                                       'argument should have been of type')
+# pylint: enable=too-many-public-methods
 
 
 class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):

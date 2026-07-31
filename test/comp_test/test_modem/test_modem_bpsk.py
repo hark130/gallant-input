@@ -497,7 +497,5 @@ class SpecialBPSKModemCompTest(BPSKModemCompTest):
         self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
 
 
-
-
 if __name__ == '__main__':
     execute_test_cases()

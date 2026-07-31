@@ -279,10 +279,8 @@ class BPSK(Modem):
         threshold = centers.mean()  # Average the center of the two clusters
         polar_diff = mapper[1] - mapper[0]
         deriv_axis = polar_diff / abs(polar_diff)
-        print(f'\nMAPPER0: {mapper[0]}\tMAPPER1: {mapper[1]}')  # DEBUGGING
         point0 = (mapper[0] * numpy.conj(deriv_axis)).real
         point1 = (mapper[1] * numpy.conj(deriv_axis)).real
-        print(f'POINT0: {point0}\t\tPOINT1: {point1}\n(DIFF: {polar_diff}) AXIS: {deriv_axis}')  # DEBUGGING
         bits = (symbol_metrics > threshold).astype(numpy.uint8) if point1 > point0 \
             else (symbol_metrics <= threshold).astype(numpy.uint8)
         bin_bytes = stringify_ndarray(bits)

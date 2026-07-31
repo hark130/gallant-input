@@ -1,6 +1,7 @@
 """Defines the class for Binary Phase Shift Key (BPSK) MOdulation/DEModulation."""
 
 # Standard Imports
+import math
 # Third Party Imports
 from sklearn.cluster import KMeans
 import numpy
@@ -14,7 +15,7 @@ from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.matched_filter import MatchedFilter
-from gallant_input.validation import (validate_bool, validate_ndarray, validate_pos_int,
+from gallant_input.validation import (BAD_MAPPER, validate_bool, validate_ndarray, validate_pos_int,
                                       validate_type)
 
 
@@ -69,8 +70,8 @@ class BPSK(Modem):
         # DONE
         return iq
 
-    def demodulate(self, samples: numpy.ndarray,
-                   filt: MatchedFilter = MatchedFilter.NONE) -> bytes:
+    def demodulate(self, samples: numpy.ndarray, filt: MatchedFilter = MatchedFilter.NONE,
+                   mapper: dict[int, complex] | None = None) -> bytes:
         """DEMoodulate binary data.
 
         Args:
@@ -78,6 +79,8 @@ class BPSK(Modem):
             filt: [OPTIONAL] The matched filter to apply.  MatchedFilter.RECT_FIR may be the
                 optimal matched filter for a modulator that did not do any pulse shaping but
                 the default is MatchedFilter.NONE (no matched filter applied).
+            mapper: [OPTIONAL] The bits --> symbol dictionary.  If None, defaults to
+                BPSK_MAP (see: gallant_input.modem.constants).
 
         Returns:
             The demodulated binary data.
@@ -96,14 +99,19 @@ class BPSK(Modem):
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
         validate_type(filt, 'filt', MatchedFilter)
+        _validate_mapper(mapper, 'mapper')
+
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
 
         # DEMODULATE IT
         # Step 1: Demodulate to metrics
-        metric = self.demodulate_to_metric(samples=samples, filt=filt)
+        metric = self.demodulate_to_metric(samples=samples, filt=filt, mapper=mapper)
         # Step 2: Recover symbols
         symbol_metrics = self.recover_symbols(metric=metric)
         # Step 3: Decide symbols
-        bit_stream = self.decide_symbols(symbol_metrics)
+        bit_stream = self.decide_symbols(symbol_metrics, mapper=mapper)
 
         # DONE
         return bit_stream
@@ -112,7 +120,8 @@ class BPSK(Modem):
     # Step 1: Demodulate to metrics
 
     def demodulate_to_metric(self, samples: numpy.ndarray,
-                             filt: MatchedFilter = MatchedFilter.NONE) -> numpy.ndarray:
+                             filt: MatchedFilter = MatchedFilter.NONE,
+                             mapper: dict[int, complex] | None = None) -> numpy.ndarray:
         """DEModulate complex baseband samples to continuous-valued symbol metrics (Demod Step 1/3).
 
         Summary: Produces a continuous-valued representation in which the modulation's symbol
@@ -132,6 +141,8 @@ class BPSK(Modem):
             filt: [OPTIONAL] The matched filter to apply.  MatchedFilter.RECT_FIR may be the
                 optimal matched filter for a modulator that did not do any pulse shaping but
                 the default is MatchedFilter.NONE (no matched filter applied).
+            mapper: [OPTIONAL] The bits --> symbol dictionary.  If None, defaults to
+                BPSK_MAP (see: gallant_input.modem.constants).
 
         Returns:
             A continuous-valued symbol metric sampled at the input sample rate
@@ -144,6 +155,8 @@ class BPSK(Modem):
         # LOCAL VARIABLES
         corrected = None  # A carrier-recovered copy of samples (if an object was provided)
         filtered = None   # A match filtered applied to the samples (as specified)
+        polar_diff = 0    # Difference between the mapper's complex values
+        deriv_axis = 0    # Derived axis based on the mapper
         metric = None     # Continuous-valued symbol metric
 
         # INPUT VALIDATION
@@ -151,6 +164,11 @@ class BPSK(Modem):
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=True)
         validate_type(filt, 'filt', MatchedFilter)
+        _validate_mapper(mapper, 'mapper')
+
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
 
         # DEMODULATE IT
         # Carrier recovery?
@@ -160,8 +178,11 @@ class BPSK(Modem):
             corrected = samples  # No recovery object
         # Receiver matched filter
         filtered = self._apply_matched_filter(samples=corrected, filt=filt)
+        # Derive the decision axis from the mapper
+        polar_diff = mapper[1] - mapper[0]
+        deriv_axis = polar_diff / abs(polar_diff)
         # Continuous decision metric
-        metric = filtered.real.astype(numpy.float32)
+        metric = (filtered * numpy.conj(deriv_axis)).real.astype(numpy.float32)
 
         # DONE
         return metric
@@ -211,7 +232,8 @@ class BPSK(Modem):
 
     # Step 3: Decide symbols
 
-    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+    def decide_symbols(self, symbol_metrics: numpy.ndarray,
+                       mapper: dict[int, complex] | None = None) -> bytes:
         """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
 
         Summary: Map each recovered symbol value to the discrete symbol/bit representation.
@@ -220,6 +242,8 @@ class BPSK(Modem):
 
         Args:
             symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            mapper: [OPTIONAL] The bits --> symbol dictionary.  If None, defaults to
+                BPSK_MAP (see: gallant_input.modem.constants).
 
         Returns:
             The demodulated binary data.
@@ -230,6 +254,8 @@ class BPSK(Modem):
         """
         # LOCAL VARIABLES
         threshold = 0.0  # The bit decision threshold
+        polar_diff = 0   # Difference between the mapper's complex values
+        deriv_axis = 0   # Derived axis based on the mapper
         bits = None      # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''  # The final binary as a bytes object
         reshaped = None  # Reshaped symbol_metrics into a single column
@@ -239,6 +265,11 @@ class BPSK(Modem):
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=False)
+        _validate_mapper(mapper, 'mapper')
+
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
 
         # DECIDE IT
         reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
@@ -246,7 +277,14 @@ class BPSK(Modem):
         kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
         centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
         threshold = centers.mean()  # Average the center of the two clusters
-        bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        polar_diff = mapper[1] - mapper[0]
+        deriv_axis = polar_diff / abs(polar_diff)
+        print(f'\nMAPPER0: {mapper[0]}\tMAPPER1: {mapper[1]}')  # DEBUGGING
+        point0 = (mapper[0] * numpy.conj(deriv_axis)).real
+        point1 = (mapper[1] * numpy.conj(deriv_axis)).real
+        print(f'POINT0: {point0}\t\tPOINT1: {point1}\n(DIFF: {polar_diff}) AXIS: {deriv_axis}')  # DEBUGGING
+        bits = (symbol_metrics > threshold).astype(numpy.uint8) if point1 > point0 \
+            else (symbol_metrics <= threshold).astype(numpy.uint8)
         bin_bytes = stringify_ndarray(bits)
 
         # DONE
@@ -327,3 +365,12 @@ class BPSK(Modem):
         """Validate attribute values."""
         self._validate_abc()
         validate_pos_int(self._bits_per_sym, 'internal attribute _bits_per_sym')
+
+
+def _validate_mapper(mapper: dict[int, complex] | None, param_name: str) -> None:
+    """Validate the mapper."""
+    bits_per_symbol = 1  # Binary modulation bits-per-symbol
+    if mapper is not None:
+        validate_type(mapper, 'mapper', dict)
+        if len(mapper) != math.pow(2, bits_per_symbol):
+            raise ValueError(BAD_MAPPER.format(param_name, len(mapper), bits_per_symbol))

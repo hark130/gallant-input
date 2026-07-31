@@ -17,7 +17,9 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
+from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
 from gallant_input.synch.costas_loop import CostasLoop
+from test.modify import generate_bin_bytes, rotate_mapping
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
 
 
@@ -179,6 +181,26 @@ class NormalModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         carr_rec = None
         bits = b'11111111'
         mapper = None  # Defaults to BPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_n04_quad_word_random_bits(self):
+        """Eight bytes of random bits."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        bits = generate_bin_bytes(num_bits=8*8)
+        mapper = None  # Defaults to BPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_n05_quad_word_random_bits_flipped_mapper(self):
+        """Eight bytes of random bits, inverted constellation mapping."""
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        bits = generate_bin_bytes(num_bits=8*8)
+        mapper = {0: 1+0j, 1: -1+0j}  # Standard mapping: {0: -1+0j, 1: 1+0j}
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits, mapper)
 
@@ -363,6 +385,39 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_exception_input(bits, mapper, ValueError,
                                       'Invalid binary value detected')
+
+    def test_e17_bad_mapper_type_list(self):
+        """Bad mapper: wrong type - string."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = [-1+0j, 1+0j]  # Should be a dict
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(bits, mapper, TypeError,
+                                      'argument should have been of type')
+
+    def test_e18_bad_mapper_value_half_a_map(self):
+        """Bad mapper: bad value - only one half of a binary mapping."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = {key: BPSK_MAP[key] for key in list(BPSK_MAP)[:1]}  # Only one entry from BPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(bits, mapper, ValueError,
+                                      'The length of the "mapper" dictionary')
+
+    def test_e19_bad_mapper_value_not_a_binary_map(self):
+        """Bad mapper: bad value - Quadrature Phase-Shift Keying (QPSK) mapping."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = QPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(bits, mapper, ValueError,
+                                      'The length of the "mapper" dictionary')
 
 
 class BoundaryModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
@@ -589,6 +644,214 @@ class SpecialModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         carr_rec = CostasLoop()  # Default settings
         bits = self.RDS_GROUP1
         mapper = None            # Defaults to BPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s10_weird_mapper_rotated_30_deg(self):
+        """Weird mapper: rotated 30° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 6)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s11_weird_mapper_rotated_45_deg(self):
+        """Weird mapper: rotated 45° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 4)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s12_weird_mapper_rotated_60_deg(self):
+        """Weird mapper: rotated 60° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 3)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s13_weird_mapper_rotated_90_deg(self):
+        """Weird mapper: rotated 90° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s14_weird_mapper_rotated_120_deg(self):
+        """Weird mapper: rotated 120° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 2 * numpy.pi / 3)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s15_weird_mapper_rotated_135_deg(self):
+        """Weird mapper: rotated 135° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 4)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s16_weird_mapper_rotated_150_deg(self):
+        """Weird mapper: rotated 150° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 6)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s17_weird_mapper_rotated_180_deg(self):
+        """Weird mapper: rotated 180° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi)  # Flipped position
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s18_weird_mapper_rotated_210_deg(self):
+        """Weird mapper: rotated 210° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 7 * numpy.pi / 6)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s19_weird_mapper_rotated_225_deg(self):
+        """Weird mapper: rotated 225° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 4)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s20_weird_mapper_rotated_240_deg(self):
+        """Weird mapper: rotated 240° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 4 * numpy.pi / 3)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s21_weird_mapper_rotated_270_deg(self):
+        """Weird mapper: rotated 270° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 2)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s22_weird_mapper_rotated_300_deg(self):
+        """Weird mapper: rotated 300° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 3)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s23_weird_mapper_rotated_315_deg(self):
+        """Weird mapper: rotated 315° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 7 * numpy.pi / 4)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s24_weird_mapper_rotated_330_deg(self):
+        """Weird mapper: rotated 330° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 11 * numpy.pi / 6)
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_s25_weird_mapper_rotated_360_deg(self):
+        """Weird mapper: rotated 360° on the complex plane (effectively, no change).
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        mapper = rotate_mapping(BPSK_MAP, 2 * numpy.pi)
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits, mapper)
 

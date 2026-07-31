@@ -20,10 +20,10 @@ from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.synch.costas_loop import CostasLoop
-from test.modify import add_awgn, convert_bin_bytes_to_bpsk, generate_bin_bytes
+from test.modify import add_awgn, convert_bin_bytes_to_bpsk, generate_bin_bytes, rotate_mapping
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
 
 
@@ -91,7 +91,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
         self.run_test()
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def run_test_exception_input(self, samples: Any, filt: Any,
+    def run_test_exception_input(self, samples: Any, filt: Any, mapper: Any,
                                  exception_type: Exception, exception_msg: str) -> None:
         """Common method calls for a test case expected to raise an exception.
 
@@ -104,7 +104,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             exception_type: An Exception type to expect (e.g., ValueError).
             exception_msg: A sub-string, empty or not, to look for in the raised Exception.
         """
-        self.set_test_input(samples, filt)
+        self.set_test_input(samples, filt, mapper)
         self.run_test_exception(exception_type=exception_type, exception_msg=exception_msg)
 
     def run_test_return(self, sample_rate: float, symbol_rate: float,
@@ -142,7 +142,7 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
                                     bin_bytes=exp_ret, bit_map=bit_map)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                    carrier_recovery=carrier_recovery, samples=test_in,
-                                   exp_ret=exp_ret, filt=filt)
+                                   exp_ret=exp_ret, filt=filt, mapper=bit_map)
 
     def run_test_return_file(self, sigmf_input: Path,
                              sample_dtype: DTypeLike = numpy.complex64) -> None:
@@ -159,7 +159,8 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
 
     def run_test_return_input(self, sample_rate: float, symbol_rate: float,
                               carrier_recovery: CostasLoop | None, samples: numpy.ndarray,
-                              exp_ret: bytes, filt: MatchedFilter = MatchedFilter.NONE) -> None:
+                              exp_ret: bytes, filt: MatchedFilter = MatchedFilter.NONE,
+                              mapper: dict[int, complex] | None = None) -> None:
         """Common method calls for a test case expected to return an expected result.
 
         Args:
@@ -168,15 +169,18 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             carrier_recovery: Sets the carrier_recovery ctor argument input.
             samples: Test case input.
             exp_ret: The expected return value from the method call.
+            filt: [OPTIONAL] Test case input.
+            mapper: [OPTIONAL] Test case input.
         """
-        self.set_test_input(samples, filt)
+        self.set_test_input(samples, filt, mapper)
         self.run_test_return(sample_rate=sample_rate, symbol_rate=symbol_rate,
                              carrier_recovery=carrier_recovery, exp_ret=exp_ret)
 
     def run_test_return_noisy(self, sample_rate: float, symbol_rate: float,
                               carrier_recovery: CostasLoop | None,
                               exp_ret: bytes, snr_db: float | int,
-                              filt: MatchedFilter = MatchedFilter.NONE) -> None:
+                              filt: MatchedFilter = MatchedFilter.NONE,
+                              mapper: dict[int, complex] | None = None) -> None:
         """Common method calls for a test case expected to return a computed result.
 
         Args:
@@ -184,12 +188,14 @@ class ModemBPSKDemodulateUnitTest(ModemBPSKUnitTest):
             symbol_rate: Sets the symbol_rate ctor argument input.
             exp_ret: Expected return value (also used to compute the test case input).
             snr_db: The desigred SNR of the test case samples, in decibels.
+            filt: [OPTIONAL] Test case input.
+            mapper: [OPTIONAL] Test case input.
         """
         test_in = create_noisy_test_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                           bin_bytes=exp_ret, snr_db=snr_db)
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                    samples=test_in, filt=filt, carrier_recovery=carrier_recovery,
-                                   exp_ret=exp_ret)
+                                   exp_ret=exp_ret, mapper=mapper)
 
 
 class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
@@ -294,8 +300,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument must be a')
 
     def test_e02_bad_sample_rate_type_string(self):
@@ -305,8 +312,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument must be a')
 
     def test_e03_bad_sample_rate_value_zero(self):
@@ -316,8 +324,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e04_bad_sample_rate_value_negative(self):
@@ -327,8 +336,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "sample_rate" argument is not positive')
 
     def test_e05_bad_sample_rate_value_zero_float(self):
@@ -338,8 +348,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "sample_rate" argument may not be 0')
 
     def test_e06_bad_sample_rate_value_negative_float(self):
@@ -349,8 +360,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "sample_rate" argument *must* be > 0')
 
     def test_e07_bad_symbol_rate_type_none(self):
@@ -360,8 +372,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument must be a')
 
     def test_e08_bad_symbol_rate_type_string(self):
@@ -371,8 +384,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument must be a')
 
     def test_e09_bad_symbol_rate_value_zero(self):
@@ -382,8 +396,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ONES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e10_bad_symbol_rate_value_negative(self):
@@ -393,8 +408,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "symbol_rate" argument is not positive')
 
     def test_e11_bad_symbol_rate_value_zero_float(self):
@@ -404,8 +420,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "symbol_rate" argument may not be 0')
 
     def test_e12_bad_symbol_rate_value_negative_float(self):
@@ -415,8 +432,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = self.SAMPLES_OOK_ALL_01S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'The "symbol_rate" argument *must* be > 0')
 
     def test_e13_bad_samples_type_none(self):
@@ -426,8 +444,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = None
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e14_bad_samples_type_complex_list(self):
@@ -437,8 +456,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = [0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j, 0.+0.j, 1.+0.j]
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e15_bad_samples_value_empty(self):
@@ -448,8 +468,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = numpy.array([], dtype=numpy.complex64)  # len(test_in) == 0
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'ndarray may not be empty')
 
     def test_e16_bad_samples_invalid_dimensions(self):
@@ -459,8 +480,9 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         carr_rec = None
         test_in = numpy.resize(self.SAMPLES_OOK_ALL_10S, (2, 2))  # test_in.ndim == 2
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       f'value is {test_in.ndim}-dimensional instead of '
                                       f'{self.SAMPLES_OOK_ALL_10S.ndim}-dimensional')
 
@@ -469,10 +491,11 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = 'CostasLoop'
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, NotImplementedError,
+        self.run_test_exception_input(test_in, filt_in, mapper, NotImplementedError,
                                       'Received an unsupported "carrier recovery" object')
 
     def test_e18_bad_carrier_recovery_content_loop_band(self):
@@ -480,10 +503,11 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = CostasLoop(loop_bandwidth='0.01')
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e19_bad_carrier_recovery_content_damp_fact(self):
@@ -491,10 +515,11 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = CostasLoop(damping_factor='0.707')
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e13_bad_filt_type_none(self):
@@ -502,10 +527,11 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = None  # As opposed to MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e14_bad_filt_type_str(self):
@@ -513,10 +539,11 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.RRC.name  # As opposed to MatchedFilter.RRC
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
 
     def test_e15_bad_filt_type_int(self):
@@ -524,11 +551,48 @@ class ErrorModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        test_in = b'10101010'
+        test_in = self.SAMPLES_OOK_ALL_10S
         filt_in = MatchedFilter.RECT_FIR.real  # As opposed to MatchedFilter.RECT_FIR
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, TypeError,
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
                                       'argument should have been of type')
+
+    def test_e16_bad_mapper_type_list(self):
+        """Bad mapper: wrong type - list."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.RECT_FIR
+        mapper = [-1+0j, 1+0j]  # Should be a dict
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, mapper, TypeError,
+                                      'argument should have been of type')
+
+    def test_e17_bad_mapper_value_half_a_map(self):
+        """Bad mapper: bad value - only one half of a binary mapping."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.RECT_FIR
+        mapper = {key: BPSK_MAP[key] for key in list(BPSK_MAP)[:1]}  # Only one entry from BPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
+                                      'The length of the "mapper" dictionary')
+
+    def test_e18_bad_mapper_value_not_a_binary_map(self):
+        """Bad mapper: bad value - Quadrature Phase-Shift Keying (QPSK) mapping."""
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        test_in = self.SAMPLES_OOK_ALL_10S
+        filt_in = MatchedFilter.RECT_FIR
+        mapper = QPSK_MAP
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
+                                      'The length of the "mapper" dictionary')
 # pylint: enable=too-many-public-methods
 
 
@@ -547,8 +611,9 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ONES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'argument is not positive')
 
     def test_b02_lowest_sample_rate_floats(self):
@@ -563,8 +628,9 @@ class BoundaryModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         # Test case input
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         filt_in = MatchedFilter.NONE
+        mapper = None
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
-        self.run_test_exception_input(test_in, filt_in, ValueError,
+        self.run_test_exception_input(test_in, filt_in, mapper, ValueError,
                                       'argument is not positive')
 
 
@@ -599,6 +665,214 @@ class SpecialModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         snr_db = self.SNR_POOR
         filt_in = MatchedFilter.RECT_FIR
         self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt_in)
+
+    def test_s04_weird_mapper_rotated_30_deg(self):
+        """Weird mapper: rotated 30° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 6)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s05_weird_mapper_rotated_45_deg(self):
+        """Weird mapper: rotated 45° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 4)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s06_weird_mapper_rotated_60_deg(self):
+        """Weird mapper: rotated 60° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 3)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s07_weird_mapper_rotated_90_deg(self):
+        """Weird mapper: rotated 90° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s08_weird_mapper_rotated_120_deg(self):
+        """Weird mapper: rotated 120° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 2 * numpy.pi / 3)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s09_weird_mapper_rotated_135_deg(self):
+        """Weird mapper: rotated 135° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 4)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s10_weird_mapper_rotated_150_deg(self):
+        """Weird mapper: rotated 150° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 6)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s11_weird_mapper_rotated_180_deg(self):
+        """Weird mapper: rotated 180° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, numpy.pi)  # Flipped position
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s12_weird_mapper_rotated_210_deg(self):
+        """Weird mapper: rotated 210° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 7 * numpy.pi / 6)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s13_weird_mapper_rotated_225_deg(self):
+        """Weird mapper: rotated 225° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 4)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s14_weird_mapper_rotated_240_deg(self):
+        """Weird mapper: rotated 240° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 4 * numpy.pi / 3)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s15_weird_mapper_rotated_270_deg(self):
+        """Weird mapper: rotated 270° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 2)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s16_weird_mapper_rotated_300_deg(self):
+        """Weird mapper: rotated 300° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 5 * numpy.pi / 3)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s17_weird_mapper_rotated_315_deg(self):
+        """Weird mapper: rotated 315° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 7 * numpy.pi / 4)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s18_weird_mapper_rotated_330_deg(self):
+        """Weird mapper: rotated 330° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 11 * numpy.pi / 6)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
+
+    def test_s19_weird_mapper_rotated_360_deg(self):
+        """Weird mapper: rotated 360° on the complex plane (effectively, no change).
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        bits = b'10101010'
+        filt_in = MatchedFilter.NONE
+        mapper = rotate_mapping(BPSK_MAP, 2 * numpy.pi)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt_in, mapper)
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

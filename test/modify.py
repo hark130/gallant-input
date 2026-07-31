@@ -7,7 +7,8 @@ import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
 from gallant_input.modem.calc import calculate_sps
-from gallant_input.validation import validate_int_or_float, validate_ndarray, validate_pos_int
+from gallant_input.validation import (validate_float, validate_int_or_float, validate_ndarray,
+                                      validate_pos_int, validate_type)
 
 
 def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
@@ -56,6 +57,19 @@ def add_awgn(samples: numpy.ndarray, snr_db: float | int) -> numpy.ndarray:
 
     # DONE
     return noisy.astype(samples.dtype)  # Cast back to original dtype
+
+
+def change_sample_phase(sample: complex, delta_phase: float) -> complex:
+    """Change the sample's phase by delta_phase.
+
+    Negative values will decrease the phase.  A delta_phase of zero will result in no change.
+    """
+    # INPUT VALIDATION
+    validate_type(sample, 'sample', complex)
+    validate_float(delta_phase, 'delta_phase')
+
+    # DONE
+    return sample * numpy.exp(1j * delta_phase)
 
 
 def convert_bin_bytes_to_bpsk(bin_bytes: bytes, sample_rate: int | float, symbol_rate: int | float,
@@ -110,6 +124,29 @@ def generate_bin_bytes(num_bits: int) -> bytes:
     """
     validate_pos_int(num_bits, 'num_bits')
     return f'{random.getrandbits(num_bits):0{num_bits}b}'.encode('ascii')
+
+
+def rotate_mapping(mapping: dict[int, complex], delta_phase: float) -> dict[int, complex]:
+    """Rotate the phase of every value in mapping by delta_phase, preserving the keys.
+
+    Example:
+        rotate_mapping({0: -1+0j, 1: 1+0j}, 0.0)          ≈ {0: -1+0j, 1: 1+0j}  # No change
+        rotate_mapping({0: -1+0j, 1: 1+0j}, numpy.pi / 2) ≈ {0: 0-1j, 1: 0+1j}   # Rotated 90°
+        rotate_mapping({0: -1+0j, 1: 1+0j}, numpy.pi)     ≈ {0: 1+0j, 1: -1+0j}  # Rotated 180°
+        rotate_mapping({0: -1+0j, 1: 1+0j}, 2 * numpy.pi) ≈ {0: -1+0j, 1: 1+0j}  # No change
+    """
+    # LOCAL VARIABLES
+    new_map = {}  # Rotated mapping
+
+    # INPUT VALIDATION
+    validate_type(mapping, 'mapping', dict)
+
+    # ROTATE IT
+    for key, val in mapping.items():
+        new_map[key] = change_sample_phase(sample=val, delta_phase=delta_phase)
+
+    # DONE
+    return new_map
 
 
 def upsample_test_input(samples: numpy.ndarray, sample_rate: float | int,

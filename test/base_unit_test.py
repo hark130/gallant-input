@@ -244,11 +244,13 @@ class BaseUnitTest(TediousUnitTest):
         Tests type, number of dimensions, shape, data type, and all values.
         """
         # LOCAL VARIABLES
-        def_error = 'Array {} mismatch:'
+        def_error = 'Array {} mismatch:'  # Default error string template
+        dtype = None                      # Expected return data type
 
         # VALIDATE IT
         # Type
         if self.validate_ndarray_return_type(return_value=return_value):
+            dtype = self._exp_return.dtype
             # Number of dimensions
             if return_value.ndim != self._exp_return.ndim:
                 self._add_test_failure(f'{def_error.format("dimension")} Expected '
@@ -260,13 +262,24 @@ class BaseUnitTest(TediousUnitTest):
                                        f'{self._exp_return.shape} shape '
                                        f'but received {return_value.shape} instead')
             # Data Type
-            if return_value.dtype != self._exp_return.dtype:
+            if return_value.dtype != dtype:
                 self._add_test_failure(f'{def_error.format("dtype")} Expected '
-                                       f'{self._exp_return.dtype} shape '
+                                       f'{dtype} shape '
                                        f'but received {return_value.dtype} instead')
             # Final Catch All
-            if not numpy.array_equal(return_value, self._exp_return):
-                self._add_test_failure('The expected array is not equal to the returned array')
+            # Floating point type arrays require special comparison
+            if numpy.issubdtype(dtype, numpy.floating) \
+                or numpy.issubdtype(dtype, numpy.complexfloating):
+                if not numpy.allclose(return_value, self._exp_return, atol=1e-6, rtol=0):
+                    self._add_test_failure(f'The expected {dtype} array is not equivalent '
+                                           'to the returned array')
+                    print(f'\nRET: {return_value}')  # DEBUGGING
+                    print(f'EXP: {self._exp_return}')  # DEBUGGING
+            # Non-floating point comparison
+            elif not numpy.array_equal(return_value, self._exp_return):
+                    print(f'\nRET: {return_value}')  # DEBUGGING
+                    print(f'EXP: {self._exp_return}')  # DEBUGGING
+                    self._add_test_failure('The expected array is not equal to the returned array')
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

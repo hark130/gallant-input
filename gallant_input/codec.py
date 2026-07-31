@@ -5,7 +5,7 @@ import math
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import (validate_binary_bytes, validate_float_or_complex,
+from gallant_input.validation import (BAD_MAPPER, validate_binary_bytes, validate_float_or_complex,
                                       validate_int, validate_ndarray, validate_pos_int,
                                       validate_type)
 
@@ -202,8 +202,7 @@ def _validate_bps_to_mapper(bits_per_symbol: int, mapper: dict[int, float | comp
     validate_pos_int(bits_per_symbol, 'bits_per_symbol')
     validate_type(mapper, 'mapper', dict)
     if len(mapper) != math.pow(2, bits_per_symbol):
-        raise ValueError(f'The length of the "mapper" dictionary ({len(mapper)}) does not equal '
-                         f'2^{bits_per_symbol}')
+        raise ValueError(BAD_MAPPER.format('mapper', len(mapper), bits_per_symbol))
     for key, value in mapper.items():
         validate_int(key, 'a key in the mapper dictionary')
         if key < 0:

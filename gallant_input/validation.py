@@ -22,6 +22,8 @@ from numpy.typing import ArrayLike
 import numpy
 # Local Imports
 
+# Template string for bad mapper lengths: argument name, mapper length, bits per symbol
+BAD_MAPPER: Final[str] = 'The length of the "{}" dictionary ({}) does not equal {}'
 # Template string for arguments of the wrong data type
 _BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty

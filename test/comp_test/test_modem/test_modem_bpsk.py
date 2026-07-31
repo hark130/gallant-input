@@ -468,230 +468,35 @@ class BoundaryBPSKModemCompTest(BPSKModemCompTest):
 class SpecialBPSKModemCompTest(BPSKModemCompTest):
     """Special Test Cases."""
 
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s01_realistic_usage_mo_dem(self):
-        """5.03 Demod 101 FoI 2, mo --> dem order."""
+    def test_s01_rds_sized_random_bits_mo_dem(self):
+        """Single byte of random bits, mo --> dem order."""
         # BPSKConfig() args
-        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
-        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
         # modulate()/demodulate() args
-        bin_bytes = b'10101010'
+        bin_bytes = generate_bin_bytes(num_bits=104*8*4)  # The size of a full RDS Group
+        mapper = None  # Defaults to BPSK_MAP
         samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
+        filt = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=True)
 
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s02_realistic_usage_dem_mo(self):
-        """Radio Data System (RDS) inspired settings, dem --> mo order."""
-        samp_rate = 57000  # RDS-inspired
-        sym_rate = 2375    # RDS-inspired
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.set_test_file_input_return(self.test_bfsk_in2)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s03_realistic_usage_mo_dem(self):
-        """5.03 Demod 101 FoI 2, mo --> dem order."""
+    def test_s02_single_word_random_bits_dem_mo(self):
+        """Single byte of random bits, dem --> mo order."""
         # BPSKConfig() args
-        samp_rate = 480000  # 5.03 Demod 101 FoI 2 sample rate
-        sym_rate = 800      # 5.03 Demod 101 FoI 2 symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
         # modulate()/demodulate() args
-        bin_bytes = b'10101010'
-        samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
+        bin_bytes = generate_bin_bytes(num_bits=104*8*4)  # The size of a full RDS Group
+        mapper = BPSK_MAP
+        samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
+        filt = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
 
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s04_realistic_usage_dem_mo(self):
-        """5.03 Demod 101 FoI 2, dem --> mo order."""
-        # BPSKConfig() args
-        samp_rate = 480000  # 5.03 Demod 101 FoI 3 sample rate
-        sym_rate = 800      # 5.03 Demod 101 FoI 3 symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.set_test_file_input_return(self.test_bfsk_in3)
 
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s05_real_data_rds_set_msg00_a_mo_dem(self):
-        """RDS SET 1: KONO 101.1 FM Group Type 00A, mo --> dem order."""
-        # BPSKConfig() args
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = self.RDS_SET1_MSG00A
-        samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s06_real_data_rds_set_msg00_a_dem_mo(self):
-        """RDS SET 1: KONO 101.1 FM Group Type 00A, dem --> mo order."""
-        # BPSKConfig() args
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=False)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s07_real_data_rds_set_msg00_a_mo_dem(self):
-        """RDS SET 1: KONO 101.1 FM Group Type 00A, mo --> dem order."""
-        # BPSKConfig() args
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = self.RDS_SET1_MSG00A
-        samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s08_real_data_rds_set_msg00_a_dem_mo(self):
-        """RDS SET 1: KONO 101.1 FM Group Type 00A, dem --> mo order."""
-        # BPSKConfig() args
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=False)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s09_real_data_fhss_chan_01_preamble_mo_dem(self):
-        """5.05 FHSS Channel 01 Preamble, mo --> dem order."""
-        # BPSKConfig() args
-        samp_rate = 26000000  # 5.05 FHSS sample rate
-        sym_rate = 250000     # 5.05 FHSS symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = self.FHSS_CHANNEL_01_PREAMBLE
-        samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s10_real_data_fhss_chan_01_preamble_dem_mo(self):
-        """5.05 FHSS Channel 01 Preamble, dem --> mo order."""
-        # BPSKConfig() args
-        samp_rate = 26000000  # 5.05 FHSS sample rate
-        sym_rate = 250000     # 5.05 FHSS symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = None  # Will be defined by dynamic test case execution
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=False)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s11_real_data_rds_set_msg00_a_with_awgn(self):
-        """RDS SET 1: KONO 101.1 FM Live Capture of Group Type 00A with AWGN (poor SNR)."""
-        # BPSKConfig() args
-        samp_rate = 57000  # RDS is sampled at 57 kHz to allow for integer-based processing
-        sym_rate = 2375    # Twice the bit rate of 1187.5 bits per second (bps)
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        snr_db = self.SNR_POOR
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_noisy_input(samples, snr_db)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s12_real_data_demod_101_foi_1_pdu_with_awgn(self):
-        """5.03 Demod 101 FoI 1 PDU with AWGN (poor SNR)."""
-        # BPSKConfig() args
-        samp_rate = 480000  # 5.03 Demod 101 FoI 1 sample rate
-        sym_rate = 800      # 5.03 Demod 101 FoI 1 symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        snr_db = self.SNR_POOR
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_noisy_input(samples, snr_db)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s13_real_data_fhss_chan_01_preamble_with_awgn(self):
-        """5.05 FHSS Channel 01 Preamble with AWGN (poor SNR)."""
-        # BPSKConfig() args
-        samp_rate = 26000000  # 5.05 FHSS sample rate
-        sym_rate = 250000     # 5.05 FHSS symbol rate
-        f0 = -sym_rate / 2
-        f1 = sym_rate / 2
-        phase = None
-        # modulate()/demodulate() args
-        samples = "TO DO: DON'T DO NOW... Find some actual BFSK samples"
-        snr_db = self.SNR_POOR
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_noisy_input(samples, snr_db)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s14_real_data_demod_101_foi3_mo_dem(self):
-        """Demod 101 FoI3, decimated and filtered, mo --> dem order."""
-        # BPSKConfig() args
-        samp_rate = 240000  # Demod 101 FoI3, decimated
-        sym_rate = 600      # Demod 101 FoI3 baud rate
-        f0 = -9766 / 2      # Demod 101 FoI3 9.766KHz width
-        f1 = 9766 / 2       # Demod 101 FoI3 9.766KHz width
-        phase = None
-        # modulate()/demodulate() args
-        bin_bytes = \
-            b'0000000001010101010101010101010101010101110100111001000101010111' \
-            b'0110010101101100011000110110111101101101011001010010000001100010' \
-            b'0110000101100011011010110010000100100000010101000110100001101001' \
-            b'0111001100100000011010010111001100100000010001000110010101101101' \
-            b'0110111101100100001000000011000100110000001100010010000001110000' \
-            b'0110000101110010011101000010000000110010001011100010000001100110' \
-            b'0110110001100001011001110111101101100110011100100011001101110001' \
-            b'0111010101000101011011100100001101111001010111110111001101001000' \
-            b'0011000101000110001101110101111101101011001100110111100100110001' \
-            b'01101110010001110111110100000000'
-        samples = None  # Will be defined by dynamic test case execution
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.run_test_return_input(bin_bytes, samples, modem_order=True)
-
-    @skip("TO DO: DON'T DO NOW... Update and define this test case")
-    def test_s15_single_byte_alt_bits_dem_mo(self):
-        """Demod 101 FoI3, decimated and filtered, dem --> mo order."""
-        # BPSKConfig() args
-        samp_rate = 240000  # Demod 101 FoI3, decimated
-        sym_rate = 600      # Demod 101 FoI3 baud rate
-        f0 = -9766 / 2      # Demod 101 FoI3 9.766KHz width
-        f1 = 9766 / 2       # Demod 101 FoI3 9.766KHz width
-        phase = None
-        self.set_bpsk_ctor_args(samp_rate, sym_rate, f0, f1, phase)
-        self.set_test_file_input_return(self.test_bfsk_in4)
 
 
 if __name__ == '__main__':

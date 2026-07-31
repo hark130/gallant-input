@@ -387,7 +387,7 @@ class ErrorModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
                                       'Invalid binary value detected')
 
     def test_e17_bad_mapper_type_list(self):
-        """Bad mapper: wrong type - string."""
+        """Bad mapper: wrong type - list."""
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None

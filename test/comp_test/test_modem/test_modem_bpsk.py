@@ -11,6 +11,7 @@ Typical Usage:
 
 # Standard Imports
 from typing import Any
+from unittest import skip
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 import numpy
@@ -108,7 +109,6 @@ class BPSKModemCompTest(ModemCompTest):
         self.set_oob_test_input(bin_bytes, mapper, samples, filt, modem_order)
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
-    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def run_test_return_input(self, bin_bytes: Any, mapper: Any, samples: Any, filt: Any,
                               modem_order: bool = True) -> None:
@@ -129,8 +129,8 @@ class BPSKModemCompTest(ModemCompTest):
                                    filt=filt, modem_order=modem_order)
         self.run_test()
 
-    def run_test_return_noisy_input(self, samples: Any, filt: Any, mapper: Any,
-                                    snr_db: float | int) -> None:
+    def run_test_return_noisy_input(self, bin_bytes: Any, samples: Any, filt: Any, mapper: Any,
+                                    snr_db: float | int, modem_order: bool = False) -> None:
         """Common method for a test case expected to return an expected result on noisy input.
 
         The expected results depends on modem_order.  Test author must first call
@@ -143,12 +143,15 @@ class BPSKModemCompTest(ModemCompTest):
             filt: Test case input for the demodulate method argument of the same name.
             mapper: Test case input for the modulate method argument of the same name.
             snr_db: The desigred SNR, in decibels, to add to samples.
+            modem_order: [OPTIONAL] This method was written with the assumption that the noisy
+                samples will be demodulated and then modulated again.
         """
         noisy = add_awgn(samples, snr_db)
-        self.set_test_input_return(bin_bytes=None, samples=noisy, filt=filt, mapper=mapper,
-                                   modem_order=False, skip_exp_ret=True)
+        self.set_test_input_return(bin_bytes=bin_bytes, samples=noisy, filt=filt, mapper=mapper,
+                                   modem_order=modem_order, skip_exp_ret=True)
         self.expect_return(samples)
         self.run_test()
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
@@ -372,6 +375,37 @@ class NormalBPSKModemCompTest(BPSKModemCompTest):
         filt = MatchedFilter.RECT_FIR
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
+
+    @skip("Test framework doesn't support this specific type of instrumentation")
+    def test_n11_random_bits_noisy_mo_dem(self):
+        """Random bits w/ AWGN, at a reasonable SNR, mo --> dem order."""
+        # BPSKConfig() args
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        mapper = None  # Defaults to BPSK_MAP
+        samples = None  # Will be defined by dynamic test case execution
+        filt = MatchedFilter.RECT_FIR
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_noisy_input(bin_bytes=bin_bytes, samples=samples, filt=filt,
+                                         mapper=mapper, snr_db=self.SNR_POOR, modem_order=True)
+
+    def test_n12_random_bits_noisy_dem_mo(self):
+        """Random bits w/ AWGN, at a reasonable SNR, dem --> mo order."""
+        # BPSKConfig() args
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
+        samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
+        filt = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_noisy_input(bin_bytes=bin_bytes, samples=samples, filt=filt,
+                                         mapper=mapper, snr_db=self.SNR_POOR, modem_order=False)
 
 
 class BoundaryBPSKModemCompTest(BPSKModemCompTest):

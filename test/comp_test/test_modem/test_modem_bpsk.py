@@ -302,7 +302,7 @@ class NormalBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=1*8)
-        mapper = BPSK_MAP
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
@@ -316,7 +316,7 @@ class NormalBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=2*8)
-        mapper = BPSK_MAP
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
@@ -330,7 +330,7 @@ class NormalBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=4*8)
-        mapper = BPSK_MAP
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
@@ -344,9 +344,37 @@ class NormalBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=8*8)
-        mapper = BPSK_MAP
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
+
+    def test_n09_random_bits_filtered_mo_dem(self):
+        """Random bits, matched filter: rectangular FIR, mo --> dem order."""
+        # BPSKConfig() args
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        mapper = None  # Defaults to BPSK_MAP
+        samples = None  # Will be defined by dynamic test case execution
+        filt = MatchedFilter.RECT_FIR
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=True)
+
+    def test_n10_random_bits_filtered_dem_mo(self):
+        """Random bits, matched filter: rectangular FIR, dem --> mo order."""
+        # BPSKConfig() args
+        samp_rate = 4800
+        sym_rate = 80
+        carr_rec = None
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        mapper = BPSK_MAP  # Used by test code "double do" helper function
+        samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
+        filt = MatchedFilter.RECT_FIR
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
 

@@ -173,8 +173,6 @@ class BPSKModemCompTest(ModemCompTest):
         self._mod_arg_bb = bin_bytes
         self._mod_arg_map = mapper
         self._defined_test_input = True
-        print(f'BIN BYTES: {bin_bytes}')  # DEBUGGING
-        print(f'MAPPER: {mapper}')  # DEBUGGING
 
     def set_oob_test_input(self, bin_bytes: Any, mapper: Any, samples: Any,
                            filt: Any, modem_order: bool = True) -> None:
@@ -888,7 +886,6 @@ class SpecialBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=104*8*4)  # The size of a full RDS Group
-        print(f'\nTEST CASE BIN BYTES: {bin_bytes}')  # DEBUGGING
         mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 2)
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE

@@ -273,12 +273,8 @@ class BaseUnitTest(TediousUnitTest):
                 if not numpy.allclose(return_value, self._exp_return, atol=1e-6, rtol=0):
                     self._add_test_failure(f'The expected {dtype} array is not equivalent '
                                            'to the returned array')
-                    print(f'\nRET: {return_value}')  # DEBUGGING
-                    print(f'EXP: {self._exp_return}')  # DEBUGGING
             # Non-floating point comparison
             elif not numpy.array_equal(return_value, self._exp_return):
-                    print(f'\nRET: {return_value}')  # DEBUGGING
-                    print(f'EXP: {self._exp_return}')  # DEBUGGING
                     self._add_test_failure('The expected array is not equal to the returned array')
 
     # CLASS HELPER METHODS

@@ -10,9 +10,7 @@ Typical Usage:
 """
 
 # Standard Imports
-from pathlib import Path
 from typing import Any
-from unittest import skip
 # Third Party Imports
 from tediousstart.tediousstart import execute_test_cases
 import numpy
@@ -89,6 +87,7 @@ class BPSKModemCompTest(ModemCompTest):
     # COMMON-USE METHODS
     # Methods listed in "suggested" call order
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def run_test_exception(self, exception_type: Exception, exception_msg: str,
                            bin_bytes: Any, mapper: Any, samples: Any, filt: Any,
                            modem_order: bool = True) -> None:
@@ -109,6 +108,7 @@ class BPSKModemCompTest(ModemCompTest):
         self.set_oob_test_input(bin_bytes, mapper, samples, filt, modem_order)
         self.expect_exception(exception_type=exception_type, exception_msg=exception_msg)
         self.run_test()
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def run_test_return_input(self, bin_bytes: Any, mapper: Any, samples: Any, filt: Any,
                               modem_order: bool = True) -> None:
@@ -129,7 +129,8 @@ class BPSKModemCompTest(ModemCompTest):
                                    filt=filt, modem_order=modem_order)
         self.run_test()
 
-    def run_test_return_noisy_input(self, samples: Any, filt: Any, snr_db: float | int) -> None:
+    def run_test_return_noisy_input(self, samples: Any, filt: Any, mapper: Any,
+                                    snr_db: float | int) -> None:
         """Common method for a test case expected to return an expected result on noisy input.
 
         The expected results depends on modem_order.  Test author must first call
@@ -140,10 +141,11 @@ class BPSKModemCompTest(ModemCompTest):
             bin_bytes: Test case input for the modulate method argument of the same name.
             samples: Test case input for the demodulate method argument of the same name.
             filt: Test case input for the demodulate method argument of the same name.
+            mapper: Test case input for the modulate method argument of the same name.
             snr_db: The desigred SNR, in decibels, to add to samples.
         """
         noisy = add_awgn(samples, snr_db)
-        self.set_test_input_return(bin_bytes=None, samples=noisy, filt=filt,
+        self.set_test_input_return(bin_bytes=None, samples=noisy, filt=filt, mapper=mapper,
                                    modem_order=False, skip_exp_ret=True)
         self.expect_return(samples)
         self.run_test()
@@ -214,13 +216,6 @@ class BPSKModemCompTest(ModemCompTest):
             else:
                 self.expect_return(samples)
     # pylint: enable=too-many-arguments,too-many-positional-arguments
-
-    def set_test_file_input_return(self, sigmf_file: Path) -> None:
-        """Use a SigMF file as demodulate() --> modulate() samples test case input."""
-        samples = None    # Samples read ffrom sigmf_file
-        bin_bytes = None  # Description (original digital data) read from sigmf_file's metadata
-        samples, bin_bytes = self.get_test_file_input(file_input=sigmf_file, sigmf_data=True)
-        self.set_test_input_return(bin_bytes=bin_bytes, samples=samples, modem_order=False)
 
     def create_test_obj(self) -> BPSK:
         """Create an BPSK() test object.
@@ -500,6 +495,8 @@ class BoundaryBPSKModemCompTest(BPSKModemCompTest):
 class SpecialBPSKModemCompTest(BPSKModemCompTest):
     """Special Test Cases."""
 
+    # They're test cases!  Leave me be, Pylint.
+    # pylint: disable=too-many-public-methods
     def test_s01_rds_sized_random_bits_mo_dem(self):
         """Single byte of random bits, mo --> dem order."""
         # BPSKConfig() args
@@ -975,6 +972,7 @@ class SpecialBPSKModemCompTest(BPSKModemCompTest):
         filt = MatchedFilter.NONE
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_return_input(bin_bytes, mapper, samples, filt, modem_order=False)
+    # pylint: enable=too-many-public-methods
 
 
 if __name__ == '__main__':

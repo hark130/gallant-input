@@ -269,13 +269,13 @@ class BaseUnitTest(TediousUnitTest):
             # Final Catch All
             # Floating point type arrays require special comparison
             if numpy.issubdtype(dtype, numpy.floating) \
-                or numpy.issubdtype(dtype, numpy.complexfloating):
+                    or numpy.issubdtype(dtype, numpy.complexfloating):
                 if not numpy.allclose(return_value, self._exp_return, atol=1e-6, rtol=0):
                     self._add_test_failure(f'The expected {dtype} array is not equivalent '
                                            'to the returned array')
             # Non-floating point comparison
             elif not numpy.array_equal(return_value, self._exp_return):
-                    self._add_test_failure('The expected array is not equal to the returned array')
+                self._add_test_failure('The expected array is not equal to the returned array')
 
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order

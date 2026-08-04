@@ -44,6 +44,7 @@ class BPSKModemCompTest(ModemCompTest):
         self.carrier_recovery = None   # Optional BPSKConfig attribute
         self._demod_arg_s = None       # Test case input: BPSK().demodulate(samples) arg
         self._demod_arg_f = None       # Test case input: BPSK().demodulate(filt) arg
+        self._demod_arg_m = None       # Test case input: BPSK().demodulate(mapper) arg
         self._mod_arg_bb = None        # Test case input: BPSK().modulate(bin_bytes) arg
         self._mod_arg_map = None       # Test case input: BPSK().modulate(mapper) arg
         self._modem_call_order = True  # Call order for the two methods: If True, mo --> dem
@@ -58,12 +59,13 @@ class BPSKModemCompTest(ModemCompTest):
 
         # CALL IT
         if self._modem_call_order is True:
-            mod_ret_val = test_obj.modulate(self._mod_arg_bb)
-            demod_ret_val = test_obj.demodulate(mod_ret_val)
+            mod_ret_val = test_obj.modulate(self._mod_arg_bb, self._mod_arg_map)
+            demod_ret_val = test_obj.demodulate(mod_ret_val, self._demod_arg_f, self._demod_arg_m)
             test_result = demod_ret_val
         else:
-            demod_ret_val = test_obj.demodulate(self._demod_arg_s)
-            mod_ret_val = test_obj.modulate(demod_ret_val)
+            demod_ret_val = test_obj.demodulate(self._demod_arg_s, self._demod_arg_f,
+                                                self._demod_arg_m)
+            mod_ret_val = test_obj.modulate(demod_ret_val, self._mod_arg_map)
             test_result = mod_ret_val
 
         # DONE
@@ -149,7 +151,7 @@ class BPSKModemCompTest(ModemCompTest):
     # CLASS HELPER METHODS
     # Methods listed in alphabetical order
 
-    def set_demodulate_test_input(self, samples: Any, filt: Any) -> None:
+    def set_demodulate_test_input(self, samples: Any, filt: Any, mapper: Any) -> None:
         """Sets test case input for the call to the demodulate() method.
 
         Args:
@@ -158,6 +160,7 @@ class BPSKModemCompTest(ModemCompTest):
         """
         self._demod_arg_s = samples
         self._demod_arg_f = filt
+        self._demod_arg_m = mapper
         self._defined_test_input = True
 
     def set_modulate_test_input(self, bin_bytes: Any, mapper: Any) -> None:
@@ -170,6 +173,8 @@ class BPSKModemCompTest(ModemCompTest):
         self._mod_arg_bb = bin_bytes
         self._mod_arg_map = mapper
         self._defined_test_input = True
+        print(f'BIN BYTES: {bin_bytes}')  # DEBUGGING
+        print(f'MAPPER: {mapper}')  # DEBUGGING
 
     def set_oob_test_input(self, bin_bytes: Any, mapper: Any, samples: Any,
                            filt: Any, modem_order: bool = True) -> None:
@@ -177,7 +182,7 @@ class BPSKModemCompTest(ModemCompTest):
 
         Args:
             bin_bytes: Test case input for the modulate method argument of the same name.
-            mapper: Test case input for the modulate method argument of the same name.
+            mapper: Test input for the modulate (and demodulate) method argument of the same name.
             samples: Test case input for the demodulate method argument of the same name.
             filt: Test case input for the demodulate method argument of the same name.
             modem_order: [OPTIONAL] If True, the test case will call modulate() then demodulate().
@@ -185,7 +190,7 @@ class BPSKModemCompTest(ModemCompTest):
         """
         self._validate_type(modem_order, 'modem_order', bool)
         self.set_modulate_test_input(bin_bytes=bin_bytes, mapper=mapper)
-        self.set_demodulate_test_input(samples=samples, filt=filt)
+        self.set_demodulate_test_input(samples=samples, filt=filt, mapper=mapper)
         self._modem_call_order = modem_order
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -883,6 +888,7 @@ class SpecialBPSKModemCompTest(BPSKModemCompTest):
         carr_rec = None
         # modulate()/demodulate() args
         bin_bytes = generate_bin_bytes(num_bits=104*8*4)  # The size of a full RDS Group
+        print(f'\nTEST CASE BIN BYTES: {bin_bytes}')  # DEBUGGING
         mapper = rotate_mapping(BPSK_MAP, 3 * numpy.pi / 2)
         samples = convert_bin_bytes_to_bpsk(bin_bytes, samp_rate, sym_rate, mapper)
         filt = MatchedFilter.NONE

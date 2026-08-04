@@ -250,7 +250,7 @@ def _call_convolve(samples: numpy.ndarray, coeffs: numpy.ndarray,
         Discrete, linear convolution of `samples` and `coeffs`.
     """
     # LOCAL VARIABLES
-    result = None                                # Discrete linear convolution of signal and coeffs
+    result = None                                 # Discrete linear convolution of signal and coeffs
     dynamic_kwargs = {'a': samples, 'v': coeffs}  # Dynamic keyword arguments
 
     # INPUT VALIDATION

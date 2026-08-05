@@ -6,8 +6,8 @@ import math
 import numpy
 # Local Imports
 from gallant_input.validation import (BAD_MAPPER, validate_binary_bytes, validate_float_or_complex,
-                                      validate_int, validate_ndarray, validate_pos_int,
-                                      validate_type)
+                                      validate_int, validate_mapper, validate_ndarray,
+                                      validate_pos_int, validate_type)
 
 
 def convert_ascii_bin_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
@@ -123,7 +123,7 @@ def map_bits_to_symbols(bitstream: numpy.ndarray, bits_per_symbol: int,
     # VALIDATION
     validate_ndarray(array=bitstream, array_name='bitstream', can_be_empty=False,
                      num_dim=None, must_be_complex=False)
-    _validate_bps_to_mapper(bits_per_symbol, mapper)
+    validate_mapper(mapper=mapper, mapper_name='mapper', bits_per_symbol=bits_per_symbol)
 
     # MAP IT
     # Pad
@@ -194,17 +194,3 @@ def upsample(symbols: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
 
     # DONE
     return samples
-
-
-def _validate_bps_to_mapper(bits_per_symbol: int, mapper: dict[int, float | complex]) -> None:
-    """Validate these arguments under their own strength and against each other."""
-    # VALIDATION
-    validate_pos_int(bits_per_symbol, 'bits_per_symbol')
-    validate_type(mapper, 'mapper', dict)
-    if len(mapper) != math.pow(2, bits_per_symbol):
-        raise ValueError(BAD_MAPPER.format('mapper', len(mapper), bits_per_symbol))
-    for key, value in mapper.items():
-        validate_int(key, 'a key in the mapper dictionary')
-        if key < 0:
-            raise ValueError(f'Keys in the "mapper" dictionary may not be negative: {key}')
-        validate_float_or_complex(value, 'a value in the mapper dictionary')

@@ -24,6 +24,9 @@ import numpy
 
 # Template string for bad mapper lengths: argument name, mapper length, bits per symbol
 BAD_MAPPER: Final[str] = 'The length of the "{}" dictionary ({}) does not equal {}'
+# Template string for an out-of-bounds value for a mapper key
+BAD_MAPPER_KEY: Final[str] = 'The "{}" dictionary contains an out-of-bounds key value ({}) for ' \
+                             'a mapper of bits-per-symbol {}'
 # Template string for arguments of the wrong data type
 _BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty
@@ -302,6 +305,29 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
     validate_type(validate_this, param_name, list)
     if not validate_this and not can_be_empty:
         raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+
+
+def validate_mapper(mapper: dict[int, float | complex], mapper_name: str,
+                    bits_per_symbol: int) -> None:
+    """Validate modulator/demodulator bit mappings against their bits-per-symbol."""
+    # LOCAL VARIABLES
+    upper_bound = 0  # 2^bits-per-symbol
+
+    # VALIDATION
+    # ...under their own strength
+    validate_type(mapper, mapper_name, dict)
+    validate_pos_int(bits_per_symbol, 'bits_per_symbol')
+    # ...with relation to each other
+    upper_bound = math.pow(2, bits_per_symbol)
+    if len(mapper) != upper_bound:
+        raise ValueError(BAD_MAPPER.format(mapper_name, len(mapper), bits_per_symbol))
+    for key, value in mapper.items():
+        validate_int(key, 'a key in the mapper dictionary')
+        if key < 0:
+            raise ValueError(f'Keys in the "mapper" dictionary may not be negative: {key}')
+        if key > upper_bound - 1:
+            raise ValueError(BAD_MAPPER_KEY.format(mapper_name, key, bits_per_symbol))
+        validate_float_or_complex(value, 'a value in the mapper dictionary')
 
 
 def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False,

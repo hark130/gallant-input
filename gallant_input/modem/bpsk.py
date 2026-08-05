@@ -313,7 +313,7 @@ class BPSK(Modem):
 
         Raises:
             TypeError: Bad data type.
-            ValueError: Badd value.
+            ValueError: Bad value.
         """
         # VALIDATION
         validate_bool(self._validated, 'internal attribute _validated')

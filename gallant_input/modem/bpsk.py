@@ -15,8 +15,8 @@ from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.matched_filter import MatchedFilter
-from gallant_input.validation import (BAD_MAPPER, validate_bool, validate_ndarray, validate_pos_int,
-                                      validate_type)
+from gallant_input.validation import (BAD_MAPPER, validate_bool, validate_mapper, validate_ndarray,
+                                      validate_pos_int, validate_type)
 
 
 class BPSK(Modem):
@@ -94,16 +94,16 @@ class BPSK(Modem):
         symbol_metrics = None  # One recovered symbol metric for each transmitted symbol
         bit_stream = b''       # The demodulated binary as a bytes object
 
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
+
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
         validate_type(filt, 'filt', MatchedFilter)
-        _validate_mapper(mapper, 'mapper')
-
-        # SETUP
-        if mapper is None:
-            mapper = BPSK_MAP
+        validate_mapper(mapper, 'mapper', self._bits_per_sym)
 
         # DEMODULATE IT
         # Step 1: Demodulate to metrics
@@ -159,16 +159,16 @@ class BPSK(Modem):
         deriv_axis = 0    # Derived axis based on the mapper
         metric = None     # Continuous-valued symbol metric
 
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
+
         # INPUT VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=True)
         validate_type(filt, 'filt', MatchedFilter)
-        _validate_mapper(mapper, 'mapper')
-
-        # SETUP
-        if mapper is None:
-            mapper = BPSK_MAP
+        validate_mapper(mapper, 'mapper', self._bits_per_sym)
 
         # DEMODULATE IT
         # Carrier recovery?
@@ -261,15 +261,15 @@ class BPSK(Modem):
         reshaped = None  # Reshaped symbol_metrics into a single column
         kmeans = None    # K-Means clustering object
 
+        # SETUP
+        if mapper is None:
+            mapper = BPSK_MAP
+
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=False)
-        _validate_mapper(mapper, 'mapper')
-
-        # SETUP
-        if mapper is None:
-            mapper = BPSK_MAP
+        validate_mapper(mapper, 'mapper', self._bits_per_sym)
 
         # DECIDE IT
         reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
@@ -363,12 +363,3 @@ class BPSK(Modem):
         """Validate attribute values."""
         self._validate_abc()
         validate_pos_int(self._bits_per_sym, 'internal attribute _bits_per_sym')
-
-
-def _validate_mapper(mapper: dict[int, complex] | None, param_name: str) -> None:
-    """Validate the mapper."""
-    bits_per_symbol = 1  # Binary modulation bits-per-symbol
-    if mapper is not None:
-        validate_type(mapper, 'mapper', dict)
-        if len(mapper) != math.pow(2, bits_per_symbol):
-            raise ValueError(BAD_MAPPER.format(param_name, len(mapper), bits_per_symbol))

@@ -432,7 +432,7 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 1
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
@@ -442,7 +442,7 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 1
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
@@ -467,7 +467,7 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = float(1.0)
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
@@ -477,7 +477,7 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = float(1.0)
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
@@ -525,17 +525,7 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
 class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
     """Special Test Cases."""
 
-    def test_s019_superfluous_carrier_recovery_obj(self):
-        """Added an unnecessary carrier recovery object to the config."""
-        samp_rate = 480000
-        sym_rate = 800
-        carr_rec = CostasLoop()  # Default settings
-        mapper = QPSK_MAP
-        bits = self.RDS_GROUP1
-        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
-        self.run_test_return_compute(bits)
-
-    def test_s02_weird_mapper_rotated_30_deg(self):
+    def test_s01_weird_mapper_rotated_30_deg(self):
         """Weird mapper: rotated 30° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -544,11 +534,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, numpy.pi / 6)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s03_weird_mapper_rotated_45_deg(self):
+    def test_s02_weird_mapper_rotated_45_deg(self):
         """Weird mapper: rotated 45° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -557,11 +547,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, numpy.pi / 4)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s04_weird_mapper_rotated_60_deg(self):
+    def test_s03_weird_mapper_rotated_60_deg(self):
         """Weird mapper: rotated 60° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -570,11 +560,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, numpy.pi / 3)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s05_weird_mapper_rotated_90_deg(self):
+    def test_s04_weird_mapper_rotated_90_deg(self):
         """Weird mapper: rotated 90° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -583,11 +573,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s06_weird_mapper_rotated_120_deg(self):
+    def test_s05_weird_mapper_rotated_120_deg(self):
         """Weird mapper: rotated 120° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -596,11 +586,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi / 3)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s07_weird_mapper_rotated_135_deg(self):
+    def test_s06_weird_mapper_rotated_135_deg(self):
         """Weird mapper: rotated 135° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -609,11 +599,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 4)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s08_weird_mapper_rotated_150_deg(self):
+    def test_s07_weird_mapper_rotated_150_deg(self):
         """Weird mapper: rotated 150° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -622,11 +612,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 6)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s09_weird_mapper_rotated_180_deg(self):
+    def test_s08_weird_mapper_rotated_180_deg(self):
         """Weird mapper: rotated 180° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -635,11 +625,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, numpy.pi)  # Flipped position
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s10_weird_mapper_rotated_210_deg(self):
+    def test_s09_weird_mapper_rotated_210_deg(self):
         """Weird mapper: rotated 210° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -648,11 +638,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 6)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s11_weird_mapper_rotated_225_deg(self):
+    def test_s10_weird_mapper_rotated_225_deg(self):
         """Weird mapper: rotated 225° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -661,11 +651,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 4)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s12_weird_mapper_rotated_240_deg(self):
+    def test_s11_weird_mapper_rotated_240_deg(self):
         """Weird mapper: rotated 240° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -674,11 +664,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 4 * numpy.pi / 3)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s13_weird_mapper_rotated_270_deg(self):
+    def test_s12_weird_mapper_rotated_270_deg(self):
         """Weird mapper: rotated 270° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -687,11 +677,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 2)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s14_weird_mapper_rotated_300_deg(self):
+    def test_s13_weird_mapper_rotated_300_deg(self):
         """Weird mapper: rotated 300° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -700,11 +690,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 3)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s15_weird_mapper_rotated_315_deg(self):
+    def test_s14_weird_mapper_rotated_315_deg(self):
         """Weird mapper: rotated 315° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -713,11 +703,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 4)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s16_weird_mapper_rotated_330_deg(self):
+    def test_s15_weird_mapper_rotated_330_deg(self):
         """Weird mapper: rotated 330° on the complex plane.
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -726,11 +716,11 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 11 * numpy.pi / 6)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_s17_weird_mapper_rotated_360_deg(self):
+    def test_s16_weird_mapper_rotated_360_deg(self):
         """Weird mapper: rotated 360° on the complex plane (effectively, no change).
 
         Binary mapping rotated away from the real axis on the complex plane.
@@ -739,7 +729,47 @@ class SpecialModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 800
         carr_rec = None
         mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi)
-        bits = b'10101010'
+        bits = generate_bin_bytes(num_bits=256)
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_compute(bits)
+
+    def test_s17_superfluous_carrier_recovery_obj(self):
+        """Added an unnecessary carrier recovery object to the config."""
+        samp_rate = 480000
+        sym_rate = 800
+        carr_rec = CostasLoop()  # Default settings
+        mapper = QPSK_MAP
+        bits = generate_bin_bytes(num_bits=256)
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_compute(bits)
+
+    def test_s18_trailing_zero_needs_padding(self):
+        """Binary input doesn't conform to the scheme's expected length.
+
+        Expect trailing zeroes as padding from the modulator.
+        """
+        samp_rate = 480000
+        sym_rate = 800
+        carr_rec = None
+        mapper = QPSK_MAP
+        bits = generate_bin_bytes(num_bits=254) + b'0'  # Total len, 255
+        self.assertEqual(bits[len(bits)-1:], b'0', 'Specifically tests this trailing bit')
+        self.assertNotEqual(len(bits) % self.bits_per_symbol, 0, 'Input length *must* be off')
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_compute(bits)
+
+    def test_s19_trailing_one_needs_padding(self):
+        """Binary input doesn't conform to the scheme's expected length.
+
+        Expect trailing zeroes as padding from the modulator.
+        """
+        samp_rate = 480000
+        sym_rate = 800
+        carr_rec = None
+        mapper = QPSK_MAP
+        bits = generate_bin_bytes(num_bits=254) + b'1'  # Total len, 255
+        self.assertEqual(bits[len(bits)-1:], b'1', 'Specifically tests this trailing bit')
+        self.assertNotEqual(len(bits) % self.bits_per_symbol, 0, 'Input length *must* be off')
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 

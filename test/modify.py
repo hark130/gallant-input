@@ -129,7 +129,7 @@ def convert_bin_bytes_to_qpsk(bin_bytes: bytes, sample_rate: int | float, symbol
     """
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
-    bps = 2                                # Bits-per-symbpl
+    bps = 2                                # Bits-per-symbol
     samples = None                         # An array of the sample values
     array = None                           # The numpy.ndarray formed from the samples
 

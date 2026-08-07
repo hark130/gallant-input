@@ -40,32 +40,6 @@ def convert_ascii_bin_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
     return bit_stream
 
 
-def convert_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:
-    """Convert a bytes object containing binary data to an array object.
-
-    Args:
-        bin_bytes: A bytes object containing binary binary to convert.
-
-    Returns:
-        The converted bin_bytes value.
-
-    Raises:
-        TypeError: Invalid data type.
-        ValueError: Bad value (e.g., "...and I thought I saw a 2" -Bender).
-    """
-    # LOCAL VARIABLES
-    bit_array = None  # Converted bytes to bit array
-
-    # INPUT VALIDATION
-    validate_binary_bytes(validate_this=bin_bytes, param_name='bin_bytes', exact_len=None)
-
-    # CONVERT IT
-    bit_array = numpy.unpackbits(numpy.frombuffer(bin_bytes, dtype=numpy.uint8))
-
-    # DONE
-    return bit_array
-
-
 def decode_differential_binary(bin_bytes: bytes) -> bytes:
     """Differential-decode a bytes object containing binary data.
 

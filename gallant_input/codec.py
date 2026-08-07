@@ -1,13 +1,11 @@
 """Functionality to encode and decode data."""
 
 # Standard Imports
-import math
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import (BAD_MAPPER, validate_binary_bytes, validate_float_or_complex,
-                                      validate_int, validate_mapper, validate_ndarray,
-                                      validate_pos_int, validate_type)
+from gallant_input.validation import (validate_binary_bytes, validate_mapper, validate_ndarray,
+                                      validate_pos_int)
 
 
 def convert_ascii_bin_bytes_to_bits(bin_bytes: bytes) -> numpy.ndarray:

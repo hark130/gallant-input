@@ -146,7 +146,7 @@ class NormalModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 80
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b''.join([bytes(f'{key:02b}', 'ascii') for key in QPSK_MAP.keys()]) * 8
+        bits = b''.join([bytes(f'{key:02b}', 'ascii') for key in QPSK_MAP]) * 2 * len(QPSK_MAP)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 

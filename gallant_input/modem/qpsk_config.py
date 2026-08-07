@@ -17,8 +17,8 @@ class QPSKConfig(ModemConfig):
     # ATTRIBUTES
     # Public
 
-    carrier_recovery: CostasLoop | None = field(default=None)                    # Carrier recovery
-    mapper: dict[int, complex] = field(default_factory=lambda: QPSK_MAP.copy())  # Bit mapping
+    carrier_recovery: CostasLoop | None = field(default=None)            # Carrier recovery obj
+    mapper: dict[int, complex] = field(default_factory=QPSK_MAP.copy())  # Bit mapping
 
     # Private
 

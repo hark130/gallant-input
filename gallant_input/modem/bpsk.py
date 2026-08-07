@@ -1,7 +1,6 @@
 """Defines the class for Binary Phase Shift Key (BPSK) MOdulation/DEModulation."""
 
 # Standard Imports
-import math
 # Third Party Imports
 from sklearn.cluster import KMeans
 import numpy
@@ -15,7 +14,7 @@ from gallant_input.modem.bpsk_config import BPSKConfig
 from gallant_input.modem.constants import BPSK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.matched_filter import MatchedFilter
-from gallant_input.validation import (BAD_MAPPER, validate_bool, validate_mapper, validate_ndarray,
+from gallant_input.validation import (validate_bool, validate_mapper, validate_ndarray,
                                       validate_pos_int, validate_type)
 
 

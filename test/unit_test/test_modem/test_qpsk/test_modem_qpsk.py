@@ -58,6 +58,8 @@ class ModemQPSKUnitTest(ModemUnitTest):
     # CORE CLASS METHODS
     # Methods listed in call order
 
+    bits_per_symbol = 2  # QPSK == 4PSK == 2^2PSK
+
     def __init__(self, *args, **kwargs) -> None:
         """ModemQPSKUnitTest ctor."""
         # ATTRIBUTES

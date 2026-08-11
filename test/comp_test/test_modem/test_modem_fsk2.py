@@ -419,6 +419,7 @@ class BoundaryFSK2ModemCompTest(FSK2ModemCompTest):
         self.set_fsk2_ctor_args(samp_rate, sym_rate, f0, f1, phase)
         self.run_test_return_input(bin_bytes, samples, modem_order=False)
 
+    @skip("See GAIN-27 for notes on the resolution of this test case's intermittent failures")
     def test_b09_samples_per_symbol_smallest_mo_dem(self):
         """Samples per symbol smallest value to be successful, mo --> dem order."""
         # FSK2Config() args

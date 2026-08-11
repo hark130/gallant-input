@@ -17,8 +17,8 @@ class QPSKConfig(ModemConfig):
     # ATTRIBUTES
     # Public
 
-    carrier_recovery: CostasLoop | None = field(default=None)          # Carrier recovery obj
-    mapper: dict[int, complex] = field(default_factory=QPSK_MAP.copy)  # Bit mapping
+    carrier_recovery: CostasLoop | None = field(default=None)  # Carrier recovery obj
+    mapper: dict[int, complex] | None = None                   # Bit mapping (defaults to QPSK_MAP)
 
     # Private
 
@@ -36,14 +36,14 @@ class QPSKConfig(ModemConfig):
             self.validate_qpsk()  # Validate the QPSK-specific data
             self.validate_abc()  # Which will complete the validation and set _validated
 
+    # PUBLIC METHODS
+    # In alphabetical order
+
     def validate_qpsk(self) -> None:
         """Validate all attributes defined in this child class regardless of internal status."""
         self._validate_bps()
         self._validate_carrier_recovery()
         self._validate_mapper()
-
-    # PUBLIC METHODS
-    # In alphabetical order
 
     # PRIVATE METHODS
 
@@ -64,3 +64,8 @@ class QPSKConfig(ModemConfig):
         """Validate the mapper attribute."""
         self._validate_bps()
         validate_mapper(self.mapper, 'mapper', self._bits_per_sym)
+
+    def __post_init__(self):
+        """Fix up the mapper attribute post-init."""
+        if self.mapper is None:
+            self.mapper = QPSK_MAP.copy()

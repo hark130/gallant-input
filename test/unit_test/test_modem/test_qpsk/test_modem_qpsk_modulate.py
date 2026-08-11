@@ -146,7 +146,9 @@ class NormalModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         sym_rate = 80
         carr_rec = None
         mapper = QPSK_MAP
-        bits = b''.join([bytes(f'{key:02b}', 'ascii') for key in QPSK_MAP]) * 2 * len(QPSK_MAP)
+        bps = 2                                    # Bits per symbol
+        repeat = int(8 * 8 / (bps * len(mapper)))  # Number of repeats
+        bits = b''.join([bytes(f'{key:02b}', 'ascii') for key in QPSK_MAP]) * repeat
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
@@ -337,7 +339,7 @@ class ErrorModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        mapper = [-1+0j, 1+0j]  # Should be a dict
+        mapper = list(QPSK_MAP.values())  # Should be a dict
         bits = b'10101010'
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(bits, TypeError,

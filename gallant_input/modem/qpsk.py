@@ -81,7 +81,7 @@ class QPSK(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        metric = None          # A continuous-valued symbol metric sampled at the input sample rate
+        metric = None          # A complex-valued symbol metric sampled at the input sample rate
         symbol_metrics = None  # One recovered symbol metric for each transmitted symbol
         bit_stream = b''       # The demodulated binary as a bytes object
 
@@ -128,7 +128,7 @@ class QPSK(Modem):
                 the default is MatchedFilter.NONE (no matched filter applied).
 
         Returns:
-            A continuous-valued symbol metric sampled at the input sample rate
+            A Complex-valued symbol metric sampled at the input sample rate
             (e.g., one value per original sample).
 
         Raises:
@@ -137,10 +137,8 @@ class QPSK(Modem):
         """
         # LOCAL VARIABLES
         corrected = None  # A carrier-recovered copy of samples (if an object was provided)
-        filtered = None   # A match filtered applied to the samples (as specified)
-        polar_diff = 0    # Difference between the mapper's complex values
-        deriv_axis = 0    # Derived axis based on the mapper
-        metric = None     # Continuous-valued symbol metric
+        filtered = None   # A matched filter applied to the samples (as specified)
+        metric = None     # Complex-valued symbol metric
 
         # INPUT VALIDATION
         self.parse()  # Validate and parse
@@ -156,11 +154,8 @@ class QPSK(Modem):
             corrected = samples  # No recovery object
         # Receiver matched filter
         filtered = self._apply_matched_filter(samples=corrected, filt=filt)
-        # # Derive the decision axis from the mapper
-        # polar_diff = self._mapper[1] - self._mapper[0]
-        # deriv_axis = polar_diff / abs(polar_diff)
-        # # Continuous decision metric
-        # metric = (filtered * numpy.conj(deriv_axis)).real.astype(numpy.float32)
+        # Complex decision metric
+        metric = filtered.astype(numpy.complex64)  # Maintain IQ info
 
         # DONE
         return metric
@@ -181,11 +176,11 @@ class QPSK(Modem):
         samples-per-symbol.  If not, consider using an external timing synchronization algorithm
         (e.g., synch.timing.recover_clock_mm()) in lieu of this step.
 
-        No symbol decisions are made by this method. The returned values remain continuous-valued
+        No symbol decisions are made by this method. The returned values remain complex-valued
         and are intended to be passed to self.decide_symbols().
 
         Args:
-            metric: Continuous-valued symbol metrics.
+            metric: Complex-valued symbol metrics.
 
         Returns:
             One recovered symbol metric for each transmitted symbol.
@@ -200,7 +195,7 @@ class QPSK(Modem):
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=metric, array_name='metric', can_be_empty=False, num_dim=1,
-                         must_be_complex=False)
+                         must_be_complex=True)
 
         # RECOVER IT
         symbol_metrics = reshape_to_symbols(metric, self._sps).mean(axis=1)
@@ -225,23 +220,40 @@ class QPSK(Modem):
 
         Raises:
             TypeError: Invalid data type.
-            ValueError: Bad value.
+            ValueError: Bad value (e.g., Not enough symbols in symbol_metrics).
         """
         # LOCAL VARIABLES
-        threshold = 0.0  # The bit decision threshold
-        polar_diff = 0   # Difference between the mapper's complex values
-        deriv_axis = 0   # Derived axis based on the mapper
-        bits = None      # The final array of 1s and 0s to convert to a bytes object
-        bin_bytes = b''  # The final binary as a bytes object
-        reshaped = None  # Reshaped symbol_metrics into a single column
-        kmeans = None    # K-Means clustering object
+        n_symbols = 0         # 4 for QPSK
+        features = None       # [I, Q] columns for K-Means
+        kmeans = None         # K-Means clustering object
+        labels = None         # Cluster label per sample
+        centers = None        # Cluster centroids as complex values
+        label_to_key = {}     # cluster label -> mapper key (0-3)
+        symbol_values = None  # Decided mapper key per symbol
+        bits = None           # The final array of 1s and 0s to convert to a bytes object
+        bin_bytes = b''       # The final binary as a bytes object
+
+        # threshold = 0.0  # The bit decision threshold
+        # polar_diff = 0   # Difference between the mapper's complex values
+        # deriv_axis = 0   # Derived axis based on the mapper
+        # bits = None      # The final array of 1s and 0s to convert to a bytes object
+        # bin_bytes = b''  # The final binary as a bytes object
+        # reshaped = None  # Reshaped symbol_metrics into a single column
 
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
-                         num_dim=1, must_be_complex=False)
+                         num_dim=1, must_be_complex=True)
+        n_symbols = 2 ** self._bits_per_sym  # 4 for QPSK
+        if len(symbol_metrics) < n_symbols:
+            raise ValueError(f'Requires at least {n_symbols} symbols to cluster but received '
+                             f'{len(symbol_metrics)}')
 
         # DECIDE IT
+        # 1. Cluster in the complex plane
+        features = numpy.column_stack([symbol_metrics.real, symbol_metrics.imag])
+
+
         # reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
         # kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
         # kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices

@@ -29,9 +29,9 @@ class BPSK(Modem):
         Args:
             config: Necessary configuration settings.
         """
-        self._bits_per_sym = 1         # Bits per symbol
-        self._carrier_recovery = None  # Optional carrier recovery object
         super().__init__(config=config)
+        self._bits_per_sym = 1         # Set bits per symbol
+        self._carrier_recovery = None  # Optional carrier recovery object
 
     # ABSTRACT METHODS
 

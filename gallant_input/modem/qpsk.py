@@ -30,7 +30,6 @@ class QPSK(Modem):
         Args:
             config: Necessary configuration settings.
         """
-        self._bits_per_sym = 1         # Bits per symbol
         self._carrier_recovery = None  # Optional carrier recovery object
         self._mapper = None            # Bit map
         super().__init__(config=config)

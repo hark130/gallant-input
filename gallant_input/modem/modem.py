@@ -21,12 +21,13 @@ class Modem(ABC):
             sample_rate: The sample rate of the capture in Hz.
             symbol_rate: The number of symbols-per-second (1 / symbol time).
         """
-        self.sample_rate = None  # Sample rate
-        self.symbol_rate = None  # Symbol rate
-        self._parsed = False     # Input parsed
-        self._sps = 0            # Samples per symbol
-        self._validated = False  # Validation status of attributes
-        self._config = config    # Class configuration
+        self.sample_rate = None    # Sample rate
+        self.symbol_rate = None    # Symbol rate
+        self._bits_per_sym = None  # Bits per symbol (e.g., BFSK == 1, QPSK == 2)
+        self._config = config      # Class configuration
+        self._parsed = False       # Input parsed
+        self._sps = 0              # Samples per symbol
+        self._validated = False    # Validation status of attributes
 
     @abstractmethod
     def modulate(self, bin_bytes: bytes) -> numpy.ndarray:

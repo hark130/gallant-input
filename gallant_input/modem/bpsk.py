@@ -153,7 +153,7 @@ class BPSK(Modem):
         """
         # LOCAL VARIABLES
         corrected = None  # A carrier-recovered copy of samples (if an object was provided)
-        filtered = None   # A match filtered applied to the samples (as specified)
+        filtered = None   # A matched filter applied to the samples (as specified)
         polar_diff = 0    # Difference between the mapper's complex values
         deriv_axis = 0    # Derived axis based on the mapper
         metric = None     # Continuous-valued symbol metric

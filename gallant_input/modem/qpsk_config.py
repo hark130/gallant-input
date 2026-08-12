@@ -39,6 +39,12 @@ class QPSKConfig(ModemConfig):
     # PUBLIC METHODS
     # In alphabetical order
 
+    @property
+    def bits_per_sym(self) -> int:
+        """Get the bits-per-symbol from the dataclass."""
+        self.validate_content()
+        return self._bits_per_sym
+
     def validate_qpsk(self) -> None:
         """Validate all attributes defined in this child class regardless of internal status."""
         self._validate_bps()

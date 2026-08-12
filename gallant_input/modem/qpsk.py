@@ -1,7 +1,6 @@
 """Defines the class for Quadrature Phase Shift Key (QPSK) MOdulation/DEModulation."""
 
 # Standard Imports
-import math
 # Third Party Imports
 from sklearn.cluster import KMeans
 import numpy
@@ -12,11 +11,9 @@ from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_sy
 from gallant_input.convolvemode import ConvolveMode
 from gallant_input.filters import apply_fir, create_rect_fir, create_rrc_fir
 from gallant_input.modem.qpsk_config import QPSKConfig
-from gallant_input.modem.constants import QPSK_MAP
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.matched_filter import MatchedFilter
-from gallant_input.validation import (BAD_MAPPER, validate_bool, validate_mapper, validate_ndarray,
-                                      validate_pos_int, validate_type)
+from gallant_input.validation import validate_bool, validate_ndarray, validate_type
 
 
 class QPSK(Modem):
@@ -342,7 +339,7 @@ class QPSK(Modem):
         """Gently extract config values into instance attributes."""
         validate_type(self._config, 'config', QPSKConfig)
         self._config.validate_content()
-        self._bits_per_sym = self._config._bits_per_sym
+        self._bits_per_sym = self._config.bits_per_sym
         self._carrier_recovery = self._config.carrier_recovery
         self._mapper = self._config.mapper
 

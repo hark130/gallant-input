@@ -12,10 +12,8 @@ Typical Usage:
 """
 
 # Standard Imports
-from pathlib import Path
 from typing import Any
 # Third Party Imports
-from numpy.typing import DTypeLike
 from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
@@ -91,6 +89,7 @@ class ModemQPSKDemodulateUnitTest(ModemQPSKUnitTest):
         self.expect_return(exp_ret)
         self.run_test()
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def run_test_return_compute(self, sample_rate: float, symbol_rate: float,
                                 carrier_recovery: CostasLoop | None,
                                 mapper: dict[int, complex] | None, exp_ret: bytes,
@@ -152,14 +151,11 @@ class ModemQPSKDemodulateUnitTest(ModemQPSKUnitTest):
         self.run_test_return_input(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                    carrier_recovery=carrier_recovery, mapper=mapper,
                                    samples=test_in, filt=filt, exp_ret=exp_ret)
+    # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 class NormalModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
     """Normal Test Cases."""
-
-# NOTES:
-# - Remove short binary test cases (see: QPSK.modulate() unit test cases) or swap the static test input for random binary
-# - Keep AWGN test cases (but swap static binary for random input)
 
     def test_n01_single_word_random_bits(self):
         """Single byte of random bits."""
@@ -253,6 +249,8 @@ class NormalModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
                                    snr_db=snr_db, filt=filt)
 
 
+# They're test cases!  Leave me be, Pylint.
+# pylint: disable=too-many-public-methods
 class ErrorModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
     """Error Test Cases."""
 
@@ -1166,6 +1164,7 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_return_input(sample_rate=samp_rate, symbol_rate=sym_rate,
                                    carrier_recovery=carr_rec, mapper=mapper,
                                    samples=samples, filt=filt, exp_ret=exp_ret)
+# pylint: enable=too-many-public-methods
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

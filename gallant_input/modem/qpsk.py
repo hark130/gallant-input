@@ -252,20 +252,23 @@ class QPSK(Modem):
         # DECIDE IT
         # 1. Cluster in the complex plane
         features = numpy.column_stack([symbol_metrics.real, symbol_metrics.imag])
+        kmeans = KMeans(n_clusters=n_symbols, n_init='auto')  # QPSK gets formed into four clusters
+        labels = kmeans.fit_predict(features)  # Array of cluster labels (not symbols)
+        centers = kmeans.cluster_centers_[:, 0] + 1j * kmeans.cluster_centers_[:, 1]  # Centroids
 
+        # 2. Match each centroid to its nearest mapper entry (because the labels are abitrary)
+        for label, center in enumerate(centers):
+            distances = {key: abs(center - value) for key, value in self._mapper.items()}
+            label_to_key[label] = min(distances, key=distances.get)
 
-        # reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
-        # kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
-        # kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
-        # centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
-        # threshold = centers.mean()  # Average the center of the two clusters
-        # polar_diff = self._mapper[1] - self._mapper[0]
-        # deriv_axis = polar_diff / abs(polar_diff)
-        # point0 = (self._mapper[0] * numpy.conj(deriv_axis)).real
-        # point1 = (self._mapper[1] * numpy.conj(deriv_axis)).real
-        # bits = (symbol_metrics > threshold).astype(numpy.uint8) if point1 > point0 \
-        #     else (symbol_metrics <= threshold).astype(numpy.uint8)
-        # bin_bytes = stringify_ndarray(bits)
+        # 3. Resolve each sample's cluster label to its mapper key
+        symbol_values = numpy.array([label_to_key[label] for label in labels], dtype=numpy.uint8)
+
+        # 4. Unpack the symbol values into binary
+        bit_matrix = ((symbol_values[:, None] >>
+                       numpy.arange(self._bits_per_sym - 1, -1, -1)) & 1).astype(numpy.uint8)
+        bits = bit_matrix.flatten()
+        bin_bytes = stringify_ndarray(bits)
 
         # DONE
         return bin_bytes

@@ -463,8 +463,8 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         self.run_test_exception_input(bits, ValueError,
                                       'argument is not positive')
 
-    def test_b07_lowest_symbol_rate(self):
-        """Smallest valid symbol rate."""
+    def test_b07_lowest_symbol_rate_floats(self):
+        """Smallest valid symbol rate (as floats)."""
         samp_rate = float(4800.0)
         sym_rate = float(1.0)
         carr_rec = None
@@ -473,8 +473,8 @@ class BoundaryModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 
-    def test_b08_lowest_samples_per_symbol(self):
-        """Smallest valid sample rate and symbol rate."""
+    def test_b08_lowest_samples_per_symbol_floats(self):
+        """Smallest valid sample rate and symbol rate (as floats)."""
         samp_rate = float(1.0)
         sym_rate = float(1.0)
         carr_rec = None

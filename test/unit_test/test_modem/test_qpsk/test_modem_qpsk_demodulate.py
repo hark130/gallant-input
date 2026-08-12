@@ -676,7 +676,55 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_exception_input(samples, filt, ValueError,
                                       'argument is not positive')
 
-    def test_b03_inadequate_min_num_syms_one(self):
+    def test_b03_lowest_symbol_rate(self):
+        """Smallest valid symbol rate."""
+        # QPSKConfig() input
+        samp_rate = 4800
+        sym_rate = 1
+        carr_rec = None
+        mapper = QPSK_MAP
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_b04_lowest_symbol_rate_floats(self):
+        """Smallest valid symbol rate (as floats)."""
+        # QPSKConfig() input
+        samp_rate = float(4800.0)
+        sym_rate = float(1.0)
+        carr_rec = None
+        mapper = QPSK_MAP
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_b05_lowest_samples_per_symbol(self):
+        """Smallest valid sample rate and symbol rate."""
+        # QPSKConfig() input
+        samp_rate = 1
+        sym_rate = 1
+        carr_rec = None
+        mapper = QPSK_MAP
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_b06_lowest_samples_per_symbol_floats(self):
+        """Smallest valid sample rate and symbol rate (as floats)."""
+        # QPSKConfig() input
+        samp_rate = float(1.0)
+        sym_rate = float(1.0)
+        carr_rec = None
+        mapper = QPSK_MAP
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_b07_inadequate_min_num_syms_one(self):
         """Minimum number of symbols not met: one (requires four)."""
         # QPSKConfig() input
         samp_rate = 32000  # GNU Radio tutorial example settings
@@ -693,7 +741,7 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_exception_input(samples, filt, ValueError,
                                       self.template_nsym_exc.format(num_syms))
 
-    def test_b04_barely_inadequate_min_num_syms_three(self):
+    def test_b08_barely_inadequate_min_num_syms_three(self):
         """Minimum number of symbols not met: three (requires four)."""
         # QPSKConfig() input
         samp_rate = 32000  # GNU Radio tutorial example settings
@@ -710,7 +758,7 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_exception_input(samples, filt, ValueError,
                                       self.template_nsym_exc.format(num_syms))
 
-    def test_b05_barely_met_min_num_syms_four(self):
+    def test_b09_barely_met_min_num_syms_four(self):
         """Barely met the minimum number of symbols: four."""
         # QPSKConfig() input
         samp_rate = 32000  # GNU Radio tutorial example settings
@@ -723,7 +771,7 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         filt = MatchedFilter.NONE
         self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
-    def test_b06_barely_exceeded_min_num_syms_five(self):
+    def test_b10_barely_exceeded_min_num_syms_five(self):
         """Barely exceeded the minimum number of symbols: five (requires at least four)."""
         # QPSKConfig() input
         samp_rate = 32000  # GNU Radio tutorial example settings

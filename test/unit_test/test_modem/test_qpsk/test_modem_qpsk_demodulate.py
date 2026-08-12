@@ -1126,7 +1126,10 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
     def test_s24_odd_binary_len_leading_zero(self):
-        """Odd length input binary expects zero padding: leading 0."""
+        """Odd length input binary expects zero padding: leading 0.
+
+        The resulting demodulated binary will always be even.
+        """
         # QPSKConfig() input
         samp_rate = 32000   # GNU Radio tutorial example settings
         sym_rate = 8000     # GNU Radio tutorial example settings
@@ -1135,10 +1138,19 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         # QPSK().demodulate() input
         bits = b'0' + generate_bin_bytes(num_bits=254)  # len(bits) == 255
         filt = MatchedFilter.NONE
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+        # Test case setup
+        exp_ret = bits + b'0'  # QPSK output is always even
+        samples = create_test_input(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                    bin_bytes=bits, bit_map=mapper)
+        self.run_test_return_input(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                   carrier_recovery=carr_rec, mapper=mapper,
+                                   samples=samples, filt=filt, exp_ret=exp_ret)
 
     def test_s25_odd_binary_len_leading_one(self):
-        """Odd length input binary expects zero padding: leading 1."""
+        """Odd length input binary expects zero padding: leading 1.
+
+        The resulting demodulated binary will always be even.
+        """
         # QPSKConfig() input
         samp_rate = 32000   # GNU Radio tutorial example settings
         sym_rate = 8000     # GNU Radio tutorial example settings
@@ -1147,7 +1159,13 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         # QPSK().demodulate() input
         bits = b'1' + generate_bin_bytes(num_bits=254)  # len(bits) == 255
         filt = MatchedFilter.NONE
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+        # Test case setup
+        exp_ret = bits + b'0'  # QPSK output is always even
+        samples = create_test_input(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                    bin_bytes=bits, bit_map=mapper)
+        self.run_test_return_input(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                   carrier_recovery=carr_rec, mapper=mapper,
+                                   samples=samples, filt=filt, exp_ret=exp_ret)
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

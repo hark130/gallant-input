@@ -385,7 +385,7 @@ class NormalQPSKModemCompTest(QPSKModemCompTest):
         filt = MatchedFilter.RECT_FIR
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_noisy_input(bin_bytes=bin_bytes, samples=samples, filt=filt,
-                                         mapper=mapper, snr_db=self.SNR_POOR, modem_order=True)
+                                         snr_db=self.SNR_POOR, modem_order=True)
 
     def test_n12_random_bits_noisy_dem_mo(self):
         """Random bits w/ AWGN, at a reasonable SNR, dem --> mo order."""
@@ -1032,6 +1032,7 @@ class SpecialQPSKModemCompTest(QPSKModemCompTest):
         self.assertNotEqual(len(bin_bytes) % self.bits_per_symbol, 0, 'Input length *must* be off')
         samples = convert_bin_bytes_to_qpsk(bin_bytes=bin_bytes, sample_rate=samp_rate,
                                             symbol_rate=sym_rate, bit_map=mapper)
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.set_test_input_return(bin_bytes=bin_bytes, samples=samples, filt=filt,
                                    modem_order=False, skip_exp_ret=True)
         self.expect_return(bin_bytes + b'0')  # QPSK output is always even
@@ -1050,6 +1051,7 @@ class SpecialQPSKModemCompTest(QPSKModemCompTest):
         self.assertNotEqual(len(bin_bytes) % self.bits_per_symbol, 0, 'Input length *must* be off')
         samples = convert_bin_bytes_to_qpsk(bin_bytes=bin_bytes, sample_rate=samp_rate,
                                             symbol_rate=sym_rate, bit_map=mapper)
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.set_test_input_return(bin_bytes=bin_bytes, samples=samples, filt=filt,
                                    modem_order=False, skip_exp_ret=True)
         self.expect_return(bin_bytes + b'0')  # QPSK output is always even

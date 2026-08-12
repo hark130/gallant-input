@@ -793,13 +793,252 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
 # - Show me examples of "Each symbol individually: four separate short messages, each using only one of the four 2-bit patterns repeated (00, 01, 10, 11), to confirm each quadrant maps back correctly and isn't accidentally swapped with a neighbor." in binary
 #   (e.g., b'0000000000000000', b'0101010101010101', etc)
 # - Odd bit-length input: a bin_bytes whose bit count isn't a multiple of 2 — confirm your padding convention (established back when we discussed QPSK's TX-side dibit grouping) round-trips correctly, and that decide_symbols()/downstream unpacking doesn't silently drop or misalign the last bit.
-# - Keep rotated mapping test cases
 # - All same bit-pair, long run: long single-symbol repetition — a stress test for the clustering-instability gotcha above (only one real cluster present).
-# - Skip any/all Costas Loop-related test cases with a note regarding GAIN-26
 # - Keep AWGN test cases
 # """
 
-    def test_s01_carrier_recovery_costas_loop(self):
+    def test_s01_weird_mapper_rotated_30_deg(self):
+        """Weird mapper: rotated 30° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 6)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s02_weird_mapper_rotated_45_deg(self):
+        """Weird mapper: rotated 45° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 4)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s03_weird_mapper_rotated_60_deg(self):
+        """Weird mapper: rotated 60° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 3)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s04_weird_mapper_rotated_90_deg(self):
+        """Weird mapper: rotated 90° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s05_weird_mapper_rotated_120_deg(self):
+        """Weird mapper: rotated 120° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi / 3)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s06_weird_mapper_rotated_135_deg(self):
+        """Weird mapper: rotated 135° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 4)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s07_weird_mapper_rotated_150_deg(self):
+        """Weird mapper: rotated 150° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 6)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s08_weird_mapper_rotated_180_deg(self):
+        """Weird mapper: rotated 180° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi)  # Flipped position
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s09_weird_mapper_rotated_210_deg(self):
+        """Weird mapper: rotated 210° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 6)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s10_weird_mapper_rotated_225_deg(self):
+        """Weird mapper: rotated 225° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 4)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s11_weird_mapper_rotated_240_deg(self):
+        """Weird mapper: rotated 240° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 4 * numpy.pi / 3)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s12_weird_mapper_rotated_270_deg(self):
+        """Weird mapper: rotated 270° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 2)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s13_weird_mapper_rotated_300_deg(self):
+        """Weird mapper: rotated 300° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 3)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s14_weird_mapper_rotated_315_deg(self):
+        """Weird mapper: rotated 315° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 4)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s15_weird_mapper_rotated_330_deg(self):
+        """Weird mapper: rotated 330° on the complex plane.
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 11 * numpy.pi / 6)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s16_weird_mapper_rotated_360_deg(self):
+        """Weird mapper: rotated 360° on the complex plane (effectively, no change).
+
+        Binary mapping rotated away from the real axis on the complex plane.
+        """
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 800
+        carr_rec = None
+        mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi)
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    @skip('This test case is invalid until GAIN-26 is completed')
+    def test_s17_carrier_recovery_costas_loop(self):
         """Random bits; carrier recovery: Costas Loop."""
         samp_rate = 4800
         sym_rate = 80
@@ -808,7 +1047,8 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         filt = MatchedFilter.NONE
         self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret, filt=filt)
 
-    def test_s02_carrier_recovery_of_random_bits_with_awgn(self):
+    @skip('This test case is invalid until GAIN-26 is completed')
+    def test_s18_carrier_recovery_of_random_bits_with_awgn(self):
         """Random bits with AWGN at a reasonable SNR (dB) using a Costas Loop."""
         samp_rate = 4800
         sym_rate = 80
@@ -818,7 +1058,8 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         filt = MatchedFilter.NONE
         self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt)
 
-    def test_s03_everything_everywhere_all_at_once(self):
+    @skip('This test case is invalid until GAIN-26 is completed')
+    def test_s19_everything_everywhere_all_at_once(self):
         """Random AWGN bits, at a reasonable SNR (dB), using a Costas Loop and rectangular FIR."""
         samp_rate = 4800
         sym_rate = 80
@@ -827,214 +1068,6 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         snr_db = self.SNR_POOR
         filt = MatchedFilter.RECT_FIR
         self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt)
-
-    def test_s04_weird_mapper_rotated_30_deg(self):
-        """Weird mapper: rotated 30° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 6)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s05_weird_mapper_rotated_45_deg(self):
-        """Weird mapper: rotated 45° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 4)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s06_weird_mapper_rotated_60_deg(self):
-        """Weird mapper: rotated 60° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 3)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s07_weird_mapper_rotated_90_deg(self):
-        """Weird mapper: rotated 90° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s08_weird_mapper_rotated_120_deg(self):
-        """Weird mapper: rotated 120° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi / 3)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s09_weird_mapper_rotated_135_deg(self):
-        """Weird mapper: rotated 135° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 4)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s10_weird_mapper_rotated_150_deg(self):
-        """Weird mapper: rotated 150° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 6)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s11_weird_mapper_rotated_180_deg(self):
-        """Weird mapper: rotated 180° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi)  # Flipped position
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s12_weird_mapper_rotated_210_deg(self):
-        """Weird mapper: rotated 210° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 6)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s13_weird_mapper_rotated_225_deg(self):
-        """Weird mapper: rotated 225° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 4)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s14_weird_mapper_rotated_240_deg(self):
-        """Weird mapper: rotated 240° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 4 * numpy.pi / 3)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s15_weird_mapper_rotated_270_deg(self):
-        """Weird mapper: rotated 270° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 3 * numpy.pi / 2)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s16_weird_mapper_rotated_300_deg(self):
-        """Weird mapper: rotated 300° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 5 * numpy.pi / 3)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s17_weird_mapper_rotated_315_deg(self):
-        """Weird mapper: rotated 315° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 7 * numpy.pi / 4)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s18_weird_mapper_rotated_330_deg(self):
-        """Weird mapper: rotated 330° on the complex plane.
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 11 * numpy.pi / 6)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
-
-    def test_s19_weird_mapper_rotated_360_deg(self):
-        """Weird mapper: rotated 360° on the complex plane (effectively, no change).
-
-        Binary mapping rotated away from the real axis on the complex plane.
-        """
-        samp_rate = 48000
-        sym_rate = 800
-        carr_rec = None
-        bits = b'10101010'
-        filt = MatchedFilter.NONE
-        mapper = rotate_mapping(QPSK_MAP, 2 * numpy.pi)
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, bits, filt, mapper)
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

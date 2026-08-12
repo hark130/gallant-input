@@ -637,14 +637,8 @@ class ErrorModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
 class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
     """Boundary Test Cases."""
 
-
-# """
-# NOTES:
-# - One symbol (ValueError)
-# - Three symbols (ValueError)
-# - Exactly four symbols (success)
-# - Five symbols (success)
-# """
+    # Template min-number-of-symbols-not-met ValueError exception message template
+    template_nsym_exc = 'Requires at least 4 symbols to cluster but received {}'
 
     def test_b01_lowest_sample_rate(self):
         """Smallest valid sample rate.
@@ -652,15 +646,16 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         Rounding this computed samples per symbol to an integer results in a value of 0 which is
         not valid.
         """
+        # QPSKConfig() input
         samp_rate = 1
         sym_rate = 80
         carr_rec = None
-        # Test case input
-        bits = self.SAMPLES_OOK_ALL_ONES
+        mapper = None  # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        samples = self.SAMPLES_OOK_ALL_ONES  # Just to get a valid array
         filt = MatchedFilter.NONE
-        mapper = None
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
-        self.run_test_exception_input(bits, filt, ValueError,
+        self.run_test_exception_input(samples, filt, ValueError,
                                       'argument is not positive')
 
     def test_b02_lowest_sample_rate_floats(self):
@@ -669,16 +664,77 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         Rounding this computed samples per symbol to an integer results in a value of 0 which is
         not valid.
         """
+        # QPSKConfig() input
         samp_rate = float(1.0)
         sym_rate = float(80.0)
         carr_rec = None
-        # Test case input
-        bits = self.SAMPLES_OOK_ALL_ZEROES
+        mapper = None  # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        samples = self.SAMPLES_OOK_ALL_ZEROES  # Just to get a valid array
         filt = MatchedFilter.NONE
-        mapper = None
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
-        self.run_test_exception_input(bits, filt, ValueError,
+        self.run_test_exception_input(samples, filt, ValueError,
                                       'argument is not positive')
+
+    def test_b03_inadequate_min_num_syms_one(self):
+        """Minimum number of symbols not met: one (requires four)."""
+        # QPSKConfig() input
+        samp_rate = 32000  # GNU Radio tutorial example settings
+        sym_rate = 8000    # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = QPSK_MAP  # Necessary to create the samples
+        # QPSK().demodulate() input
+        num_syms = 1       # The number of symbols to generate for this test case
+        bits = generate_bin_bytes(num_bits=self.bits_per_symbol*num_syms)  # Source binary
+        samples = convert_bin_bytes_to_qpsk(bin_bytes=bits, sample_rate=samp_rate,
+                                            symbol_rate=sym_rate, bit_map=mapper)
+        filt = MatchedFilter.NONE
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_exception_input(samples, filt, ValueError,
+                                      self.template_nsym_exc.format(num_syms))
+
+    def test_b04_barely_inadequate_min_num_syms_three(self):
+        """Minimum number of symbols not met: three (requires four)."""
+        # QPSKConfig() input
+        samp_rate = 32000  # GNU Radio tutorial example settings
+        sym_rate = 8000    # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = QPSK_MAP  # Necessary to create the samples
+        # QPSK().demodulate() input
+        num_syms = 3       # The number of symbols to generate for this test case
+        bits = generate_bin_bytes(num_bits=self.bits_per_symbol*num_syms)  # Source binary
+        samples = convert_bin_bytes_to_qpsk(bin_bytes=bits, sample_rate=samp_rate,
+                                            symbol_rate=sym_rate, bit_map=mapper)
+        filt = MatchedFilter.NONE
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_exception_input(samples, filt, ValueError,
+                                      self.template_nsym_exc.format(num_syms))
+
+    def test_b05_barely_met_min_num_syms_four(self):
+        """Barely met the minimum number of symbols: four."""
+        # QPSKConfig() input
+        samp_rate = 32000  # GNU Radio tutorial example settings
+        sym_rate = 8000    # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None      # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        num_syms = 4       # The number of symbols to generate for this test case
+        bits = generate_bin_bytes(num_bits=self.bits_per_symbol*num_syms)
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_b06_barely_exceeded_min_num_syms_five(self):
+        """Barely exceeded the minimum number of symbols: five (requires at least four)."""
+        # QPSKConfig() input
+        samp_rate = 32000  # GNU Radio tutorial example settings
+        sym_rate = 8000    # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None      # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        num_syms = 5       # The number of symbols to generate for this test case
+        bits = generate_bin_bytes(num_bits=self.bits_per_symbol*num_syms)
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
 
 class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):

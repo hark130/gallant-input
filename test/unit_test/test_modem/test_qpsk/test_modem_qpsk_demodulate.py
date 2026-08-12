@@ -842,7 +842,7 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 2)  # Imaginary values instead of real
+        mapper = rotate_mapping(QPSK_MAP, numpy.pi / 2)
         # QPSK().demodulate() input
         bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
         filt = MatchedFilter.NONE

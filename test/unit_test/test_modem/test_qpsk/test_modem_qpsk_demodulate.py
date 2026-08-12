@@ -248,7 +248,9 @@ class NormalModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         # QPSK().demodulate() input
         bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
         filt = MatchedFilter.NONE
-        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, mapper, bits, snr_db, filt)
+        self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                   carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
+                                   snr_db=snr_db, filt=filt)
 
 
 class ErrorModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
@@ -788,15 +790,6 @@ class BoundaryModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
 class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
     """Special Test Cases."""
 
-# """
-# NOTES:
-# - Show me examples of "Each symbol individually: four separate short messages, each using only one of the four 2-bit patterns repeated (00, 01, 10, 11), to confirm each quadrant maps back correctly and isn't accidentally swapped with a neighbor." in binary
-#   (e.g., b'0000000000000000', b'0101010101010101', etc)
-# - Odd bit-length input: a bin_bytes whose bit count isn't a multiple of 2 — confirm your padding convention (established back when we discussed QPSK's TX-side dibit grouping) round-trips correctly, and that decide_symbols()/downstream unpacking doesn't silently drop or misalign the last bit.
-# - All same bit-pair, long run: long single-symbol repetition — a stress test for the clustering-instability gotcha above (only one real cluster present).
-# - Keep AWGN test cases
-# """
-
     def test_s01_weird_mapper_rotated_30_deg(self):
         """Weird mapper: rotated 30° on the complex plane.
 
@@ -1040,34 +1033,121 @@ class SpecialModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
     @skip('This test case is invalid until GAIN-26 is completed')
     def test_s17_carrier_recovery_costas_loop(self):
         """Random bits; carrier recovery: Costas Loop."""
+        # QPSKConfig() input
         samp_rate = 4800
         sym_rate = 80
         carr_rec = CostasLoop()
-        exp_ret = generate_bin_bytes(num_bits=128)
+        mapper = None            # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=128)  # Expected ret value computes the 'samples' input
         filt = MatchedFilter.NONE
-        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret, filt=filt)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
     @skip('This test case is invalid until GAIN-26 is completed')
     def test_s18_carrier_recovery_of_random_bits_with_awgn(self):
         """Random bits with AWGN at a reasonable SNR (dB) using a Costas Loop."""
+        # QPSKConfig() input
         samp_rate = 4800
         sym_rate = 80
         carr_rec = CostasLoop()
-        exp_ret = generate_bin_bytes(num_bits=128)
+        mapper = None            # Defaults to QPSK_MAP
+        # Setup
         snr_db = self.SNR_POOR
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=128)  # Expected ret value computes the 'samples' input
         filt = MatchedFilter.NONE
-        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt)
+        self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                   carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
+                                   snr_db=snr_db, filt=filt)
 
     @skip('This test case is invalid until GAIN-26 is completed')
     def test_s19_everything_everywhere_all_at_once(self):
         """Random AWGN bits, at a reasonable SNR (dB), using a Costas Loop and rectangular FIR."""
+        # QPSKConfig() input
         samp_rate = 4800
         sym_rate = 80
         carr_rec = CostasLoop()
-        exp_ret = generate_bin_bytes(num_bits=256)
+        mapper = None            # Defaults to QPSK_MAP
+        # Setup
         snr_db = self.SNR_POOR
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
         filt = MatchedFilter.RECT_FIR
-        self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db, filt=filt)
+        self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                   carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
+                                   snr_db=snr_db, filt=filt)
+
+    def test_s20_one_symbol_repeated_zero(self):
+        """Exclusively one symbol repeated: 00."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'00' * 128  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s21_one_symbol_repeated_one(self):
+        """Exclusively one symbol repeated: 01."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'01' * 128  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s22_one_symbol_repeated_two(self):
+        """Exclusively one symbol repeated: 10."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'10' * 128  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s23_one_symbol_repeated_three(self):
+        """Exclusively one symbol repeated: 11."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'11' * 128  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s24_odd_binary_len_leading_zero(self):
+        """Odd length input binary expects zero padding: leading 0."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'0' + generate_bin_bytes(num_bits=254)  # len(bits) == 255
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
+
+    def test_s25_odd_binary_len_leading_one(self):
+        """Odd length input binary expects zero padding: leading 1."""
+        # QPSKConfig() input
+        samp_rate = 32000   # GNU Radio tutorial example settings
+        sym_rate = 8000     # GNU Radio tutorial example settings
+        carr_rec = None
+        mapper = None       # Defaults to QPSK_MAP
+        # QPSK().demodulate() input
+        bits = b'1' + generate_bin_bytes(num_bits=254)  # len(bits) == 255
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
 
 def create_noisy_test_input(sample_rate: int | float, symbol_rate: int | float,

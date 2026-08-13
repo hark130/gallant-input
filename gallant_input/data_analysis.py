@@ -62,7 +62,7 @@ def compare_streams(stream1: bytes | str, stream2: bytes | str, show_index: bool
     print(f'{prefix1}{stream1}')
     print(f'{prefix2}{stream2}')
     if show_index:
-        print(f'{index_prefix}{"".join([str(index%10) for index in range(max_len)])}')
+        print(f'{index_prefix}{"".join([str(index % 10) for index in range(max_len)])}')
     print(diff_prefix, end='')
     for index in range(max_len):
         if stream1[index] != stream2[index]:

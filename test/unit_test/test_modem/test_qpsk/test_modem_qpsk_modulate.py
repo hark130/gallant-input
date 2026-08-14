@@ -17,7 +17,7 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP, QPSK_MAP_DVB_S2
 from gallant_input.synch.costas_loop import CostasLoop
 from test.modify import convert_bin_bytes_to_qpsk, generate_bin_bytes, rotate_mapping
 from test.unit_test.test_modem.test_qpsk.test_modem_qpsk import ModemQPSKUnitTest
@@ -149,6 +149,16 @@ class NormalModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         bps = 2                                    # Bits per symbol
         repeat = int(8 * 8 / (bps * len(mapper)))  # Number of repeats
         bits = b''.join([bytes(f'{key:02b}', 'ascii') for key in QPSK_MAP]) * repeat
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_compute(bits)
+
+    def test_n06_dvb_s2_mapping(self):
+        """Digital Video Broadcasting (DVB) - Satellite Second Generation (S2) standard map."""
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        mapper = QPSK_MAP_DVB_S2  # DVB-S2 mapping
+        bits = generate_bin_bytes(num_bits=256)
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_compute(bits)
 

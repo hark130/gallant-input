@@ -14,4 +14,7 @@ OOK_MAP: Final[dict[int, float]] = {0: 0.0, 1: 1.0}
 FSK2_MAP: Final[dict[int, float]] = {0: -115200 / 2, 1: 115200 / 2}  # Baud Rate: 115200
 # Phase Modulation (PM)
 BPSK_MAP: Final[dict[int, complex]] = {0: -1+0j, 1: 1+0j}
+# Default QPSK mapping
 QPSK_MAP: Final[dict[int, complex]] = {0b00: 1+1j, 0b01: -1+1j, 0b10: 1-1j, 0b11: -1-1j}
+# QPSK mapping used in Digital Video Broadcasting (DVB) - Satellite Second Generation (S2) standard
+QPSK_MAP_DVB_S2: Final[dict[int, complex]] = {0b00: 1+1j, 0b01: 1-1j, 0b10: -1+1j, 0b11: -1-1j}

@@ -18,7 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP, QPSK_MAP_DVB_S2
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.synch.costas_loop import CostasLoop
 from test.modify import add_awgn, convert_bin_bytes_to_qpsk, generate_bin_bytes, rotate_mapping
@@ -247,6 +247,18 @@ class NormalModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
                                    carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
                                    snr_db=snr_db, filt=filt)
+
+    def test_n08_dvb_s2_mapping(self):
+        """Digital Video Broadcasting (DVB) - Satellite Second Generation (S2) standard map."""
+        # QPSKConfig() input
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        mapper = QPSK_MAP_DVB_S2  # DVB-S2 mapping
+        # QPSK().demodulate() input
+        bits = generate_bin_bytes(num_bits=256)  # Expected ret value computes the 'samples' input
+        filt = MatchedFilter.NONE
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, mapper, bits, filt)
 
 
 # They're test cases!  Leave me be, Pylint.

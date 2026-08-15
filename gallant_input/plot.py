@@ -2,6 +2,7 @@
 
 # Standard Imports
 # Third Party Imports
+from scipy.signal import welch
 import matplotlib.pyplot as plt
 import numpy
 # Local Imports
@@ -10,12 +11,15 @@ from gallant_input.validation import (validate_bool, validate_int_or_float, vali
                                       validate_pos_float, validate_pos_int, validate_string)
 
 
-def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constellation') -> None:
+def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constellation',
+                       now: bool = True) -> None:
     """Plot an IQ constellation (scatter plot of I vs Q).
 
     Args:
-        signal: An array object which represents a complex signal to plot.
+        samples: An array object which represents a complex signal to plot.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
 
     Raises:
         TypeError: Bad data type.
@@ -28,16 +32,19 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     plt.figure()
     plt.scatter(samples.real, samples.imag, s=1, label='Samples')
     plt.axis('equal')
-    _plot_it(x_label='In-phase (I)', y_label='Quadrature (Q)', title=title)
+    _plot_it(x_label='In-phase (I)', y_label='Quadrature (Q)', title=title, now=now)
 
 
 def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
-                            title: str | None = 'Frequency Response') -> None:
+                            title: str | None = 'Frequency Response', now: bool = True) -> None:
     """Plot the frequency response of filter coefficients.
 
     Args:
         coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
         win_size: [OPTIONAL] FFT window size.  Consider using signal.optimize_window_size().
+        title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
     """
     # LOCAL VARIABLES
     freq_map = None                                   # Frequency mapping of signal
@@ -52,18 +59,20 @@ def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
 
     # PLOT IT
     # 1. Compute it
-    freq_map, mag_map = compute_spectrum(signal=coeffs, samp_rate=None, axis_len=win_size,
+    freq_map, mag_map = compute_spectrum(samples=coeffs, samp_rate=None, axis_len=win_size,
                                          shift_result=True, convert_db=True)
     # 2. Plot it
     _plot_spectrum(freq_map=freq_map, mag_map=mag_map,
-                   x_label=x_label, y_label=y_label, title=title)
+                   x_label=x_label, y_label=y_label, title=title, now=now)
 
 
-def plot_impulse_response(coeffs: numpy.ndarray) -> None:
+def plot_impulse_response(coeffs: numpy.ndarray, now: bool = True) -> None:
     """Plot filter coefficients.
 
     Args:
         coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
     """
     # LOCAL VARIABLES
     x_values = None    # Evenly spaced x-axis values derived from coeffs
@@ -87,32 +96,37 @@ def plot_impulse_response(coeffs: numpy.ndarray) -> None:
     plt.setp(baseline, linewidth=1)  # Emphasizes pos/neg symmetry and visualizes filter shape
     plt.axhline(0, linewidth=1)  # Horizontal axis at zero
     plt.xlim(-1, len(coeffs))  # Tight axis control
-    _plot_it(x_label='Index (n)', y_label='h[n]', title='Impulse Response h[n]', visible_grid=False)
+    _plot_it(x_label='Index (n)', y_label='h[n]', title='Impulse Response h[n]', visible_grid=False,
+             now=now)
 
 
 # Maybe I'll refactor this later...
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
+def plot_spectrum(samples: numpy.ndarray, samp_rate: int | float | None = None,
                   shift_result: bool = True, convert_db: bool = True,
-                  center_freq: float | None = None,
-                  title: str | None = 'Magnitude Spectrum') -> None:
+                  center_freq: float | None = None, title: str | None = 'Magnitude Spectrum',
+                  now: bool = True) -> None:
     """Plot magnitude spectrum of a signal.
 
+    Plot frequency vs. magnitude.
+
     Args:
-        signal: The signal to evaluate.
+        samples: The signal to evaluate.
         samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, the library will use defaults.
         shift_result: [OPTIONAL] If True, rotate both arrays so that 0 Hz is in the center.
         convert_db: [OPTIONAL] Convert y-axis values to decibels.
         center_freq: [OPTIONAL] Specify a center frequency on the plot.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
 
     Raises:
         TypeError: Bad data type.
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    freq_map = None                  # Frequency mapping of signal
-    mag_map = None                   # Magnitude mapping of signal
+    freq_map = None                  # Frequency mapping of samples
+    mag_map = None                   # Magnitude mapping of samples
     x_label = 'Frequency (Hz, abs)'  # The x-axis label
     y_label = 'Magnitude'            # The y-axis label
 
@@ -120,7 +134,7 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
     if center_freq is not None:
         validate_pos_float(center_freq, 'center_freq')
         x_label = 'Frequency (Hz)'
-    freq_map, mag_map = compute_spectrum(signal=signal, samp_rate=samp_rate,
+    freq_map, mag_map = compute_spectrum(samples=samples, samp_rate=samp_rate,
                                          shift_result=shift_result, convert_db=convert_db)
     if center_freq is not None:
         freq_map = freq_map + center_freq
@@ -128,19 +142,52 @@ def plot_spectrum(signal: numpy.ndarray, samp_rate: int | float | None = None,
         y_label = y_label + ' (dB)'
 
     # PLOT IT
-    _plot_spectrum(freq_map=freq_map, mag_map=mag_map,
-                   x_label=x_label, y_label=y_label, title=title)
+    _plot_spectrum(freq_map=freq_map, mag_map=mag_map, x_label=x_label, y_label=y_label,
+                   title=title, now=now)
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
+def plot_symbol_boundaries(real_wave: numpy.ndarray, sps: float | int,
+                           title: str | None = 'Symbol Boundaries', now: bool = True) -> None:
+    """Plot symbol boundaries against a real (demodulated) waveform.
+
+    Args:
+        real_wave: The real waveform.
+        sps: Samples per symbol.
+        title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
+    """
+    # LOCAL VARIABLES
+    num_samps = None             # The length of real_wave
+    x_label = 'Sample Index'     # The x-axis label
+    y_label = 'Inst. Freq'       # The y-axis label
+
+    # INPUT VALIDATION
+    validate_ndarray(real_wave, 'real_wave', can_be_empty=False, num_dim=1)
+    validate_int_or_float(sps, 'sps')
+
+    # PREPARE
+    num_samps = len(real_wave)
+    sample_points = numpy.arange(0, num_samps, sps)
+    plt.plot(real_wave, color='blue')
+    for sample_point in sample_points:
+        plt.axvline(sample_point, color='red', alpha=0.2)
+
+    # PLOT IT
+    _plot_it(x_label=x_label, y_label=y_label, title=title, now=now)
+
+
 def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = None,
-                     title: str | None = 'Time Domain') -> None:
+                     title: str | None = 'Time Domain', now: bool = True) -> None:
     """Plot real and imaginary components of a signal over time.
 
     Args:
         samples: An array object which represents a signal to plot.  Can be real or complex.
         samp_rate: [OPTIONAL] The sampling frequency in Hz.  If None, uses the "samples" indices.
         title: [OPTIONAL] The title of the plot.  If empty or None, no title will be added.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
 
     Raises:
         TypeError: Bad data type.
@@ -172,11 +219,33 @@ def plot_time_domain(samples: numpy.ndarray, samp_rate: int | float | None = Non
     plt.plot(x_plot, samples.real, label='I (Real)')
     if numpy.iscomplexobj(samples):
         plt.plot(x_plot, samples.imag, label='Q (Imag)')
-    _plot_it(x_label=x_label, y_label=y_label, title=title)
+    _plot_it(x_label=x_label, y_label=y_label, title=title, now=now)
+
+
+def plot_welch_psd(samples: numpy.ndarray, sample_rate: float | int,
+                   title: str | None = 'Welch Power Spectral Density', now: bool = True) -> None:
+    """Plot the estimated Welch Power Spectral Density.
+
+    """
+    # LOCAL VARIABLES
+    x_label = 'Frequency (Hz)'  # Plot x-axis label
+    y_label = 'PSD (dB/Hz)'     # Plot y-axis label
+    freq_arr = None             # An array of sample frequencies
+    psd = None                  # Power spectral density of samples
+    psd_db = None               # The PSD in decibels
+
+    # PREPARE
+    freq_arr, psd = welch(samples, fs=sample_rate, nperseg=4096, scaling='density')
+    psd_db = 10 * numpy.log10(psd + 1e-20)
+
+    # PLOT IT
+    plt.figure(figsize=(12, 4))
+    plt.plot(freq_arr, psd_db)
+    _plot_it(x_label=x_label, y_label=y_label, title=title, visible_grid=True, now=now)
 
 
 def _plot_it(x_label: str | None = None, y_label: str | None = None,
-             title: str | None = None, visible_grid: bool = True) -> None:
+             title: str | None = None, visible_grid: bool = True, now: bool = True) -> None:
     """Create a modular SPOT for this module to display all 'open figrues'.
 
     Calls:
@@ -185,13 +254,16 @@ def _plot_it(x_label: str | None = None, y_label: str | None = None,
         plt.title(title)
         plt.legend()
         plt.grid()
-        plt.show()
+        if now is True:
+            plt.show()
 
     Args:
         x_label: [OPTIONAL] Set the label for the x-axis, if defined.
         y_label: [OPTIONAL] Set the label for the y-axis, if defined.
         title: [OPTIONAL] Set the text to use for the title, if defined.
         visible_grid: [OPTIONAL] If True, show the grid lines.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
 
     Raises:
         TypeError: Bad data type.
@@ -208,15 +280,18 @@ def _plot_it(x_label: str | None = None, y_label: str | None = None,
         validate_string(title, 'title', can_be_empty=False)
         plt.title(title)
     validate_bool(visible_grid, 'visible_grid')
+    validate_bool(now, 'now')
 
     # PLOT IT
     plt.legend()
     plt.grid(visible=visible_grid)
-    plt.show()
+    if now is True:
+        plt.show()
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def _plot_spectrum(freq_map: numpy.ndarray, mag_map: numpy.ndarray, x_label: str | None = None,
-                   y_label: str | None = None, title: str | None = None) -> None:
+                   y_label: str | None = None, title: str | None = None, now: bool = True) -> None:
     """Share common functionality between plot_spectrum() and plot_frequency_response().
 
     Args:
@@ -224,8 +299,11 @@ def _plot_spectrum(freq_map: numpy.ndarray, mag_map: numpy.ndarray, x_label: str
         mag_map: Magnitude mapping in a 1-dimensional array.
         x_label: [OPTIONAL] Set the label for the x-axis, if defined.
         y_label: [OPTIONAL] Set the label for the y-axis, if defined.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
     """
     # PLOT IT
     plt.figure()
     plt.plot(freq_map, mag_map, label='FFT')
-    _plot_it(x_label=x_label, y_label=y_label, title=title)
+    _plot_it(x_label=x_label, y_label=y_label, title=title, now=now)
+# pylint: enable=too-many-arguments,too-many-positional-arguments

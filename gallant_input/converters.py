@@ -4,8 +4,28 @@
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.validation import (validate_binary_bytes, validate_bytes_or_str, validate_bool,
-                                      validate_int)
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_bytes_or_str,
+                                      validate_int, validate_string)
+
+
+def convert_ascii_to_bin_bytes(message: str, clean_it: bool = False) -> bytes:
+    """Convert an ASCII message to padded binary bytes.
+
+    Args:
+        message: An ASCII message
+        clean_it: [OPTIONAL] Remove characters that aren't: printable ASCII, tabs, newlines.
+
+    Returns:
+        The binary version of the message.
+
+    Raises:
+        TypeError: Invalid data type.
+    """
+    validate_string(message, 'message', can_be_empty=False)
+    validate_bool(clean_it, 'clean_it')
+    if clean_it:
+        message = sanitize_ascii(message)
+    return ''.join(f'{ord(char):08b}' for char in message).encode()
 
 
 def convert_bin_bytes_to_ascii(binary: bytes, clean_it: bool = False) -> str:

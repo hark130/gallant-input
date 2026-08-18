@@ -17,7 +17,7 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, BPSK_MAP_3GPP_5G, BPSK_MAP_802_11, QPSK_MAP
 from gallant_input.synch.costas_loop import CostasLoop
 from test.modify import generate_bin_bytes, rotate_mapping
 from test.unit_test.test_modem.test_bpsk.test_modem_bpsk import ModemBPSKUnitTest
@@ -201,6 +201,26 @@ class NormalModemBPSKModulateUnitTest(ModemBPSKModulateUnitTest):
         carr_rec = None
         bits = generate_bin_bytes(num_bits=8*8)
         mapper = {0: 1+0j, 1: -1+0j}  # Standard mapping: {0: -1+0j, 1: 1+0j}
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_n06_3gpp_5g_mapping(self):
+        """3GPP 5G standard BPSK mapping."""
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        bits = generate_bin_bytes(num_bits=256)
+        mapper = BPSK_MAP_3GPP_5G
+        self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
+        self.run_test_input_return_def(bits, mapper)
+
+    def test_n07_802_11_mapping(self):
+        """IEEE 802.11 standard BPSK mapping."""
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        bits = generate_bin_bytes(num_bits=256)
+        mapper = BPSK_MAP_802_11
         self.set_bpsk_ctor_args(samp_rate, sym_rate, carr_rec)
         self.run_test_input_return_def(bits, mapper)
 

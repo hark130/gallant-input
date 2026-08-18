@@ -20,7 +20,7 @@ from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, BPSK_MAP_3GPP_5G, BPSK_MAP_802_11, QPSK_MAP
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.synch.costas_loop import CostasLoop
 from test.modify import add_awgn, convert_bin_bytes_to_bpsk, generate_bin_bytes, rotate_mapping
@@ -286,6 +286,24 @@ class NormalModemBPSKDemodulateUnitTest(ModemBPSKDemodulateUnitTest):
         exp_ret = generate_bin_bytes(num_bits=128)
         snr_db = self.SNR_POOR
         self.run_test_return_noisy(samp_rate, sym_rate, carr_rec, exp_ret, snr_db)
+
+    def test_n11_3gpp_5g_mapping(self):
+        """3GPP 5G standard BPSK mapping."""
+        samp_rate = 4800
+        sym_rate = 1000
+        carr_rec = None
+        mapper = BPSK_MAP_3GPP_5G
+        exp_ret = generate_bin_bytes(num_bits=256)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret, bit_map=mapper)
+
+    def test_n12_802_11_mapping(self):
+        """IEEE 802.11 standard BPSK mapping."""
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        mapper = BPSK_MAP_802_11
+        exp_ret = generate_bin_bytes(num_bits=256)
+        self.run_test_return_compute(samp_rate, sym_rate, carr_rec, exp_ret, bit_map=mapper)
 
 
 # They're test cases, Pylint.  Leave me be.

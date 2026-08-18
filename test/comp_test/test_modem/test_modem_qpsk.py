@@ -18,7 +18,7 @@ import numpy
 # Local Imports
 from gallant_input.modem.qpsk import QPSK
 from gallant_input.modem.qpsk_config import QPSKConfig
-from gallant_input.modem.constants import QPSK_MAP
+from gallant_input.modem.constants import QPSK_MAP, QPSK_MAP_DVB_S2
 from gallant_input.modem.matched_filter import MatchedFilter
 from test.comp_test.test_modem.modem_comp_test import ModemCompTest
 from test.modify import add_awgn, convert_bin_bytes_to_qpsk, generate_bin_bytes, rotate_mapping
@@ -401,6 +401,40 @@ class NormalQPSKModemCompTest(QPSKModemCompTest):
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_return_noisy_input(bin_bytes=bin_bytes, samples=samples, filt=filt,
                                          snr_db=self.SNR_POOR, modem_order=False)
+
+    def test_n13_dvb_s2_mapping_mo_dem(self):
+        """DVB-S2 mapping, mo --> dem order.
+
+        Digital Video Broadcasting (DVB) - Satellite Second Generation (S2) standard mapping.
+        """
+        # QPSKConfig() args
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        mapper = QPSK_MAP_DVB_S2  # DVB-S2 mapping
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        samples = None  # Will be defined by dynamic test case execution
+        filt = MatchedFilter.NONE
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_input(bin_bytes, samples, filt, modem_order=True)
+
+    def test_n14_dvb_s2_mapping_dem_mo(self):
+        """DVB-S2 mapping, dem --> mo order.
+
+        Digital Video Broadcasting (DVB) - Satellite Second Generation (S2) standard mapping.
+        """
+        # QPSKConfig() args
+        samp_rate = 48000
+        sym_rate = 1000
+        carr_rec = None
+        mapper = QPSK_MAP_DVB_S2  # DVB-S2 mapping
+        # modulate()/demodulate() args
+        bin_bytes = generate_bin_bytes(num_bits=256)
+        samples = convert_bin_bytes_to_qpsk(bin_bytes, samp_rate, sym_rate, mapper)
+        filt = MatchedFilter.NONE
+        self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
+        self.run_test_return_input(bin_bytes, samples, filt, modem_order=False)
 
 
 class BoundaryQPSKModemCompTest(QPSKModemCompTest):

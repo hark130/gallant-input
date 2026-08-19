@@ -44,7 +44,7 @@ def configure_usrp(usrp: uhd.usrp.multi_usrp.MultiUSRP, samp_rate: float | int,
 
 
 def receive(usrp: uhd.usrp.multi_usrp.MultiUSRP, stop_event: threading.Event):
-    """Capture a finite number of samples."""
+    """Capture an infinite number of samples (until stop_event triggers)."""
     stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
     stream_args.channels = [0]
     streamer = usrp.get_rx_stream(stream_args)
@@ -69,7 +69,6 @@ def receive(usrp: uhd.usrp.multi_usrp.MultiUSRP, stop_event: threading.Event):
         streamer.issue_stream_cmd(stream_cmd)
 
     # DONE
-    print(f"RX: captured {len(received)} samples")  # DEBUGGING
     return received
 
 
@@ -101,7 +100,6 @@ def receive_num(usrp: uhd.usrp.multi_usrp.MultiUSRP, num_samples: int):
         streamer.issue_stream_cmd(stream_cmd)
 
     # DONE
-    print(f"RX: received {total} samples")  # DEBUGGING
     return received
 
 
@@ -114,7 +112,6 @@ def transmit(usrp: uhd.usrp.multi_usrp.MultiUSRP, samples: numpy.ndarray) -> int
     metadata.end_of_burst = True
     samples = numpy.asarray(samples, dtype=numpy.complex64)
     sent = streamer.send(samples, metadata)
-    print(f"TX: sent {sent}/{len(samples)} samples")  # DEBUGGING
 
     # DONE
     return sent

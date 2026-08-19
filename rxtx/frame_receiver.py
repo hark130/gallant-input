@@ -5,7 +5,7 @@ from enum import auto, Enum
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.frame import find_frame_start
+from gallant_input.synch.frame import find_frame_start
 
 
 class FrameState(Enum):
@@ -27,12 +27,13 @@ class FrameReceiver:
     HEADER_BITS = (PREAMBLE_BITS + SYNCWORD_BITS + DATA_LEN_BITS)
     # The DATA field is of variable length, as determined by the DATA_LEN field
 
-    def __init__(self, modem, preamble: numpy.ndarray, syncword: numpy.ndarray):
+    def __init__(self, modem: Modem, preamble: numpy.ndarray, syncword: bytes):
         self._modem = modem
         # Bipolar preamble symbol metrics
         self._preamble = numpy.asarray(preamble, dtype=numpy.float32)
         # Expected binary syncword
-        self._syncword = numpy.asarray(syncword, dtype=numpy.uint8)
+        # self._syncword = numpy.asarray(syncword, dtype=numpy.uint8)
+        self._syncword = syncword
         self._state = FrameState.SEARCHING  # The state of the state machine
         # Symbols waiting to be processed
         self._buffer = numpy.empty(0, dtype=numpy.float32)
@@ -140,30 +141,24 @@ class FrameReceiver:
         data_bits = b''                             # Demodulated DATA
 
         # READ IT
-        if self._buffer.size >= data_bits_required:
+        # if self._buffer.size >= data_bits_required:
+        if len(self._buffer) >= data_bits_required:
             data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
-            data_bits = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
-            data = self._bits_to_bytes(data_bits)  # Translate the ndarray to a bytes obj
+            data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
+            # data = self._bits_to_bytes(data_bits)  # Translate the ndarray to a bytes obj
             self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
 
         # DONE
         return data
 
     @staticmethod
-    def _bits_to_bytes(bits: numpy.ndarray) -> bytes:
-        """Convert a binary ndarray to bytes."""
-        if len(bits) % 8 != 0:
-            raise ValueError('Number of bits must be divisible by 8')
-        return bytes(int(''.join(str(int(bit)) for bit in bits[i:i + 8]), 2)
-                         for i in range(0, len(bits), 8))
-
-    @staticmethod
     def _bits_to_integer(bits: numpy.ndarray) -> int:
         """Convert a binary ndarray to an integer."""
-        value = 0
-        for bit in bits:
-            value = (value << 1) | int(bit)
-        return value
+        # value = 0
+        # for bit in bits:
+        #     value = (value << 1) | int(bit)
+        # return value
+        return int(bits.decode('ascii'), 2)
 
     def _reset(self):
         """Reset the receiver to search for the next frame."""

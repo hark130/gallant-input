@@ -6,12 +6,26 @@ from pathlib import Path
 # Third Party Imports
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
+from gallant_input.converters import convert_int_to_bin_bytes
 from gallant_input.data_analysis import compare_streams
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.modem.calc import calculate_ber
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_callable,
                                       validate_file, validate_type)
 from rxtx.argvals import ArgVals
+
+
+def convert_data_len(data_len: int, max_bit_len: int = 8) -> bytes:
+    """Convert the data length value into a binary value.
+
+    Args:
+        data_len: The integer to convert to binary.
+        max_bit_len: Maximum length of the converted binary.
+    """
+    data_len_bits = convert_int_to_bin_bytes(number=data_len, min_width=max_bit_len)
+    if len(data_len_bits) > max_bit_len:
+        raise ValueError(f'The data_len value {data_len} does not fit into {max_bit_len} bits')
+    return data_len_bits
 
 
 def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool,

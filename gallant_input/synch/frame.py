@@ -55,6 +55,66 @@ def correlate_it(haystack: bytes | numpy.ndarray, needle: bytes | numpy.ndarray)
     return index
 
 
+def find_frame_start(symbol_metrics: numpy.ndarray, preamble: numpy.ndarray,
+                     threshold: float = 0.8) -> int:
+    """Find the start of a frame by correlating bipolar symbol metrics with a known preamble.
+
+    Args:
+        symbol_metrics: Symbol-spaced, continuous-valued demodulator metrics.
+        preamble: Expected bipolar preamble, typically containing -1.0 and +1.0.
+        threshold: Minimum normalized correlation coefficient required to accept
+            a preamble match.
+
+    Returns:
+        Index into symbol_metrics where the preamble begins or None if the score didn't
+        meet the threshold.
+
+    Raises:
+        ValueError: Bad input value (e.g., array dimension, len, relative size).
+        TypeError: Bad input type.
+    """
+    # LOCAL VARIABLES
+    symbol_metrics = numpy.asarray(symbol_metrics, dtype=numpy.float32)
+    preamble = numpy.asarray(preamble, dtype=numpy.float32)
+    needle_norm = None   # Needle matrix norm
+    correlations = None  # Correlation array
+
+    # INPUT VALIDATION
+    validate_ndarray(symbol_metrics, 'symbol_metrics',
+                     can_be_empty=False, num_dim=1, must_be_complex=False)
+    validate_ndarray(preamble, 'preamble',
+                     can_be_empty=False, num_dim=1, must_be_complex=False)
+    if symbol_metrics.size < preamble.size:
+        raise ValueError(f'Unable to locate a preamble if symbol_metrics is shorter')
+
+    # FIND IT
+    # Remove DC from the two signals so correlation measures similarity
+    # of the pattern rather than similarity of their absolute levels.
+    needle = preamble - numpy.mean(preamble)
+    # Normalize the needle once
+    needle_norm = numpy.linalg.norm(needle)
+    if needle_norm == 0:
+        raise ValueError("The preamble must contain variation")
+    correlations = numpy.empty(symbol_metrics.size - preamble.size + 1, dtype=numpy.float32)
+    for i in range(correlations.size):
+        window = symbol_metrics[i:i + preamble.size]  # Sliding window
+        window = window - numpy.mean(window)  # Remove the local DC component
+        window_norm = numpy.linalg.norm(window)  # Window matrix norm
+        if window_norm == 0:
+            correlations[i] = 0.0
+            continue
+        correlations[i] = (numpy.dot(window, needle) / (window_norm * needle_norm))
+    # Find the strongest match.
+    start = int(numpy.argmax(correlations))
+    score = float(correlations[start])
+
+    # DONE
+    if score < threshold:
+        # print(f'Best correlation was {score:.3f} but was below threshold {threshold:.3f}')
+        start = None
+    return start
+
+
 def _validate_corr_arrays(haystack: numpy.ndarray, haystack_name: str,
                           needle: numpy.ndarray, needle_name: str) -> None:
     """Validate the correlation arrays under their own strength and against each other."""

@@ -15,17 +15,17 @@ from gallant_input.validation import (validate_binary_bytes, validate_bool, vali
 from rxtx.argvals import ArgVals
 
 
-def convert_data_len(data_len: int, max_bit_len: int = 8) -> bytes:
-    """Convert the data length value into a binary value.
+def convert_field_val(field_val: int, max_bit_len: int = 8) -> bytes:
+    """Convert a field value into a binary value.
 
     Args:
-        data_len: The integer to convert to binary.
+        field_val: The integer to convert to binary.
         max_bit_len: Maximum length of the converted binary.
     """
-    data_len_bits = convert_int_to_bin_bytes(number=data_len, min_width=max_bit_len)
-    if len(data_len_bits) > max_bit_len:
-        raise ValueError(f'The data_len value {data_len} does not fit into {max_bit_len} bits')
-    return data_len_bits
+    field_bits = convert_int_to_bin_bytes(number=field_val, min_width=max_bit_len)
+    if len(field_bits) > max_bit_len:
+        raise ValueError(f'The field_val value {field_val} does not fit into {max_bit_len} bits')
+    return field_bits
 
 
 def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool,

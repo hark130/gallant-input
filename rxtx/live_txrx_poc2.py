@@ -29,7 +29,7 @@ from gallant_input.radio.gain_usrp import configure_usrp, receive, transmit
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.spacetime import create_rfc_3339_z_time
-from gallant_input.synch.frame import correlate_it
+from gallant_input.synch.frame import correlate_it, find_frame_start
 from gallant_input.synch.timing import recover_clock_mm
 from rxtx.utilities import convert_data_len, evaluate_payload
 
@@ -195,10 +195,10 @@ def main() -> None:
         # Step 2.5 - Frame Acquisition!
         frame_start = correlate_it(haystack=symbol_metrics, needle=PREAMBLE)
         # frame_start = correlate_it(haystack=symbol_metrics, needle=PREAMBLE+SYNCWORD)
-        print(f'correlate_it() THINKS THE FRAME STARTS AT INDEX {frame_start} (of {len(symbol_metrics)}) IN THE SYMBOL METRICS')
+        # print(f'correlate_it() THINKS THE FRAME STARTS AT INDEX {frame_start} (of {len(symbol_metrics)}) IN THE SYMBOL METRICS')
         frame_start = find_frame_start(symbol_metrics=symbol_metrics,
                                        preamble=convert_bin_bytes_to_ndarray(PREAMBLE, bipolar=True))
-        print(f'find_frame_start() THINKS THE FRAME STARTS AT INDEX {frame_start} (of {len(symbol_metrics)}) IN THE SYMBOL METRICS')
+        # print(f'find_frame_start() THINKS THE FRAME STARTS AT INDEX {frame_start} (of {len(symbol_metrics)}) IN THE SYMBOL METRICS')
         symbol_metrics = symbol_metrics[frame_start:]
         # print(f'SLICED SYMBOL METRICS: {symbol_metrics[:40]}')  # DEBUGGING
         if DEBUG:

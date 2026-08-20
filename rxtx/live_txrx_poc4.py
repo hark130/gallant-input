@@ -190,8 +190,8 @@ def main() -> None:
     samp_rate = SAMPLE_RATE
     symb_rate = SYMBOL_RATE
     sps = calculate_sps(sample_rate=samp_rate, symbol_rate=symb_rate)
-    rx_gain = 40
-    tx_gain = 50
+    rx_gain = 30
+    tx_gain = 30
     channel = 0
     tx_samples = None    # An array of samples to transmit
     rx_samples = None    # The received samples
@@ -207,7 +207,7 @@ def main() -> None:
     # SETUP
     lpf = create_basic_lpf()
     configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=center_freq,
-                   rx_gain=rx_gain, tx_gain=tx_gain, channel=channel)
+                   gain=rx_gain, channel=channel)
 
     # RECEIVE
     # Start

@@ -320,7 +320,8 @@ def _call_firwin(numtaps: int, cutoff: float | ArrayLike, width: float | None = 
     """
     _validate_firwin_args(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
                           pass_zero=pass_zero, scale=scale, fs=fs)
-    return firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window, pass_zero=pass_zero)
+    return firwin(numtaps=numtaps, cutoff=cutoff, width=width, window=window, pass_zero=pass_zero,
+                  scale=scale, fs=fs)
 
 
 def _validate_cutoff(cutoff: float | ArrayLike, cutoff_name: str, ratio: bool) -> None:

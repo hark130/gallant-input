@@ -410,7 +410,6 @@ def main() -> None:
                                symbol_rate=symb_rate)
         our_freqs = comm_freqs.get_my_freqs()
         their_freqs = comm_freqs.get_user_freqs(2 if arg_dict[CLI_ARG_USER] == 1 else 1)
-        print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')  # DEBUGGING
         sps = calculate_sps(sample_rate=samp_rate, symbol_rate=symb_rate)
         rx_gain = 30                                        # RX gain
         tx_gain = 30                                        # TX gain
@@ -426,6 +425,9 @@ def main() -> None:
         rx_thread = None                                    # The "receive" thread
 
         # SETUP
+        if arg_dict[CLI_ARG_DEBUG]:
+            print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')  # DEBUGGING
+            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')  # DEBUGGINGs
         lpf = create_tailored_lpf(sample_rate=samp_rate, symbol_rate=symb_rate)
         configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=their_freqs.center,
                        gain=rx_gain, channel=channel, direction=ConfigDirection.RX)

@@ -4,6 +4,9 @@ USAGE:
     1. Follow the 'Calculate BER / Packet Loss' instructions in the rf_capstone_v3.py docstring.
     2. python rf_capstone_calc_error_rate.py
     3. ***** TO DO: DON'T DO NOW... ls command to `head` the top ./devops/files/error.log
+    4. Save the files with:
+cp "$USER1_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user1.out
+cp "$USER2_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user2.out
 """
 
 # Standard Imports

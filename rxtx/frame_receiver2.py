@@ -5,6 +5,7 @@ from enum import auto, Enum
 # Third Party Imports
 import numpy
 # Local Imports
+from gallant_input.modem.calc import calculate_ber
 from gallant_input.synch.frame import find_frame_start
 
 
@@ -45,10 +46,18 @@ class FrameReceiver2:
         self._frame_metrics = numpy.empty(0, dtype=numpy.float32)
         self._data_length = None  # DATA_LEN converted from binary to an integer
 
-    def process(self, symbol_metrics: numpy.ndarray) -> list[bytes]:
-        """Process a chunk of symbol metrics and return any complete frames."""
+    def process(self, symbol_metrics: numpy.ndarray, exp_data: bytes | None = None) -> list[bytes]:
+        """Process a chunk of symbol metrics and return any complete frames.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            exp_data: [OPTIONAL] Controls 'debug' mode.  If defined, bit error rates (BERs) will
+                be calculated and printed for the syncwords and data based on the expected data
+                provided.
+        """
         # LOCAL VARIABLES
-        datum = []  # A list of all the data fields currently found
+        datum = []                    # A list of all the data fields currently found
+        debug = exp_data is not None  # Read header debugging?
 
         # PROCESS IT
         # Add the new input to the buffer
@@ -63,12 +72,12 @@ class FrameReceiver2:
                     break
             if self._state is FrameState.READING_HEADER:
                 # print(f'STATE: {self._state.name}')  # DEBUGGING
-                header_ready = self._read_header()
+                header_ready = self._read_header(debug=debug)
                 if not header_ready:
                     break
             if self._state is FrameState.READING_DATA:
                 # print(f'STATE: {self._state.name}')  # DEBUGGING
-                data = self._read_data()
+                data = self._read_data(exp_data=exp_data)
                 # print(f'self._read_data() RETURNED: {data}')  # DEBUGGING
                 if data is None:
                     break
@@ -100,7 +109,7 @@ class FrameReceiver2:
         # DONE
         return frame_found
 
-    def _read_header(self) -> bool:
+    def _read_header(self, debug: bool) -> bool:
         """Read and validate the syncword and data length.
 
         Returns:
@@ -123,6 +132,8 @@ class FrameReceiver2:
             header_bits = self._modem.decide_symbols(header_metrics)
             # Validate the syncword
             received_syncword = header_bits[syncword_start:syncword_end]
+            if debug is True:
+                print(f'[RX] SYNCWORD BER: {calculate_ber(self._syncword, received_syncword)}')
             if not numpy.array_equal(received_syncword, self._syncword):
                 # False preamble detection?!
                 self._buffer = self._buffer[1:]  # Discard the first symbol
@@ -140,7 +151,7 @@ class FrameReceiver2:
         # DONE
         return keep_going
 
-    def _read_data(self) -> bytes | None:
+    def _read_data(self, exp_data: bytes | None) -> bytes | None:
         """Collect and decode the number of data bytes specified by DATA_LEN."""
         # LOCAL VARIABLES
         data = None                                 # Data read and decoded
@@ -154,19 +165,26 @@ class FrameReceiver2:
         # READ IT
         if len(self._buffer) >= data_bits_required + self.CHECKSUM_BITS:
             data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
-            data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
-            # data = self._bits_to_bytes(data_bits)  # Translate the ndarray to a bytes obj
-            self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
-            checksum_bits = self._modem.decide_symbols(self._buffer[:self.CHECKSUM_BITS])
-            exp_checksum = self._bits_to_integer(checksum_bits)
-            act_checksum = self._checksum(data)
-            if act_checksum != exp_checksum:
-                print(f'[RX] Dropping failed checksum')
-                # print(f'[RX] Dropping data "{data}" because exp_checksum {exp_checksum} != '
-                #       f'act_checksum {act_checksum}')
-                data = None
-                self._reset()  # Checksum failed so there's no chance of any remaining datas
-            self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
+            try:
+                data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
+            except ValueError as err:
+                if exp_data is not None:
+                    print('FrameReceiver2()._read_data() caught an exception from the '
+                          f'demodulator: {err}')
+            else:
+                if exp_data is not None:
+                    print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')
+                self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
+                checksum_bits = self._modem.decide_symbols(self._buffer[:self.CHECKSUM_BITS])
+                exp_checksum = self._bits_to_integer(checksum_bits)
+                act_checksum = self._checksum(data)
+                if act_checksum != exp_checksum:
+                    print(f'[RX] Dropping failed checksum')
+                    # print(f'[RX] Dropping data "{data}" because exp_checksum {exp_checksum} != '
+                    #       f'act_checksum {act_checksum}')
+                    data = None
+                    self._reset()  # Checksum failed so there's no chance of any remaining data
+                self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
 
         # DONE
         return data

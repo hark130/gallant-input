@@ -2,15 +2,30 @@
 
 USAGE:
 
-# Help
+# 1. Help
 python rf_capstone_v3.py --help
 
-# Same Machine, Two SDRs
+# 2. Same Machine, Two SDRs
 uhd_find_devices
 # Terminal 1
 python rf_capstone_v3.py --serial 317650F --user 1
 # Terminal 2
 python rf_capstone_v3.py --serial 3512A99 --user 2
+
+# Calculate BER / Packet Loss (must be same machine)
+uhd_find_devices
+# Terminal 1
+export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
+export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
+export USER2_OUTPUT=$TMP_OUTPUT/rf_capstone_user2.out  # The error rate script will use this env var
+python -u rf_capstone_v3.py --serial 317650F --user 1 --debug > "$USER1_OUTPUT" 2>&1
+# Terminal 2
+export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
+export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
+export USER2_OUTPUT=$TMP_OUTPUT/rf_capstone_user2.out  # The error rate script will use this env var
+python -u rf_capstone_v3.py --serial 3512A99 --user 2 --debug > "$USER2_OUTPUT" 2>&1
+# POST-TERMINATION
+# Follow the instructions in the rf_capstone_calc_error_rate.py docstring
 
 NOTES:
     - Include the following in the specification (not the user documentation):
@@ -24,6 +39,7 @@ NOTES:
 # Standard Imports
 from collections import namedtuple
 from dataclasses import dataclass, field
+from time import sleep
 from typing import Final
 import argparse
 import random
@@ -429,6 +445,10 @@ def main() -> None:
 
         # TRANSMIT
         try:
+            debug_sleep = 10  # ...seconds to start the other user
+            if arg_dict[CLI_ARG_DEBUG]:
+                print(f'You have {debug_sleep} seconds to start the other user!')
+                sleep(debug_sleep)
             while True:
                 # Build the frame
                 if arg_dict[CLI_ARG_DEBUG] is True:

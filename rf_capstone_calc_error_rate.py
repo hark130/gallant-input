@@ -9,6 +9,7 @@ USAGE:
 # Standard Imports
 from dataclasses import dataclass
 from typing import Final
+import os
 # Third Party Imports
 # Local Imports
 
@@ -44,7 +45,7 @@ def calc_packet_loss(sender: List[str], receiver: List[str]) -> PacketStats:
             recv_packets += 1
     # Calc it
     if sent_packets > 0:
-        loss = recv_packets / sent_packets * 100
+        loss = (sent_packets - recv_packets) / sent_packets * 100
     if recv_packets > sent_packets:
         raise RuntimeError(f'There is something fishy in this exchange: recv {recv_packets} > '
                            f'sent {sent_packets}')
@@ -88,7 +89,7 @@ def read_file(filename: str) -> List[str]:
     file_cont = []  # File contents
 
     # READ IT
-    with open(filename, 'r', encoding='ascii') as file:
+    with open(filename, 'r', encoding='utf-8') as file:
         file_cont = [line.strip() for line in file]
 
     # DONE

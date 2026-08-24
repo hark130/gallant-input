@@ -1,0 +1,598 @@
+[INFO] [UHD] linux; GNU C++ version 15.2.0; Boost_109000; UHD_4.9.0.1-1ubuntu1
+[INFO] [B200] Detected Device: B206mini
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+OURS: UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+THEIRS: UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+RX GAIN: 30
+TX GAIN: 30
+SAMPLE RATE: 240000.0 (fs/2 == 120000.0)
+SYMBOL RATE: 2400
+FREQ SEP: 4800
+BANDWIDTH: 9600
+CUTOFF: 5000.0
+[INFO] [B200] Asking for clock rate 61.440000 MHz... 
+[INFO] [B200] Actually got clock rate 61.440000 MHz.
+[RX] Starting
+RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 10000 (CONTROL: 100000)
+You have 5 seconds to start the other user!
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXPERIMENT 1e - FrameReceiver2() buffer BUG? - Smaller buffer, more packet loss (watch boundaries)?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 228) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.28125
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 110) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Not enough room in the buffer (size: 89) for a header 104
+[RX] SYNCWORD BER: 0.03125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.46875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.59375
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Not enough room in the buffer (size: 28) for a preamble 64
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 156) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 46) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.40625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.46875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 223) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 110) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Not enough room in the buffer (size: 90) for a header 104
+[RX] SYNCWORD BER: 0.03125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.40625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Not enough room in the buffer (size: 19) for a preamble 64
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.46875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.25
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.3125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 49) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)[TX] Sending - Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.21875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.34375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.21875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.46875
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.5
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+EXP1E: Not enough room in the buffer (size: 109) for a data 256 + checksum 8 = 264
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.5625
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.4375
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Not enough room in the buffer (size: 89) for a header 104
+[RX] SYNCWORD BER: 0.25
+EXP1E: No syncword found... but continuing
+[RX] SYNCWORD BER: 0.53125
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Not enough room in the buffer (size: 19) for a preamble 64
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.25
+EXP1E: No syncword found... but continuing
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+EXP1E: Buffer cleared to only keep 63 bits (now size 63)
+

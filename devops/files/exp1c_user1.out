@@ -20,10 +20,10 @@ CUTOFF: 5000.0
 [INFO] [B200] Asking for clock rate 61.440000 MHz... 
 [INFO] [B200] Actually got clock rate 61.440000 MHz.
 [RX] Starting
-BUFFER THRESHOLD: 0 (CONTROL: 0)
 RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 1000000 (CONTROL: 100000)
 You have 5 seconds to start the other user!
-EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Buffer size increase (less packet loss?)
+EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Larger buffer, less packet loss?
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
 [RX] DATA BER: 0.0
@@ -38,56 +38,14 @@ EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Buffer size increase (less packet
 
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.5625
-[RX] SYNCWORD BER: 0.4375
-[RX] SYNCWORD BER: 0.53125
-[RX] SYNCWORD BER: 0.46875
-[RX] SYNCWORD BER: 0.5625
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.015625
+[RX] DATA BER: 0.00390625
 [RX] Dropping failed checksum
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.46875
-[RX] SYNCWORD BER: 0.46875
-[RX] SYNCWORD BER: 0.53125
-[RX] SYNCWORD BER: 0.46875
-[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
 [RX] DATA BER: 0.0
@@ -95,7 +53,131 @@ EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Buffer size increase (less packet
 [RX] Received: Lorem ipsum dolor sit amet, ___?
 
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.53125
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
 [RX] DATA BER: 0.0
@@ -111,19 +193,143 @@ EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Buffer size increase (less packet
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.03125
 [RX] SYNCWORD BER: 0.59375
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.1796875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.0625
+[RX] SYNCWORD BER: 0.59375
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.5
-[RX] SYNCWORD BER: 0.4375
-[RX] SYNCWORD BER: 0.53125
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.25
-[RX] SYNCWORD BER: 0.65625
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
 [RX] DATA BER: 0.0
@@ -137,273 +343,7 @@ EXPERIMENT 1c - FrameReceiver2() buffer BUG? - Buffer size increase (less packet
 [RX] Received: Lorem ipsum dolor sit amet, ___?
 
 [TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.25
-[RX] SYNCWORD BER: 0.65625
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.00390625
-[RX] Dropping failed checksum
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.00390625
-[RX] Dropping failed checksum
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-[RX] Dropping failed checksum
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.00390625
-[RX] Dropping failed checksum
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.03125
 [RX] SYNCWORD BER: 0.5625
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.25
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.28125
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.00390625
-[RX] Dropping failed checksum
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[RX] SYNCWORD BER: 0.0
-[RX] DATA BER: 0.0
-
-[RX] Received: Lorem ipsum dolor sit amet, ___?
-
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
-[TX] Sending - Lorem ipsum dolor sit amet, ___?
 [RX] SYNCWORD BER: 0.0
 [RX] DATA BER: 0.0
 

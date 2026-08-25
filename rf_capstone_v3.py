@@ -365,12 +365,13 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
 
     try:
         modem.parse()  # Update the sps attribute
+        max_frame_len = len(PREAMBLE) + len(SYNCWORD) + 8 + max_data_bytes + 8
         threshold = modem._sps * 1000  # Threshold to process samples (Experiment 1a: Control)
         # threshold = modem._sps * 100  # Experiment 1b: Smaller buffer; greater loss?
         # threshold = modem._sps * 10000  # Experiment 1c: Larger buffer; less loss?
         # threshold = modem._sps * 1000000  # Experiment 1d: Largest buffer; less loss?
         # threshold = calc_threshold(sample_rate=SAMPLE_RATE, symbol_rate=SYMBOL_RATE,
-        #                            num_symbols=MAX_FRAME_LEN)
+        #                            num_symbols=max_frame_len) * 100
         print(f'BUFFER THRESHOLD: {threshold} (CONTROL: {modem._sps * 1000})')  # DEBUGGING
         while not stop_event.is_set():
             count = streamer.recv(buffer, metadata)

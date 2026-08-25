@@ -164,24 +164,30 @@ class FrameReceiver2:
         data_metrics = None                         # DATA field from the buffer
         data_bits = b''                             # Demodulated DATA
         checksum_bits = b''                         # The checksum field bits
+        combined_metrics = None                     # "Decide symbols" on DATA + Checksum first
+        combined_bits = b''                         # Decode both DATA + Checksum together
         exp_checksum: int = 0                       # Expected checksum
         act_checksum: int = 0                       # Actual checksum
 
         # READ IT
         if len(self._buffer) >= data_bits_required + self.CHECKSUM_BITS:
-            data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
+            combined_metrics = self._buffer[:data_bits_required + self.CHECKSUM_BITS]
+            # data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
             try:
-                data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
+                combined_bits = self._modem.decide_symbols(combined_metrics)  # Demod Stage 3-of-3
+                # data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
             except ValueError as err:
                 if exp_data is not None:
                     print('FrameReceiver2()._read_data() caught an exception from the '
                           f'demodulator: {err}')
                 self._reset()  # "Unstuck" the machine
             else:
+                data = combined_bits[:data_bits_required]
+                checksum_bits = combined_bits[data_bits_required:]
                 if exp_data is not None:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')
                 self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
-                checksum_bits = self._modem.decide_symbols(self._buffer[:self.CHECKSUM_BITS])
+                # checksum_bits = self._modem.decide_symbols(self._buffer[:self.CHECKSUM_BITS])
                 exp_checksum = self._bits_to_integer(checksum_bits)
                 act_checksum = self._checksum(data)
                 if act_checksum != exp_checksum:

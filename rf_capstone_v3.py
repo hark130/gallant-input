@@ -75,9 +75,6 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
                                   squelch_signal)
 from gallant_input.spacetime import create_rfc_3339_z_time
 from gallant_input.synch.frame import correlate_it
-from gallant_input.synch.frequency_corrector import FrequencyCorrector
-from gallant_input.synch.mueller_muller import MuellerMuller
-from gallant_input.synch.mueller_muller2 import MuellerMuller2
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
 from rxtx.frame_receiver2 import FrameReceiver2  # Now with more checksumming
@@ -180,10 +177,10 @@ def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
 
 def build_frame(preamble: bytes, syncword: bytes, message: bytes, fec_repeat: int | None) -> bytes:
     """Build a frame."""
+    checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
     if fec_repeat is not None:
         message = apply_fec_repetition(bits=message, repeats=fec_repeat)
     data_len = convert_field_val(len(message) // 8, max_bit_len=DATA_LEN_WIDTH)
-    checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
     header = preamble + syncword
     payload = data_len + message + checksum
     return header + payload
@@ -205,7 +202,6 @@ def calc_bandwidth(symbol_rate: int) -> int:
     """
     bandwidth = calc_freq_sep(symbol_rate) + (2 * symbol_rate)
     return bandwidth
-    # return bandwidth * 2
 
 
 def calc_threshold(sample_rate: float | int, symbol_rate: float | int, num_symbols: int) -> int:
@@ -225,7 +221,6 @@ def calc_freq_sep(symbol_rate: int) -> int:
     """Calculate the frequency separation."""
     freq_sep = 2 * symbol_rate
     return freq_sep
-    # return freq_sep * 4
 
 
 def calc_freqs(center_freq: float | int, user: int, symbol_rate: int) -> UserFreqs:
@@ -477,8 +472,8 @@ def main() -> None:
         our_freqs = comm_freqs.get_my_freqs()
         their_freqs = comm_freqs.get_user_freqs(2 if arg_dict[CLI_ARG_USER] == 1 else 1)
         sps = calculate_sps(sample_rate=samp_rate, symbol_rate=symb_rate)
-        rx_gain = 30                                        # RX gain
-        tx_gain = 30                                        # TX gain
+        rx_gain = 40                                        # RX gain
+        tx_gain = 40                                        # TX gain
         channel = 0                                         # SDR channel
         # tx_samples = None    # An array of samples to transmit
         # rx_samples = None    # The received samples

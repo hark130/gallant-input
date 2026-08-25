@@ -175,7 +175,6 @@ class FrameReceiver2:
             # data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
             try:
                 combined_bits = self._modem.decide_symbols(combined_metrics)  # Demod Stage 3-of-3
-                # data = self._modem.decide_symbols(data_metrics)  # Demodulation Stage 3-of-3
             except ValueError as err:
                 if exp_data is not None:
                     print('FrameReceiver2()._read_data() caught an exception from the '
@@ -187,13 +186,10 @@ class FrameReceiver2:
                 if exp_data is not None:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')
                 self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
-                # checksum_bits = self._modem.decide_symbols(self._buffer[:self.CHECKSUM_BITS])
                 exp_checksum = self._bits_to_integer(checksum_bits)
                 act_checksum = self._checksum(data)
                 if act_checksum != exp_checksum:
                     print(f'[RX] Dropping failed checksum')
-                    # print(f'[RX] Dropping data "{data}" because exp_checksum {exp_checksum} != '
-                    #       f'act_checksum {act_checksum}')
                     data = None
                     self._reset()  # Checksum failed so there's no chance of any remaining data
                 self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer

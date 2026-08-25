@@ -15,6 +15,14 @@ from gallant_input.validation import (validate_binary_bytes, validate_bool, vali
 from rxtx.argvals import ArgVals
 
 
+def apply_fec_repetition(bits: bytes, repeats: int) -> bytes:
+    """Apply a Forward Error Correction (FEC) repetition.
+
+    Repeat each bit repeats times (simple FEC).
+    """
+    return b''.join(bytes([bit]) * repeats for bit in bits)
+
+
 def convert_field_val(field_val: int, max_bit_len: int = 8) -> bytes:
     """Convert a field value into a binary value.
 
@@ -26,6 +34,19 @@ def convert_field_val(field_val: int, max_bit_len: int = 8) -> bytes:
     if len(field_bits) > max_bit_len:
         raise ValueError(f'The field_val value {field_val} does not fit into {max_bit_len} bits')
     return field_bits
+
+
+def decode_fec_repetition(bits: bytes, repeats: int) -> bytes:
+    """Decode a Forward Error Correction (FEC) repetition.
+
+    Majority-vote decode a repetition-coded bitstring.
+    """
+    decoded = bytearray()
+    for i in range(0, len(bits), repeats):
+        group = bits[i:i + repeats]
+        ones = group.count(ord('1'))
+        decoded.append(ord('1') if ones > repeats // 2 else ord('0'))
+    return bytes(decoded)
 
 
 def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool,

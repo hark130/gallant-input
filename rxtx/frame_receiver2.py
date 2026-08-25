@@ -31,7 +31,7 @@ class FrameReceiver2:
     # The DATA field is of variable length, as determined by the DATA_LEN field
 
     def __init__(self, modem: Modem, preamble: numpy.ndarray, syncword: bytes,
-                 checksum: Callable[[bytes], int]):
+                 checksum: Callable[[bytes], int], max_data_bytes: int = 32):
         self._modem = modem
         # Bipolar preamble symbol metrics
         self._preamble = numpy.asarray(preamble, dtype=numpy.float32)
@@ -45,6 +45,7 @@ class FrameReceiver2:
         # Once a preamble is found, these hold the partially assembled frame.
         self._frame_metrics = numpy.empty(0, dtype=numpy.float32)
         self._data_length = None  # DATA_LEN converted from binary to an integer
+        self._max_data_bytes = max_data_bytes  # Maximum size of the DATA field in bytes
 
     def process(self, symbol_metrics: numpy.ndarray, exp_data: bytes | None = None) -> list[bytes]:
         """Process a chunk of symbol metrics and return any complete frames.
@@ -57,7 +58,7 @@ class FrameReceiver2:
         """
         # LOCAL VARIABLES
         datum = []                    # A list of all the data fields currently found
-        debug = exp_data is not None  # Read header debugging?
+        debug = exp_data is not None  # _read_header(debug) arg value
 
         # PROCESS IT
         # Add the new input to the buffer
@@ -66,21 +67,19 @@ class FrameReceiver2:
         # Start state-machining
         while True:
             if self._state is FrameState.SEARCHING:
-                # print(f'STATE: {self._state.name}')  # DEBUGGING
                 frame_found = self._find_frame()
                 if not frame_found:
                     break
             if self._state is FrameState.READING_HEADER:
-                # print(f'STATE: {self._state.name}')  # DEBUGGING
                 header_ready = self._read_header(debug=debug)
                 if not header_ready:
                     break
             if self._state is FrameState.READING_DATA:
-                # print(f'STATE: {self._state.name}')  # DEBUGGING
                 data = self._read_data(exp_data=exp_data)
-                # print(f'self._read_data() RETURNED: {data}')  # DEBUGGING
                 if data is None:
-                    break
+                    if self._state is FrameState.READING_DATA:
+                        break  # Waiting on more samples
+                    continue  # State was reset internally so keep going
                 datum.append(data)  # Found one
                 self._reset()  # Continue looking
 
@@ -100,7 +99,7 @@ class FrameReceiver2:
                 # No preamble found...
                 keep = self.PREAMBLE_BITS - 1  # ...but keep enough symbols in case it was split
                 if self._buffer.size > keep:
-                    self._buffer = self._buffer[-keep:]
+                    self._buffer = self._buffer[-keep:]  # Keeping the last "keep" bits
             else:
                 self._buffer = self._buffer[start:]  # Discard everything before the preamble
                 self._state = FrameState.READING_HEADER  # Advance the machine state
@@ -142,11 +141,17 @@ class FrameReceiver2:
             else:
                 len_bits = header_bits[len_start:len_end]  # Extract DATA_LEN
                 self._data_length = self._bits_to_integer(len_bits)  # Convert DATA_LEN to int
-                # A valid header has been parsed
-                self._frame_metrics = self._buffer[:self.HEADER_BITS]  # Beginning of DATA
-                self._buffer = self._buffer[self.HEADER_BITS:]  # Remove the header from the buffer
-                self._state = FrameState.READING_DATA  # Advance the machine state
-                keep_going = True  # Header is valid
+                if self._data_length == 0 or self._data_length > self._max_data_bytes:
+                    # Corrupted data length field
+                    self._buffer = self._buffer[1:]  # Drop it...
+                    self._state = FrameState.SEARCHING  # ...and keep on...
+                    keep_going = True  # ...looking
+                else:
+                    # A valid header has been parsed
+                    self._frame_metrics = self._buffer[:self.HEADER_BITS]  # Beginning of DATA
+                    self._buffer = self._buffer[self.HEADER_BITS:]  # Remove the header from the buffer
+                    self._state = FrameState.READING_DATA  # Advance the machine state
+                    keep_going = True  # Header is valid
 
         # DONE
         return keep_going
@@ -171,6 +176,7 @@ class FrameReceiver2:
                 if exp_data is not None:
                     print('FrameReceiver2()._read_data() caught an exception from the '
                           f'demodulator: {err}')
+                self._reset()  # "Unstuck" the machine
             else:
                 if exp_data is not None:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')

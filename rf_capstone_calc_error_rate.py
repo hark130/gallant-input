@@ -7,6 +7,7 @@ USAGE:
     4. Save the files with:
 cp "$USER1_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user1.out
 cp "$USER2_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user2.out
+
 """
 
 # Standard Imports

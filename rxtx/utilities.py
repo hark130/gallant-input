@@ -15,11 +15,12 @@ from gallant_input.validation import (validate_binary_bytes, validate_bool, vali
 from rxtx.argvals import ArgVals
 
 
-def apply_fec_repetition(bits: bytes, repeats: int) -> bytes:
+def apply_fec_repetition(bits: bytes, repeats: int, force_odd: bool = True) -> bytes:
     """Apply a Forward Error Correction (FEC) repetition.
 
     Repeat each bit repeats times (simple FEC).
     """
+    _validate_fec_repetition(bits, repeats, force_odd)
     return b''.join(bytes([bit]) * repeats for bit in bits)
 
 
@@ -36,11 +37,12 @@ def convert_field_val(field_val: int, max_bit_len: int = 8) -> bytes:
     return field_bits
 
 
-def decode_fec_repetition(bits: bytes, repeats: int) -> bytes:
+def decode_fec_repetition(bits: bytes, repeats: int, force_odd: bool = True) -> bytes:
     """Decode a Forward Error Correction (FEC) repetition.
 
     Majority-vote decode a repetition-coded bitstring.
     """
+    _validate_fec_repetition(bits, repeats, force_odd)
     decoded = bytearray()
     for i in range(0, len(bits), repeats):
         group = bits[i:i + repeats]
@@ -129,3 +131,13 @@ def get_sample_rate(arg_vals: ArgVals, filepath: Path) -> float | int:
             except_msg = except_msg + f' or "{meta_path.absolute()}"'
         raise RuntimeError(except_msg)
     return sample_rate
+
+
+def _validate_fec_repetition(bits: bytes, repeats: int, force_odd: bool) -> None:
+    """Validate FEC args on behalf of this module."""
+    # INPUT VALIDATION
+    validate_binary_bytes(bits, 'bits')
+    validate_pos_int(repeats, 'repeats')
+    validate_bool(force_odd, 'force_odd')
+    if force_odd is True and repeats % 2 == 0:
+        raise ValueError(f'The repeats value "{repeats}" must be odd')

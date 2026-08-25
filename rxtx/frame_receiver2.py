@@ -7,6 +7,7 @@ import numpy
 # Local Imports
 from gallant_input.modem.calc import calculate_ber
 from gallant_input.synch.frame import find_frame_start
+from rxtx.utilities import decode_fec_repetition
 
 
 class FrameState(Enum):
@@ -31,7 +32,8 @@ class FrameReceiver2:
     # The DATA field is of variable length, as determined by the DATA_LEN field
 
     def __init__(self, modem: Modem, preamble: numpy.ndarray, syncword: bytes,
-                 checksum: Callable[[bytes], int], max_data_bytes: int = 32):
+                 checksum: Callable[[bytes], int], fec_repeat: int | None,
+                 max_data_bytes: int = 32):
         self._modem = modem
         # Bipolar preamble symbol metrics
         self._preamble = numpy.asarray(preamble, dtype=numpy.float32)
@@ -45,6 +47,7 @@ class FrameReceiver2:
         # Once a preamble is found, these hold the partially assembled frame.
         self._frame_metrics = numpy.empty(0, dtype=numpy.float32)
         self._data_length = None  # DATA_LEN converted from binary to an integer
+        self._fec_repeat = fec_repeat  # Forward Error Correction value
         self._max_data_bytes = max_data_bytes  # Maximum size of the DATA field in bytes
 
     def process(self, symbol_metrics: numpy.ndarray, exp_data: bytes | None = None) -> list[bytes]:
@@ -172,7 +175,6 @@ class FrameReceiver2:
         # READ IT
         if len(self._buffer) >= data_bits_required + self.CHECKSUM_BITS:
             combined_metrics = self._buffer[:data_bits_required + self.CHECKSUM_BITS]
-            # data_metrics = self._buffer[:data_bits_required]  # Get the DATA from the buffer
             try:
                 combined_bits = self._modem.decide_symbols(combined_metrics)  # Demod Stage 3-of-3
             except ValueError as err:
@@ -182,6 +184,8 @@ class FrameReceiver2:
                 self._reset()  # "Unstuck" the machine
             else:
                 data = combined_bits[:data_bits_required]
+                if self._fec_repeat is not None:
+                    data = decode_fec_repetition(bits=data, repeats=self._fec_repeat)
                 checksum_bits = combined_bits[data_bits_required:]
                 if exp_data is not None:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')

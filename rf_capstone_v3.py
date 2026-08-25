@@ -81,7 +81,7 @@ from gallant_input.synch.mueller_muller2 import MuellerMuller2
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
 from rxtx.frame_receiver2 import FrameReceiver2  # Now with more checksumming
-from rxtx.utilities import convert_field_val, evaluate_payload
+from rxtx.utilities import apply_fec_repetition, convert_field_val, evaluate_payload
 
 
 CLI_ARG_DEBUG: Final[str] = 'debug'
@@ -102,10 +102,12 @@ MAX_USERS: Final[int] = 2  # Currently only supports two users
 
 
 # PROTOCOL SPECIFICATIONS
-DATA_LEN_WIDTH: Final[int] = 8       # Fixed width of the data length field, in bits
-CHECKSUM_WIDTH: Final[int] = 8       # Fixed width of the checksum filed, in bits
-MAX_DATA_FIELD: Final[int] = 32 * 8  # Maximum width of the DATA field
+DATA_LEN_WIDTH: Final[int] = 8         # Fixed width of the data length field, in bits
+CHECKSUM_WIDTH: Final[int] = 8         # Fixed width of the checksum filed, in bits
+MAX_DATA_FIELD_BYTES: Final[int] = 32  # Maximum width of the DATA field in bytes (not counting FEC)
+MAX_DATA_FIELD: Final[int] = MAX_DATA_FIELD_BYTES * 8  # Maximum width of the DATA field in bits
 SYMBOL_RATE: Final[int] = 2400
+FEC_REPEAT: Final[int | None] = 3      # Forward Error Correction (FEC) repeat value
 
 # MESSAGES TO TRANSMIT
 # MESSAGE 1: test
@@ -127,12 +129,12 @@ MESSAGES: Final[List] = [MSG1, MSG2, MSG3, MSG4, MSG5, MSG6, MSG7]
 # PROTOCOL MACROS
 PREAMBLE: Final[bytes] = 32 * b'10'
 SYNCWORD: Final[bytes] = b'11011000110111000101000100101110'  # 0xD8DC512E
-HEADER: Final[bytes] = PREAMBLE + SYNCWORD
-DATA: Final[bytes] = MSG3  # UPDATE THIS WITH NEW DATA (see above)
-DATA_LEN: Final[bytes] = convert_field_val(len(DATA) // 8, max_bit_len=DATA_LEN_WIDTH)
-PAYLOAD: Final[bytes] = DATA_LEN + DATA
-FRAME: Final[bytes] = HEADER + PAYLOAD  # Transmit this
-MAX_FRAME_LEN: Final[int] = len(PREAMBLE) + len(SYNCWORD) + DATA_LEN_WIDTH + MAX_DATA_FIELD + CHECKSUM_WIDTH
+# HEADER: Final[bytes] = PREAMBLE + SYNCWORD
+# DATA: Final[bytes] = MSG3  # UPDATE THIS WITH NEW DATA (see above)
+# DATA_LEN: Final[bytes] = convert_field_val(len(DATA) // 8, max_bit_len=DATA_LEN_WIDTH)
+# PAYLOAD: Final[bytes] = DATA_LEN + DATA
+# FRAME: Final[bytes] = HEADER + PAYLOAD  # Transmit this
+# MAX_FRAME_LEN: Final[int] = len(PREAMBLE) + len(SYNCWORD) + DATA_LEN_WIDTH + MAX_DATA_FIELD + CHECKSUM_WIDTH
 
 
 # Each user sends on theirs but receives on the other user's
@@ -176,8 +178,10 @@ def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
     return config
 
 
-def build_frame(preamble: bytes, syncword: bytes, message: bytes) -> bytes:
+def build_frame(preamble: bytes, syncword: bytes, message: bytes, fec_repeat: int | None) -> bytes:
     """Build a frame."""
+    if fec_repeat is not None:
+        message = apply_fec_repetition(bits=message, repeats=fec_repeat)
     data_len = convert_field_val(len(message) // 8, max_bit_len=DATA_LEN_WIDTH)
     checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
     header = preamble + syncword
@@ -340,8 +344,13 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     print('[RX] Starting')
     sps = modem._sps  # Samples per symbol
     lpf = lpf  # Use the same taps to RX as to TX
+    fec_repeat = FEC_REPEAT
+    max_data_bytes = MAX_DATA_FIELD_BYTES
+    if fec_repeat is not None:
+        max_data_bytes = max_data_bytes * fec_repeat
     frame_receiver = FrameReceiver2(modem=modem, preamble=preamble, syncword=syncword,
-                                    checksum=generate_checksum)
+                                    checksum=generate_checksum, fec_repeat=fec_repeat,
+                                    max_data_bytes=max_data_bytes)
     stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
     stream_args.channels = [0]
     streamer = usrp.get_rx_stream(stream_args)
@@ -480,6 +489,7 @@ def main() -> None:
         modem = build_modem(config=modem_config)
         stop_event = threading.Event()                      # Signal the child thread to exit
         rx_thread = None                                    # The "receive" thread
+        fec_repeat = FEC_REPEAT                                   # Implement FEC repeats or not
 
         # SETUP
         if arg_dict[CLI_ARG_DEBUG]:
@@ -518,7 +528,8 @@ def main() -> None:
                     tmp_msg = MSG7  # For calculating BER
                 else:
                     tmp_msg = random.choice(MESSAGES)  # Choose a random message
-                tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg)
+                tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg,
+                                        fec_repeat=fec_repeat)
                 tx_samples = modem.modulate(bin_bytes=tmp_frame)
                 # [?] Filter?
                 tx_samples = apply_fir(samples=tx_samples, coeffs=lpf)

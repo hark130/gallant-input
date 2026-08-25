@@ -1,0 +1,14 @@
+Stateful Symbol Synch
+
+EXP3A (Legacy M&M w/ Interp)
+User 1 sent 65 packets, user 2 received 55: 15.38% packet loss.
+User 2 sent 65 packets, user 1 received 51: 21.54% packet loss.
+
+EXP3B (Legacy M&M no Interpolation)
+User 1 sent 68 packets, user 2 received 62: 8.82% packet loss.
+User 2 sent 67 packets, user 1 received 47: 29.85% packet loss.
+
+EXP3C (Stateful M&M default values)
+User 1 sent 90 packets, user 2 received 3: 96.67% packet loss.
+User 2 sent 89 packets, user 1 received 2: 97.75% packet loss.
+

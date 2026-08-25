@@ -12,3 +12,15 @@ EXP3C (Stateful M&M default values)
 User 1 sent 90 packets, user 2 received 3: 96.67% packet loss.
 User 2 sent 89 packets, user 1 received 2: 97.75% packet loss.
 
+EXP3D (Stateful M&M gain_mu matches legacy default)
+User 1 sent 148 packets, user 2 received 16: 89.19% packet loss.
+User 2 sent 147 packets, user 1 received 19: 87.07% packet loss.
+
+EXP3E (Stateful M&M interpolated)
+User 1 sent 150 packets, user 2 received 5: 96.67% packet loss.
+User 2 sent 149 packets, user 1 received 5: 96.64% packet loss.
+
+EXP3F (Stateful M&M interpolated w/ gain_mu override)
+User 1 sent 75 packets, user 2 received 4: 94.67% packet loss.
+User 2 sent 76 packets, user 1 received 11: 85.53% packet loss.
+

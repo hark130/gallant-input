@@ -39,9 +39,12 @@ NOTES:
 # Standard Imports
 from collections import namedtuple
 from dataclasses import dataclass, field
+from scipy.signal import freqz
 from time import sleep
 from typing import Final
 import argparse
+import numpy
+import math
 import random
 import sys
 import threading
@@ -63,8 +66,8 @@ from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modem.fsk2 import FSK2
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
-                                plot_welch_psd)
+from gallant_input.plot import (plot_filter_taps, plot_impulse_response, plot_spectrum,
+                                plot_symbol_boundaries, plot_time_domain, plot_welch_psd)
 from gallant_input.gain_sigmf.sigmfmetabuilder import build_default_metadata
 from gallant_input.radio.config_direction import ConfigDirection
 from gallant_input.radio.gain_usrp import configure_usrp, receive, transmit
@@ -72,6 +75,9 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
                                   squelch_signal)
 from gallant_input.spacetime import create_rfc_3339_z_time
 from gallant_input.synch.frame import correlate_it
+from gallant_input.synch.frequency_corrector import FrequencyCorrector
+from gallant_input.synch.mueller_muller import MuellerMuller
+from gallant_input.synch.mueller_muller2 import MuellerMuller2
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
 from rxtx.frame_receiver2 import FrameReceiver2  # Now with more checksumming
@@ -96,8 +102,9 @@ MAX_USERS: Final[int] = 2  # Currently only supports two users
 
 
 # PROTOCOL SPECIFICATIONS
-DATA_LEN_WIDTH: Final[int] = 8  # Fixed width of the data length field, in bits
-CHECKSUM_WIDTH: Final[int] = 8  # Fixed width of the checksum filed, in bits
+DATA_LEN_WIDTH: Final[int] = 8       # Fixed width of the data length field, in bits
+CHECKSUM_WIDTH: Final[int] = 8       # Fixed width of the checksum filed, in bits
+MAX_DATA_FIELD: Final[int] = 32 * 8  # Maximum width of the DATA field
 SYMBOL_RATE: Final[int] = 2400
 
 # MESSAGES TO TRANSMIT
@@ -125,6 +132,7 @@ DATA: Final[bytes] = MSG3  # UPDATE THIS WITH NEW DATA (see above)
 DATA_LEN: Final[bytes] = convert_field_val(len(DATA) // 8, max_bit_len=DATA_LEN_WIDTH)
 PAYLOAD: Final[bytes] = DATA_LEN + DATA
 FRAME: Final[bytes] = HEADER + PAYLOAD  # Transmit this
+MAX_FRAME_LEN: Final[int] = len(PREAMBLE) + len(SYNCWORD) + DATA_LEN_WIDTH + MAX_DATA_FIELD + CHECKSUM_WIDTH
 
 
 # Each user sends on theirs but receives on the other user's
@@ -193,12 +201,27 @@ def calc_bandwidth(symbol_rate: int) -> int:
     """
     bandwidth = calc_freq_sep(symbol_rate) + (2 * symbol_rate)
     return bandwidth
+    # return bandwidth * 2
+
+
+def calc_threshold(sample_rate: float | int, symbol_rate: float | int, num_symbols: int) -> int:
+    """Calculate the threshold at which the receiver will process a chunk of the buffer.
+
+    Args:
+        sample_rate: The sample rate of the capture in samples per second.
+        symbol_rate: The number of symbols-per-second (1 / symbol time).
+        num_symbols: Consider using the maximum frame length, in bits, here.
+    """
+    sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
+    buff_size = math.ceil(sps * num_symbols)
+    return buff_size
 
 
 def calc_freq_sep(symbol_rate: int) -> int:
     """Calculate the frequency separation."""
     freq_sep = 2 * symbol_rate
     return freq_sep
+    # return freq_sep * 4
 
 
 def calc_freqs(center_freq: float | int, user: int, symbol_rate: int) -> UserFreqs:
@@ -237,9 +260,14 @@ def create_tailored_lpf(sample_rate: float | int, symbol_rate: int,
     """
     chan_bandwidth = calc_bandwidth(symbol_rate=symbol_rate)
     cutoff = round(chan_bandwidth, -3) / 2  # Round up to the nearest 1000s, centered
-    print(f'SAMPLE RATE: {sample_rate} (fs/2 == {sample_rate/2})')  # DEBUGGING
+    # cutoff += 2000  # TESTING
+    print(f'BANDWIDTH: {chan_bandwidth}')  # DEBUGGING
     print(f'CUTOFF: {cutoff}')  # DEBUGGING
     taps = design_lpf(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)
+    # plot_filter_taps(taps=taps, sample_rate=sample_rate, cutoff=cutoff)  # DEBUGGINGs
+
+    # DONE
+    # exit()  # DEBUGGING
     return taps
 
 
@@ -323,6 +351,7 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     total = 0
     datum = []  # Data pulled from frames
     exp_data = MSG7 if debug is True else None  # Calculate and print BERs in DEBUG mode
+    threshold = 0  # Threshold to process samples
     print(f'RECEIVE FRAME EXP DATA: {exp_data} (debug is {debug})')  # DEBUGGING
 
     # Start continuous RX.
@@ -332,20 +361,29 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
 
     try:
         modem.parse()  # Update the sps attribute
+        threshold = modem._sps * 1000  # Threshold to process samples (Experiment 1a: Control)
+        # threshold = modem._sps * 100  # Experiment 1b: Smaller buffer; greater loss?
+        # threshold = modem._sps * 10000  # Experiment 1c: Larger buffer; less loss?
+        # threshold = modem._sps * 1000000  # Experiment 1d: Largest buffer; less loss?
+        # threshold = calc_threshold(sample_rate=SAMPLE_RATE, symbol_rate=SYMBOL_RATE,
+        #                            num_symbols=MAX_FRAME_LEN)
+        print(f'BUFFER THRESHOLD: {threshold} (CONTROL: {modem._sps * 1000})')  # DEBUGGING
         while not stop_event.is_set():
             count = streamer.recv(buffer, metadata)
             if metadata.error_code != uhd.types.RXMetadataErrorCode.none:
                 raise RuntimeError(f"RX error: {metadata.strerror()}")
             # print(f'[RX] Received {count} samples')  # DEBUGGING
+            # print(f'BUFFER.NDIM: {buffer.ndim} (SHAPE: {buffer.shape} / TYPE: {buffer.dtype})')  # DEBUGGING
             received = numpy.concatenate([received, buffer[0, :count]])  # Store it
-            if len(received) > modem._sps * 1000:
+            if len(received) > threshold:
                 # print(f'[RX] Processing {len(received)} samples')  # DEBUGGING
                 # Filter
                 received = apply_fir(samples=received, coeffs=lpf)
+                # DEMOD STEPS 1, 2, and then 3
                 # Step 1 - Demod to Metrics
                 metric = modem.demodulate_to_metric(samples=received)
                 # Step 2 - Time Sync w/ Interpolation(?)
-                # symbol_metrics = recover_clock_mm(metric, modem._sps,, interp=None)  # Do not interpolate
+                # symbol_metrics = recover_clock_mm(metric, modem._sps, interp=None)  # Do not interpolate
                 symbol_metrics = recover_clock_mm(metric, modem._sps, interp=16)  # Interp for better boundary
                 # Step 3 - Parse Frames
                 datum = frame_receiver.process(symbol_metrics=symbol_metrics, exp_data=exp_data)
@@ -355,6 +393,25 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     finally:
         stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.stop_cont)
         streamer.issue_stream_cmd(stream_cmd)
+
+
+def wait_until_interval(num_sec: float | int) -> None:
+  """Pauses until the clock reaches a repeating pattern based on num_sec."""
+  now = time.time()
+  num_sec = float(num_sec)  # Explicitly convert it to a float
+  # step = num_sec * 2  # The repeating pattern size (worked for 15s but not for smaller values)
+  step = 2  # The repeating pattern size (alternating seconds)
+  # Shift time backward by the offset to calculate alignment
+  shifted_now = now - num_sec
+  target_shifted = math.ceil(shifted_now / step) * step
+  # If we are exactly on the boundary, push to the next step
+  if target_shifted == shifted_now:
+    target_shifted += step
+  # Shift back to get the final absolute timestamp
+  target_time = target_shifted + num_sec
+  # Busy-wait loop with a tiny sleep to minimize CPU usage
+  while time.time() < target_time:
+    time.sleep(0.001)
 
 
 def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:
@@ -427,7 +484,10 @@ def main() -> None:
         # SETUP
         if arg_dict[CLI_ARG_DEBUG]:
             print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')  # DEBUGGING
-            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')  # DEBUGGINGs
+            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')  # DEBUGGING
+            print(f'SAMPLE RATE: {samp_rate} (fs/2 == {samp_rate/2})')  # DEBUGGING
+            print(f'SYMBOL RATE: {symb_rate}')  # DEBUGGING
+            print(f'FREQ SEP: {calc_freq_sep(symb_rate)}')  # DEBUGGING
         lpf = create_tailored_lpf(sample_rate=samp_rate, symbol_rate=symb_rate)
         configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=their_freqs.center,
                        gain=rx_gain, channel=channel, direction=ConfigDirection.RX)
@@ -447,7 +507,8 @@ def main() -> None:
 
         # TRANSMIT
         try:
-            debug_sleep = 10  # ...seconds to start the other user
+            debug_sleep = 5  # ...seconds to start the other user
+            half_dup_offset = 1  # Force half-duplex at these second intervals
             if arg_dict[CLI_ARG_DEBUG]:
                 print(f'You have {debug_sleep} seconds to start the other user!')
                 sleep(debug_sleep)
@@ -457,15 +518,20 @@ def main() -> None:
                     tmp_msg = MSG7  # For calculating BER
                 else:
                     tmp_msg = random.choice(MESSAGES)  # Choose a random message
-                print(f'[TX] Sending - {convert_bin_bytes_to_ascii(tmp_msg, clean_it=True)}')
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg)
                 tx_samples = modem.modulate(bin_bytes=tmp_frame)
                 # [?] Filter?
                 tx_samples = apply_fir(samples=tx_samples, coeffs=lpf)
+                # input('[TX] Press <ENTER> to send a message.\n')  # TESTING
+                wait_until_interval(num_sec=half_dup_offset + arg_dict[CLI_ARG_USER] - 1)  # Force half-duplex
+                print(f'[TX] Sending - {convert_bin_bytes_to_ascii(tmp_msg, clean_it=True)}')
                 transmit(usrp=usrp, samples=tx_samples)
-                tmp_sleep = random.randint(1, 5)
-                print(f'[TX] Sleeping - {tmp_sleep} secs')
-                time.sleep(tmp_sleep)
+                # tmp_sleep = random.randint(1, 5)  # Between 1 and 5 seconds
+                # tmp_sleep = random.randint(2, 5) * 0.1  # Between 0.2 and 0.5 seconds
+                # tmp_sleep = 0.1  # CW2 Mode (100% Packet Loss)
+                # tmp_sleep = 0.5  # Harklemode
+                # print(f'[TX] Sleeping - {tmp_sleep} secs')
+                # time.sleep(tmp_sleep)
         except KeyboardInterrupt:
             time.sleep(0.2)  # Let the receive thread finish?
             stop_event.set()  # Tell the receive thread to stop

@@ -11,7 +11,7 @@ from gallant_input.data_analysis import compare_streams
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.modem.calc import calculate_ber
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_callable,
-                                      validate_file, validate_type)
+                                      validate_file, validate_pos_int, validate_type)
 from rxtx.argvals import ArgVals
 
 

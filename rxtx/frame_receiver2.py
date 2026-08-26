@@ -5,6 +5,7 @@ from enum import auto, Enum
 # Third Party Imports
 import numpy
 # Local Imports
+from gallant_input.converters import convert_bin_bytes_to_int
 from gallant_input.modem.calc import calculate_ber
 from gallant_input.synch.frame import find_frame_start
 from rxtx.utilities import decode_fec_repetition
@@ -189,11 +190,18 @@ class FrameReceiver2:
                 checksum_bits = combined_bits[data_bits_required:]
                 if exp_data is not None:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')
+                    # print(f'EXPECTED CHECKSUM (FROM exp_data): {self._checksum(exp_data)}')  # DEBUGGING
                 self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
                 exp_checksum = self._bits_to_integer(checksum_bits)
                 act_checksum = self._checksum(data)
                 if act_checksum != exp_checksum:
                     print(f'[RX] Dropping failed checksum')
+                    # print(f'[RX] Dropping failed checksum (exp={exp_checksum}, act={act_checksum}, '
+                    #       f'checksum_bits={checksum_bits}, data_bits_required={data_bits_required})')  # DEBUGGING
+                    print(f'[RX] Dropping failed checksum (exp={exp_checksum}, act={act_checksum}, '
+                          f'checksum_bits={checksum_bits}, data_bits_required={data_bits_required}, '
+                          f'len_data={len(data)}, len_exp_data={len(exp_data) if exp_data else None}, '
+                          f'data={data!r})')
                     data = None
                     self._reset()  # Checksum failed so there's no chance of any remaining data
                 self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
@@ -202,7 +210,7 @@ class FrameReceiver2:
         return data
 
     @staticmethod
-    def _bits_to_integer(bits: numpy.ndarray) -> int:
+    def _bits_to_integer(bits: bytes) -> int:
         """Convert a binary ndarray to an integer."""
         return int(bits.decode('ascii'), 2)
 

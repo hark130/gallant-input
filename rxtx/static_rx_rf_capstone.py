@@ -7,6 +7,9 @@
 
 Example Usage:
     python -m rxtx.static_rx_rf_capstone --help
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message_shortened.complex --samprate 240000
 """
 
 # Standard Imports
@@ -18,7 +21,8 @@ import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
-from gallant_input.converters import convert_bin_bytes_to_ascii
+from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int
+from gallant_input.filters import apply_fir, create_basic_lpf, design_lpf
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.fsk2 import FSK2
@@ -33,12 +37,24 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
 from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
 from rxtx.arg_parser import parse_args, print_help
-from rxtx.utilities import evaluate_payload, get_filename, get_sample_rate
+from rxtx.utilities import decode_fec_repetition, evaluate_payload, get_filename, get_sample_rate
 
 DEF_PREAMBLE: Final[bytes] = 32 * b'10'
 DEF_SYNCWORD: Final[bytes] = b'11011000110111000101000100101110'  # 0xD8DC512E
 DEF_PREAMWRD: Final[bytes] = DEF_PREAMBLE[-8:] + DEF_SYNCWORD  # Some preamble + sw (if necessary?)
-EXP_PAYLOAD: Final[bytes] = b'PAYLOADS ARE VARIABLE'  # Expected payload
+EXP_PAYLOAD: Final[bytes] = b'0110000000011100000011111100000000011111100011111111111100011111' \
+                            b'1111000000111000000111111000000111000111000111111000111111000111' \
+                            b'0000001110000000000000000001111110001110000001110001111111110000' \
+                            b'0000000000011111111100000011111100011111111100011100011100011111' \
+                            b'1000111111000111000000111000000000000000000111111000000111000000' \
+                            b'0001111110001111111111110001111110001111110000000001111110001111' \
+                            b'1111111100011111111100000011100000000011100000000000000000011111' \
+                            b'1111000000111111000111111000111000000111000111111111000111000000' \
+                            b'0000001110000000000000000001111110000000000001110001111110001111' \
+                            b'1100011100011111100000011100011100011111111100011100000000000011' \
+                            b'1000111111000000000000111000000000000000000111000111111111111111' \
+                            b'0001110001111111111111110001110001111111111111110000001111111111' \
+                            b'1111111110000000'  # --debug message
 
 
 # PROTOCOL SPECIFICATIONS
@@ -94,19 +110,32 @@ def generate_checksum(data_field: bytes) -> int:
 
 def parse_payload(payload: bytes) -> None:
     """Parse and print the payload."""
+    # LOCAL VARIABLES
+    data_len = 0          # DATA LEN
+    raw_data = b''        # FEC repeats included in this raw DATA field value
+    data = b''            # Original data
+    exp_check_bits = b''  # The CHECKSUM field
+    exp_checksum = 0      # Checksum value converted from the CHECKSUM field
+    act_checksum = 0      # Re-calculate the checksum from the data (*not* DATA)
+    message = ''          # The original message
+
     # PARSE IT
-    data_len = convert_bin_bytes_to_int(payload[:DATA_LEN_WIDTH])  # Length of the data
+    data_len = convert_bin_bytes_to_int(payload[:DATA_LEN_WIDTH]) * 8  # Length of the data
+    # print(f'DATA LEN: {data_len}')  # DEBUGGING
     raw_data = payload[DATA_LEN_WIDTH:DATA_LEN_WIDTH + data_len]
     data = decode_fec_repetition(raw_data, FEC_REPEAT, force_odd=False)
     exp_check_bits = payload[DATA_LEN_WIDTH + data_len:DATA_LEN_WIDTH + data_len + CHECKSUM_WIDTH]
-    exp_checksum = convert_bin_bytes_to_int(binary=exp_check_bits)
+    if exp_check_bits:
+        exp_checksum = convert_bin_bytes_to_int(binary=exp_check_bits)
+    else:
+        print(f'The CHECKSUM field was missing?!')
     act_checksum = generate_checksum(data_field=data)
     message = convert_bin_bytes_to_ascii(data)
 
     # PRINT IT
     if act_checksum != exp_checksum:
         print(f'[STATIC RX] Failed checksum (exp={exp_checksum}, act={act_checksum}, '
-              f'checksum_bits={exp_check_bits}, data_bits_required={data_bits_required}, '
+              f'checksum_bits={exp_check_bits}, '
               f'len_raw_data={len(raw_data)}, len_exp_data={data_len}, '
               f'decoded_data={data})')
     print(f'\nMESSAGE: {message}')
@@ -125,6 +154,7 @@ def main() -> None:
         symbol_rate = arg_vals.symbol_rate  # Capture symbol rate
         sps = 0                             # Samples per symbol
         samples = None                      # Samples read from the capture
+        taps = None                         # LPF
         decimate = 1                        # Decimation (e.g., 1 to skip decimation)
         squelch_db = None                   # Squelch threshold in db (e.g., -48, -55); skip w/ None
         mod_scheme = ModScheme.FSK2         # Communicates anticipated modulation to detect_signal()
@@ -136,6 +166,11 @@ def main() -> None:
         needle = b''                        # The needle being correlated to the package (e.g., sw)
         index = 0                           # Correlated index into the binary
         payload = b''                       # Frame synch'd binary
+        modem_config = None                 # ModemConfig() object (build latest)
+        modem = None                        # Modem() object (build latest)
+        # HARD CODED FREQS
+        user1_freqs = UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+        user2_freqs = UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
 
         # PREPARE
         # [!] Determine sample rate
@@ -144,14 +179,30 @@ def main() -> None:
         samples = read_samples(filepath)
         # [!] Establish samples-per-symbol
         sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
-        if arg_vals.debug:
-            plot_time_domain(samples=samples, samp_rate=sample_rate,
-                             title='Time Domain (original)', now=False)
-            plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                          convert_db=True, center_freq=None,
-                          title='Magnitude Spectrum (original)', now=False)
+        # if arg_vals.debug:
+        #     plot_time_domain(samples=samples, samp_rate=sample_rate,
+        #                      title='Time Domain (original)', now=False)
+        #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+        #                   convert_db=True, center_freq=None,
+        #                   title='Magnitude Spectrum (original)', now=False)
 
         # [?] Clean Up
+        # Filter!
+        # if arg_vals.debug:
+        #     plot_time_domain(samples=samples, samp_rate=sample_rate,
+        #                      title='Time Domain (pre-filter)', now=False)
+        #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+        #                   convert_db=True, center_freq=None,
+        #                   title='Magnitude Spectrum (pre-filter)', now=False)
+        taps = design_lpf(numtaps=101, cutoff=5000.0, fs=float(sample_rate))  # Replicated from rf_capstone
+        samples = apply_fir(samples=samples, coeffs=taps)
+        # if arg_vals.debug:
+        #     plot_time_domain(samples=samples, samp_rate=sample_rate,
+        #                      title='Time Domain (post-filter)', now=False)
+        #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+        #                   convert_db=True, center_freq=None,
+        #                   title='Magnitude Spectrum (post-filter)', now=False)
+
         # Decimate!
         if decimate > 1:
             samples = decimate_samples(samples=samples, decimate=decimate)
@@ -159,7 +210,7 @@ def main() -> None:
             sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc new sps
         if sps > 20 and arg_vals.debug:
             print(f'Consider decimating the samples-per-symbol, currently "{sps}", below 20')
-        if arg_vals.debug:
+        if arg_vals.debug and decimate > 1:
             plot_time_domain(samples=samples, samp_rate=sample_rate,
                              title='Time Domain (post-decimation)', now=False)
             plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
@@ -168,9 +219,9 @@ def main() -> None:
 
         # [?] Squelch!
         # Identify noise floor
-        if arg_vals.debug:
-            plot_welch_psd(samples=samples, sample_rate=sample_rate,
-                           title='Welch Power Spectral Density (pre-squelch)', now=False)
+        # if arg_vals.debug:
+        #     plot_welch_psd(samples=samples, sample_rate=sample_rate,
+        #                    title='Welch Power Spectral Density (pre-squelch)', now=False)
         # Squelch?
         if squelch_db is not None:
             samples = squelch_signal(samples=samples, threshold=squelch_db)
@@ -181,34 +232,35 @@ def main() -> None:
 
         # [?] Analyze the Spectrum
         spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
+        # print(f'SPECTRUM ANALYSIS: {spect_analysis}')  # DEBUGGING
 
         # [?] Detect Signal
         if spect_analysis is not None:
             det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
+            # print(f'DETECTED SIGNAL: {det_signal}')  # DEBUGGING
 
         # [?] Downconvert
         if det_signal is not None:
             if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
+                print(f'Downconverting to {det_signal.center_frequency}Hz')
                 samples = downconvert_signal(samples=samples, sample_rate=sample_rate,
                                              center_freq=det_signal.center_frequency)
-                if arg_vals.debug:
-                    plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                                  convert_db=True, center_freq=None,
-                                  title='Magnitude Spectrum (post-baseband translation)', now=False)
+                # if arg_vals.debug:
+                #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                #                   convert_db=True, center_freq=None,
+                #                   title='Magnitude Spectrum (post-baseband translation)', now=False)
 
         # DEMOD
-        # NOTE: Modem() and ModemConfig() objects are (essentially) reset between these
-        # non-demodulate() helper function calls.  If your Modem*() objects need to maintain
-        # state (e.g., recovering carrier phase over chunked samples) then consider skipping the
-        # helper functions and calling direct to the source.
+        modem_config = build_modem_config(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                          freqs=user1_freqs)
+        modem = build_modem(config=modem_config)
         # [?] Steps 1 - 3?
-        binary = demodulate(samples=samples, sample_rate=sample_rate, symbol_rate=symbol_rate)
+        # binary = modem.demodulate(samples=samples)
         # -or-
         # [?] Step 1, 2, then 3!
         if not binary:
             # Step 1 - Demod to Metrics
-            metric = demod_to_metric(samples=samples, sample_rate=sample_rate,
-                                     symbol_rate=symbol_rate)
+            metric = modem.demodulate_to_metric(samples=samples)
             if arg_vals.debug:
                 plot_time_domain(samples=metric, samp_rate=sample_rate,
                                  title='Time Domain (Demod Step 1: Metrics)', now=False)
@@ -224,17 +276,20 @@ def main() -> None:
                                        title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
                                        now=False)
             # Step 3 - Symbol Decisions
-            binary = decide_symbols(symbol_metrics=symbol_metrics, sample_rate=sample_rate,
-                                    symbol_rate=symbol_rate)
+            binary = modem.decide_symbols(symbol_metrics=symbol_metrics)
         if arg_vals.debug:
             print(f'Demod Final Step: {binary}')
 
         # [?] Frame Sync
         needle = DEF_SYNCWORD
         index = correlate_it(binary, needle)
+        # print(f'The needle {needle} was found at Index {index}')  # DEBUGGING
         payload = binary[index + len(needle):]
+        print(f'Payload length: {len(payload)}')
 
         # [!] Parse Payload
+        parse_payload(payload)
+        # Use evaluate_payload() for the --debug message
         evaluate_payload(act_payload=payload, exp_payload=EXP_PAYLOAD, debug=arg_vals.debug,
                          parse_payload=parse_payload)
     except Exception as err:

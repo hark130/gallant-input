@@ -69,12 +69,15 @@ from gallant_input.modscheme import ModScheme
 from gallant_input.plot import (plot_filter_taps, plot_impulse_response, plot_spectrum,
                                 plot_symbol_boundaries, plot_time_domain, plot_welch_psd)
 from gallant_input.gain_sigmf.sigmfmetabuilder import build_default_metadata
+from gallant_input.modscheme import ModScheme
 from gallant_input.radio.config_direction import ConfigDirection
 from gallant_input.radio.gain_usrp import configure_usrp, receive, transmit
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.spacetime import create_rfc_3339_z_time
 from gallant_input.synch.frame import correlate_it
+from gallant_input.synch.frequency_corrector import FrequencyCorrector
+from gallant_input.synch.mueller_muller import MuellerMuller
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
 from rxtx.frame_receiver2 import FrameReceiver2  # Now with more checksumming
@@ -178,11 +181,14 @@ def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
 def build_frame(preamble: bytes, syncword: bytes, message: bytes, fec_repeat: int | None) -> bytes:
     """Build a frame."""
     checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
+    # print(f'ORIGINAL MESSAGE LEN: {len(message)}')  # DEBUGGING
     if fec_repeat is not None:
         message = apply_fec_repetition(bits=message, repeats=fec_repeat)
+    # print(f'MESSAGE LEN: {len(message)} DATA LEN: {len(message) // 8}')  # DEBUGGING
     data_len = convert_field_val(len(message) // 8, max_bit_len=DATA_LEN_WIDTH)
     header = preamble + syncword
     payload = data_len + message + checksum
+    # print(f'PAYLOAD: {payload}')  # DEBUGGING
     return header + payload
 
 
@@ -337,7 +343,7 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
                    lpf: numpy.ndarray):
     """Capture an infinite number of frames (until stop_event triggers)."""
     print('[RX] Starting')
-    sps = modem._sps  # Samples per symbol
+    sps = 0  # Samples per symbol
     lpf = lpf  # Use the same taps to RX as to TX
     fec_repeat = FEC_REPEAT
     max_data_bytes = MAX_DATA_FIELD_BYTES
@@ -356,7 +362,9 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     datum = []  # Data pulled from frames
     exp_data = MSG7 if debug is True else None  # Calculate and print BERs in DEBUG mode
     threshold = 0  # Threshold to process samples
+    mm_sync = None  # Instantiate the object once modem is parseds
     print(f'RECEIVE FRAME EXP DATA: {exp_data} (debug is {debug})')  # DEBUGGING
+    freq_corr = None  # FrequencyCorrector() object
 
     # Start continuous RX.
     stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
@@ -365,14 +373,26 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
 
     try:
         modem.parse()  # Update the sps attribute
+        sps = modem._sps  # Samples per symbol
         max_frame_len = len(PREAMBLE) + len(SYNCWORD) + 8 + max_data_bytes + 8
         threshold = modem._sps * 1000  # Threshold to process samples (Experiment 1a: Control)
+        freq_corr = FrequencyCorrector(sample_rate=SAMPLE_RATE, freq_sep=calc_freq_sep(SYMBOL_RATE),
+                                       snr_threshold_db=20)
         # threshold = modem._sps * 100  # Experiment 1b: Smaller buffer; greater loss?
         # threshold = modem._sps * 10000  # Experiment 1c: Larger buffer; less loss?
         # threshold = modem._sps * 1000000  # Experiment 1d: Largest buffer; less loss?
         # threshold = calc_threshold(sample_rate=SAMPLE_RATE, symbol_rate=SYMBOL_RATE,
         #                            num_symbols=max_frame_len) * 100
         print(f'BUFFER THRESHOLD: {threshold} (CONTROL: {modem._sps * 1000})')  # DEBUGGING
+        # print(f'EXP3I: Stateful Symbol Timing - Stateful M&M (interpolated w/ smaller gain_mu override and loosened relative limit)')
+        # mm_sync = MuellerMuller(samples_per_symbol=sps)  # EXP3C: All default values
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.3)  # EXP3D: gain_mu matches legacy default value
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16)  # EXP3E: Interpolate
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16, gain_mu=0.3)  # EXP3F: Interpolate w/ gain_mu override
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.5)  # EXP3G: bigger gain_me
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.175/8)  # EXP3H: smaller gain_me
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16, gain_mu=0.01, omega_relative_limit=0.01)  # EXP3I: smaller gain_mu and loosen the relative limit to 1%
+        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.01, omega_relative_limit=0.01)  # EXP3I: smaller gain_mu and loosen the relative limit to 1%
         while not stop_event.is_set():
             count = streamer.recv(buffer, metadata)
             if metadata.error_code != uhd.types.RXMetadataErrorCode.none:
@@ -384,12 +404,41 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
                 # print(f'[RX] Processing {len(received)} samples')  # DEBUGGING
                 # Filter
                 received = apply_fir(samples=received, coeffs=lpf)
+
+                # FREQUENCY CORRECTION ATTEMPT #1 - Static RX Style (OVERFLOW!)
+                # # [?] Analyze the Spectrum
+                # mod_scheme = ModScheme.FSK2  # Communicates anticipated modulation to detect_signal()
+                # spect_analysis = analyze_spectrum(received, sample_rate=SAMPLE_RATE, max_peaks=2)
+                # # print(f'SPECTRUM ANALYSIS: {spect_analysis}')  # DEBUGGING
+                # # [?] Detect Signal
+                # if spect_analysis is not None:
+                #     det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
+                #     # print(f'DETECTED SIGNAL: {det_signal}')  # DEBUGGING
+                # # [?] Downconvert
+                # if det_signal is not None:
+                #     if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
+                #         print(f'Downconverting to {det_signal.center_frequency}Hz')
+                #         received = downconvert_signal(samples=received, sample_rate=SAMPLE_RATE,
+                #                                      center_freq=det_signal.center_frequency)
+                # FREQUENCY CORRECTION ATTEMPT #2 - Static RX Style (but hard-coded)
+                # downconvert = 1003.186003491318  # Taken from the static receiver output
+                # # print(f'Downconverting to {downconvert}Hz')
+                # received = downconvert_signal(samples=received, sample_rate=SAMPLE_RATE,
+                #                               center_freq=downconvert)
+                # FREQUENCY CORRECTION ATTEMPT #3 - Dynamic CFO Detector/Corrector
+                received = freq_corr.process(received, debug=debug)
+                if debug and freq_corr:
+                    print(freq_corr.debug_state())
+
                 # DEMOD STEPS 1, 2, and then 3
                 # Step 1 - Demod to Metrics
                 metric = modem.demodulate_to_metric(samples=received)
                 # Step 2 - Time Sync w/ Interpolation(?)
                 # symbol_metrics = recover_clock_mm(metric, modem._sps, interp=None)  # Do not interpolate
                 symbol_metrics = recover_clock_mm(metric, modem._sps, interp=16)  # Interp for better boundary
+                # symbol_metrics = mm_sync.process(metric)
+                if debug and mm_sync:
+                    print(mm_sync.debug_state())
                 # Step 3 - Parse Frames
                 datum = frame_receiver.process(symbol_metrics=symbol_metrics, exp_data=exp_data)
                 for data in datum:

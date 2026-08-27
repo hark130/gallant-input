@@ -68,6 +68,11 @@ def fetch_env_var(env_var: str) -> str:
     return env_val
 
 
+def print_avg_packet_loss(user1: PacketStats, user2: PacketStats) -> None:
+    """SPOT to print average packet loss stats."""
+    print(f'Average: {(user1.lost + user2.lost) / 2:.2f}% packet loss.')
+
+
 def print_packet_loss(sender: int, receiver: int, results: PacketStats) -> None:
     """SPOT to print packet loss stats."""
     print(f'User {sender} sent {results.sent} packets, user {receiver} received {results.recv}: '
@@ -115,6 +120,8 @@ def main() -> None:
     print_packet_loss(1, 2, packet_loss_1to2)
     # User 2 --> User 1
     print_packet_loss(2, 1, packet_loss_2to1)
+    # Average
+    print_avg_packet_loss(packet_loss_1to2, packet_loss_2to1)
 
 
 if __name__ == '__main__':

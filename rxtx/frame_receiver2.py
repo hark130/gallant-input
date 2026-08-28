@@ -34,7 +34,7 @@ class FrameReceiver2:
 
     def __init__(self, modem: Modem, preamble: numpy.ndarray, syncword: bytes,
                  checksum: Callable[[bytes], int], fec_repeat: int | None,
-                 max_data_bytes: int = 32):
+                 max_data_bytes: int = 32, debug: bool = False):
         """Class ctor."""
         self._modem = modem
         # Bipolar preamble symbol metrics
@@ -52,7 +52,7 @@ class FrameReceiver2:
         self._data_length = None  # DATA_LEN converted from binary to an integer
         self._fec_repeat = fec_repeat  # Forward Error Correction value
         self._max_data_bytes = max_data_bytes  # Maximum size of the DATA field in bytes
-        self._debug = False  # Caller desires debug output (controlled by process(exp_data))
+        self._debug = debug  # Caller desires debug output (controlled by process(exp_data))
         self._count_pre = 0  # [CFT] Total count of preamble detections
         self._count_syn = 0  # [CFT] Total count of syncword detections
         self._count_len = 0  # [CFT] Total count of valid DATA_LEN detections
@@ -72,13 +72,12 @@ class FrameReceiver2:
 
         Args:
             symbol_metrics: One recovered symbol metric for each transmitted symbol.
-            exp_data: [OPTIONAL] Controls 'debug' mode.  If defined, bit error rates (BERs) will
+            exp_data: [OPTIONAL] If defined, bit error rates (BERs) will
                 be calculated and printed for the syncwords and data based on the expected data
                 provided.
         """
         # LOCAL VARIABLES
         datum = []                    # A list of all the data fields currently found
-        debug = exp_data is not None  # _read_header(debug) arg value
 
         # PREPARE
         if self._sync_arr is None:
@@ -86,7 +85,6 @@ class FrameReceiver2:
             # self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True).astype(numpy.float32)
 
         # PROCESS IT
-        self._debug = debug
         # Add the new input to the buffer
         self._buffer = numpy.concatenate([self._buffer, numpy.asarray(symbol_metrics,
                                           dtype=numpy.float32)])
@@ -97,7 +95,7 @@ class FrameReceiver2:
                 if not frame_found:
                     break
             if self._state is FrameState.READING_HEADER:
-                header_ready = self._read_header(debug=debug)
+                header_ready = self._read_header(debug=self._debug)
                 if not header_ready:
                     break
             if self._state is FrameState.READING_DATA:
@@ -160,6 +158,10 @@ class FrameReceiver2:
             else:
                 if self._debug:
                     print('[CFT] Correlated a syncword')
+                    # print(f'{self._buffer[start:start+self.SYNCWORD_BITS]}')  # DEBUGGING
+                    # print(f'...{self._buffer[start - 8:start]}...{self._buffer[start:start+self.SYNCWORD_BITS]}...{self._buffer[start+self.SYNCWORD_BITS:start+self.SYNCWORD_BITS+8]}')  # DEBUGGING
+                    # print(f'SYNCWORD:                 {self._syncword}')  # DEBUGGING
+                    # print(f'8 + SYNCWORD + 8: {self._modem.decide_symbols(self._buffer[start - 8:start+self.SYNCWORD_BITS+8])}')  # DEBUGGING
                 self._buffer = self._buffer[start:]  # Discard everything before the syncword
                 self._state = FrameState.READING_HEADER  # Advance the machine state
                 frame_found = True  # Found one!
@@ -245,9 +247,14 @@ class FrameReceiver2:
         # VALIDATION
         if self._buffer.size >= part_header_bits:
             header_metrics = self._buffer[:part_header_bits]
-            header_bits = self._modem.decide_symbols(header_metrics)
+            header_bits = self._modem.decide_symbols(header_metrics)#, threshold=0.0
             # Validate the syncword
             received_syncword = header_bits[syncword_start:syncword_end]
+            print(f'RECV SYNC:                {received_syncword}')  # DEBUGGING
+            if self._debug:
+                just_the_syncword = self._modem.decide_symbols(self._buffer[:self.SYNCWORD_BITS])#, threshold=0.0
+                if just_the_syncword != received_syncword:
+                    print(f'DECIDING SYMBOLS WITH THE DATA LEN TACKED ON BUNGLED THE SYNCWORD DECODE!')
             if debug is True:
                 print(f'[RX] SYNCWORD BER: {calculate_ber(self._syncword, received_syncword)}')
             # print(f'RECV SYNCWORD TYPE: {type(received_syncword)} SYNCWORD TYPE: {type(self._syncword)}')  # DEBUGGING
@@ -296,9 +303,9 @@ class FrameReceiver2:
         if len(self._buffer) >= data_bits_required + self.CHECKSUM_BITS:
             combined_metrics = self._buffer[:data_bits_required + self.CHECKSUM_BITS]
             try:
-                combined_bits = self._modem.decide_symbols(combined_metrics)  # Demod Stage 3-of-3
+                combined_bits = self._modem.decide_symbols(combined_metrics)#, threshold=0.0  # Demod Stage 3-of-3
             except ValueError as err:
-                if exp_data is not None:
+                if self._debug:
                     print('FrameReceiver2()._read_data() caught an exception from the '
                           f'demodulator: {err}')
                 self._reset()  # "Unstuck" the machine
@@ -307,7 +314,7 @@ class FrameReceiver2:
                 if self._fec_repeat is not None:
                     data = decode_fec_repetition(bits=data, repeats=self._fec_repeat)
                 checksum_bits = combined_bits[data_bits_required:]
-                if exp_data is not None:
+                if exp_data is not None and self._debug:
                     print(f'[RX] DATA BER: {calculate_ber(exp_data, data)}')
                     # print(f'EXPECTED CHECKSUM (FROM exp_data): {self._checksum(exp_data)}')  # DEBUGGING
                 self._buffer = self._buffer[data_bits_required:]  # Advance the buffer
@@ -317,10 +324,11 @@ class FrameReceiver2:
                     print(f'[RX] Dropping failed checksum')
                     # print(f'[RX] Dropping failed checksum (exp={exp_checksum}, act={act_checksum}, '
                     #       f'checksum_bits={checksum_bits}, data_bits_required={data_bits_required})')  # DEBUGGING
-                    print(f'[RX] Dropping failed checksum (exp={exp_checksum}, act={act_checksum}, '
-                          f'checksum_bits={checksum_bits}, data_bits_required={data_bits_required}, '
-                          f'len_data={len(data)}, len_exp_data={len(exp_data) if exp_data else None}, '
-                          f'data={data!r})')
+                    if self._debug:
+                        print(f'[RX] Dropping failed checksum (exp={exp_checksum}, act={act_checksum}, '
+                              f'checksum_bits={checksum_bits}, data_bits_required={data_bits_required}, '
+                              f'len_data={len(data)}, len_exp_data={len(exp_data) if exp_data else None}, '
+                              f'data={data!r})')
                     data = None
                     self._reset()  # Checksum failed so there's no chance of any remaining data
                 else:

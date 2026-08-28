@@ -108,6 +108,7 @@ MAX_DATA_FIELD_BYTES: Final[int] = 32  # Maximum width of the DATA field in byte
 MAX_DATA_FIELD: Final[int] = MAX_DATA_FIELD_BYTES * 8  # Maximum width of the DATA field in bits
 SYMBOL_RATE: Final[int] = 2400
 FEC_REPEAT: Final[int | None] = 3      # Forward Error Correction (FEC) repeat value
+GFSK_BT: Final[float | None] = 0.4     # Gaussian pulse shaping bandwidth-time product
 
 # MESSAGES TO TRANSMIT
 # MESSAGE 1: test
@@ -265,7 +266,7 @@ def create_tailored_lpf(sample_rate: float | int, symbol_rate: int,
     """
     chan_bandwidth = calc_bandwidth(symbol_rate=symbol_rate)
     cutoff = round(chan_bandwidth, -3) / 2  # Round up to the nearest 1000s, centered
-    # cutoff += 2000  # TESTING
+    # cutoff += 3000  # TESTING
     print(f'BANDWIDTH: {chan_bandwidth}')  # DEBUGGING
     print(f'CUTOFF: {cutoff}')  # DEBUGGING
     taps = design_lpf(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)
@@ -426,7 +427,8 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
                 # received = downconvert_signal(samples=received, sample_rate=SAMPLE_RATE,
                 #                               center_freq=downconvert)
                 # FREQUENCY CORRECTION ATTEMPT #3 - Dynamic CFO Detector/Corrector
-                received = freq_corr.process(received, debug=debug)
+                received = freq_corr.process(received, debug=False)
+                # received = freq_corr.process(received, debug=debug)
                 if debug and freq_corr:
                     print(freq_corr.debug_state())
 
@@ -551,8 +553,11 @@ def main() -> None:
 
         # RECEIVE
         # Start
+        print(F'ORIGINAL PREAMBLE: {PREAMBLE}')  # DEBUGGING
         bipolar_preamble = convert_bin_bytes_to_ndarray(PREAMBLE, bipolar=True)
+        print(F'ORIGINAL BIPOLAR PREAMBLE: {bipolar_preamble}')  # DEBUGGING
         syncword_arr = convert_bin_bytes_to_ndarray(SYNCWORD, bipolar=False)
+        print(F'ORIGINAL SYNCWORD ARR: {syncword_arr}')  # DEBUGGING
         rx_thread = threading.Thread(
             target=receive_frames,
             args=(usrp, modem, bipolar_preamble, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
@@ -575,7 +580,7 @@ def main() -> None:
                     tmp_msg = random.choice(MESSAGES)  # Choose a random message
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg,
                                         fec_repeat=fec_repeat)
-                tx_samples = modem.modulate(bin_bytes=tmp_frame)
+                tx_samples = modem.modulate(bin_bytes=tmp_frame, gauss_bt=GFSK_BT)
                 # [?] Filter?
                 tx_samples = apply_fir(samples=tx_samples, coeffs=lpf)
                 # input('[TX] Press <ENTER> to send a message.\n')  # TESTING

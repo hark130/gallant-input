@@ -56,7 +56,7 @@ def correlate_it(haystack: bytes | numpy.ndarray, needle: bytes | numpy.ndarray)
 
 
 def find_frame_start(symbol_metrics: numpy.ndarray, preamble: numpy.ndarray,
-                     threshold: float = 0.8) -> int:
+                     threshold: float = 0.8) -> int | None:
     """Find the start of a frame by correlating bipolar symbol metrics with a known preamble.
 
     Args:

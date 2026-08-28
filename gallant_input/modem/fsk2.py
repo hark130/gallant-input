@@ -6,11 +6,13 @@ from sklearn.cluster import KMeans
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarray
+from gallant_input.filters import create_gaussian_pulse
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
-                                      validate_ndarray, validate_phase, validate_type)
+                                      validate_ndarray, validate_phase, validate_pos_float,
+                                      validate_type)
 
 
 class FSK2(Modem):
@@ -32,11 +34,13 @@ class FSK2(Modem):
 
     # ABSTRACT METHODS
 
-    def modulate(self, bin_bytes: bytes) -> numpy.ndarray:
+    def modulate(self, bin_bytes: bytes, gauss_bt: float | None = None) -> numpy.ndarray:
         """MOdulate binary data.
 
         Args:
             bin_bytes: A bytes object containing binary to modulate.
+            gauss_bt: [OPTIONAL] Gaussian pulse shaping bandwidth-time product (0.3-0.5 typical).
+                If None, modulates with rectangular NRZ symbols (original behavior).
 
         Returns:
             The modulated binary data.
@@ -60,12 +64,22 @@ class FSK2(Modem):
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         freqs = numpy.where(bits == 0, self.freq0, self.freq1)
-        for freq in freqs:
-            phase_inc = 2 * numpy.pi * freq / self.sample_rate
-            phi = self._phase + phase_inc * numpy.arange(self._sps)
-            out.append(numpy.exp(1j * phi))
-            self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
-        iq = numpy.concatenate(out).astype(numpy.complex64)
+        # for freq in freqs:
+        #     phase_inc = 2 * numpy.pi * freq / self.sample_rate
+        #     phi = self._phase + phase_inc * numpy.arange(self._sps)
+        #     out.append(numpy.exp(1j * phi))
+        #     self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
+        # iq = numpy.concatenate(out).astype(numpy.complex64)
+        if gauss_bt is None:
+            for freq in freqs:
+                phase_inc = 2 * numpy.pi * freq / self.sample_rate
+                phi = self._phase + phase_inc * numpy.arange(self._sps)
+                out.append(numpy.exp(1j * phi))
+                self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
+            iq = numpy.concatenate(out).astype(numpy.complex64)
+        else:
+            # Gaussian-smoothed frequency sequence
+            iq = self._modulate_shaped(freqs=freqs, gauss_bt=gauss_bt)
 
         # DONE
         return iq
@@ -280,6 +294,41 @@ class FSK2(Modem):
             self._validated = True
 
     # PRIVATE METHODS
+
+    def _modulate_shaped(self, freqs: numpy.ndarray, gauss_bt: float) -> numpy.ndarray:
+        """Modulate a per-symbol frequency sequence with Gaussian pulse shaping.
+
+        Args:
+            freqs: One frequency value (freq0 or freq1) per symbol.
+            gauss_bt: Gaussian pulse shaping bandwidth-time product (which must be positive).
+
+        Returns:
+            The modulated, pulse-shaped IQ samples.
+        """
+        # LOCAL VARIABLES
+        rect_freqs = None             # Freqs held at the sample rate (rectangular NRZ)
+        gaussian_taps = None          # The Gaussian pulse-shaping filter
+        shaped_freqs = None           # rect_freqs after Gaussian pulse shaping
+        phase_inc_per_sample = None   # Per-sample phase increment
+        phi = None                    # The cumulative phase array
+        iq = None                     # Final array of modulated samples
+
+        # INPUT VALIDATION
+        validate_pos_float(gauss_bt, 'gauss_bt')
+
+        # SHAPE IT
+        rect_freqs = numpy.repeat(freqs, int(self._sps))  # Rectangular hold, per-sample
+        gaussian_taps = create_gaussian_pulse(gauss_bt=gauss_bt, sps=int(self._sps))
+        shaped_freqs = numpy.convolve(rect_freqs, gaussian_taps, mode='same')
+
+        # INTEGRATE THE SHAPED FREQUENCY SEQUENCE INTO A CONTINUOUS PHASE
+        phase_inc_per_sample = 2 * numpy.pi * shaped_freqs / self.sample_rate
+        phi = self._phase + numpy.cumsum(phase_inc_per_sample)
+        iq = numpy.exp(1j * phi).astype(numpy.complex64)
+        self._update_phase(phi[-1] + phase_inc_per_sample[-1])  # Maintain a continuous phase
+
+        # DONE
+        return iq
 
     def _parse(self) -> None:
         """Parse user input."""

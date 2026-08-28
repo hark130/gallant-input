@@ -82,8 +82,8 @@ class FrameReceiver2:
 
         # PREPARE
         if self._sync_arr is None:
-            # self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True)
-            self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True).astype(numpy.float32)
+            self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True)
+            # self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True).astype(numpy.float32)
 
         # PROCESS IT
         self._debug = debug
@@ -119,28 +119,111 @@ class FrameReceiver2:
         start = None         # Index into symbol_metrics where the preamble begins
 
         # FIND IT
-        # ORIGINAL
-        if self._buffer.size >= self.PREAMBLE_BITS:
-            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.7)
-            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.6)
-            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.5)
-            start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble)
+        # Find Preamble
+        # if self._buffer.size >= self.PREAMBLE_BITS:
+        #     # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.7)
+        #     # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.6)
+        #     # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.5)
+        #     start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble)
+        #     if start is not None:
+        #         self._count_pre += 1  # [CFT] Found one!
+        #         if self._debug:
+        #             print('[CFT] Found preamble')
+        #         # self._buffer = self._buffer[start:]  # Discard everything before the preamble
+        #         # *Now* correlate a syncword
+        #         start = find_frame_start(symbol_metrics=self._buffer, preamble=self._sync_arr)
+        #         if start is None:
+        #             print('[CFT] False preamble')
+        #         # elif start >= (self.PREAMBLE_BITS + self.SYNCWORD_BITS):
+        #         #     print('[CFT] Too far to be a true hit')
+        #         #     print(f'Start value was {start} which was beyond {self.PREAMBLE_BITS} + {self.SYNCWORD_BITS} == {self.PREAMBLE_BITS + self.SYNCWORD_BITS}')  # DEBUGGING
+        #         #     start = None
+        #         else:
+        #             # Advance to the sycnword and continue processing
+        #             print('[CFT] Correlated a syncword')
+        #             self._buffer = self._buffer[start:]  # Discard everything before the preamble
+        #             self._state = FrameState.READING_HEADER  # Advance the machine state
+        #             frame_found = True  # Found one!
+        #     if start is None:
+        #         # No preamble found...
+        #         keep = self.PREAMBLE_BITS - 1  # ...but keep enough symbols in case it was split
+        #         if self._buffer.size > keep:
+        #             self._buffer = self._buffer[-keep:]  # Keeping the last "keep" bits
+        # Find Syncword
+        if self._buffer.size >= self.SYNCWORD_BITS:
+            start = find_frame_start(symbol_metrics=self._buffer, preamble=self._sync_arr)
             if start is None:
-                # No preamble found...
-                keep = self.PREAMBLE_BITS - 1  # ...but keep enough symbols in case it was split
+                # No syncword found...
+                keep = self.SYNCWORD_BITS - 1  # ...but keep enough symbols in case it was split
                 if self._buffer.size > keep:
                     self._buffer = self._buffer[-keep:]  # Keeping the last "keep" bits
             else:
-                self._count_pre += 1  # [CFT] Found one!
                 if self._debug:
-                    print('[CFT] Found preamble')
-                self._buffer = self._buffer[start:]  # Discard everything before the preamble
+                    print('[CFT] Correlated a syncword')
+                self._buffer = self._buffer[start:]  # Discard everything before the syncword
                 self._state = FrameState.READING_HEADER  # Advance the machine state
                 frame_found = True  # Found one!
 
         # DONE
         return frame_found
 
+    # LEGACY VERSION
+    # def _read_header(self, debug: bool) -> bool:
+    #     """Read and validate the syncword and data length.
+
+    #     Returns:
+    #         True if the caller should continue processing, False otherwise.
+    #     """
+    #     # LOCAL VARIABLES
+    #     keep_going = False                                  # Should the caller continue processing?
+    #     header_metrics = None                               # Header portion of the symbol metrics
+    #     header_bits = b''                                   # Demodulated header metrics
+    #     syncword_start = self.PREAMBLE_BITS                 # Starting index of the syncword
+    #     # syncword_start = 0                 # Starting index of the syncword
+    #     syncword_end = syncword_start + self.SYNCWORD_BITS  # Ending index of the syncword
+    #     received_syncword = None                            # Syncword sliced from the header
+    #     len_start = syncword_end                            # Starting index of the data len
+    #     len_end = len_start + self.DATA_LEN_BITS            # Ending index of the data len
+    #     len_bits = None                                     # DATA_LEN portion of the header
+
+    #     # VALIDATION
+    #     if self._buffer.size >= self.HEADER_BITS:
+    #         header_metrics = self._buffer[:self.HEADER_BITS]
+    #         header_bits = self._modem.decide_symbols(header_metrics)
+    #         # Validate the syncword
+    #         received_syncword = header_bits[syncword_start:syncword_end]
+    #         if debug is True:
+    #             print(f'[RX] SYNCWORD BER: {calculate_ber(self._syncword, received_syncword)}')
+    #         # print(f'RECV SYNCWORD TYPE: {type(received_syncword)} SYNCWORD TYPE: {type(self._syncword)}')  # DEBUGGING
+    #         if not numpy.array_equal(received_syncword, self._syncword):
+    #             # False preamble detection?!
+    #             self._buffer = self._buffer[1:]  # Discard the first symbol
+    #             self._state = FrameState.SEARCHING  # Back to the start of the machine
+    #             keep_going = True  # Invalid header but continue searching anyway
+    #         else:
+    #             self._count_syn += 1  # [CFT] Found one!
+    #             if self._debug:
+    #                 print('[CFT] Found syncword')
+    #             len_bits = header_bits[len_start:len_end]  # Extract DATA_LEN
+    #             self._data_length = self._bits_to_integer(len_bits)  # Convert DATA_LEN to int
+    #             if self._data_length == 0 or self._data_length > self._max_data_bytes:
+    #                 # Corrupted data length field
+    #                 self._buffer = self._buffer[1:]  # Drop it...
+    #                 self._state = FrameState.SEARCHING  # ...and keep on...
+    #                 keep_going = True  # ...looking
+    #             else:
+    #                 self._count_len += 1  # [CFT] Found one!
+    #                 print('[CFT] Found DATA_LEN')
+    #                 # A valid header has been parsed
+    #                 self._frame_metrics = self._buffer[:self.HEADER_BITS]  # Beginning of DATA
+    #                 self._buffer = self._buffer[self.HEADER_BITS:]  # Remove the header from the buffer
+    #                 self._state = FrameState.READING_DATA  # Advance the machine state
+    #                 keep_going = True  # Header is valid
+
+    #     # DONE
+    #     return keep_going
+
+    # SYNCWORD CORRELATION VERSIONs
     def _read_header(self, debug: bool) -> bool:
         """Read and validate the syncword and data length.
 
@@ -149,9 +232,10 @@ class FrameReceiver2:
         """
         # LOCAL VARIABLES
         keep_going = False                                  # Should the caller continue processing?
+        part_header_bits = (self.SYNCWORD_BITS + self.DATA_LEN_BITS)  # len(Header) - len(preamble) because we correlated a syncword
         header_metrics = None                               # Header portion of the symbol metrics
         header_bits = b''                                   # Demodulated header metrics
-        syncword_start = self.PREAMBLE_BITS                 # Starting index of the syncword
+        syncword_start = 0                                  # Starting index of the syncword
         syncword_end = syncword_start + self.SYNCWORD_BITS  # Ending index of the syncword
         received_syncword = None                            # Syncword sliced from the header
         len_start = syncword_end                            # Starting index of the data len
@@ -159,8 +243,8 @@ class FrameReceiver2:
         len_bits = None                                     # DATA_LEN portion of the header
 
         # VALIDATION
-        if self._buffer.size >= self.HEADER_BITS:
-            header_metrics = self._buffer[:self.HEADER_BITS]
+        if self._buffer.size >= part_header_bits:
+            header_metrics = self._buffer[:part_header_bits]
             header_bits = self._modem.decide_symbols(header_metrics)
             # Validate the syncword
             received_syncword = header_bits[syncword_start:syncword_end]
@@ -168,7 +252,7 @@ class FrameReceiver2:
                 print(f'[RX] SYNCWORD BER: {calculate_ber(self._syncword, received_syncword)}')
             # print(f'RECV SYNCWORD TYPE: {type(received_syncword)} SYNCWORD TYPE: {type(self._syncword)}')  # DEBUGGING
             if not numpy.array_equal(received_syncword, self._syncword):
-                # False preamble detection?!
+                # False syncword detection?!
                 self._buffer = self._buffer[1:]  # Discard the first symbol
                 self._state = FrameState.SEARCHING  # Back to the start of the machine
                 keep_going = True  # Invalid header but continue searching anyway
@@ -187,8 +271,8 @@ class FrameReceiver2:
                     self._count_len += 1  # [CFT] Found one!
                     print('[CFT] Found DATA_LEN')
                     # A valid header has been parsed
-                    self._frame_metrics = self._buffer[:self.HEADER_BITS]  # Beginning of DATA
-                    self._buffer = self._buffer[self.HEADER_BITS:]  # Remove the header from the buffer
+                    self._frame_metrics = self._buffer[:part_header_bits]  # Beginning of DATA
+                    self._buffer = self._buffer[part_header_bits:]  # Remove the header from the buffer
                     self._state = FrameState.READING_DATA  # Advance the machine state
                     keep_going = True  # Header is valid
 

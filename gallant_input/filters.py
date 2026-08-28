@@ -74,6 +74,44 @@ def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
                       scale=scale, fs=fs)
 
 
+def create_gaussian_pulse(gauss_bt: float, sps: int, span_symbols: int = 4) -> numpy.ndarray:
+    """Create a normalized Gaussian pulse-shaping filter for GFSK.
+
+    Args:
+        gauss_bt: Bandwidth-time product. Lower values narrow the spectrum but increase
+            inter-symbol smoothing (0.3-0.5 typical; GSM uses 0.3, Bluetooth uses 0.5).
+            Must be positive.
+        sps: Samples per symbol.
+        span_symbols: [OPTIONAL] Filter length, in symbols.
+
+    Returns:
+        A 1-D array of unit-area filter taps.
+    """
+    # LOCAL VARIABLES
+    num_samples = 0    # Total filter length, in samples
+    time_axis = None   # Time axis, in symbol periods
+    alpha = 0.0        # Gaussian std dev derived from gauss_bt
+    pulse = None       # Unnormalized Gaussian pulse
+    norm_pulse = None  # Gaussian pulse, normalized to preserve total freq dev
+
+    # INPUT VALIDATION
+    validate_pos_float(gauss_bt, 'gauss_bt')
+    validate_pos_int(sps, 'sps')
+    validate_pos_int(span_symbols, 'span_symbols')
+
+    # PREPARE
+    num_samples = span_symbols * sps
+
+    # BUILD IT
+    time_axis = numpy.arange(-num_samples / 2, num_samples / 2 + 1) / sps
+    alpha = numpy.sqrt(numpy.log(2)) / (2 * numpy.pi * gauss_bt)
+    pulse = numpy.exp(-(time_axis ** 2) / (2 * alpha ** 2))
+    norm_pulse = pulse / numpy.sum(pulse)
+
+    # DONE
+    return norm_pulse
+
+
 def create_rect_fir(sps: int, force_odd: bool = False) -> numpy.ndarray:
     """Create a rectangular finite infinite response (FIR) filter.
 

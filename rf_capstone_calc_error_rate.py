@@ -21,6 +21,9 @@ USER1_ENV_VAR: Final[str] = 'USER1_OUTPUT'        # User 1 output environment va
 USER2_ENV_VAR: Final[str] = 'USER2_OUTPUT'        # User 2 output environment variable
 SENDING_NEEDLE: Final[str] = '[TX] Sending - '    # The "I sent a message" needle
 RECEIVING_NEEDLE: Final[str] = '[RX] Received: '  # The "I received a message" needle
+FIELD_NEEDLE_PRE: Final[str] = '[CFT] Found preamble'  # The "I found a preamble" needle
+FIELD_NEEDLE_SYN: Final[str] = '[CFT] Found syncword'  # The "I found a syncword" needle
+FIELD_NEEDLE_LEN: Final[str] = '[CFT] Found DATA_LEN'  # The "I found a valid DATA_LEN" needle
 
 
 @dataclass
@@ -29,6 +32,42 @@ class PacketStats():
     sent: int
     recv: int
     lost: float
+
+
+@dataclass
+class FieldStats():
+    """Contains stats on packet loss."""
+    sent: int        # Total packets sent
+    recv_pre: int    # Correlated preambles
+    recv_syn: int    # Valid syncwords
+    recv_len: int    # Valid DATA_LEN field count
+    recv_frame: int  # Completely valid frame (checksum passed)
+
+
+def calc_field_loss(sender: List[str], receiver: List[str]) -> FieldStats:
+    """Calculate loss rate, by field, from sender to receiver."""
+    # LOCAL VARIABLES
+    sent_packets = 0  # The number of packets sent
+    recv_preambles = 0  # Total preambles found
+    recv_syncwords = 0  # Total syncwords found
+    recv_data_len = 0   # Total number of valid DATA_LEN fields
+    recv_frame = 0      # Total valid frames received (checksum passed)
+
+    # CALC IT
+    # Count sent packets
+    sent_packets = calc_sent_packets(sender)
+    # Count received preambles
+    recv_preambles = _count_it(haystack=receiver, needle=FIELD_NEEDLE_PRE)
+    # Count received syncwords
+    recv_syncwords = _count_it(haystack=receiver, needle=FIELD_NEEDLE_SYN)
+    # Count received data_len
+    recv_data_len = _count_it(haystack=receiver, needle=FIELD_NEEDLE_LEN)
+    # Count received frames
+    recv_frame = calc_recv_packets(receiver)
+
+    # DONE
+    return FieldStats(sent=sent_packets, recv_pre=recv_preambles, recv_syn=recv_syncwords,
+                      recv_len=recv_data_len, recv_frame=recv_frame)
 
 
 def calc_packet_loss(sender: List[str], receiver: List[str]) -> PacketStats:
@@ -40,9 +79,7 @@ def calc_packet_loss(sender: List[str], receiver: List[str]) -> PacketStats:
 
     # CALC IT
     # Count sent packets
-    for sent_line in sender:
-        if SENDING_NEEDLE in sent_line:
-            sent_packets += 1
+    sent_packets = calc_sent_packets(sender)
     # Count recv packets
     for recv_line in receiver:
         if RECEIVING_NEEDLE in recv_line:
@@ -58,6 +95,32 @@ def calc_packet_loss(sender: List[str], receiver: List[str]) -> PacketStats:
     return PacketStats(sent=sent_packets, recv=recv_packets, lost=loss)
 
 
+def calc_recv_packets(receiver: List[str]) -> int:
+    """Count the number of packets the receiver received."""
+    # LOCAL VARIABLES
+    recv_packets = 0  # The number of received packets
+
+    # CALC IT
+    # Count recv packets
+    recv_packets = _count_it(haystack=receiver, needle=RECEIVING_NEEDLE)
+
+    # DONE
+    return recv_packets
+
+
+def calc_sent_packets(sender: List[str]) -> int:
+    """Count the number of packets the sender sent."""
+    # LOCAL VARIABLES
+    sent_packets = 0  # The number of packets sent
+
+    # CALC IT
+    # Count sent packets
+    sent_packets = _count_it(haystack=sender, needle=SENDING_NEEDLE)
+
+    # DONE
+    return sent_packets
+
+
 def fetch_env_var(env_var: str) -> str:
     """Fetch an environment variable."""
     env_val = os.getenv(env_var)
@@ -71,6 +134,42 @@ def fetch_env_var(env_var: str) -> str:
 def print_avg_packet_loss(user1: PacketStats, user2: PacketStats) -> None:
     """SPOT to print average packet loss stats."""
     print(f'Average: {(user1.lost + user2.lost) / 2:.2f}% packet loss.')
+
+
+def print_field_loss(sender: int, receiver: int, results: FieldStats) -> None:
+    """SPOT to print loss-by-field stats."""
+    # LOCAL VARIABLES
+    preamble_loss = 0
+    syncword_loss = 0
+    data_len_loss = 0
+    frame_loss = 0
+
+    # CALCULATE
+    if results.sent > 0:
+        preamble_loss = (results.sent - results.recv_pre) / results.sent * 100
+        syncword_loss = (results.sent - results.recv_syn) / results.sent * 100
+        data_len_loss = (results.sent - results.recv_len) / results.sent * 100
+        frame_loss = (results.sent - results.recv_frame) / results.sent * 100
+
+        # FIELD LOSS
+        print()
+        print(f'User {sender} sent {results.sent} packets.  Of those packets, user {receiver} received:'
+              f'\n\t{results.recv_pre} preambles ({preamble_loss:.2f}% loss)'
+              f'\n\t{results.recv_syn} syncwords ({syncword_loss:.2f}% loss)'
+              f'\n\t{results.recv_len} DATA_LENs ({data_len_loss:.2f}% loss)'
+              f'\n\t{results.recv_frame} frames ({frame_loss:.2f}% loss)')
+
+        # FALSE POSITIVES?!
+        if results.recv_pre > results.sent:
+            print(f'User {receiver} has received {results.recv_pre - results.sent} extra preambles')
+        if results.recv_syn > results.sent:
+            print(f'User {receiver} has received {results.recv_syn - results.sent} extra syncwords?')
+        if results.recv_len > results.sent:
+            print(f'User {receiver} has received {results.recv_len - results.sent} extra DATA_LENs?!')
+        if results.recv_frame > results.sent:
+            print(f'User {receiver} has received {results.recv_frame - results.sent} extra frames?!?!')
+    else:
+        print(f'User {sender} has not yet sent any packets')
 
 
 def print_packet_loss(sender: int, receiver: int, results: PacketStats) -> None:
@@ -105,6 +204,20 @@ def read_file(filename: str) -> List[str]:
     return file_cont
 
 
+def _count_it(haystack: List[str], needle: str) -> int:
+    """Count the occurrences of the needle in the haystack."""
+    # LOCAL VARIABLES
+    count = 0
+
+    # COUNT IT
+    for straw in haystack:
+        if needle in straw:
+            count += 1
+
+    # DONE
+    return count
+
+
 def main() -> None:
     """do_it()."""
     # LOCAL VARIABLES
@@ -114,14 +227,27 @@ def main() -> None:
     # user2 = read_file('devops/files/rf_capstone_user2.out')  # OFFLINE TESTING
     packet_loss_1to2 = calc_packet_loss(sender=user1, receiver=user2)  # User 1 --> User 2
     packet_loss_2to1 = calc_packet_loss(sender=user2, receiver=user1)  # User 2 --> User 1
+    field_loss_1to2 = calc_field_loss(sender=user1, receiver=user2)  # User 1 --> User 2
+    field_loss_2to1 = calc_field_loss(sender=user2, receiver=user1)  # User 2 --> User 1
 
     # CALCULATE IT
+    print()
+    # 1. Packet Loss
     # User 1 --> User 2
     print_packet_loss(1, 2, packet_loss_1to2)
     # User 2 --> User 1
     print_packet_loss(2, 1, packet_loss_2to1)
     # Average
     print_avg_packet_loss(packet_loss_1to2, packet_loss_2to1)
+    # 2. Field Loss
+    print()
+    # User 1 --> User 2
+    print_field_loss(1, 2, field_loss_1to2)
+    # User 2 --> User 1
+    print_field_loss(2, 1, field_loss_2to1)
+
+    # DONE
+    print()
 
 
 if __name__ == '__main__':

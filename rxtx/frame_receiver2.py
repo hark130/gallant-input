@@ -7,7 +7,7 @@ import numpy
 # Local Imports
 from gallant_input.converters import convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray
 from gallant_input.modem.calc import calculate_ber
-from gallant_input.synch.frame import correlate_it, find_frame_start, find_frame_start2
+from gallant_input.synch.frame import correlate_it, find_frame_start
 from rxtx.utilities import decode_fec_repetition
 
 

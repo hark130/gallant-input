@@ -5,9 +5,9 @@ from enum import auto, Enum
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int
+from gallant_input.converters import convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray
 from gallant_input.modem.calc import calculate_ber
-from gallant_input.synch.frame import find_frame_start
+from gallant_input.synch.frame import correlate_it, find_frame_start, find_frame_start2
 from rxtx.utilities import decode_fec_repetition
 
 
@@ -35,12 +35,14 @@ class FrameReceiver2:
     def __init__(self, modem: Modem, preamble: numpy.ndarray, syncword: bytes,
                  checksum: Callable[[bytes], int], fec_repeat: int | None,
                  max_data_bytes: int = 32):
+        """Class ctor."""
         self._modem = modem
         # Bipolar preamble symbol metrics
         self._preamble = numpy.asarray(preamble, dtype=numpy.float32)
         # Expected binary syncword
         # self._syncword = numpy.asarray(syncword, dtype=numpy.uint8)
         self._syncword = syncword
+        self._sync_arr = None
         self._checksum = checksum  # Checksum generating function
         self._state = FrameState.SEARCHING  # The state of the state machine
         # Symbols waiting to be processed
@@ -50,6 +52,20 @@ class FrameReceiver2:
         self._data_length = None  # DATA_LEN converted from binary to an integer
         self._fec_repeat = fec_repeat  # Forward Error Correction value
         self._max_data_bytes = max_data_bytes  # Maximum size of the DATA field in bytes
+        self._debug = False  # Caller desires debug output (controlled by process(exp_data))
+        self._count_pre = 0  # [CFT] Total count of preamble detections
+        self._count_syn = 0  # [CFT] Total count of syncword detections
+        self._count_len = 0  # [CFT] Total count of valid DATA_LEN detections
+        self._count_chk = 0  # [CFT] Total count of checksum passes
+
+    def __del__(self):
+        """Class dtor."""
+        if self._debug is True:
+            print(f'[CFT] The current state is {self._state.name}')
+            print(f'[CFT] Found {self._count_pre} preambles')
+            print(f'[CFT] Found {self._count_syn} syncwords')
+            print(f'[CFT] Found {self._count_len} DATA_LEN fields')
+            print(f'[CFT] Found {self._count_chk} frames')
 
     def process(self, symbol_metrics: numpy.ndarray, exp_data: bytes | None = None) -> list[bytes]:
         """Process a chunk of symbol metrics and return any complete frames.
@@ -64,7 +80,13 @@ class FrameReceiver2:
         datum = []                    # A list of all the data fields currently found
         debug = exp_data is not None  # _read_header(debug) arg value
 
+        # PREPARE
+        if self._sync_arr is None:
+            # self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True)
+            self._sync_arr = convert_bin_bytes_to_ndarray(self._syncword, bipolar=True).astype(numpy.float32)
+
         # PROCESS IT
+        self._debug = debug
         # Add the new input to the buffer
         self._buffer = numpy.concatenate([self._buffer, numpy.asarray(symbol_metrics,
                                           dtype=numpy.float32)])
@@ -97,7 +119,11 @@ class FrameReceiver2:
         start = None         # Index into symbol_metrics where the preamble begins
 
         # FIND IT
+        # ORIGINAL
         if self._buffer.size >= self.PREAMBLE_BITS:
+            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.7)
+            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.6)
+            # start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble, threshold=0.5)
             start = find_frame_start(symbol_metrics=self._buffer, preamble=self._preamble)
             if start is None:
                 # No preamble found...
@@ -105,6 +131,9 @@ class FrameReceiver2:
                 if self._buffer.size > keep:
                     self._buffer = self._buffer[-keep:]  # Keeping the last "keep" bits
             else:
+                self._count_pre += 1  # [CFT] Found one!
+                if self._debug:
+                    print('[CFT] Found preamble')
                 self._buffer = self._buffer[start:]  # Discard everything before the preamble
                 self._state = FrameState.READING_HEADER  # Advance the machine state
                 frame_found = True  # Found one!
@@ -137,12 +166,16 @@ class FrameReceiver2:
             received_syncword = header_bits[syncword_start:syncword_end]
             if debug is True:
                 print(f'[RX] SYNCWORD BER: {calculate_ber(self._syncword, received_syncword)}')
+            # print(f'RECV SYNCWORD TYPE: {type(received_syncword)} SYNCWORD TYPE: {type(self._syncword)}')  # DEBUGGING
             if not numpy.array_equal(received_syncword, self._syncword):
                 # False preamble detection?!
                 self._buffer = self._buffer[1:]  # Discard the first symbol
                 self._state = FrameState.SEARCHING  # Back to the start of the machine
                 keep_going = True  # Invalid header but continue searching anyway
             else:
+                self._count_syn += 1  # [CFT] Found one!
+                if self._debug:
+                    print('[CFT] Found syncword')
                 len_bits = header_bits[len_start:len_end]  # Extract DATA_LEN
                 self._data_length = self._bits_to_integer(len_bits)  # Convert DATA_LEN to int
                 if self._data_length == 0 or self._data_length > self._max_data_bytes:
@@ -151,6 +184,8 @@ class FrameReceiver2:
                     self._state = FrameState.SEARCHING  # ...and keep on...
                     keep_going = True  # ...looking
                 else:
+                    self._count_len += 1  # [CFT] Found one!
+                    print('[CFT] Found DATA_LEN')
                     # A valid header has been parsed
                     self._frame_metrics = self._buffer[:self.HEADER_BITS]  # Beginning of DATA
                     self._buffer = self._buffer[self.HEADER_BITS:]  # Remove the header from the buffer
@@ -204,6 +239,8 @@ class FrameReceiver2:
                           f'data={data!r})')
                     data = None
                     self._reset()  # Checksum failed so there's no chance of any remaining data
+                else:
+                    self._count_chk += 1  # [CFT] Found one!
                 self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
 
         # DONE

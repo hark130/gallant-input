@@ -10,9 +10,9 @@ from gallant_input.filters import create_gaussian_pulse
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
-                                      validate_ndarray, validate_phase, validate_pos_float,
-                                      validate_type)
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_float,
+                                      validate_int_or_float, validate_ndarray, validate_phase,
+                                      validate_pos_float, validate_type)
 
 
 class FSK2(Modem):
@@ -127,13 +127,18 @@ class FSK2(Modem):
 
     # PUBLIC METHODS
 
-    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+    def decide_symbols(self, symbol_metrics: numpy.ndarray,
+                       threshold: float | bool = False) -> bytes:
         """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
 
         Maps each recovered symbol metric to its nearest valid symbol.
 
         Args:
             symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            threshold: [OPTIONAL] Use a basic threshold to make symbol decisions instead of
+                KMeans clustering.  If False, utilize KMeans.  If True, use the median to
+                determine an adaptive threshold.  Otherwise, specify the threshold (e.g., 0.0)
+                as a float.
 
         Returns:
             The demodulated binary data.
@@ -143,7 +148,6 @@ class FSK2(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        threshold = 0.0  # The bit decision threshold
         bits = None      # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''  # The final binary as a bytes object
         reshaped = None  # Reshaped symbol_metrics into a single column
@@ -153,18 +157,21 @@ class FSK2(Modem):
         self.parse(demod=True)  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=False)
+        _validate_threshold(threshold)
 
         # DECIDE IT
-        # NOTE: Using the "mean()" of the symbol metrics wasn't sufficient to find the
-        # best decision boundary between the two populations of symbol metrics for some
-        # live captures.  Why?  The median shifts towards a dominant cluster if the bit counts
-        # aren't equally distributed.
-        reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
-        kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
-        kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
-        centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
-        threshold = centers.mean()  # Average the center of the two clusters
-        bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        if threshold is False:
+            threshold = 0.0  # Reset the value
+            reshaped = symbol_metrics.reshape(-1, 1)  # Reshape it into one multi-row column
+            kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
+            kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
+            centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse to sorted 1-D array
+            threshold = centers.mean()  # Average the center of the two clusters
+            bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        else:
+            if threshold is True:
+                threshold = numpy.median(symbol_metrics)  # Calculate the adaptive thresholds
+            bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
         bin_bytes = stringify_ndarray(bits)
 
         # DONE
@@ -389,3 +396,30 @@ def _validate_frequencies(symbol_rate: float | int,
     if freq_dev < min_dev:
         raise ValueError(f'The deviation between "{freq0}" and "{freq1}" must be at '
                          f'*least* "{min_dev}"')
+
+def _validate_threshold(threshold: float | bool) -> None:
+    """Validate the uniquely designed threshold argument."""
+    # LOCAL VARIABLES
+    valid = False
+
+    # VALIDATE IT
+    # bool?
+    try:
+        validate_bool(threshold, 'threshold')
+    except TypeError:
+        pass  # One more chance
+    else:
+        valid = True
+    # float
+    if not valid:
+        try:
+            validate_float(threshold, 'threshold')
+        except TypeError:
+            pass  # Handled below
+        else:
+            valid = True
+
+    # DONE
+    if not valid:
+        raise TypeError(f'The "threshold" argument must be a bool or floating point '
+                        f'data type instead of type {type(threshold)}')

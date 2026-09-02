@@ -18,7 +18,8 @@ uhd_find_devices
 export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
 export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
 export USER2_OUTPUT=$TMP_OUTPUT/rf_capstone_user2.out  # The error rate script will use this env var
-python -u rf_capstone_v3.py --serial 317650F --user 1 --debug > "$USER1_OUTPUT" 2>&1
+# python -u rf_capstone_v3.py --serial 317650F --user 1 --debug > "$USER1_OUTPUT" 2>&1
+python -u rf_capstone_v3.py --serial 352825E --user 1 --debug > "$USER1_OUTPUT" 2>&1
 # Terminal 2
 export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
 export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
@@ -75,12 +76,12 @@ from gallant_input.radio.gain_usrp import configure_usrp, receive, transmit
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
 from gallant_input.spacetime import create_rfc_3339_z_time
-from gallant_input.synch.frame import correlate_it
+from gallant_input.synch.frame import correlate_it, find_frame_start
 from gallant_input.synch.frequency_corrector import FrequencyCorrector
 from gallant_input.synch.mueller_muller import MuellerMuller
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
-from rxtx.frame_receiver2 import FrameReceiver2  # Now with more checksumming
+from rxtx.frame_receiver import FrameReceiver
 from rxtx.utilities import apply_fec_repetition, convert_field_val, evaluate_payload
 
 
@@ -343,16 +344,15 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
                    syncword: numpy.ndarray, stop_event: threading.Event, debug: bool,
                    lpf: numpy.ndarray):
     """Capture an infinite number of frames (until stop_event triggers)."""
-    print('[RX] Starting')
     sps = 0  # Samples per symbol
     lpf = lpf  # Use the same taps to RX as to TX
     fec_repeat = FEC_REPEAT
     max_data_bytes = MAX_DATA_FIELD_BYTES
     if fec_repeat is not None:
         max_data_bytes = max_data_bytes * fec_repeat
-    frame_receiver = FrameReceiver2(modem=modem, preamble=preamble, syncword=syncword,
-                                    checksum=generate_checksum, fec_repeat=fec_repeat,
-                                    max_data_bytes=max_data_bytes)
+    frame_receiver = FrameReceiver(modem=modem, syncword=syncword, checksum=generate_checksum,
+                                   fec_repeat=fec_repeat, max_data_bytes=max_data_bytes,
+                                   debug=debug)
     stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
     stream_args.channels = [0]
     streamer = usrp.get_rx_stream(stream_args)
@@ -364,7 +364,6 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     exp_data = MSG7 if debug is True else None  # Calculate and print BERs in DEBUG mode
     threshold = 0  # Threshold to process samples
     mm_sync = None  # Instantiate the object once modem is parseds
-    print(f'RECEIVE FRAME EXP DATA: {exp_data} (debug is {debug})')  # DEBUGGING
     freq_corr = None  # FrequencyCorrector() object
 
     # Start continuous RX.
@@ -373,12 +372,16 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     streamer.issue_stream_cmd(stream_cmd)
 
     try:
+        print('[RX] Starting')
         modem.parse()  # Update the sps attribute
         sps = modem._sps  # Samples per symbol
+        # print(f'The samples per symbol: {sps}')  # DEBUGGING
         max_frame_len = len(PREAMBLE) + len(SYNCWORD) + 8 + max_data_bytes + 8
         threshold = modem._sps * 1000  # Threshold to process samples (Experiment 1a: Control)
+        # threshold = modem._sps * 100  # Threshold to process samples
         freq_corr = FrequencyCorrector(sample_rate=SAMPLE_RATE, freq_sep=calc_freq_sep(SYMBOL_RATE),
                                        snr_threshold_db=20)
+        # complex_preamble = modem.modulate(bin_bytes=preamble, gauss_bt=GFSK_BT)
         # threshold = modem._sps * 100  # Experiment 1b: Smaller buffer; greater loss?
         # threshold = modem._sps * 10000  # Experiment 1c: Larger buffer; less loss?
         # threshold = modem._sps * 1000000  # Experiment 1d: Largest buffer; less loss?
@@ -401,10 +404,19 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
             # print(f'[RX] Received {count} samples')  # DEBUGGING
             # print(f'BUFFER.NDIM: {buffer.ndim} (SHAPE: {buffer.shape} / TYPE: {buffer.dtype})')  # DEBUGGING
             received = numpy.concatenate([received, buffer[0, :count]])  # Store it
+            # tmp_buffer = buffer[0, :count]
+            # # Anti-Aliasing Low Pass Filter
+            # tmp_buffer = apply_fir(samples=tmp_buffer, coeffs=lpf)
+            # print('POST ANTI-ALIASING LOW PASS FILTER')  # DEBUGGING
+            # # Decimation
+            # tmp_buffer = decimate_samples(samples=tmp_buffer, decimate=decimate)
+            # print('POST DECIMATION')  # DEBUGGING
+            # received = numpy.concatenate([received, tmp_buffer])  # Store it
             if len(received) > threshold:
                 # print(f'[RX] Processing {len(received)} samples')  # DEBUGGING
                 # Filter
                 received = apply_fir(samples=received, coeffs=lpf)
+                # print('POST FILTER')  # DEBUGGING
 
                 # FREQUENCY CORRECTION ATTEMPT #1 - Static RX Style (OVERFLOW!)
                 # # [?] Analyze the Spectrum
@@ -429,8 +441,20 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
                 # FREQUENCY CORRECTION ATTEMPT #3 - Dynamic CFO Detector/Corrector
                 received = freq_corr.process(received, debug=False)
                 # received = freq_corr.process(received, debug=debug)
+                # print('POST CFO')  # DEBUGGING
                 if debug and freq_corr:
                     print(freq_corr.debug_state())
+
+                # CORRELATE ON COMPLEX PREAMBLE
+                # index = find_frame_start(symbol_metrics=received, preamble=complex_preamble)
+                # print('POST PREAMBLE CORRELATION')  # DEBUGGING
+                # if debug and index is not None:
+                #     print(f'Found a preamble at index {index}')
+                # if index is not None:
+                #     received = received[index:]  # Advance to the preamble
+                # else:
+                #     received = received[-len(complex_preamble):]  # Keep enough in case of a split
+                #     continue  # No need to process this... keep receiving
 
                 # DEMOD STEPS 1, 2, and then 3
                 # Step 1 - Demod to Metrics
@@ -537,6 +561,7 @@ def main() -> None:
         stop_event = threading.Event()                      # Signal the child thread to exit
         rx_thread = None                                    # The "receive" thread
         fec_repeat = FEC_REPEAT                                   # Implement FEC repeats or not
+        current_msg = 1                                     # Used to discretely number test msgs
 
         # SETUP
         if arg_dict[CLI_ARG_DEBUG]:
@@ -553,14 +578,15 @@ def main() -> None:
 
         # RECEIVE
         # Start
-        print(F'ORIGINAL PREAMBLE: {PREAMBLE}')  # DEBUGGING
-        bipolar_preamble = convert_bin_bytes_to_ndarray(PREAMBLE, bipolar=True)
-        print(F'ORIGINAL BIPOLAR PREAMBLE: {bipolar_preamble}')  # DEBUGGING
-        syncword_arr = convert_bin_bytes_to_ndarray(SYNCWORD, bipolar=False)
-        print(F'ORIGINAL SYNCWORD ARR: {syncword_arr}')  # DEBUGGING
+        # print(F'ORIGINAL PREAMBLE: {PREAMBLE}')  # DEBUGGING
+        # bipolar_preamble = convert_bin_bytes_to_ndarray(PREAMBLE, bipolar=True)
+        # print(F'ORIGINAL BIPOLAR PREAMBLE: {bipolar_preamble}')  # DEBUGGING
+        # syncword_arr = convert_bin_bytes_to_ndarray(SYNCWORD, bipolar=False)
+        # print(F'ORIGINAL SYNCWORD ARR: {syncword_arr}')  # DEBUGGING
         rx_thread = threading.Thread(
             target=receive_frames,
-            args=(usrp, modem, bipolar_preamble, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
+            # args=(usrp, modem, bipolar_preamble, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
+            args=(usrp, modem, PREAMBLE, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
         )
         rx_thread.start()
         time.sleep(0.1)  # Give the receive thread a head starts
@@ -578,6 +604,16 @@ def main() -> None:
                     tmp_msg = MSG7  # For calculating BER
                 else:
                     tmp_msg = random.choice(MESSAGES)  # Choose a random message
+                ###########################################################
+                # CREATE A STATIC CAPTURE WITH OBVIOULSY LABELED MESSAGES #
+                ###########################################################
+                # total_msgs = 10
+                # if current_msg > total_msgs:
+                #     sleep(2)  # Let the other user finish sending messages, if applicable
+                #     raise KeyboardInterrupt(f'Sent {total_msgs} messages')
+                # tmp_msg = convert_ascii_to_bin_bytes(message=f'This is message #{current_msg}')
+                # current_msg += 1  # Advance to the next message number
+                ###########################################################
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg,
                                         fec_repeat=fec_repeat)
                 tx_samples = modem.modulate(bin_bytes=tmp_frame, gauss_bt=GFSK_BT)

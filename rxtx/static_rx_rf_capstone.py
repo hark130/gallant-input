@@ -10,6 +10,10 @@ Example Usage:
     python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400.sigmf-data
     python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message.sigmf-data
     python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message_shortened.complex --samprate 240000
+    # Now with Gaussian Pulse Shaping
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_msg9.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_last_three.sigmf-data
 """
 
 # Standard Imports
@@ -21,7 +25,8 @@ import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
-from gallant_input.converters import convert_bin_bytes_to_ascii, convert_bin_bytes_to_int
+from gallant_input.converters import (convert_ascii_to_bin_bytes, convert_bin_bytes_to_ascii,
+                                      convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray)
 from gallant_input.filters import apply_fir, create_basic_lpf, design_lpf
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
@@ -36,7 +41,9 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
                                   squelch_signal)
 from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
+from gallant_input.validation import validate_ndarray
 from rxtx.arg_parser import parse_args, print_help
+from rxtx.frame_receiver import FrameReceiver
 from rxtx.utilities import decode_fec_repetition, evaluate_payload, get_filename, get_sample_rate
 
 DEF_PREAMBLE: Final[bytes] = 32 * b'10'
@@ -58,6 +65,7 @@ EXP_PAYLOAD: Final[bytes] = b'01100000000111000000111111000000000111111000111111
 
 
 # PROTOCOL SPECIFICATIONS
+MAX_DATA_FIELD_BYTES: Final[int] = 32  # Maximum width of the DATA field in bytes (not counting FEC)
 DATA_LEN_WIDTH: Final[int] = 8         # Fixed width of the data length field, in bits
 CHECKSUM_WIDTH: Final[int] = 8         # Fixed width of the checksum filed, in bits
 FEC_REPEAT: Final[int | None] = 3      # Forward Error Correction (FEC) repeat value
@@ -130,7 +138,9 @@ def parse_payload(payload: bytes) -> None:
     else:
         print(f'The CHECKSUM field was missing?!')
     act_checksum = generate_checksum(data_field=data)
+    # print(f'DATA: {data}')  # DEBUGGING
     message = convert_bin_bytes_to_ascii(data)
+    # print(f'MESSAGE: {message}')  # DEBUGGING
 
     # PRINT IT
     if act_checksum != exp_checksum:
@@ -138,16 +148,20 @@ def parse_payload(payload: bytes) -> None:
               f'checksum_bits={exp_check_bits}, '
               f'len_raw_data={len(raw_data)}, len_exp_data={data_len}, '
               f'decoded_data={data})')
-    print(f'\nMESSAGE: {message}')
+    print_message('\n' + message)
 
 
-# Don't you know it's CFT, Pylint?!
-# pylint: disable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
+def print_message(message: str, preface: str = '') -> None:
+    """Just print the message."""
+    print(f'MESSAGE: {preface}{message}')
+
+
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
     try:
         # LOCAL VARIABLES
+        num_msgs = 0                        # Number of messages found
         arg_vals = parse_args()             # Parsed CLI args
         filepath = get_filename(arg_vals)   # CLI capture file
         sample_rate = 0                     # Capture sample rate
@@ -171,6 +185,7 @@ def main() -> None:
         # HARD CODED FREQS
         user1_freqs = UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
         user2_freqs = UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+        exp_data = convert_ascii_to_bin_bytes(message='Lorem ipsum dolor sit amet, ___?') if arg_vals.debug is True else None
 
         # PREPARE
         # [!] Determine sample rate
@@ -231,13 +246,12 @@ def main() -> None:
                                title='Welch Power Spectral Density (post-squelch)', now=False)
 
         # [?] Analyze the Spectrum
-        spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2)
-        # print(f'SPECTRUM ANALYSIS: {spect_analysis}')  # DEBUGGING
+        spect_analysis = analyze_spectrum(samples, sample_rate=sample_rate, max_peaks=2,
+                                          min_spacing=symbol_rate)
 
         # [?] Detect Signal
         if spect_analysis is not None:
             det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
-            # print(f'DETECTED SIGNAL: {det_signal}')  # DEBUGGING
 
         # [?] Downconvert
         if det_signal is not None:
@@ -248,59 +262,63 @@ def main() -> None:
                 # if arg_vals.debug:
                 #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
                 #                   convert_db=True, center_freq=None,
-                #                   title='Magnitude Spectrum (post-baseband translation)', now=False)
+                #                   title='Magnitude Spectrum (post-baseband translation)',
+                #                   now=False)
 
         # DEMOD
         modem_config = build_modem_config(sample_rate=sample_rate, symbol_rate=symbol_rate,
                                           freqs=user1_freqs)
         modem = build_modem(config=modem_config)
         # [?] Steps 1 - 3?
-        # binary = modem.demodulate(samples=samples)
+        # binary = modem.demodulate(samples=samples)  # DO NOT USE!
         # -or-
         # [?] Step 1, 2, then 3!
         if not binary:
             # Step 1 - Demod to Metrics
             metric = modem.demodulate_to_metric(samples=samples)
-            if arg_vals.debug:
-                plot_time_domain(samples=metric, samp_rate=sample_rate,
-                                 title='Time Domain (Demod Step 1: Metrics)', now=False)
-                plot_symbol_boundaries(real_wave=metric, sps=sps,
-                                       title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
+            # if arg_vals.debug:
+            #     plot_time_domain(samples=metric, samp_rate=sample_rate,
+            #                      title='Time Domain (Demod Step 1: Metrics)', now=False)
+            #     plot_symbol_boundaries(real_wave=metric, sps=sps,
+            #                            title='Symbol Boundaries (Demod Step 1: Metrics)',
+            #                            now=False)
             # Step 2 - Time Sync w/ Interpolation(?)
             # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
             symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
-            if arg_vals.debug:
-                plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
-                                 title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
-                plot_symbol_boundaries(real_wave=symbol_metrics, sps=1,
-                                       title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
-                                       now=False)
-            # Step 3 - Symbol Decisions
-            binary = modem.decide_symbols(symbol_metrics=symbol_metrics)
-        if arg_vals.debug:
-            print(f'Demod Final Step: {binary}')
-
-        # [?] Frame Sync
-        needle = DEF_SYNCWORD
-        index = correlate_it(binary, needle)
-        # print(f'The needle {needle} was found at Index {index}')  # DEBUGGING
-        payload = binary[index + len(needle):]
-        print(f'Payload length: {len(payload)}')
-
-        # [!] Parse Payload
-        parse_payload(payload)
-        # Use evaluate_payload() for the --debug message
-        evaluate_payload(act_payload=payload, exp_payload=EXP_PAYLOAD, debug=arg_vals.debug,
-                         parse_payload=parse_payload)
+            # symbol_metrics = modem.recover_symbols(metric=metric)  # DO NOT USE!
+            # if arg_vals.debug:
+            #     plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
+            #                      title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
+            #     plot_symbol_boundaries(real_wave=symbol_metrics, sps=1,
+            #                            title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
+            #                            now=False)
+            # Step 3 - Frame Receiver
+            # [?] FrameReceiver
+            max_data_bytes = MAX_DATA_FIELD_BYTES
+            if FEC_REPEAT is not None:
+                max_data_bytes = max_data_bytes * FEC_REPEAT
+            frame_receiver = FrameReceiver(modem=modem, syncword=DEF_SYNCWORD,
+                                           checksum=generate_checksum, fec_repeat=FEC_REPEAT,
+                                           max_data_bytes=max_data_bytes, debug=arg_vals.debug)
+            chunk_size = 100
+            for i in range(0, len(symbol_metrics), chunk_size):
+                chunk = symbol_metrics[i:i + chunk_size]
+                # datum = frame_receiver.process(symbol_metrics=chunk, exp_data=exp_data)  # Only for --debug captures
+                datum = frame_receiver.process(symbol_metrics=chunk)
+                if datum:
+                    # print(f'Found something in chunk window [{i}:{i + chunk_size}]')  # DEBUGGING
+                    for data in datum:
+                        num_msgs += 1  # Found one!
+                        print_message(message=convert_bin_bytes_to_ascii(data) + '\n', preface=f'{num_msgs}.) ')
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()
         if arg_vals is None or arg_vals.debug is True:
             raise err from err
     finally:
+        print(f'\nFOUND {num_msgs} MESSAGES')
         if arg_vals is not None and arg_vals.debug is True:
             plt.show()  # Plot them all *now*
-# pylint: enable=broad-exception-caught,too-many-branches,too-many-locals,too-many-statements
 
 
 if __name__ == '__main__':

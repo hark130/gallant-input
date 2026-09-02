@@ -3,8 +3,7 @@
 USAGE:
     1. Follow the 'Calculate BER / Packet Loss' instructions in the rf_capstone_v3.py docstring.
     2. python rf_capstone_calc_error_rate.py
-    3. ***** TO DO: DON'T DO NOW... ls command to `head` the top ./devops/files/error.log
-    4. Save the files with:
+    3. Save the files with:
 cp "$USER1_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user1.out
 cp "$USER2_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user2.out
 
@@ -136,13 +135,22 @@ def print_avg_packet_loss(user1: PacketStats, user2: PacketStats) -> None:
     print(f'Average: {(user1.lost + user2.lost) / 2:.2f}% packet loss.')
 
 
-def print_field_loss(sender: int, receiver: int, results: FieldStats) -> None:
-    """SPOT to print loss-by-field stats."""
+def print_field_loss(sender: int, receiver: int, results: FieldStats,
+                     count_pre: bool = False) -> None:
+    """SPOT to print loss-by-field stats.
+
+    Args:
+        sender: The sender's user number to use in print statements.
+        receiver: The receiver's user number to use in print statements.
+        results: The parsed field statistics.
+        count_pre: [OPTIONAL] If True, also prints preamble statistics.
+    """
     # LOCAL VARIABLES
     preamble_loss = 0
     syncword_loss = 0
     data_len_loss = 0
     frame_loss = 0
+    pre_string = ''    # The optional(?) preamble results
 
     # CALCULATE
     if results.sent > 0:
@@ -152,22 +160,29 @@ def print_field_loss(sender: int, receiver: int, results: FieldStats) -> None:
         frame_loss = (results.sent - results.recv_frame) / results.sent * 100
 
         # FIELD LOSS
+        if count_pre:
+            pre_string = f'\n\t{results.recv_pre} preambles ({preamble_loss:.2f}% loss)'
         print()
-        print(f'User {sender} sent {results.sent} packets.  Of those packets, user {receiver} received:'
-              f'\n\t{results.recv_pre} preambles ({preamble_loss:.2f}% loss)'
+        print(f'User {sender} sent {results.sent} packets.  '
+              f'Of those packets, user {receiver} received:'
+              + pre_string +
               f'\n\t{results.recv_syn} syncwords ({syncword_loss:.2f}% loss)'
               f'\n\t{results.recv_len} DATA_LENs ({data_len_loss:.2f}% loss)'
               f'\n\t{results.recv_frame} frames ({frame_loss:.2f}% loss)')
 
         # FALSE POSITIVES?!
         if results.recv_pre > results.sent:
-            print(f'User {receiver} has received {results.recv_pre - results.sent} extra preambles')
+            print(f'User {receiver} has received {results.recv_pre - results.sent} '
+                  'extra preambles')
         if results.recv_syn > results.sent:
-            print(f'User {receiver} has received {results.recv_syn - results.sent} extra syncwords?')
+            print(f'User {receiver} has received {results.recv_syn - results.sent} '
+                  'extra syncwords?')
         if results.recv_len > results.sent:
-            print(f'User {receiver} has received {results.recv_len - results.sent} extra DATA_LENs?!')
+            print(f'User {receiver} has received {results.recv_len - results.sent} '
+                  'extra DATA_LENs?!')
         if results.recv_frame > results.sent:
-            print(f'User {receiver} has received {results.recv_frame - results.sent} extra frames?!?!')
+            print(f'User {receiver} has received {results.recv_frame - results.sent} '
+                  'extra frames?!?!')
     else:
         print(f'User {sender} has not yet sent any packets')
 
@@ -221,14 +236,15 @@ def _count_it(haystack: List[str], needle: str) -> int:
 def main() -> None:
     """do_it()."""
     # LOCAL VARIABLES
+    count_preambles = False                                            # No preamble correlation
     user1 = read_env_var(USER1_ENV_VAR)
     user2 = read_env_var(USER2_ENV_VAR)
     # user1 = read_file('devops/files/rf_capstone_user1.out')  # OFFLINE TESTING
     # user2 = read_file('devops/files/rf_capstone_user2.out')  # OFFLINE TESTING
     packet_loss_1to2 = calc_packet_loss(sender=user1, receiver=user2)  # User 1 --> User 2
     packet_loss_2to1 = calc_packet_loss(sender=user2, receiver=user1)  # User 2 --> User 1
-    field_loss_1to2 = calc_field_loss(sender=user1, receiver=user2)  # User 1 --> User 2
-    field_loss_2to1 = calc_field_loss(sender=user2, receiver=user1)  # User 2 --> User 1
+    field_loss_1to2 = calc_field_loss(sender=user1, receiver=user2)    # User 1 --> User 2
+    field_loss_2to1 = calc_field_loss(sender=user2, receiver=user1)    # User 2 --> User 1
 
     # CALCULATE IT
     print()
@@ -242,9 +258,9 @@ def main() -> None:
     # 2. Field Loss
     print()
     # User 1 --> User 2
-    print_field_loss(1, 2, field_loss_1to2)
+    print_field_loss(1, 2, field_loss_1to2, count_pre=count_preambles)
     # User 2 --> User 1
-    print_field_loss(2, 1, field_loss_2to1)
+    print_field_loss(2, 1, field_loss_2to1, count_pre=count_preambles)
 
     # DONE
     print()

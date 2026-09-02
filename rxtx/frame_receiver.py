@@ -1,14 +1,16 @@
 """Defines a state machine to parse validated frames from received samples."""
 
 # Standard Imports
+from collections.abc import Callable
 from enum import auto, Enum
+from typing import Final
 # Third Party Imports
 import numpy
 # Local Imports
-from gallant_input.converters import convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray
+from gallant_input.converters import convert_bin_bytes_to_ndarray
 from gallant_input.modem.calc import calculate_ber
-from gallant_input.plot import plot_time_domain
-from gallant_input.synch.frame import correlate_it, find_frame_start
+from gallant_input.modem.modem import Modem
+from gallant_input.synch.frame import find_frame_start
 from rxtx.utilities import decode_fec_repetition
 
 
@@ -18,6 +20,7 @@ class FrameState(Enum):
     FULL_DECODE = auto()
 
 
+# pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments
 class FrameReceiver:
     """A symbol-->frame state machine.
 
@@ -180,7 +183,7 @@ class FrameReceiver:
                       f'len(exp_data)={len(exp_data) if exp_data else None}, '
                       f'data={data_bits!r})')
             else:
-                print(f'[RX] Dropping failed checksum')
+                print('[RX] Dropping failed checksum')
             self._reset()  # Checksum failed so there's no chance of any remaining data
             self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
         else:
@@ -271,3 +274,4 @@ class FrameReceiver:
         """Reset the receiver to search for the next frame."""
         self._state = FrameState.SEARCHING
         self._data_length = None
+# pylint: enable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments

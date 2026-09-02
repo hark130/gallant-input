@@ -85,7 +85,7 @@ def find_frame_start(symbol_metrics: numpy.ndarray, preamble: numpy.ndarray,
     validate_ndarray(preamble, 'preamble',
                      can_be_empty=False, num_dim=1, must_be_complex=False)
     if symbol_metrics.size < preamble.size:
-        raise ValueError(f'Unable to locate a preamble if symbol_metrics is shorter')
+        raise ValueError('Unable to locate a preamble if symbol_metrics is shorter')
 
     # FIND IT
     # Remove DC from the two signals so correlation measures similarity

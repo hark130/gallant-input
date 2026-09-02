@@ -1,4 +1,4 @@
-"""Defines a stateful Coarse Frequency Correction (CFO) class: FrequencyCorrector."""
+"""Defines a stateful frequency correction downconverter (FCD) class: FrequencyCorrector."""
 
 # Standard Imports
 # Third Party Imports
@@ -7,14 +7,15 @@ import scipy.signal
 # Local Imports
 
 
+# pylint: disable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments
 class FrequencyCorrector:
-    """Stateful CFO downconverter."""
+    """Stateful frequency correction downconverter."""
 
     def __init__(self, sample_rate: float, freq_sep: float,
                  tolerance_hz: float = 2000.0, snr_threshold_db: float = 10.0,
                  lock_count: int = 5, lock_std_hz: float = 15.0, buffer_size: int = 30,
                  nperseg: int = 4096, sep_tolerance_hz: float = 100.0):
-        """Initialize a stateful CFO detector/corrector.
+        """Initialize a stateful FCD detector/corrector.
 
         Args:
             sample_rate: The sample rate of the incoming samples, in Hz.
@@ -49,15 +50,16 @@ class FrequencyCorrector:
         self._phase = 0.0
 
     def debug_state(self) -> str:
-        return (f'[CFO] locked={self._locked} cfo_hz={self._cfo_hz:.1f} '
+        """Return debug information as a string."""
+        return (f'[FCD] locked={self._locked} cfo_hz={self._cfo_hz:.1f} '
                 f'buffer_size={len(self._candidates)}')
 
     def process(self, samples: numpy.ndarray, noise_floor_db: float | None = None,
                 debug: bool = False) -> numpy.ndarray:
-        """Apply the current CFO correction to a chunk, updating lock state while unlocked.
+        """Apply the current FCD correction to a chunk, updating lock state while unlocked.
 
         Before locking, attempts a measurement each call and checks the growing candidate
-        buffer for a qualifying cluster. Once locked, the CFO estimate is held fixed and no
+        buffer for a qualifying cluster. Once locked, the FCD estimate is held fixed and no
         further measurement is attempted. The correction itself uses a persistent phase
         accumulator so the mixing LO stays phase-continuous across chunk boundaries.
 
@@ -65,7 +67,7 @@ class FrequencyCorrector:
             samples: The chunk of complex baseband samples to correct.
             noise_floor_db: [OPTIONAL] The known noise floor, in dB, passed through to the internal
                 measurement step while still searching for a lock. Ignored once locked.
-            debug: [OPTIONAL] If True, prints debug statements about CFO locks.
+            debug: [OPTIONAL] If True, prints debug statements about FCD locks.
 
         Returns:
             The frequency-corrected samples, same dtype and length as the input.
@@ -82,10 +84,10 @@ class FrequencyCorrector:
                     self._cfo_hz = cluster
                     self._locked = True
                     if debug:
-                        print(f'[CFO] Locked at {self._cfo_hz:.1f} Hz')
+                        print(f'[FCD] Locked at {self._cfo_hz:.1f} Hz')
                 else:
                     if debug:
-                        print('[CFO] No cluster yet, '
+                        print('[FCD] No cluster yet, '
                               f'buffer={[round(c, 1) for c in self._candidates]}')
 
         phase_inc = -2 * numpy.pi * self._cfo_hz / self._sample_rate
@@ -103,7 +105,7 @@ class FrequencyCorrector:
         interleaved elsewhere in the buffer.
 
         Args:
-            candidates: The buffer of recent SNR-qualified CFO candidates, in Hz.
+            candidates: The buffer of recent SNR-qualified FCD candidates, in Hz.
             lock_count: The number of candidates required to form a qualifying cluster.
             lock_std_hz: The maximum spread, in Hz, allowed within a cluster.
 
@@ -113,7 +115,6 @@ class FrequencyCorrector:
         """
         # LOCAL VARIABLES
         cluster_median = None  # Cluster median
-
 
         if len(candidates) >= lock_count:
             sorted_vals = sorted(candidates)
@@ -126,12 +127,14 @@ class FrequencyCorrector:
         # DONE
         return cluster_median
 
+# Leave me be, Pylint!
+# pylint: disable=too-many-locals
     def _measure(self, samples: numpy.ndarray, noise_floor_db: float | None) -> float | None:
-        """Measure a candidate CFO from one chunk of samples, if a confident detection exists.
+        """Measure a candidate FCD from one chunk of samples, if a confident detection exists.
 
         Locates the two expected FSK tones via a Welch-averaged PSD, requires each to
         individually clear the SNR threshold, and confirms the two peaks are separated by
-        close to freq_sep (CFO-invariant, since CFO shifts both tones equally) before
+        close to freq_sep (FCD-invariant, since FCD shifts both tones equally) before
         accepting the measurement -- rejecting single-source artifacts that spill into both
         search windows and would otherwise look like a confident two-tone detection.
 
@@ -141,15 +144,15 @@ class FrequencyCorrector:
                 PSD. Falls back to the chunk's own median PSD if not supplied.
 
         Returns:
-            The estimated CFO, in Hz, or None if no confident two-tone detection was found.
+            The estimated FCD, in Hz, or None if no confident two-tone detection was found.
         """
         # LOCAL VARIABLES
-        estim_cfo = None  # Estimated CFO (in Hz)
+        estim_cfo = None  # Estimated FCD (in Hz)
 
         # SETUP
         nperseg = min(self._nperseg, len(samples))
         freqs, psd = scipy.signal.welch(samples, fs=self._sample_rate,
-                                         nperseg=nperseg, return_onesided=False)
+                                        nperseg=nperseg, return_onesided=False)
         freqs = numpy.fft.fftshift(freqs)
         psd_db = 10 * numpy.log10(numpy.fft.fftshift(psd) + 1e-20)
         if noise_floor_db is None:
@@ -166,7 +169,7 @@ class FrequencyCorrector:
         snr1_db = psd_db[peak1_idx] - noise_floor_db
         if snr0_db >= self._snr_threshold_db and snr1_db >= self._snr_threshold_db:
             # Reject false pairs: A genuine detection has its two peaks freq_sep apart,
-            # regardless of CFO (CFO shifts both tones equally, so the gap is CFO-invariant)
+            # regardless of FCD (FCD shifts both tones equally, so the gap is FCD-invariant)
             peak0_freq, peak1_freq = freqs[peak0_idx], freqs[peak1_idx]
             measured_sep = peak1_freq - peak0_freq
             if abs(measured_sep - self._freq_sep) <= self._sep_tolerance_hz:
@@ -174,3 +177,5 @@ class FrequencyCorrector:
 
         # DONE
         return estim_cfo
+# pylint: enable=too-many-locals
+# pylint: enable=too-many-instance-attributes,too-many-arguments,too-many-positional-arguments

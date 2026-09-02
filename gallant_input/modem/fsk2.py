@@ -397,6 +397,7 @@ def _validate_frequencies(symbol_rate: float | int,
         raise ValueError(f'The deviation between "{freq0}" and "{freq1}" must be at '
                          f'*least* "{min_dev}"')
 
+
 def _validate_threshold(threshold: float | bool) -> None:
     """Validate the uniquely designed threshold argument."""
     # LOCAL VARIABLES

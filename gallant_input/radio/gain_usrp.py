@@ -1,6 +1,7 @@
 """Common-use functionality for USRP SDRs."""
 
 # Standard Imports
+import threading
 # Third Party Imports
 import numpy
 import uhd
@@ -9,6 +10,8 @@ from gallant_input.radio.config_direction import ConfigDirection
 from gallant_input.validation import validate_pos_float_or_int, validate_int, validate_type
 
 
+# Dear Future Hark - Maybe, refactor these args into a dataclass, but leave it for now
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def configure_usrp(usrp: uhd.usrp.multi_usrp.MultiUSRP, samp_rate: float | int,
                    center_freq: float | int, gain: float | int, channel: int = 0,
                    direction: ConfigDirection = ConfigDirection.BOTH) -> None:
@@ -38,6 +41,7 @@ def configure_usrp(usrp: uhd.usrp.multi_usrp.MultiUSRP, samp_rate: float | int,
     elif direction == ConfigDirection.BOTH:
         _configure_usrp_rx(usrp, samp_rate, center_freq, gain, channel)
         _configure_usrp_tx(usrp, samp_rate, center_freq, gain, channel)
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def receive(usrp: uhd.usrp.multi_usrp.MultiUSRP, stop_event: threading.Event):
@@ -48,7 +52,6 @@ def receive(usrp: uhd.usrp.multi_usrp.MultiUSRP, stop_event: threading.Event):
     buffer = numpy.empty((1, streamer.get_max_num_samps()), dtype=numpy.complex64)
     metadata = uhd.types.RXMetadata()
     received = numpy.empty(0, dtype=numpy.complex64)
-    total = 0
 
     # Start continuous RX.
     stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
@@ -101,6 +104,7 @@ def receive_num(usrp: uhd.usrp.multi_usrp.MultiUSRP, num_samples: int):
 
 
 def transmit(usrp: uhd.usrp.multi_usrp.MultiUSRP, samples: numpy.ndarray) -> int:
+    """Transmit an array of samples."""
     stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
     stream_args.channels = [0]
     streamer = usrp.get_tx_stream(stream_args)
@@ -157,7 +161,7 @@ def _validate_usrp_rx_gain(usrp: uhd.usrp.multi_usrp.MultiUSRP, gain_value: floa
     # Extract min, max, and step boundaries from the UHD range object
     min_gain = gain_range.start()  # Will return 0.0
     max_gain = gain_range.stop()   # Will return 76.0 for RX, 89.8 for TX
-    if not (min_gain <= gain_value <= max_gain):
+    if not min_gain <= gain_value <= max_gain:
         raise ValueError(f'RX Gain {gain_value} db out of safe range: [{min_gain}, {max_gain}]')
 
 
@@ -168,6 +172,5 @@ def _validate_usrp_tx_gain(usrp: uhd.usrp.multi_usrp.MultiUSRP, gain_value: floa
     # Extract min, max, and step boundaries from the UHD range object
     min_gain = gain_range.start()  # Will return 0.0
     max_gain = gain_range.stop()   # Will return 89.8 for TX
-    step = gain_range.step()       # 0.25 for TX
-    if not (min_gain <= gain_value <= max_gain):
+    if not min_gain <= gain_value <= max_gain:
         raise ValueError(f'TX Gain {gain_value} db out of safe range: [{min_gain}, {max_gain}]')

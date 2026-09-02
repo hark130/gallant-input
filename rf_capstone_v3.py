@@ -476,22 +476,22 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
 
 
 def wait_until_interval(num_sec: float | int) -> None:
-  """Pauses until the clock reaches a repeating pattern based on num_sec."""
-  now = time.time()
-  num_sec = float(num_sec)  # Explicitly convert it to a float
-  # step = num_sec * 2  # The repeating pattern size (worked for 15s but not for smaller values)
-  step = 2  # The repeating pattern size (alternating seconds)
-  # Shift time backward by the offset to calculate alignment
-  shifted_now = now - num_sec
-  target_shifted = math.ceil(shifted_now / step) * step
-  # If we are exactly on the boundary, push to the next step
-  if target_shifted == shifted_now:
+    """Pauses until the clock reaches a repeating pattern based on num_sec."""
+    now = time.time()
+    num_sec = float(num_sec)  # Explicitly convert it to a float
+    # step = num_sec * 2  # The repeating pattern size (worked for 15s but not for smaller values)
+    step = 2  # The repeating pattern size (alternating seconds)
+    # Shift time backward by the offset to calculate alignment
+    shifted_now = now - num_sec
+    target_shifted = math.ceil(shifted_now / step) * step
+    # If we are exactly on the boundary, push to the next step
+    if target_shifted == shifted_now:
     target_shifted += step
-  # Shift back to get the final absolute timestamp
-  target_time = target_shifted + num_sec
-  # Busy-wait loop with a tiny sleep to minimize CPU usage
-  while time.time() < target_time:
-    time.sleep(0.001)
+    # Shift back to get the final absolute timestamp
+    target_time = target_shifted + num_sec
+    # Busy-wait loop with a tiny sleep to minimize CPU usage
+    while time.time() < target_time:
+        time.sleep(0.001)
 
 
 def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:

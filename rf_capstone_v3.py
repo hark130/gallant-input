@@ -486,7 +486,7 @@ def wait_until_interval(num_sec: float | int) -> None:
     target_shifted = math.ceil(shifted_now / step) * step
     # If we are exactly on the boundary, push to the next step
     if target_shifted == shifted_now:
-    target_shifted += step
+        target_shifted += step
     # Shift back to get the final absolute timestamp
     target_time = target_shifted + num_sec
     # Busy-wait loop with a tiny sleep to minimize CPU usage

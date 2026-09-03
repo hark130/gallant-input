@@ -95,12 +95,9 @@ CLI_ARG_USER: Final[str] = 'user'
 DEBUG: Final[bool] = True  # In lieu of parsed args
 
 # TXRX SPECIFICATIONS
-# CENTER_FREQ: Final[float] = 912e6
-# CENTER_FREQ: Final[float] = 911950e3  # TESTING
-CENTER_FREQ: Final[float] = 912050e3  # TESTING
+CENTER_FREQ: Final[float] = 912050e3
 SAMPLE_RATE: Final[float] = 240e3
 MAX_USERS: Final[int] = 2  # Currently only supports two users
-
 
 # PROTOCOL SPECIFICATIONS
 DATA_LEN_WIDTH: Final[int] = 8         # Fixed width of the data length field, in bits
@@ -131,12 +128,6 @@ MESSAGES: Final[List] = [MSG1, MSG2, MSG3, MSG4, MSG5, MSG6, MSG7]
 # PROTOCOL MACROS
 PREAMBLE: Final[bytes] = 32 * b'10'
 SYNCWORD: Final[bytes] = b'11011000110111000101000100101110'  # 0xD8DC512E
-# HEADER: Final[bytes] = PREAMBLE + SYNCWORD
-# DATA: Final[bytes] = MSG3  # UPDATE THIS WITH NEW DATA (see above)
-# DATA_LEN: Final[bytes] = convert_field_val(len(DATA) // 8, max_bit_len=DATA_LEN_WIDTH)
-# PAYLOAD: Final[bytes] = DATA_LEN + DATA
-# FRAME: Final[bytes] = HEADER + PAYLOAD  # Transmit this
-# MAX_FRAME_LEN: Final[int] = len(PREAMBLE) + len(SYNCWORD) + DATA_LEN_WIDTH + MAX_DATA_FIELD + CHECKSUM_WIDTH
 
 
 # Each user sends on theirs but receives on the other user's
@@ -183,14 +174,12 @@ def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
 def build_frame(preamble: bytes, syncword: bytes, message: bytes, fec_repeat: int | None) -> bytes:
     """Build a frame."""
     checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
-    # print(f'ORIGINAL MESSAGE LEN: {len(message)}')  # DEBUGGING
     if fec_repeat is not None:
         message = apply_fec_repetition(bits=message, repeats=fec_repeat)
     # print(f'MESSAGE LEN: {len(message)} DATA LEN: {len(message) // 8}')  # DEBUGGING
     data_len = convert_field_val(len(message) // 8, max_bit_len=DATA_LEN_WIDTH)
     header = preamble + syncword
     payload = data_len + message + checksum
-    # print(f'PAYLOAD: {payload}')  # DEBUGGING
     return header + payload
 
 
@@ -210,6 +199,12 @@ def calc_bandwidth(symbol_rate: int) -> int:
     """
     bandwidth = calc_freq_sep(symbol_rate) + (2 * symbol_rate)
     return bandwidth
+
+
+def calc_lpf_cutoff(chan_bandwidth: int) -> float:
+    """Calculate the LPF cutoff based on the channel bandwidth."""
+    cutoff = round(chan_bandwidth, -3) / 2  # Round up to the nearest 1000s, centered
+    return cutoff
 
 
 def calc_threshold(sample_rate: float | int, symbol_rate: float | int, num_symbols: int) -> int:
@@ -266,15 +261,10 @@ def create_tailored_lpf(sample_rate: float | int, symbol_rate: int,
     Default cutoff values were allowing the transmit channel to 'leak' into the receive channel.
     """
     chan_bandwidth = calc_bandwidth(symbol_rate=symbol_rate)
-    cutoff = round(chan_bandwidth, -3) / 2  # Round up to the nearest 1000s, centered
-    # cutoff += 3000  # TESTING
-    print(f'BANDWIDTH: {chan_bandwidth}')  # DEBUGGING
-    print(f'CUTOFF: {cutoff}')  # DEBUGGING
+    cutoff = calc_lpf_cutoff(chan_bandwidth)
     taps = design_lpf(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)
-    # plot_filter_taps(taps=taps, sample_rate=sample_rate, cutoff=cutoff)  # DEBUGGINGs
 
     # DONE
-    # exit()  # DEBUGGING
     return taps
 
 
@@ -565,11 +555,13 @@ def main() -> None:
 
         # SETUP
         if arg_dict[CLI_ARG_DEBUG]:
-            print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')  # DEBUGGING
-            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')  # DEBUGGING
-            print(f'SAMPLE RATE: {samp_rate} (fs/2 == {samp_rate/2})')  # DEBUGGING
-            print(f'SYMBOL RATE: {symb_rate}')  # DEBUGGING
-            print(f'FREQ SEP: {calc_freq_sep(symb_rate)}')  # DEBUGGING
+            print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')
+            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')
+            print(f'SAMPLE RATE: {samp_rate} (fs/2 == {samp_rate/2})')
+            print(f'SYMBOL RATE: {symb_rate}')
+            print(f'BANDWIDTH: {calc_bandwidth(symb_rate)}')
+            print(f'LPF CUTOFF: {calc_lpf_cutoff(calc_bandwidth(symb_rate))}')
+            print(f'FREQ SEP: {calc_freq_sep(symb_rate)}')
         lpf = create_tailored_lpf(sample_rate=samp_rate, symbol_rate=symb_rate)
         configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=their_freqs.center,
                        gain=rx_gain, channel=channel, direction=ConfigDirection.RX)
@@ -578,18 +570,12 @@ def main() -> None:
 
         # RECEIVE
         # Start
-        # print(F'ORIGINAL PREAMBLE: {PREAMBLE}')  # DEBUGGING
-        # bipolar_preamble = convert_bin_bytes_to_ndarray(PREAMBLE, bipolar=True)
-        # print(F'ORIGINAL BIPOLAR PREAMBLE: {bipolar_preamble}')  # DEBUGGING
-        # syncword_arr = convert_bin_bytes_to_ndarray(SYNCWORD, bipolar=False)
-        # print(F'ORIGINAL SYNCWORD ARR: {syncword_arr}')  # DEBUGGING
         rx_thread = threading.Thread(
             target=receive_frames,
-            # args=(usrp, modem, bipolar_preamble, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
             args=(usrp, modem, PREAMBLE, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
         )
         rx_thread.start()
-        time.sleep(0.1)  # Give the receive thread a head starts
+        time.sleep(0.1)  # Give the receive thread a head start
 
         # TRANSMIT
         try:

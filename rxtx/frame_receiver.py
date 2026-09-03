@@ -185,11 +185,10 @@ class FrameReceiver:
             else:
                 print('[RX] Dropping failed checksum')
             self._reset()  # Checksum failed so there's no chance of any remaining data
-            self._buffer = self._buffer[self.CHECKSUM_BITS:]  # Advance the buffer
         else:
             data = data_bits  # It's valid
             self._count_chk += 1  # [CFT] Found one!
-            self._buffer = self._buffer[(self._data_length * 8) + self.CHECKSUM_BITS:]  # Advance it
+        self._buffer = self._buffer[(self._data_length * 8) + self.CHECKSUM_BITS:]  # Advance it
 
         # DONE
         return data
@@ -215,7 +214,7 @@ class FrameReceiver:
         if data_len <= 0 or data_len > self._max_data_bytes:
             # Corrupted data length field
             self._buffer = self._buffer[1:]  # Drop it...
-            self._state = FrameState.SEARCHING  # ...and keep on...
+            self._reset()  # ...and keep on...
         else:
             valid = True
             self._count_len += 1  # [CFT] Found one!
@@ -247,7 +246,7 @@ class FrameReceiver:
         if recv_syncword != self._syncword:
             # Corrupt syncword?!
             self._buffer = self._buffer[1:]  # Discard the first symbol
-            self._state = FrameState.SEARCHING  # Back to the start of the machine
+            self._reset()  # Back to the start of the machine
         else:
             valid = True  # Everything checks out
             self._count_syn += 1  # [CFT] Found one!

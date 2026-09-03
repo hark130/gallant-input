@@ -7,13 +7,20 @@
 
 Example Usage:
     python -m rxtx.static_rx_rf_capstone --help
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400.sigmf-data
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message.sigmf-data
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message_shortened.complex --samprate 240000
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+        ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+        ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+        ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_one_message_shortened.complex \
+        --samprate 240000
     # Now with Gaussian Pulse Shaping
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages.sigmf-data
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_msg9.sigmf-data
-    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_last_three.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+        ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+        ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_msg9.sigmf-data
+    python -m rxtx.static_rx_rf_capstone --baud 2400 --filename \
+    ./test/test_input/rf_capstone_raw_cap_c912p0644m_s240k_b2400_ten_messages_last_three.sigmf-data
 """
 
 # Standard Imports
@@ -22,12 +29,11 @@ from typing import Final
 import sys
 # Third Party Imports
 import matplotlib.pyplot as plt
-import numpy
 # Local Imports
 from gallant_input.analyze import analyze_spectrum
 from gallant_input.converters import (convert_ascii_to_bin_bytes, convert_bin_bytes_to_ascii,
-                                      convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray)
-from gallant_input.filters import apply_fir, create_basic_lpf, design_lpf
+                                      convert_bin_bytes_to_int)
+from gallant_input.filters import apply_fir, design_lpf
 from gallant_input.io import read_samples
 from gallant_input.modem.calc import calculate_sps
 from gallant_input.modem.fsk2 import FSK2
@@ -35,16 +41,15 @@ from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.modem_config import ModemConfig
 from gallant_input.modscheme import ModScheme
-from gallant_input.plot import (plot_spectrum, plot_symbol_boundaries, plot_time_domain,
+from gallant_input.plot import (plot_spectrum, plot_time_domain,
                                 plot_welch_psd)
 from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
                                   squelch_signal)
-from gallant_input.synch.frame import correlate_it
 from gallant_input.synch.timing import recover_clock_mm
-from gallant_input.validation import validate_ndarray
+from gallant_input.validation import validate_pos_float_or_int, validate_pos_int
 from rxtx.arg_parser import parse_args, print_help
 from rxtx.frame_receiver import FrameReceiver
-from rxtx.utilities import decode_fec_repetition, evaluate_payload, get_filename, get_sample_rate
+from rxtx.utilities import decode_fec_repetition, get_filename, get_sample_rate
 
 DEF_PREAMBLE: Final[bytes] = 32 * b'10'
 DEF_SYNCWORD: Final[bytes] = b'11011000110111000101000100101110'  # 0xD8DC512E
@@ -69,6 +74,7 @@ MAX_DATA_FIELD_BYTES: Final[int] = 32  # Maximum width of the DATA field in byte
 DATA_LEN_WIDTH: Final[int] = 8         # Fixed width of the data length field, in bits
 CHECKSUM_WIDTH: Final[int] = 8         # Fixed width of the checksum filed, in bits
 FEC_REPEAT: Final[int | None] = 3      # Forward Error Correction (FEC) repeat value
+MAX_USERS: Final[int] = 2              # Currently only supports two users
 
 
 # Each user sends on theirs but receives on the other user's
@@ -104,11 +110,55 @@ def build_modem(config: ModemConfig) -> Modem:
     return modem_obj
 
 
-def build_modem_config(sample_rate: float | int, symbol_rate: float | int, freqs: UserFreqs) -> ModemConfig:
+def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
+                       freqs: UserFreqs) -> ModemConfig:
     """Build a ModemConfig child class object."""
     config = FSK2Config(sample_rate=sample_rate, symbol_rate=symbol_rate,
                         freq0=freqs.f0, freq1=freqs.f1)
     return config
+
+
+def calc_bandwidth(symbol_rate: int) -> int:
+    """Calculate the bandwidth using Carson's Rule.
+
+    Carson's Rule: Bt = freq_sep + (2 * Baud)
+    """
+    bandwidth = calc_freq_sep(symbol_rate) + (2 * symbol_rate)
+    return bandwidth
+
+
+def calc_freq_sep(symbol_rate: int) -> int:
+    """Calculate the frequency separation."""
+    freq_sep = 2 * symbol_rate
+    return freq_sep
+
+
+def calc_freqs(center_freq: float | int, user: int, symbol_rate: int) -> UserFreqs:
+    """Calculate the user-specific center frequency, off freq, and on freq."""
+    # LOCAL VARIABLES
+    freq_sep = calc_freq_sep(symbol_rate)    # Frequency separation
+    bandwidth = calc_bandwidth(symbol_rate)  # (Carson's Rule) Bt = freq_sep + (2 * Baud)
+    freq0 = -(freq_sep / 2)                  # Off freq (User 1 default)
+    freq1 = freq_sep / 2                     # On freq (User 1 default)
+    new_center = 0.0                         # The user's new center freq
+    channel_spacing = 0                      # Each channel needs this much room
+
+    # INPUT VALIDATION
+    validate_pos_float_or_int(center_freq, 'center_freq')
+    _validate_user(user)
+    validate_pos_int(symbol_rate, 'symbol_rate')
+
+    # CALC FREQS
+    channel_spacing = bandwidth + (2 * symbol_rate)
+    if user == 1:
+        new_center = center_freq - channel_spacing  # Shift user 1 left
+    elif user == 2:
+        new_center = center_freq + channel_spacing  # Shift user 2 right
+    else:
+        raise NotImplementedError(f'Unsupported number of users {user}')
+
+    # DONE
+    return UserFreqs(center=new_center, f0=freq0, f1=freq1)
 
 
 def generate_checksum(data_field: bytes) -> int:
@@ -136,7 +186,7 @@ def parse_payload(payload: bytes) -> None:
     if exp_check_bits:
         exp_checksum = convert_bin_bytes_to_int(binary=exp_check_bits)
     else:
-        print(f'The CHECKSUM field was missing?!')
+        print('The CHECKSUM field was missing?!')
     act_checksum = generate_checksum(data_field=data)
     # print(f'DATA: {data}')  # DEBUGGING
     message = convert_bin_bytes_to_ascii(data)
@@ -156,6 +206,16 @@ def print_message(message: str, preface: str = '') -> None:
     print(f'MESSAGE: {preface}{message}')
 
 
+def _validate_user(user: int) -> None:
+    """Validate a 'user' argument."""
+    # INPUT VALIDATION
+    validate_pos_int(user, 'user')
+    if user > MAX_USERS:
+        raise RuntimeError(f'Invalid number of users ({user}) for a maximum of {MAX_USERS}')
+
+
+# Leave me be, Pylint.  Don't you know it's CFT?!
+# pylint: disable=too-many-locals,broad-exception-caught,too-many-branches,too-many-statements
 def main() -> None:
     """do_it()."""
     arg_vals = None  # Parsed CLI args
@@ -177,15 +237,13 @@ def main() -> None:
         metric = None                       # Step 1 - Continuous symbol metric at orig. sample rate
         symbol_metrics = None               # Step 2 - Recovered symbol metric for each orig. symbol
         binary = b''                        # Step 3 - Demodulated binary
-        needle = b''                        # The needle being correlated to the package (e.g., sw)
-        index = 0                           # Correlated index into the binary
-        payload = b''                       # Frame synch'd binary
         modem_config = None                 # ModemConfig() object (build latest)
         modem = None                        # Modem() object (build latest)
         # HARD CODED FREQS
         user1_freqs = UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
-        user2_freqs = UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
-        exp_data = convert_ascii_to_bin_bytes(message='Lorem ipsum dolor sit amet, ___?') if arg_vals.debug is True else None
+        # user2_freqs = UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+        exp_data = convert_ascii_to_bin_bytes(message='Lorem ipsum dolor sit amet, ___?') \
+            if arg_vals.debug is True else None
 
         # PREPARE
         # [!] Determine sample rate
@@ -209,7 +267,7 @@ def main() -> None:
         #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
         #                   convert_db=True, center_freq=None,
         #                   title='Magnitude Spectrum (pre-filter)', now=False)
-        taps = design_lpf(numtaps=101, cutoff=5000.0, fs=float(sample_rate))  # Replicated from rf_capstone
+        taps = design_lpf(numtaps=101, cutoff=5000.0, fs=float(sample_rate))  # From rf_capstone
         samples = apply_fir(samples=samples, coeffs=taps)
         # if arg_vals.debug:
         #     plot_time_domain(samples=samples, samp_rate=sample_rate,
@@ -303,13 +361,15 @@ def main() -> None:
             chunk_size = 100
             for i in range(0, len(symbol_metrics), chunk_size):
                 chunk = symbol_metrics[i:i + chunk_size]
-                # datum = frame_receiver.process(symbol_metrics=chunk, exp_data=exp_data)  # Only for --debug captures
-                datum = frame_receiver.process(symbol_metrics=chunk)
+                # Only for --debug captures
+                datum = frame_receiver.process(symbol_metrics=chunk, exp_data=exp_data)
+                # datum = frame_receiver.process(symbol_metrics=chunk)
                 if datum:
                     # print(f'Found something in chunk window [{i}:{i + chunk_size}]')  # DEBUGGING
                     for data in datum:
                         num_msgs += 1  # Found one!
-                        print_message(message=convert_bin_bytes_to_ascii(data) + '\n', preface=f'{num_msgs}.) ')
+                        print_message(message=convert_bin_bytes_to_ascii(data) + '\n',
+                                      preface=f'{num_msgs}.) ')
     except Exception as err:
         print(f'Execution failed with: {repr(err)}', file=sys.stderr, flush=True)
         print_help()
@@ -319,6 +379,7 @@ def main() -> None:
         print(f'\nFOUND {num_msgs} MESSAGES')
         if arg_vals is not None and arg_vals.debug is True:
             plt.show()  # Plot them all *now*
+# pylint: enable=too-many-locals,broad-exception-caught,too-many-branches,too-many-statements
 
 
 if __name__ == '__main__':

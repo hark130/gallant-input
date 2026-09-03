@@ -80,15 +80,19 @@ from gallant_input.synch.frame import correlate_it, find_frame_start
 from gallant_input.synch.frequency_corrector import FrequencyCorrector
 from gallant_input.synch.mueller_muller import MuellerMuller
 from gallant_input.synch.timing import recover_clock_mm
-from gallant_input.validation import validate_pos_float_or_int, validate_pos_int, validate_type
+from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_pos_int,
+                                      validate_type)
 from rxtx.frame_receiver import FrameReceiver
 from rxtx.utilities import apply_fec_repetition, convert_field_val, evaluate_payload
 
 
 CLI_ARG_DEBUG: Final[str] = 'debug'
 CLI_ARG_FREQ: Final[str] = 'center_freq'
+CLI_ARG_INTERACT: Final[str] = 'interact'
 CLI_ARG_SERIAL: Final[str] = 'serial'
 CLI_ARG_USER: Final[str] = 'user'
+CLI_ARG_KEYS: Final[List[str]] = [CLI_ARG_DEBUG, CLI_ARG_FREQ, CLI_ARG_INTERACT,
+                                  CLI_ARG_SERIAL, CLI_ARG_USER]
 
 
 # DEBUGGING
@@ -270,10 +274,39 @@ def create_tailored_lpf(sample_rate: float | int, symbol_rate: int,
 
 def generate_checksum(data_field: bytes) -> int:
     """Generates an 8-bit checksum by adding, then ignoring the MSBits, all the byte values."""
-    # print(f'HERE I AM WITH: {data_field}')  # DEBUGGING
-    # print(f'THE SUM IS: {sum(data_field)}')  # DEBUGGING
-    # print(f'RETURNING: {sum(data_field) & 0xFF}')  # DEBUGGING
     return sum(data_field) & 0xFF  # Mask off the MSBits
+
+
+def get_tx_msg(debug_mode: bool, interact_mode: bool) -> bytes:
+    """Get a message to transmit based on --debug and --interact CLI args.
+
+                       INTERACT
+    DEBUG         True          False
+      True      MSG7        MSG7
+      False     input()     rand(MESSAGES)
+
+    Returns:
+        An ASCII message to transmit converted to binary bytes.
+    """
+    # LOCAL VARIABLES
+    msg = None  # The message to transmit
+
+    # INPUT VALIDATION
+    validate_bool(debug_mode, 'debug_mode')
+    validate_bool(interact_mode, 'interact_mode')
+
+    # GET IT
+    if debug_mode is True:
+        msg = MSG7
+    else:
+        if interact_mode is True:
+            tmp_msg = input('Enter a message to transmit: ')
+            msg = convert_ascii_to_bin_bytes(message=tmp_msg, clean_it=True)
+        else:
+            msg = random.choice(MESSAGES)  # Choose a random message
+
+    # DONE
+    return msg
 
 
 def parse_frame(frame: numpy.ndarray, modem: Modem) -> None:
@@ -305,16 +338,23 @@ def parse_args() -> dict[str:Any]:
     # Debug mode
     parser.add_argument(f'-{CLI_ARG_DEBUG[0]}', f'--{CLI_ARG_DEBUG}', action='store_true',
                         default=False, required=False,
-                        help='Enable verbose DEBUG print statements.')
+                        help='Enable verbose DEBUG print statements and utilize predictable '
+                             'payloads to aid in BER calculation.')
     # Center frequency
     # parser.add_argument(f'-{CLI_ARG_FREQ[0]}', f'--{CLI_ARG_FREQ}', type=float,
     #                     action='store', help='Center frequency for communication', required=True)
+    # Interactive mode
+    parser.add_argument(f'-{CLI_ARG_INTERACT[0]}', f'--{CLI_ARG_INTERACT}', action='store_true',
+                        default=False, required=False,
+                        help='Allows the user to control when (in debug mode) or what (non-debug) '
+                             'messages are transmitted')
     # SDR Serial Number
     parser.add_argument(f'-{CLI_ARG_SERIAL[0]}', f'--{CLI_ARG_SERIAL}', type=str,
                         action='store', help='Serial number of the desired device', required=False)
     # User
     parser.add_argument(f'-{CLI_ARG_USER[0]}', f'--{CLI_ARG_USER}', type=int,
-                        action='store', help='Which user are you?',
+                        action='store',
+                        help=f'Which user are you?  Only {MAX_USERS} are supported.',
                         required=True)
 
     # PARSE IT
@@ -355,6 +395,7 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
     threshold = 0  # Threshold to process samples
     mm_sync = None  # Instantiate the object once modem is parseds
     freq_corr = None  # FrequencyCorrector() object
+    freq_lock = False  # Has the frequency corrector locked in yet?
 
     # Start continuous RX.
     stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
@@ -365,102 +406,37 @@ def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: 
         print('[RX] Starting')
         modem.parse()  # Update the sps attribute
         sps = modem._sps  # Samples per symbol
-        # print(f'The samples per symbol: {sps}')  # DEBUGGING
         max_frame_len = len(PREAMBLE) + len(SYNCWORD) + 8 + max_data_bytes + 8
-        threshold = modem._sps * 1000  # Threshold to process samples (Experiment 1a: Control)
-        # threshold = modem._sps * 100  # Threshold to process samples
+        threshold = modem._sps * 1000  # Threshold to process samples
         freq_corr = FrequencyCorrector(sample_rate=SAMPLE_RATE, freq_sep=calc_freq_sep(SYMBOL_RATE),
                                        snr_threshold_db=20)
-        # complex_preamble = modem.modulate(bin_bytes=preamble, gauss_bt=GFSK_BT)
-        # threshold = modem._sps * 100  # Experiment 1b: Smaller buffer; greater loss?
-        # threshold = modem._sps * 10000  # Experiment 1c: Larger buffer; less loss?
-        # threshold = modem._sps * 1000000  # Experiment 1d: Largest buffer; less loss?
-        # threshold = calc_threshold(sample_rate=SAMPLE_RATE, symbol_rate=SYMBOL_RATE,
-        #                            num_symbols=max_frame_len) * 100
-        print(f'BUFFER THRESHOLD: {threshold} (CONTROL: {modem._sps * 1000})')  # DEBUGGING
-        # print(f'EXP3I: Stateful Symbol Timing - Stateful M&M (interpolated w/ smaller gain_mu override and loosened relative limit)')
-        # mm_sync = MuellerMuller(samples_per_symbol=sps)  # EXP3C: All default values
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.3)  # EXP3D: gain_mu matches legacy default value
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16)  # EXP3E: Interpolate
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16, gain_mu=0.3)  # EXP3F: Interpolate w/ gain_mu override
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.5)  # EXP3G: bigger gain_me
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.175/8)  # EXP3H: smaller gain_me
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, interp=16, gain_mu=0.01, omega_relative_limit=0.01)  # EXP3I: smaller gain_mu and loosen the relative limit to 1%
-        # mm_sync = MuellerMuller(samples_per_symbol=sps, gain_mu=0.01, omega_relative_limit=0.01)  # EXP3I: smaller gain_mu and loosen the relative limit to 1%
         while not stop_event.is_set():
             count = streamer.recv(buffer, metadata)
             if metadata.error_code != uhd.types.RXMetadataErrorCode.none:
-                raise RuntimeError(f"RX error: {metadata.strerror()}")
-            # print(f'[RX] Received {count} samples')  # DEBUGGING
-            # print(f'BUFFER.NDIM: {buffer.ndim} (SHAPE: {buffer.shape} / TYPE: {buffer.dtype})')  # DEBUGGING
+                raise RuntimeError(f'RX error: {metadata.strerror()}')
             received = numpy.concatenate([received, buffer[0, :count]])  # Store it
-            # tmp_buffer = buffer[0, :count]
-            # # Anti-Aliasing Low Pass Filter
-            # tmp_buffer = apply_fir(samples=tmp_buffer, coeffs=lpf)
-            # print('POST ANTI-ALIASING LOW PASS FILTER')  # DEBUGGING
-            # # Decimation
-            # tmp_buffer = decimate_samples(samples=tmp_buffer, decimate=decimate)
-            # print('POST DECIMATION')  # DEBUGGING
-            # received = numpy.concatenate([received, tmp_buffer])  # Store it
             if len(received) > threshold:
-                # print(f'[RX] Processing {len(received)} samples')  # DEBUGGING
                 # Filter
                 received = apply_fir(samples=received, coeffs=lpf)
-                # print('POST FILTER')  # DEBUGGING
 
-                # FREQUENCY CORRECTION ATTEMPT #1 - Static RX Style (OVERFLOW!)
-                # # [?] Analyze the Spectrum
-                # mod_scheme = ModScheme.FSK2  # Communicates anticipated modulation to detect_signal()
-                # spect_analysis = analyze_spectrum(received, sample_rate=SAMPLE_RATE, max_peaks=2)
-                # # print(f'SPECTRUM ANALYSIS: {spect_analysis}')  # DEBUGGING
-                # # [?] Detect Signal
-                # if spect_analysis is not None:
-                #     det_signal = detect_signal(analysis=spect_analysis, scheme=mod_scheme)
-                #     # print(f'DETECTED SIGNAL: {det_signal}')  # DEBUGGING
-                # # [?] Downconvert
-                # if det_signal is not None:
-                #     if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
-                #         print(f'Downconverting to {det_signal.center_frequency}Hz')
-                #         received = downconvert_signal(samples=received, sample_rate=SAMPLE_RATE,
-                #                                      center_freq=det_signal.center_frequency)
-                # FREQUENCY CORRECTION ATTEMPT #2 - Static RX Style (but hard-coded)
-                # downconvert = 1003.186003491318  # Taken from the static receiver output
-                # # print(f'Downconverting to {downconvert}Hz')
-                # received = downconvert_signal(samples=received, sample_rate=SAMPLE_RATE,
-                #                               center_freq=downconvert)
-                # FREQUENCY CORRECTION ATTEMPT #3 - Dynamic CFO Detector/Corrector
+                # Frequency Correction
                 received = freq_corr.process(received, debug=False)
-                # received = freq_corr.process(received, debug=debug)
-                # print('POST CFO')  # DEBUGGING
-                if debug and freq_corr:
+                if debug and freq_corr and not freq_lock:
                     print(freq_corr.debug_state())
-
-                # CORRELATE ON COMPLEX PREAMBLE
-                # index = find_frame_start(symbol_metrics=received, preamble=complex_preamble)
-                # print('POST PREAMBLE CORRELATION')  # DEBUGGING
-                # if debug and index is not None:
-                #     print(f'Found a preamble at index {index}')
-                # if index is not None:
-                #     received = received[index:]  # Advance to the preamble
-                # else:
-                #     received = received[-len(complex_preamble):]  # Keep enough in case of a split
-                #     continue  # No need to process this... keep receiving
+                    freq_lock = freq_corr.is_locked()  # No need to see debug_state() every time
 
                 # DEMOD STEPS 1, 2, and then 3
                 # Step 1 - Demod to Metrics
                 metric = modem.demodulate_to_metric(samples=received)
-                # Step 2 - Time Sync w/ Interpolation(?)
-                # symbol_metrics = recover_clock_mm(metric, modem._sps, interp=None)  # Do not interpolate
-                symbol_metrics = recover_clock_mm(metric, modem._sps, interp=16)  # Interp for better boundary
-                # symbol_metrics = mm_sync.process(metric)
-                if debug and mm_sync:
-                    print(mm_sync.debug_state())
-                # Step 3 - Parse Frames
+                # Step 2 - Time Sync w/ Interpolation (for better boundaries)
+                symbol_metrics = recover_clock_mm(metric, modem._sps, interp=16)
+                # Step 3 - Parse Frames (which will decide symbols)
                 datum = frame_receiver.process(symbol_metrics=symbol_metrics, exp_data=exp_data)
                 for data in datum:
                     print_message(data_field=data)  # Print any messages
                 received = numpy.empty(0, dtype=numpy.complex64)  # Empty the array
     finally:
+        print('\n[RX] Stopping')
         stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.stop_cont)
         streamer.issue_stream_cmd(stream_cmd)
 
@@ -469,8 +445,7 @@ def wait_until_interval(num_sec: float | int) -> None:
     """Pauses until the clock reaches a repeating pattern based on num_sec."""
     now = time.time()
     num_sec = float(num_sec)  # Explicitly convert it to a float
-    # step = num_sec * 2  # The repeating pattern size (worked for 15s but not for smaller values)
-    step = 2  # The repeating pattern size (alternating seconds)
+    step = 2                  # The repeating pattern size (alternating seconds)
     # Shift time backward by the offset to calculate alignment
     shifted_now = now - num_sec
     target_shifted = math.ceil(shifted_now / step) * step
@@ -487,8 +462,8 @@ def wait_until_interval(num_sec: float | int) -> None:
 def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:
     """Construct an ArgVals data class from the parsed args."""
     # LOCAL VARIABLES
-    arg_dict = {}  # Dictionary of args and their values
-    arg_keys = [CLI_ARG_DEBUG, CLI_ARG_FREQ, CLI_ARG_SERIAL, CLI_ARG_USER]
+    arg_dict = {}            # Dictionary of args and their values
+    arg_keys = CLI_ARG_KEYS  # List of all supported CLI arg keys
 
     # INPUT VALIDATION
     validate_type(var=args, var_name='args', var_type=argparse.Namespace)
@@ -541,16 +516,13 @@ def main() -> None:
         rx_gain = 40                                        # RX gain
         tx_gain = 40                                        # TX gain
         channel = 0                                         # SDR channel
-        # tx_samples = None    # An array of samples to transmit
-        # rx_samples = None    # The received samples
         squelch_db = None    # Squelch threshold in db (e.g., -48, -55); skip w/ None
-        # num_samples = 0      # Define this later after modulated samples are ready (len(samples) x 2?)
         modem_config = build_modem_config(sample_rate=samp_rate, symbol_rate=symb_rate,
                                           freqs=our_freqs)  # FSK2()'s demod doesn't use freqs
         modem = build_modem(config=modem_config)
         stop_event = threading.Event()                      # Signal the child thread to exit
         rx_thread = None                                    # The "receive" thread
-        fec_repeat = FEC_REPEAT                                   # Implement FEC repeats or not
+        fec_repeat = FEC_REPEAT                             # Implement FEC repeats or not
         current_msg = 1                                     # Used to discretely number test msgs
 
         # SETUP
@@ -586,13 +558,11 @@ def main() -> None:
                 sleep(debug_sleep)
             while True:
                 # Build the frame
-                if arg_dict[CLI_ARG_DEBUG] is True:
-                    tmp_msg = MSG7  # For calculating BER
-                else:
-                    tmp_msg = random.choice(MESSAGES)  # Choose a random message
-                ###########################################################
-                # CREATE A STATIC CAPTURE WITH OBVIOULSY LABELED MESSAGES #
-                ###########################################################
+                tmp_msg = get_tx_msg(debug_mode=arg_dict[CLI_ARG_DEBUG],
+                                     interact_mode=arg_dict[CLI_ARG_INTERACT])
+                ############################################################
+                # CREATE A STATIC CAPTURE WITH DISCRETELY LABELED MESSAGES #
+                ############################################################
                 # total_msgs = 10
                 # if current_msg > total_msgs:
                 #     sleep(2)  # Let the other user finish sending messages, if applicable
@@ -605,16 +575,26 @@ def main() -> None:
                 tx_samples = modem.modulate(bin_bytes=tmp_frame, gauss_bt=GFSK_BT)
                 # [?] Filter?
                 tx_samples = apply_fir(samples=tx_samples, coeffs=lpf)
-                # input('[TX] Press <ENTER> to send a message.\n')  # TESTING
-                wait_until_interval(num_sec=half_dup_offset + arg_dict[CLI_ARG_USER] - 1)  # Force half-duplex
+
+                # Determine timing
+                if arg_dict[CLI_ARG_DEBUG]:
+                    if arg_dict[CLI_ARG_INTERACT]:
+                        input(f'Press <ENTER> to transmit the {CLI_ARG_DEBUG} message...')
+                    else:
+                        # Force half-duplex
+                        wait_until_interval(num_sec=half_dup_offset + arg_dict[CLI_ARG_USER] - 1)
+                else:
+                    if arg_dict[CLI_ARG_INTERACT]:
+                        pass  # Transmit *now*!
+                    else:
+                        # tmp_sleep = random.randint(1, 5)  # Between 1 and 5 seconds
+                        tmp_sleep = random.randint(2, 5) * 0.1  # Between 0.2 and 0.5 seconds
+                        # tmp_sleep = 0.1  # CW2 Mode
+                        # tmp_sleep = 0.5  # Harklemode
+                        print(f'[TX] Sleeping - {tmp_sleep:.3} secs')
+                        time.sleep(tmp_sleep)
                 print(f'[TX] Sending - {convert_bin_bytes_to_ascii(tmp_msg, clean_it=True)}')
                 transmit(usrp=usrp, samples=tx_samples)
-                # tmp_sleep = random.randint(1, 5)  # Between 1 and 5 seconds
-                # tmp_sleep = random.randint(2, 5) * 0.1  # Between 0.2 and 0.5 seconds
-                # tmp_sleep = 0.1  # CW2 Mode (100% Packet Loss)
-                # tmp_sleep = 0.5  # Harklemode
-                # print(f'[TX] Sleeping - {tmp_sleep} secs')
-                # time.sleep(tmp_sleep)
         except KeyboardInterrupt:
             time.sleep(0.2)  # Let the receive thread finish?
             stop_event.set()  # Tell the receive thread to stop
@@ -631,9 +611,9 @@ def main() -> None:
                 else:
                     print('\nThere are no devices available.  Either connect another SDR or '
                           f'use the --{CLI_ARG_SERIAL} CLI argument.', file=sys.stderr)
-        raise err
+        if arg_dict[CLI_ARG_DEBUG] is True:
+            raise err
 
 
 if __name__ == '__main__':
     main()
-    

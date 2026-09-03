@@ -54,6 +54,10 @@ class FrequencyCorrector:
         return (f'[FCD] locked={self._locked} cfo_hz={self._cfo_hz:.1f} '
                 f'buffer_size={len(self._candidates)}')
 
+    def is_locked(self) -> bool:
+        """Has the FCD locked in a frequency offset yet?"""
+        return self._locked
+
     def process(self, samples: numpy.ndarray, noise_floor_db: float | None = None,
                 debug: bool = False) -> numpy.ndarray:
         """Apply the current FCD correction to a chunk, updating lock state while unlocked.

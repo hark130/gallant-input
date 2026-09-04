@@ -64,12 +64,6 @@ class FSK2(Modem):
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         freqs = numpy.where(bits == 0, self.freq0, self.freq1)
-        # for freq in freqs:
-        #     phase_inc = 2 * numpy.pi * freq / self.sample_rate
-        #     phi = self._phase + phase_inc * numpy.arange(self._sps)
-        #     out.append(numpy.exp(1j * phi))
-        #     self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
-        # iq = numpy.concatenate(out).astype(numpy.complex64)
         if gauss_bt is None:
             for freq in freqs:
                 phase_inc = 2 * numpy.pi * freq / self.sample_rate

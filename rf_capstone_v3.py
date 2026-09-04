@@ -300,8 +300,8 @@ def get_tx_msg(debug_mode: bool, interact_mode: bool) -> bytes:
         msg = MSG7
     else:
         if interact_mode is True:
-            tmp_msg = input('Enter a message to transmit: ')
-            msg = convert_ascii_to_bin_bytes(message=tmp_msg, clean_it=True)
+            tmp_msg = input(f'Enter a {MAX_DATA_FIELD_BYTES} character message to transmit: ')
+            msg = convert_ascii_to_bin_bytes(message=tmp_msg[:MAX_DATA_FIELD_BYTES], clean_it=True)
         else:
             msg = random.choice(MESSAGES)  # Choose a random message
 

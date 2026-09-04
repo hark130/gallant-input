@@ -78,7 +78,6 @@ from gallant_input.signal import (decimate_samples, detect_signal, downconvert_s
 from gallant_input.spacetime import create_rfc_3339_z_time
 from gallant_input.synch.frame import correlate_it, find_frame_start
 from gallant_input.synch.frequency_corrector import FrequencyCorrector
-from gallant_input.synch.mueller_muller import MuellerMuller
 from gallant_input.synch.timing import recover_clock_mm
 from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_pos_int,
                                       validate_type)

@@ -11,7 +11,7 @@ cp "$USER2_OUTPUT" ./devops/files/$(date +%Y%m%d_%H%M%S)_rf_capstone_user2.out
 
 # Standard Imports
 from dataclasses import dataclass
-from typing import Final
+from typing import Final, List
 import os
 # Third Party Imports
 # Local Imports

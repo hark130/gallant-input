@@ -184,13 +184,14 @@ class FrameReceiver:
                       f'data={data_bits!r})')
             else:
                 print('[RX] Dropping failed checksum')
-            self._reset()  # Checksum failed so there's no chance of any remaining data
         else:
             data = data_bits  # It's valid
             self._count_chk += 1  # [CFT] Found one!
         self._buffer = self._buffer[(self._data_length * 8) + self.CHECKSUM_BITS:]  # Advance it
 
         # DONE
+        if data is None:
+            self._reset()  # No data, so go back to searching
         return data
 
     def _validate_data_len(self, decoded_frame: bytes) -> bool:

@@ -87,8 +87,8 @@ def calc_packet_loss(sender: List[str], receiver: List[str]) -> PacketStats:
     if sent_packets > 0:
         loss = (sent_packets - recv_packets) / sent_packets * 100
     if recv_packets > sent_packets:
-        raise RuntimeError(f'There is something fishy in this exchange: recv {recv_packets} > '
-                           f'sent {sent_packets}')
+        print(f'There is something fishy in this exchange: recv {recv_packets} > '
+              f'sent {sent_packets}.\nIs the other user on a different machine?')
 
     # DONE
     return PacketStats(sent=sent_packets, recv=recv_packets, lost=loss)
@@ -193,27 +193,31 @@ def print_packet_loss(sender: int, receiver: int, results: PacketStats) -> None:
           f'{results.lost:.2f}% packet loss.')
 
 
-def read_env_var(env_var: str) -> List[str]:
+def read_env_var(env_var: str, must_exist: bool = True) -> List[str]:
     """Read a file found in the given environment variable into a list of strings."""
     # LOCAL VARIABLES
     file_cont = []                     # File contents
     filename = fetch_env_var(env_var)  # The output filename
 
     # READ IT
-    file_cont = read_file(filename)
+    file_cont = read_file(filename, must_exist=must_exist)
 
     # DONE
     return file_cont
 
 
-def read_file(filename: str) -> List[str]:
+def read_file(filename: str, must_exist: bool = True) -> List[str]:
     """Read a file into a list of strings."""
     # LOCAL VARIABLES
     file_cont = []  # File contents
 
     # READ IT
-    with open(filename, 'r', encoding='utf-8') as file:
-        file_cont = [line.strip() for line in file]
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            file_cont = [line.strip() for line in file]
+    except FileNotFoundError as err:
+        if must_exist is True:
+            raise err from err
 
     # DONE
     return file_cont
@@ -237,8 +241,8 @@ def main() -> None:
     """do_it()."""
     # LOCAL VARIABLES
     count_preambles = False                                            # No preamble correlation
-    user1 = read_env_var(USER1_ENV_VAR)
-    user2 = read_env_var(USER2_ENV_VAR)
+    user1 = read_env_var(USER1_ENV_VAR, must_exist=False)              # Two different computers
+    user2 = read_env_var(USER2_ENV_VAR, must_exist=False)              # Two different computers
     # user1 = read_file('devops/files/rf_capstone_user1.out')  # OFFLINE TESTING
     # user2 = read_file('devops/files/rf_capstone_user2.out')  # OFFLINE TESTING
     packet_loss_1to2 = calc_packet_loss(sender=user1, receiver=user2)  # User 1 --> User 2

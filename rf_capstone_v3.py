@@ -42,7 +42,7 @@ from collections import namedtuple
 from dataclasses import dataclass, field
 from scipy.signal import freqz
 from time import sleep
-from typing import Final
+from typing import Final, List
 import argparse
 import numpy
 import math

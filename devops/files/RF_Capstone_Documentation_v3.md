@@ -160,9 +160,8 @@ enough CFO could ruin symbol metrics and increase bit error rates (BER) and pack
 
 ### Why coarse correction?
 
-The CFO here is a static hardware offset.  In testing and observation, the warmer the
-SDRs got, the larger the CFO.  The SDRs were not moving so there was no need for
-continuous frequency correction.  However, dead air was skewing a very basic
+The CFO here is a static hardware offset.  The SDRs were not moving so there was no
+need for continuous frequency correction.  However, dead air was skewing a very basic
 frequency correction so I implemented a frequency correction sampler and lock.
 Once the frequency corrector "locked in", it reduced processing cycles while
 also correcting the frequency.  In practice, it was all that was needed.
@@ -230,7 +229,7 @@ also correcting the frequency.  In practice, it was all that was needed.
 ```
 
 * Byte order: Big Endian.
-* Bit order:** MSB first.
+* Bit order: MSB first.
 * PREAMBLE - 64 bits of alternating `10` (`PREAMBLE = 32 * b'10'`), still built
   into every transmitted frame by `build_frame()`.  **Confirmed:** the live
   `receive_frames()` no longer converts `PREAMBLE` into a correlation array or passes
@@ -326,7 +325,7 @@ payloads.
 
 ```
                      buffer too small, or syncword correlation
-                     found no match yet (keeps all but one of the symbols
+                     found no match yet (keeps a fixed window of SYNCWORD_BITS - 1
                      in case the syncword straddles a chunk
                      boundary; wait for more incoming samples)
                   +-------------------------------------------+
@@ -387,11 +386,11 @@ payloads.
   1. **Syncword** - An exact bit-string comparison against the known syncword is
      performed.  A mismatch here means the correlation hit was a false positive and
      the machine returns to `SEARCHING` after dropping a single symbol (just in case
-     an actual syncword is straddling the boundary between process samples)..
+     an actual syncword is straddling the boundary between process samples).
   2. **`DATA_LEN`** - This value is validated against the maximum DATA field length
      the protocol was designed to handle.  An out-of-range value is treated the same
      as a bad syncword: one symbol is dropped and the machine goes back to `SEARCHING`.
-  3. **`DATA` + checksum** Slices out theDATA bits, retrieves the the trailing
+  3. **`DATA` + checksum** Slices out the DATA bits, retrieves the the trailing
      `CHECKSUM_BITS`), runs `decode_fec_repetition()` on the `DATA` field, then
      computes and compares the checksum.  A match emits the frame and the machine resets
      to `SEARCHING`.  A mismatch drops the frame and also resets to `SEARCHING`.
@@ -455,12 +454,16 @@ However, this feature/refactor would require significant safety guards.
 
 ### Improved Interfaced
 
-The text user interface (TUI) leaves a lot to be desired.  An actual chat program
-would have separate windows for send and receive.  The BER/packet-loss calculation
-method, currently implemented, requires redirecting output to files to be parsed
-later by `rf_capstone_calc_error_rate.py`.  Even worse, the received data "steps on"
-the user prompt for input.  In non-`--interact` mode, everything works fine.
-However, `--interact` mode, `--debug` or not, requires significant improvement.
+* The text user interface (TUI) leaves a lot to be desired.  An actual chat program
+  would have separate windows for send and receive.  The BER/packet-loss calculation
+  method, currently implemented, requires redirecting output to files to be parsed
+  later by `rf_capstone_calc_error_rate.py`.
+* The received data "steps on" the user prompt for input.
+  In non-`--interact` mode, everything works fine.  However, `--interact` mode,
+  `--debug` or not, requires significant improvement.
+* User input, taken in `--interact`, non-`--debug`, mode is truncated at the maximum
+  length of the `DATA` field (not counting FEC-encoding).  Instead of being ignored,
+  discrete messages should be formed, and transmitted, from longer messages.
 
 ---
 
@@ -533,7 +536,7 @@ ls -l  # Verify the gallant_input package is present
 ### Step 4 - Create a virtual environment and install Python dependencies
 
 A ready-to-run setup script is provided: `setup_env.sh`.
-However, it is not particularly rebobust.
+However, it is not particularly robust.
 
 ```bash
 python3 -m venv .venv      # Optional?
@@ -668,7 +671,7 @@ python rf_capstone_calc_error_rate.py
 | `RuntimeError: No devices found for ...` | The specified `--serial` isn't connected, or no B200-type device is attached at all.  Run `uhd_find_devices` to confirm what's actually visible, and double check the USB 3.0 cable/port. |
 | `ImportError: No module named 'uhd'` | UHD's Python bindings aren't visible to your interpreter/venv.  Re-check Step 1/Step 4 above - either install `python3-uhd` system-wide and create your venv with `--system-site-packages`, or install UHD's Python API into the venv directly. |
 | No messages received on either side | Confirm both processes are actually using different `--user` values (`1` and `2`) - two processes with the same `--user` value will compute the *same* channel and talk over each other instead of to each other.  Also confirm antennas are attached and within range of each other. |
-| Received messages look garbled / frequent `Dropping failed checksum` | Check RX/TX gain (`rx_gain`/`tx_gain`, currently hard-coded to `40` dB in `main()`) - too low a gain starves the discriminator of SNR; too high can saturate the front end.  Also confirm nothing else is transmitting in the 912 MHz ISM band nearby.  If this persists specifically at the *start* of a run and then clears up, that's consistent with the coarse frequency corrector (§1.5) still locking - it needs a run of confident measurements before it starts correcting, so give it a few seconds. |
+| Received messages look garbled / frequent `Dropping failed checksum` | Check RX/TX gain (`rx_gain`/`tx_gain`, currently hard-coded to `40` dB in `main()`) - too low a gain starves the discriminator of SNR; too high can saturate the front end.  Also confirm nothing else is transmitting in the 912 MHz ISM band nearby.  If this persists specifically at the *start* of a run and then clears up, that's consistent with the coarse frequency corrector still locking - it needs a run of confident measurements before it starts correcting, so give it a few seconds. |
 | `ValueError: RX Gain ... out of safe range` / `TX Gain ... out of safe range` | The requested gain exceeds what your specific B200-series unit supports (B205mini/B206mini gain ranges can differ slightly by unit).  Lower the hard-coded `rx_gain`/`tx_gain` values to fit your hardware's reported range. |
 
 ---

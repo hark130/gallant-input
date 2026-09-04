@@ -70,7 +70,7 @@ fi
 echo "=== [6/6] Sanity check ==="
 python3 -c "import uhd, numpy, scipy, matplotlib, sklearn, sigmf; print('Core dependencies: OK')"
 python3 -c "from gallant_input.modem.fsk2 import FSK2; print('gallant_input import: OK')"
-python3 -c "from rxtx.frame_receiver2 import FrameReceiver2; print('rxtx import: OK')"
+python3 -c "from rxtx.frame_receiver import FrameReceiver; print('rxtx import: OK')"
 
 echo ""
 echo "Setup complete."

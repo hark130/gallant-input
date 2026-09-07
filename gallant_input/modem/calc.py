@@ -281,7 +281,7 @@ def trim_samples(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarr
 
     Raises:
         TypeError: Bad data type.
-        ValueError: Bad value.
+        ValueError: Bad value (e.g., Not enough samples to cover one symbol).
     """
     # LOCAL VARIABLES
     num_symbols = 0     # Number of complete symbols, valid or not, available in samples
@@ -291,6 +291,9 @@ def trim_samples(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarr
     validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                      must_be_complex=False)
     validate_pos_int(samples_per_symbol, 'samples_per_symbol')
+    if len(samples) < samples_per_symbol:
+        raise ValueError(f'Not enough samples ({len(samples)}) for even one symbol at a '
+                         f'samples per symbol of {samples_per_symbol}')
 
     # TRIM IT
     num_symbols = len(samples) // samples_per_symbol

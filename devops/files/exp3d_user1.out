@@ -1,0 +1,1694 @@
+[INFO] [UHD] linux; GNU C++ version 15.2.0; Boost_109000; UHD_4.9.0.1-1ubuntu1
+[INFO] [B200] Detected Device: B205mini
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+OURS: UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+THEIRS: UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+RX GAIN: 40
+TX GAIN: 40
+SAMPLE RATE: 240000.0 (fs/2 == 120000.0)
+SYMBOL RATE: 2400
+FREQ SEP: 4800
+BANDWIDTH: 9600
+CUTOFF: 5000.0
+[INFO] [B200] Asking for clock rate 61.440000 MHz... 
+[INFO] [B200] Actually got clock rate 61.440000 MHz.
+[RX] Starting
+RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 100000 (CONTROL: 100000)
+EXP3D: Stateful Symbol Timing - Stateful M&M (gain_mu matches legacy default value)
+[MM] Starting Values: samples_per_symbol=100.0000 interp=None gain_mu=0.3000 gain_omega=0.0225 omega_relative_limit=0.0050
+[MM] mu=0.0000 omega=100.0000 (nominal=100.0000, clip=±0.50%) residual_len=0
+You have 5 seconds to start the other user!
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8199 omega=99.8687 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5624 omega=99.8688 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1365 omega=99.8225 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5134 omega=99.7909 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1215 omega=99.6899 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1077 omega=99.7318 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4116 omega=99.8582 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3990 omega=99.8492 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4693 omega=99.7269 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2715 omega=99.7179 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1404 omega=99.8653 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.4474 omega=99.8197 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9061 omega=99.5158 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9802 omega=99.5600 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2830 omega=99.5230 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4734 omega=99.5602 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3888 omega=99.7395 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.4933 omega=99.7379 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5202 omega=99.7658 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.07421875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9862 omega=99.8520 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3751 omega=99.8701 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0443 omega=99.8862 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9663 omega=99.8147 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5244 omega=99.8917 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9357 omega=100.4014 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7749 omega=100.2822 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.5863 omega=100.2786 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3495 omega=100.2078 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.19921875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6808 omega=100.2351 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5318 omega=100.0541 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.9379 omega=100.1826 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4547 omega=100.1338 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5715 omega=100.0756 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2353 omega=100.0666 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3274 omega=100.0383 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8801 omega=99.9765 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2288 omega=99.9106 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3661 omega=99.9535 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5117 omega=99.9759 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3405 omega=100.0274 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9436 omega=99.8931 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4575 omega=99.9688 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1771 omega=99.8444 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6799 omega=99.7833 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6880 omega=99.7581 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1467 omega=99.7364 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8967 omega=99.8301 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.19921875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6774 omega=99.7103 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8110 omega=99.6017 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6535 omega=99.5628 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5966 omega=99.5009 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2437 omega=99.5619 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.30859375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8864 omega=99.5067 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9515 omega=99.7294 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7158 omega=99.7099 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6947 omega=99.5507 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5850 omega=99.5054 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6230 omega=99.6536 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9347 omega=99.5404 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4387 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8089 omega=99.5649 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3824 omega=99.6530 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5562 omega=99.6029 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.7646 omega=99.6552 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8000 omega=99.7236 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2265 omega=99.6780 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.14453125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2861 omega=99.6285 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7427 omega=99.6715 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8247 omega=99.6034 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7536 omega=99.6021 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.9564 omega=99.5424 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2100 omega=99.7108 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1918 omega=99.8010 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0678 omega=99.6040 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2848 omega=99.5421 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.31640625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7315 omega=99.5432 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2327 omega=99.5047 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3726 omega=99.5405 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.7410 omega=99.5008 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.8550 omega=99.5649 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4266 omega=99.5084 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8337 omega=99.5300 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9498 omega=99.5167 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0172 omega=99.5104 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3812 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6202 omega=99.6699 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9555 omega=99.5973 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7659 omega=99.6884 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4822 omega=99.6482 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5973 omega=99.6558 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4924 omega=99.6337 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.6951 omega=99.8023 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.9508 omega=99.8202 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9990 omega=99.8171 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.12890625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4944 omega=99.8711 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0784 omega=99.9152 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2352 omega=100.1121 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.1991 omega=100.1248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.33203125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5098 omega=100.0578 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4361 omega=100.1778 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.0574 omega=100.1003 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3409 omega=100.1436 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3523 omega=100.0593 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.0586 omega=100.0447 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6209 omega=100.3197 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.7391 omega=100.2520 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5270 omega=100.1889 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5615 omega=100.2050 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4321 omega=100.0704 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4481 omega=100.0756 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6575 omega=100.1125 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1440 omega=100.0692 (nominal=100.0000, clip=±0.50%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5880 omega=99.9675 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0685 omega=100.0366 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9061 omega=100.2456 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4278 omega=100.0786 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.0011 omega=99.9854 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5205 omega=99.9843 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4688 omega=99.8225 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3632 omega=99.8958 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6548 omega=99.8283 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2557 omega=99.6650 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.09765625
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0362 omega=99.5296 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1870 omega=99.6036 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4906 omega=99.7764 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.8924 omega=99.7247 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5563 omega=99.7636 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.21484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3017 omega=99.9189 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0147 omega=100.0101 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8183 omega=100.0879 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3344 omega=100.0436 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4149 omega=100.0128 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8066 omega=99.8201 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0202 omega=99.8655 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7713 omega=99.9638 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4091 omega=99.9643 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5902 omega=99.8944 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7827 omega=100.2084 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.7544 omega=100.1915 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.0115 omega=100.2716 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.59375
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2824 omega=100.1635 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0608 omega=100.1733 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4109 omega=100.2119 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2625 omega=100.0138 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3444 omega=99.9543 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7939 omega=99.8407 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2224 omega=99.7188 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1304 omega=100.0381 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2679 omega=99.9648 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9009 omega=99.9526 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6295 omega=100.0455 (nominal=100.0000, clip=±0.50%) residual_len=3
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7275 omega=99.9715 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.5277 omega=99.9776 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2733 omega=100.0994 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2699 omega=100.0443 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6084 omega=99.9948 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.0031 omega=99.9687 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7685 omega=99.9522 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8624 omega=99.9668 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1497 omega=99.9373 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5749 omega=99.9252 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6767 omega=100.1742 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9703 omega=100.2364 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2137 omega=100.1392 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.00390625
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3926 omega=100.2840 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7483 omega=100.1061 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8410 omega=100.0949 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1060 omega=100.1252 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0480 omega=100.0454 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.9556 omega=99.9036 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5698 omega=100.0453 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2389 omega=100.0763 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4777 omega=100.1272 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7819 omega=100.1054 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7763 omega=100.1804 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2587 omega=100.1828 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.4092 omega=100.1624 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.9927 omega=100.1345 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6003 omega=100.0958 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0211 omega=100.3877 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6334 omega=100.4706 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0077 omega=100.4982 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.6024 omega=100.4656 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5376 omega=100.3974 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3299 omega=100.3242 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7337 omega=100.4008 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0189 omega=100.4317 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.53125
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0421 omega=100.3963 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4892 omega=100.4860 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.0899 omega=100.4416 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0299 omega=100.2080 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8593 omega=100.2244 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2290 omega=100.2962 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7769 omega=100.2887 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.0150 omega=100.3653 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8917 omega=100.4072 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0997 omega=100.3432 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6254 omega=100.3973 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5871 omega=100.3886 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8926 omega=100.3768 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.6965 omega=100.3157 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7228 omega=100.3284 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.08203125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?[MM] mu=0.7289 omega=100.4510 (nominal=100.0000, clip=±0.50%) residual_len=0
+
+[MM] mu=0.7213 omega=100.4430 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8873 omega=100.2757 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3187 omega=100.1866 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0395 omega=100.0367 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9607 omega=99.9624 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4774 omega=99.8808 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.5817 omega=99.8787 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3053 omega=99.8572 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3858 omega=99.8530 (nominal=100.0000, clip=±0.50%) residual_len=6
+[RX] DATA BER: 0.01953125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6602 omega=99.7468 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7404 omega=99.6884 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.7552 omega=99.7747 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4158 omega=99.7255 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.16015625
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9366 omega=99.5200 (nominal=100.0000, clip=±0.50%) residual_len=1
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5336 omega=99.6289 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9664 omega=99.7463 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4198 omega=99.6924 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3422 omega=99.6830 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.25390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6939 omega=99.7085 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.1532 omega=99.9404 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.0430 omega=99.9278 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2984 omega=99.9414 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4887 omega=99.8226 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1330 omega=99.5934 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1683 omega=99.6726 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0661 omega=99.8051 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4829 omega=99.7142 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1604 omega=99.6823 (nominal=100.0000, clip=±0.50%) residual_len=2
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6616 omega=99.8566 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2688 omega=100.0429 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2210 omega=99.9280 (nominal=100.0000, clip=±0.50%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7457 omega=99.8581 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9110 omega=99.8489 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3152 omega=99.8991 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8447 omega=99.8499 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2576 omega=100.0324 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9686 omega=99.9716 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1472 omega=100.0501 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7267 omega=100.2281 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.1258 omega=100.1855 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3905 omega=100.1540 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5669 omega=100.1511 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2726 omega=100.0480 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4376 omega=99.8929 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1695 omega=99.9210 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.625
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1060 omega=100.0128 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7661 omega=100.1640 (nominal=100.0000, clip=±0.50%) residual_len=5
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9341 omega=100.2675 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4451 omega=100.3562 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4111 omega=100.2756 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9953 omega=100.2541 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2754 omega=100.3652 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6495 omega=100.4720 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7183 omega=100.4962 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5127 omega=100.4489 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3786 omega=100.3121 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0951 omega=100.4317 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5208 omega=100.3296 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4627 omega=100.4255 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1452 omega=100.3658 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1605 omega=100.1475 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6830 omega=100.0705 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.4918 omega=99.9049 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8529 omega=99.7801 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5640 omega=99.6836 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0185 omega=99.6857 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2081 omega=99.7992 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7465 omega=99.8616 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5530 omega=99.8508 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4958 omega=99.9253 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6735 omega=99.8479 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8699 omega=99.9761 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6896 omega=100.0738 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4599 omega=100.0382 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7776 omega=100.0633 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9577 omega=100.0622 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7497 omega=100.1698 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1755 omega=100.0510 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0160 omega=99.8791 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3386 omega=99.9204 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8526 omega=99.7847 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5751 omega=100.0871 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.7028 omega=99.9971 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8768 omega=100.1125 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5933 omega=100.1345 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0377 omega=100.4454 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0556 omega=100.3702 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6695 omega=100.2826 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3724 omega=100.3200 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2421875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8774 omega=100.3254 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5123 omega=100.3486 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2463 omega=100.4632 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5711 omega=100.3794 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2890625
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6885 omega=100.1531 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0507 omega=100.3005 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.6135 omega=100.3246 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.3409 omega=100.2652 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.59375
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8902 omega=100.1818 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5951 omega=100.2545 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7801 omega=100.1039 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6916 omega=100.0614 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.9366 omega=100.1063 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0908 omega=100.1749 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1194 omega=99.9575 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0511 omega=99.8937 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3031 omega=99.9129 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.7406 omega=99.9685 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2353 omega=99.9353 (nominal=100.0000, clip=±0.50%) residual_len=2
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7973 omega=99.8038 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.8993 omega=99.7928 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9961 omega=99.8475 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3973 omega=99.8130 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1519 omega=99.9342 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1839 omega=99.8969 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5801 omega=100.0223 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2055 omega=100.0667 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5329 omega=100.0639 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3457 omega=100.0839 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.3676 omega=100.0486 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4012 omega=100.0990 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.2856 omega=99.9782 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6497 omega=100.1070 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8163 omega=100.1076 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2169 omega=100.1197 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.5048 omega=100.1085 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3702 omega=100.1785 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9971 omega=99.9427 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6200 omega=100.0370 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1796 omega=99.9499 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2790 omega=99.9936 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9931 omega=100.0761 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2363 omega=100.3394 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8742 omega=100.3501 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5936 omega=100.4875 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6240 omega=100.4225 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9808 omega=100.4779 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3046875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6270 omega=100.4616 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.3791 omega=100.4946 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.9816 omega=100.4612 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.2246 omega=100.4723 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.3046875
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6225 omega=100.2804 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7424 omega=100.1990 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1943 omega=100.2615 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7756 omega=100.2032 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1018 omega=100.2666 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1145 omega=100.4130 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9544 omega=100.4978 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9006 omega=100.1575 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9591 omega=100.1287 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6617 omega=100.0080 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5504 omega=100.0156 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5228 omega=99.8104 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1927 omega=99.9032 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3633 omega=99.8490 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.5397 omega=99.7838 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2769 omega=99.6556 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2898 omega=99.8902 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4469 omega=99.7855 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3685 omega=99.7861 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8188 omega=99.7621 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5877 omega=99.9224 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0384 omega=99.9801 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9837 omega=100.0316 (nominal=100.0000, clip=±0.50%) residual_len=13
+[RX] SYNCWORD BER: 0.28125
+[RX] SYNCWORD BER: 0.625
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6797 omega=99.9858 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5226 omega=99.5592 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8897 omega=99.6021 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2609 omega=99.6428 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7955 omega=99.6587 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6006 omega=99.7951 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.1953125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7608 omega=99.7990 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6290 omega=99.5147 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2823 omega=99.6754 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5223 omega=99.6366 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3805 omega=99.5435 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5208 omega=99.5274 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7373 omega=99.6364 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5328 omega=99.5779 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6636 omega=99.6139 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.296875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3452 omega=99.5910 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.5500 omega=99.6231 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0013 omega=99.5271 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7581 omega=99.5062 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8059 omega=99.5390 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3046875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7330 omega=99.5660 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7104 omega=99.5238 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5361 omega=99.5240 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0630 omega=99.5392 (nominal=100.0000, clip=±0.50%) residual_len=3
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.4375
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3557 omega=99.6932 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3381 omega=99.8192 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9240 omega=99.7463 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.5847 omega=99.7585 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.375
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6273 omega=99.7433 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8021 omega=99.7321 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6186 omega=99.8229 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6001 omega=99.6957 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8651 omega=99.5659 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.8646 omega=99.5817 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7686 omega=99.7502 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3700 omega=99.8430 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1016 omega=99.9895 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7337 omega=100.0052 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8128 omega=100.0563 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5256 omega=100.0874 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0643 omega=100.0248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1289 omega=99.9802 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8136 omega=99.8617 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3161 omega=99.8184 (nominal=100.0000, clip=±0.50%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4822 omega=100.0518 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1862 omega=100.0178 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1412 omega=99.9651 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1897 omega=99.9011 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0741 omega=99.8847 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0959 omega=99.8191 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9288 omega=99.8144 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8427 omega=99.7616 (nominal=100.0000, clip=±0.50%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6597 omega=99.8271 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.1015625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1813 omega=99.8542 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9004 omega=99.9500 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3668 omega=99.9640 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5604 omega=99.9251 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0684 omega=99.9174 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7709 omega=99.8114 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2147 omega=99.7557 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3436 omega=99.7526 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6117 omega=99.8070 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2421 omega=99.8392 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8301 omega=100.1706 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9631 omega=100.2547 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0885 omega=100.2524 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9561 omega=100.2384 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2108 omega=100.1320 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5395 omega=100.0796 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1151 omega=99.9709 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8430 omega=100.0590 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4561 omega=99.9797 (nominal=100.0000, clip=±0.50%) residual_len=8
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1433 omega=99.9678 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9491 omega=99.8383 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4632 omega=99.6083 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5094 omega=99.5877 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.36328125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3233 omega=99.6141 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7093 omega=99.5983 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5310 omega=99.8431 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6215 omega=99.7957 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9963 omega=99.7423 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.203125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2178 omega=99.7232 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0544 omega=99.7712 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0051 omega=99.8017 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0139 omega=99.7276 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6098 omega=99.7599 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8076 omega=99.9608 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0463 omega=99.9930 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8873 omega=99.7998 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8960 omega=99.6823 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6144 omega=99.7703 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9135 omega=99.7394 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.7547 omega=99.7508 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0199 omega=99.7405 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6591 omega=99.7057 (nominal=100.0000, clip=±0.50%) residual_len=3
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8883 omega=99.7143 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1388 omega=99.7312 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0114 omega=99.7864 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2470 omega=99.7844 (nominal=100.0000, clip=±0.50%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0724 omega=99.8061 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.01171875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5431 omega=99.9066 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6498 omega=99.9860 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6007 omega=99.9599 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3691 omega=100.0093 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2585 omega=99.7946 (nominal=100.0000, clip=±0.50%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3186 omega=99.7699 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5297 omega=99.8546 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7614 omega=100.0852 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0272 omega=99.9930 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9957 omega=100.0089 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9784 omega=100.0599 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.6154 omega=99.9636 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3611 omega=99.9887 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8139 omega=99.9968 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5332 omega=100.0537 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3108 omega=99.9463 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.5823 omega=99.8658 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6775 omega=99.8216 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7876 omega=99.8314 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2760 omega=99.6847 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5899 omega=99.5775 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8994 omega=99.5010 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8878 omega=99.5175 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.3829 omega=99.6587 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4241 omega=99.6968 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6539 omega=99.7239 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.3860 omega=99.7185 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9711 omega=99.6963 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.25390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5147 omega=99.5005 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.8146 omega=99.5808 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6698 omega=99.7739 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.8986 omega=99.6616 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8327 omega=99.5699 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] DATA BER: 0.1484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1593 omega=99.5306 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7378 omega=99.6940 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6825 omega=99.6973 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4518 omega=99.7821 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9248 omega=99.9357 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6342 omega=99.8733 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4344 omega=99.9081 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3925 omega=99.9414 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1981 omega=99.8996 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3296 omega=99.9289 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3214 omega=99.8992 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8526 omega=99.9519 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.6280 omega=99.8110 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4517 omega=99.8712 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6656 omega=99.9220 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7590 omega=99.9966 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3273 omega=100.0523 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6992 omega=100.0330 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1385 omega=99.9391 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5910 omega=99.9893 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0630 omega=100.0856 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5674 omega=100.1480 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2012 omega=100.1016 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?[MM] mu=0.0457 omega=99.8958 (nominal=100.0000, clip=±0.50%) residual_len=9
+
+[MM] mu=0.8905 omega=99.5985 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2384 omega=99.6597 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0196 omega=99.6619 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1552 omega=99.6531 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7447 omega=99.5084 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.0933 omega=99.5860 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6615 omega=99.5843 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0196 omega=99.6227 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9355 omega=99.5095 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.1875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9783 omega=99.5955 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3038 omega=99.5926 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7024 omega=99.5516 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8175 omega=99.5043 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3671875
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2046 omega=99.5644 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3217 omega=99.8248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5777 omega=99.9238 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4256 omega=100.0365 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4146 omega=99.9209 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2496 omega=100.0312 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5379 omega=99.8659 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1738 omega=99.8890 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5587 omega=99.7427 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9160 omega=99.7486 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.171875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4062 omega=99.7786 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8875 omega=99.6160 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.2537 omega=99.5949 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7785 omega=99.5541 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8563 omega=99.5179 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9637 omega=99.6304 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4729 omega=99.7201 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4957 omega=99.6528 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6112 omega=99.6110 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.37109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4153 omega=99.5105 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8137 omega=99.7605 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.2946 omega=99.6167 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7205 omega=99.6050 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1927 omega=99.6155 (nominal=100.0000, clip=±0.50%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1267 omega=99.5604 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6665 omega=99.7621 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2509 omega=100.0640 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9492 omega=99.9143 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8003 omega=99.8667 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6187 omega=99.8545 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2187 omega=99.7905 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6232 omega=99.8074 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1686 omega=99.8524 (nominal=100.0000, clip=±0.50%) residual_len=4
+[RX] DATA BER: 0.2734375
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8072 omega=99.7916 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7996 omega=99.7075 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0530 omega=99.6272 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9919 omega=99.6281 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6890 omega=99.6137 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7634 omega=99.6726 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8542 omega=99.7785 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0538 omega=99.5397 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6091 omega=99.5312 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6715 omega=99.5995 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8207 omega=99.7222 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9365 omega=99.7764 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6611 omega=99.7523 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7442 omega=99.7043 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.1875
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1027 omega=99.6879 (nominal=100.0000, clip=±0.50%) residual_len=12
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6473 omega=99.8232 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7913 omega=99.8656 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.8680 omega=99.8372 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8698 omega=99.6765 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.21484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8238 omega=99.5612 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7360 omega=99.6084 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3665 omega=99.5820 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2732 omega=99.5066 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6747 omega=99.7798 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3203125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8470 omega=99.6307 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6088 omega=99.7229 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.6691 omega=99.7929 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6488 omega=99.8479 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9325 omega=99.7087 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7152 omega=99.6508 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8607 omega=99.6736 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.8765 omega=99.7548 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5534 omega=99.7588 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2578125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5204 omega=99.6357 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6320 omega=99.5511 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6314 omega=99.5817 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2992 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8628 omega=99.5449 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0068 omega=99.5191 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6834 omega=99.6781 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4199 omega=99.6884 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2896 omega=99.7094 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7130 omega=99.7679 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0630 omega=99.9015 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.0929 omega=99.7699 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4088 omega=99.7800 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0723 omega=99.7853 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7852 omega=99.7062 (nominal=100.0000, clip=±0.50%) residual_len=13
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8519 omega=99.8286 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7603 omega=99.9871 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.8931 omega=99.9849 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5070 omega=100.1363 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5879 omega=100.2223 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4391 omega=100.2814 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0321 omega=100.4043 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5892 omega=100.3707 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.6389 omega=100.4330 (nominal=100.0000, clip=±0.50%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2300 omega=100.4119 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.0250 omega=100.3747 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.5168 omega=100.3054 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.2638 omega=100.2863 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] SYNCWORD BER: 0.5
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9462 omega=100.3833 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6826 omega=100.2064 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4202 omega=100.1410 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8227 omega=100.2279 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2872 omega=100.1755 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.03125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0048 omega=100.1171 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7248 omega=100.1683 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2604 omega=99.9818 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.3697 omega=99.9176 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.6876 omega=99.8983 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4546 omega=99.8034 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7857 omega=99.5305 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1506 omega=99.6903 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8640 omega=99.6485 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.234375
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3239 omega=99.6795 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7175 omega=99.8207 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1463 omega=99.8923 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.6651 omega=99.9079 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0625
+[RX] SYNCWORD BER: 0.625
+[RX] SYNCWORD BER: 0.53125
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4927 omega=99.9134 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6671 omega=99.8324 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0473 omega=99.7058 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3629 omega=99.6182 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4377 omega=99.5844 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9823 omega=99.5628 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.265625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.2623 omega=99.5322 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9452 omega=99.7009 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.9410 omega=99.8372 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7748 omega=99.8028 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.9536 omega=99.7881 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1407 omega=99.7611 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3579 omega=99.7619 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.6220 omega=99.7209 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8033 omega=99.6632 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.16796875
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.0050 omega=99.5198 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8507 omega=99.5613 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2724 omega=99.7379 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6551 omega=99.6164 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3304 omega=99.6157 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] DATA BER: 0.2890625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3709 omega=99.6670 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6515 omega=99.5853 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9346 omega=99.6632 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0418 omega=99.6030 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7594 omega=99.6429 (nominal=100.0000, clip=±0.50%) residual_len=13
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4302 omega=99.6931 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0191 omega=99.5365 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2920 omega=99.6683 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8642 omega=99.6500 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.203125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.4755 omega=99.6060 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3671 omega=99.8923 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4053 omega=99.7788 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1678 omega=99.8043 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.1956 omega=99.8182 (nominal=100.0000, clip=±0.50%) residual_len=16
+[RX] DATA BER: 0.2109375
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.8729 omega=99.7849 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3687 omega=99.9696 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7833 omega=100.0046 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7594 omega=100.0361 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9287 omega=99.9433 (nominal=100.0000, clip=±0.50%) residual_len=9
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2868 omega=99.9367 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4590 omega=100.2175 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.2453 omega=99.9806 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9136 omega=99.9144 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3682 omega=99.8963 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5938 omega=99.7644 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.6359 omega=99.7668 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7081 omega=99.6173 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.7886 omega=99.5462 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.30078125
+[RX] Dropping failed checksum
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.3464 omega=99.5495 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4173 omega=99.5111 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7402 omega=99.6690 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9627 omega=99.6991 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.5625
+/home/hark/Repos/gallant-input/gallant_input/synch/mueller_muller.py:71: ComplexWarning: Casting complex values to real discards the imaginary part
+  return numpy.asarray(out, dtype=chunk.dtype)
+[MM] mu=0.5406 omega=99.5147 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4238 omega=99.5644 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3042 omega=99.5280 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6694 omega=99.5247 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.3642 omega=99.5115 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7044 omega=99.6734 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5230 omega=99.5194 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6482 omega=99.5806 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1127 omega=99.6208 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0705 omega=99.5859 (nominal=100.0000, clip=±0.50%) residual_len=0
+

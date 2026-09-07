@@ -6,12 +6,49 @@ from pathlib import Path
 # Third Party Imports
 # Local Imports
 from gallant_input.constants import SIGMF_DATA_FILE_EXT, SIGMF_META_FILE_EXT
+from gallant_input.converters import convert_int_to_bin_bytes
 from gallant_input.data_analysis import compare_streams
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.modem.calc import calculate_ber
 from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_callable,
-                                      validate_file, validate_type)
+                                      validate_file, validate_pos_int, validate_type)
 from rxtx.argvals import ArgVals
+
+
+def apply_fec_repetition(bits: bytes, repeats: int, force_odd: bool = True) -> bytes:
+    """Apply a Forward Error Correction (FEC) repetition.
+
+    Repeat each bit repeats times (simple FEC).
+    """
+    _validate_fec_repetition(bits, repeats, force_odd)
+    return b''.join(bytes([bit]) * repeats for bit in bits)
+
+
+def convert_field_val(field_val: int, max_bit_len: int = 8) -> bytes:
+    """Convert a field value into a binary value.
+
+    Args:
+        field_val: The integer to convert to binary.
+        max_bit_len: Maximum length of the converted binary.
+    """
+    field_bits = convert_int_to_bin_bytes(number=field_val, min_width=max_bit_len)
+    if len(field_bits) > max_bit_len:
+        raise ValueError(f'The field_val value {field_val} does not fit into {max_bit_len} bits')
+    return field_bits
+
+
+def decode_fec_repetition(bits: bytes, repeats: int, force_odd: bool = True) -> bytes:
+    """Decode a Forward Error Correction (FEC) repetition.
+
+    Majority-vote decode a repetition-coded bitstring.
+    """
+    _validate_fec_repetition(bits, repeats, force_odd)
+    decoded = bytearray()
+    for i in range(0, len(bits), repeats):
+        group = bits[i:i + repeats]
+        ones = group.count(ord('1'))
+        decoded.append(ord('1') if ones > repeats // 2 else ord('0'))
+    return bytes(decoded)
 
 
 def evaluate_payload(act_payload: bytes, exp_payload: bytes, debug: bool,
@@ -94,3 +131,13 @@ def get_sample_rate(arg_vals: ArgVals, filepath: Path) -> float | int:
             except_msg = except_msg + f' or "{meta_path.absolute()}"'
         raise RuntimeError(except_msg)
     return sample_rate
+
+
+def _validate_fec_repetition(bits: bytes, repeats: int, force_odd: bool) -> None:
+    """Validate FEC args on behalf of this module."""
+    # INPUT VALIDATION
+    validate_binary_bytes(bits, 'bits')
+    validate_pos_int(repeats, 'repeats')
+    validate_bool(force_odd, 'force_odd')
+    if force_odd is True and repeats % 2 == 0:
+        raise ValueError(f'The repeats value "{repeats}" must be odd')

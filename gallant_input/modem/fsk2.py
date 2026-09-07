@@ -6,11 +6,13 @@ from sklearn.cluster import KMeans
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, stringify_ndarray
+from gallant_input.filters import create_gaussian_pulse
 from gallant_input.modem.calc import reshape_to_symbols
 from gallant_input.modem.fsk2_config import FSK2Config
 from gallant_input.modem.modem import Modem
-from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_int_or_float,
-                                      validate_ndarray, validate_phase, validate_type)
+from gallant_input.validation import (validate_binary_bytes, validate_bool, validate_float,
+                                      validate_int_or_float, validate_ndarray, validate_phase,
+                                      validate_pos_float, validate_type)
 
 
 class FSK2(Modem):
@@ -32,11 +34,13 @@ class FSK2(Modem):
 
     # ABSTRACT METHODS
 
-    def modulate(self, bin_bytes: bytes) -> numpy.ndarray:
+    def modulate(self, bin_bytes: bytes, gauss_bt: float | None = None) -> numpy.ndarray:
         """MOdulate binary data.
 
         Args:
             bin_bytes: A bytes object containing binary to modulate.
+            gauss_bt: [OPTIONAL] Gaussian pulse shaping bandwidth-time product (0.3-0.5 typical).
+                If None, modulates with rectangular NRZ symbols (original behavior).
 
         Returns:
             The modulated binary data.
@@ -60,12 +64,16 @@ class FSK2(Modem):
         # MODULATE IT
         bits = convert_ascii_bin_bytes_to_bits(bin_bytes)
         freqs = numpy.where(bits == 0, self.freq0, self.freq1)
-        for freq in freqs:
-            phase_inc = 2 * numpy.pi * freq / self.sample_rate
-            phi = self._phase + phase_inc * numpy.arange(self._sps)
-            out.append(numpy.exp(1j * phi))
-            self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
-        iq = numpy.concatenate(out).astype(numpy.complex64)
+        if gauss_bt is None:
+            for freq in freqs:
+                phase_inc = 2 * numpy.pi * freq / self.sample_rate
+                phi = self._phase + phase_inc * numpy.arange(self._sps)
+                out.append(numpy.exp(1j * phi))
+                self._update_phase(phi[-1] + phase_inc)  # Maintain a continuous phase
+            iq = numpy.concatenate(out).astype(numpy.complex64)
+        else:
+            # Gaussian-smoothed frequency sequence
+            iq = self._modulate_shaped(freqs=freqs, gauss_bt=gauss_bt)
 
         # DONE
         return iq
@@ -113,13 +121,18 @@ class FSK2(Modem):
 
     # PUBLIC METHODS
 
-    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+    def decide_symbols(self, symbol_metrics: numpy.ndarray,
+                       threshold: float | bool = False) -> bytes:
         """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
 
         Maps each recovered symbol metric to its nearest valid symbol.
 
         Args:
             symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            threshold: [OPTIONAL] Use a basic threshold to make symbol decisions instead of
+                KMeans clustering.  If False, utilize KMeans.  If True, use the median to
+                determine an adaptive threshold.  Otherwise, specify the threshold (e.g., 0.0)
+                as a float.
 
         Returns:
             The demodulated binary data.
@@ -129,7 +142,6 @@ class FSK2(Modem):
             ValueError: Bad value.
         """
         # LOCAL VARIABLES
-        threshold = 0.0  # The bit decision threshold
         bits = None      # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''  # The final binary as a bytes object
         reshaped = None  # Reshaped symbol_metrics into a single column
@@ -139,18 +151,21 @@ class FSK2(Modem):
         self.parse(demod=True)  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=False)
+        _validate_threshold(threshold)
 
         # DECIDE IT
-        # NOTE: Using the "mean()" of the symbol metrics wasn't sufficient to find the
-        # best decision boundary between the two populations of symbol metrics for some
-        # live captures.  Why?  The median shifts towards a dominant cluster if the bit counts
-        # aren't equally distributed.
-        reshaped = symbol_metrics.reshape(-1, 1)  # Reshape symbol metrics into one multi-row column
-        kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
-        kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
-        centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse into a sorted 1-D array
-        threshold = centers.mean()  # Average the center of the two clusters
-        bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        if threshold is False:
+            threshold = 0.0  # Reset the value
+            reshaped = symbol_metrics.reshape(-1, 1)  # Reshape it into one multi-row column
+            kmeans = KMeans(n_clusters=2)  # BFSK gets formed into two clusters
+            kmeans.fit_predict(reshaped)  # Compute the cluster centers and predict indices
+            centers = numpy.sort(kmeans.cluster_centers_.flatten())  # Collapse to sorted 1-D array
+            threshold = centers.mean()  # Average the center of the two clusters
+            bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
+        else:
+            if threshold is True:
+                threshold = numpy.median(symbol_metrics)  # Calculate the adaptive thresholds
+            bits = (symbol_metrics > threshold).astype(numpy.uint8)  # Make bit decisions
         bin_bytes = stringify_ndarray(bits)
 
         # DONE
@@ -281,6 +296,41 @@ class FSK2(Modem):
 
     # PRIVATE METHODS
 
+    def _modulate_shaped(self, freqs: numpy.ndarray, gauss_bt: float) -> numpy.ndarray:
+        """Modulate a per-symbol frequency sequence with Gaussian pulse shaping.
+
+        Args:
+            freqs: One frequency value (freq0 or freq1) per symbol.
+            gauss_bt: Gaussian pulse shaping bandwidth-time product (which must be positive).
+
+        Returns:
+            The modulated, pulse-shaped IQ samples.
+        """
+        # LOCAL VARIABLES
+        rect_freqs = None             # Freqs held at the sample rate (rectangular NRZ)
+        gaussian_taps = None          # The Gaussian pulse-shaping filter
+        shaped_freqs = None           # rect_freqs after Gaussian pulse shaping
+        phase_inc_per_sample = None   # Per-sample phase increment
+        phi = None                    # The cumulative phase array
+        iq = None                     # Final array of modulated samples
+
+        # INPUT VALIDATION
+        validate_pos_float(gauss_bt, 'gauss_bt')
+
+        # SHAPE IT
+        rect_freqs = numpy.repeat(freqs, int(self._sps))  # Rectangular hold, per-sample
+        gaussian_taps = create_gaussian_pulse(gauss_bt=gauss_bt, sps=int(self._sps))
+        shaped_freqs = numpy.convolve(rect_freqs, gaussian_taps, mode='same')
+
+        # INTEGRATE THE SHAPED FREQUENCY SEQUENCE INTO A CONTINUOUS PHASE
+        phase_inc_per_sample = 2 * numpy.pi * shaped_freqs / self.sample_rate
+        phi = self._phase + numpy.cumsum(phase_inc_per_sample)
+        iq = numpy.exp(1j * phi).astype(numpy.complex64)
+        self._update_phase(phi[-1] + phase_inc_per_sample[-1])  # Maintain a continuous phase
+
+        # DONE
+        return iq
+
     def _parse(self) -> None:
         """Parse user input."""
         self._parse_abc()
@@ -340,3 +390,31 @@ def _validate_frequencies(symbol_rate: float | int,
     if freq_dev < min_dev:
         raise ValueError(f'The deviation between "{freq0}" and "{freq1}" must be at '
                          f'*least* "{min_dev}"')
+
+
+def _validate_threshold(threshold: float | bool) -> None:
+    """Validate the uniquely designed threshold argument."""
+    # LOCAL VARIABLES
+    valid = False
+
+    # VALIDATE IT
+    # bool?
+    try:
+        validate_bool(threshold, 'threshold')
+    except TypeError:
+        pass  # One more chance
+    else:
+        valid = True
+    # float
+    if not valid:
+        try:
+            validate_float(threshold, 'threshold')
+        except TypeError:
+            pass  # Handled below
+        else:
+            valid = True
+
+    # DONE
+    if not valid:
+        raise TypeError(f'The "threshold" argument must be a bool or floating point '
+                        f'data type instead of type {type(threshold)}')

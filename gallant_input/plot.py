@@ -2,13 +2,14 @@
 
 # Standard Imports
 # Third Party Imports
-from scipy.signal import welch
+from scipy.signal import freqz, welch
 import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.signal import compute_spectrum
 from gallant_input.validation import (validate_bool, validate_int_or_float, validate_ndarray,
-                                      validate_pos_float, validate_pos_int, validate_string)
+                                      validate_pos_float, validate_pos_float_or_int,
+                                      validate_pos_int, validate_string)
 
 
 def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constellation',
@@ -33,6 +34,44 @@ def plot_constellation(samples: numpy.ndarray, title: str | None = 'IQ Constella
     plt.scatter(samples.real, samples.imag, s=1, label='Samples')
     plt.axis('equal')
     _plot_it(x_label='In-phase (I)', y_label='Quadrature (Q)', title=title, now=now)
+
+
+def plot_filter_taps(taps: numpy.ndarray, sample_rate: float | int, cutoff: float | int | None,
+                     num_freqs: int | None = 8192, now: bool = True) -> None:
+    """Plot filter taps as freq vs mag.
+
+    Shows what frequencies the filter lets through or blocks by mapping linear amplitude to a
+    logarithmic scale.  The vertical line highlights the physical edge of the filter's target
+    channel bandwidth.
+
+    Args:
+        taps: The filter to plot.
+        sample_rate: The samples per second.
+        cutoff: [OPTIONAL] The cutoff of the filter.  If defined, plotted as a vertical line.
+        num_freqs: [OPTIONAL] If defined, the number of frequencies to computer.
+            See help(scipy.signal.freqs)'s "worN" argument for details.
+        now: [OPTIONAL] If True, will show plot immediately.  Otherwise, the caller must call
+            plt.show().
+    """
+    # LOCAL VARIABLES
+    freqs = None     # The frequencies at which the taps were computed
+    response = None  # The frequency response, as complex numbers
+
+    # INPUT VALIDATION
+    validate_ndarray(taps, 'taps', can_be_empty=False, num_dim=1, must_be_complex=False)
+    validate_pos_float_or_int(sample_rate, 'samp_rate')
+    if cutoff is not None:
+        validate_pos_float_or_int(cutoff, 'cutoff')
+
+    # SETUP
+
+    # PLOT IT
+    freqs, response = freqz(taps, worN=num_freqs, fs=float(sample_rate))
+    plt.plot(freqs, 20 * numpy.log10(numpy.maximum(numpy.abs(response), 1e-12)))
+    if cutoff is not None:
+        plt.axvline(cutoff, linestyle='--')
+    _plot_it(x_label='Frequency (Hz)', y_label='Magnitude (dB)', title='Filter Magnitude Response',
+             visible_grid=True, now=now)
 
 
 def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
@@ -68,6 +107,8 @@ def plot_frequency_response(coeffs: numpy.ndarray, win_size: int | None = None,
 
 def plot_impulse_response(coeffs: numpy.ndarray, now: bool = True) -> None:
     """Plot filter coefficients.
+
+    Plots the time-domain impulse response (taps) of a filter.
 
     Args:
         coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).

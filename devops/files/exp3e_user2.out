@@ -1,0 +1,1243 @@
+[INFO] [UHD] linux; GNU C++ version 15.2.0; Boost_109000; UHD_4.9.0.1-1ubuntu1
+[INFO] [B200] Detected Device: B206mini
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+OURS: UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+THEIRS: UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+RX GAIN: 40
+TX GAIN: 40
+SAMPLE RATE: 240000.0 (fs/2 == 120000.0)
+SYMBOL RATE: 2400
+FREQ SEP: 4800
+BANDWIDTH: 9600
+CUTOFF: 5000.0
+[INFO] [B200] Asking for clock rate 61.440000 MHz... 
+[INFO] [B200] Actually got clock rate 61.440000 MHz.
+[RX] Starting
+RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 100000 (CONTROL: 100000)
+EXP3E: Stateful Symbol Timing - Stateful M&M (interpolate)
+[MM] Starting Values: samples_per_symbol=100.0000 interp=16 gain_mu=0.1750 gain_omega=0.0077 omega_relative_limit=0.0050
+[MM] mu=0.0000 omega=100.0000 (nominal=100.0000, clip=±0.50%) residual_len=0
+You have 5 seconds to start the other user!
+[MM] mu=0.1646 omega=99.9751 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.5737 omega=99.9809 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7850 omega=99.9943 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7227 omega=99.9516 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7590 omega=99.9575 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4012 omega=99.9285 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6484 omega=99.9533 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7157 omega=99.9306 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5829 omega=99.9649 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9812 omega=99.9082 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1477 omega=99.9293 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6567 omega=99.9347 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0461 omega=99.9890 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3172 omega=100.0735 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5464 omega=100.0573 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0148 omega=100.0222 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5621 omega=100.0167 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2501 omega=100.0445 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4622 omega=99.9886 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3543 omega=100.0128 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.3423 omega=100.0077 (nominal=100.0000, clip=±0.50%) residual_len=1
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.9933 omega=100.0165 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8787 omega=100.0466 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8193 omega=100.0372 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6244 omega=100.0672 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8139 omega=99.9940 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8270 omega=100.0251 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1021 omega=100.0375 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1310 omega=100.0585 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0030 omega=100.0196 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.09375
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.1362 omega=99.9780 (nominal=100.0000, clip=±0.50%) residual_len=1
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6069 omega=100.0355 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9744 omega=100.0542 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0615 omega=100.0461 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0417 omega=99.9921 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3664 omega=100.0021 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3059 omega=100.0081 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2821 omega=99.9770 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1424 omega=99.9118 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3266 omega=99.9068 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7620 omega=99.8681 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3510 omega=99.8218 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9664 omega=99.7678 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8904 omega=99.7697 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1995 omega=99.8439 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] DATA BER: 0.2734375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5345 omega=99.8079 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4928 omega=99.7876 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.0456 omega=99.7803 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7527 omega=99.7879 (nominal=100.0000, clip=±0.50%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0769 omega=99.7657 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4507 omega=99.7711 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9981 omega=99.7542 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9564 omega=99.7240 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4204 omega=99.7022 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5700 omega=99.6760 (nominal=100.0000, clip=±0.50%) residual_len=15
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8605 omega=99.7933 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3520 omega=99.7503 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.7101 omega=99.6996 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3398 omega=99.6247 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2265625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2707 omega=99.6545 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2314 omega=99.5441 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.6450 omega=99.5043 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.5535 omega=99.5206 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.0686 omega=99.5348 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9064 omega=99.5334 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1893 omega=99.5198 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.8518 omega=99.5082 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.7520 omega=99.5025 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.625
+[RX] SYNCWORD BER: 0.09375
+[RX] SYNCWORD BER: 0.5625
+[MM] mu=0.3914 omega=99.5551 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5795 omega=99.5994 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4312 omega=99.6200 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.2726 omega=99.6218 (nominal=100.0000, clip=±0.50%) residual_len=1
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7962 omega=99.5720 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] DATA BER: 0.234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7047 omega=99.5432 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3507 omega=99.5411 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1972 omega=99.5486 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4982 omega=99.5013 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.1972 omega=99.5129 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4040 omega=99.5172 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.6905 omega=99.5662 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5447 omega=99.5490 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6060 omega=99.5068 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4656 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=10
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1313 omega=99.5064 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.3267 omega=99.5185 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.0355 omega=99.5115 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4718 omega=99.5112 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.5265 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4227 omega=99.5059 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.2820 omega=99.5085 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3309 omega=99.5330 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5205 omega=99.5210 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2211 omega=99.5017 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.5471 omega=99.5274 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.6535 omega=99.5795 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2561 omega=99.5292 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2147 omega=99.5388 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1752 omega=99.5433 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1905 omega=99.5561 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1941 omega=99.5735 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8595 omega=99.5001 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2961 omega=99.5285 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5702 omega=99.5392 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9795 omega=99.5282 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6275 omega=99.5799 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1981 omega=99.5453 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1013 omega=99.5494 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7624 omega=99.5152 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5970 omega=99.5553 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2345 omega=99.5269 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6869 omega=99.5880 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7009 omega=99.5423 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0703 omega=99.6062 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9034 omega=99.6397 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.0210 omega=99.6151 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5298 omega=99.5753 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0006 omega=99.5973 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.3742 omega=99.6429 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.6801 omega=99.6197 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9166 omega=99.6325 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3203125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6132 omega=99.6040 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5959 omega=99.5353 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7973 omega=99.5101 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3151 omega=99.5009 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5074 omega=99.5076 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] DATA BER: 0.33984375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6204 omega=99.5004 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4067 omega=99.5308 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.9422 omega=99.5362 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3045 omega=99.5138 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5926 omega=99.5216 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.29296875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1621 omega=99.5064 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.9371 omega=99.5662 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9819 omega=99.5791 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.9953 omega=99.5383 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.2890625
+[RX] Dropping failed checksum
+[MM] mu=0.2205 omega=99.5186 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2208 omega=99.5290 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7548 omega=99.6199 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1697 omega=99.6317 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5162 omega=99.6286 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3671875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9147 omega=99.5933 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1367 omega=99.6158 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.7763 omega=99.5278 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2609 omega=99.5232 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9886 omega=99.5533 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2802 omega=99.5663 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6639 omega=99.5680 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9566 omega=99.5429 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4450 omega=99.5374 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7316 omega=99.5248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9079 omega=99.5388 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2114 omega=99.5622 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6117 omega=99.6108 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.0730 omega=99.6347 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0627 omega=99.6399 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4649 omega=99.6653 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0814 omega=99.6556 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3619 omega=99.6365 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5422 omega=99.6626 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7796 omega=99.6905 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6619 omega=99.7294 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.6977 omega=99.7442 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7140 omega=99.7534 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9579 omega=99.8114 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.05078125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4426 omega=99.9428 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6157 omega=99.9938 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3526 omega=100.0204 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4710 omega=100.0002 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.6773 omega=99.9735 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7992 omega=99.9814 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8376 omega=99.9957 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3784 omega=100.0024 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9839 omega=99.9303 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8088 omega=99.9102 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0832 omega=99.8876 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.3842 omega=99.8916 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4445 omega=99.8879 (nominal=100.0000, clip=±0.50%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9717 omega=99.8525 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4284 omega=99.9076 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8846 omega=99.8869 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.7634 omega=99.8501 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9398 omega=99.8375 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[MM] mu=0.2565 omega=99.8861 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6844 omega=99.9005 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.6874 omega=99.9212 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8316 omega=99.8834 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3034 omega=99.8599 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6995 omega=99.8240 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3001 omega=99.8826 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9560 omega=99.8839 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.0816 omega=99.8673 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8462 omega=99.8417 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7186 omega=99.8954 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3488 omega=99.9001 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7610 omega=99.8989 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2971 omega=99.9140 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.1875
+[MM] mu=0.4135 omega=99.9410 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6015 omega=99.9244 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4986 omega=99.9989 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8635 omega=99.9521 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2569 omega=99.9160 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1872 omega=99.8746 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.2335 omega=99.8740 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6738 omega=99.8562 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7721 omega=99.8340 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.9863 omega=99.7903 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7632 omega=99.7375 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0296 omega=99.6872 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8689 omega=99.7098 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8969 omega=99.6945 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5595 omega=99.7600 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0319 omega=99.7611 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1553 omega=99.7134 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2153 omega=99.7040 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4351 omega=99.6899 (nominal=100.0000, clip=±0.50%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.203125
+[RX] Dropping failed checksum
+[MM] mu=0.7848 omega=99.6220 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5478 omega=99.5695 (nominal=100.0000, clip=±0.50%) residual_len=12
+[MM] mu=0.0888 omega=99.5907 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7894 omega=99.5710 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8027 omega=99.5675 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3671875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1127 omega=99.5885 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5167 omega=99.5566 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9401 omega=99.5898 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0446 omega=99.5962 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.8439 omega=99.5925 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9441 omega=99.5573 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3466 omega=99.5387 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1961 omega=99.5343 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3700 omega=99.5019 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.29296875
+[RX] Dropping failed checksum
+[MM] mu=0.6754 omega=99.6282 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8646 omega=99.6921 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6222 omega=99.7220 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.0091 omega=99.7790 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2917 omega=99.7720 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.20703125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2564 omega=99.7273 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9661 omega=99.6738 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.1887 omega=99.6084 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7631 omega=99.6249 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4310 omega=99.6148 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4135 omega=99.6121 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1488 omega=99.5565 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.9366 omega=99.5405 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9288 omega=99.5373 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1892 omega=99.5018 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3203125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3390 omega=99.5377 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8529 omega=99.5508 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1805 omega=99.5233 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3735 omega=99.5070 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.21875
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5625
+[MM] mu=0.7784 omega=99.5104 (nominal=100.0000, clip=±0.50%) residual_len=7
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9095 omega=99.5137 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.9711 omega=99.5589 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3201 omega=99.6030 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4175 omega=99.6058 (nominal=100.0000, clip=±0.50%) residual_len=6
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3890 omega=99.5797 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7827 omega=99.6075 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6356 omega=99.6108 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.5377 omega=99.6180 (nominal=100.0000, clip=±0.50%) residual_len=6
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2377 omega=99.5927 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] DATA BER: 0.22265625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9611 omega=99.6132 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.8491 omega=99.6761 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1071 omega=99.6671 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9459 omega=99.6282 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.16796875
+[RX] Dropping failed checksum
+[MM] mu=0.6112 omega=99.6557 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7027 omega=99.6782 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8729 omega=99.6625 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5413 omega=99.6478 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0099 omega=99.6211 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.37109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2044 omega=99.6551 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7164 omega=99.6289 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2735 omega=99.6795 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8227 omega=99.6652 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3700 omega=99.6537 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.21484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4340 omega=99.6954 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7146 omega=99.7477 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3170 omega=99.7051 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0051 omega=99.6781 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5834 omega=99.6791 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9602 omega=99.6017 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8894 omega=99.5873 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.0873 omega=99.5781 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0646 omega=99.5612 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.8046875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7107 omega=99.5304 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7682 omega=99.5555 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5508 omega=99.5315 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9444 omega=99.5600 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6710 omega=99.5532 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1550 omega=99.5088 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1700 omega=99.5016 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.5901 omega=99.5373 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4083 omega=99.5177 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5577 omega=99.5042 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5224 omega=99.5266 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3731 omega=99.5326 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2956 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.6464 omega=99.5215 (nominal=100.0000, clip=±0.50%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.296875
+[RX] Dropping failed checksum
+[MM] mu=0.1403 omega=99.5368 (nominal=100.0000, clip=±0.50%) residual_len=10
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5654 omega=99.5813 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7844 omega=99.5498 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0197 omega=99.5862 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8463 omega=99.5830 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0745 omega=99.5321 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9499 omega=99.5594 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9189 omega=99.5827 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2160 omega=99.5882 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4303 omega=99.6101 (nominal=100.0000, clip=±0.50%) residual_len=14
+[RX] DATA BER: 0.2734375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7933 omega=99.6172 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.5502 omega=99.6002 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.7112 omega=99.5961 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1185 omega=99.5929 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.30078125
+[RX] Dropping failed checksum
+[MM] mu=0.2024 omega=99.5554 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3268 omega=99.5923 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1857 omega=99.5960 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4360 omega=99.6008 (nominal=100.0000, clip=±0.50%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2629 omega=99.5764 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.25
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0138 omega=99.6000 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.4835 omega=99.6229 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.9635 omega=99.6220 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6107 omega=99.6531 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5576 omega=99.6244 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2734375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9900 omega=99.6537 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6334 omega=99.5999 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1101 omega=99.6114 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.8647 omega=99.6131 (nominal=100.0000, clip=±0.50%) residual_len=6
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7105 omega=99.6351 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.25390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4450 omega=99.6770 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2944 omega=99.7184 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.9947 omega=99.6965 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1451 omega=99.7031 (nominal=100.0000, clip=±0.50%) residual_len=15
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[MM] mu=0.8427 omega=99.6539 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2481 omega=99.6550 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1078 omega=99.6425 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3545 omega=99.6284 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9783 omega=99.5514 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] DATA BER: 0.25
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2015 omega=99.5094 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3469 omega=99.5052 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8314 omega=99.5021 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.8847 omega=99.5015 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2674 omega=99.5076 (nominal=100.0000, clip=±0.50%) residual_len=9
+[RX] DATA BER: 0.3125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2414 omega=99.5099 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.0063 omega=99.5058 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.5611 omega=99.5265 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.3743 omega=99.5232 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[MM] mu=0.1666 omega=99.5326 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1536 omega=99.5798 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5648 omega=99.5664 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6686 omega=99.5460 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9740 omega=99.5535 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.40234375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2304 omega=99.5458 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3978 omega=99.5617 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1803 omega=99.5230 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0497 omega=99.5274 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6405 omega=99.5009 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3359375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1700 omega=99.5389 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9274 omega=99.5759 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9250 omega=99.5912 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6792 omega=99.5783 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7750 omega=99.6139 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.26171875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0939 omega=99.5778 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.3757 omega=99.6041 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1622 omega=99.6155 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2007 omega=99.5953 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] DATA BER: 0.30859375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7177 omega=99.6753 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5778 omega=99.7163 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4749 omega=99.6798 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.3352 omega=99.6754 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9819 omega=99.6560 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6867 omega=99.6317 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9435 omega=99.5703 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8799 omega=99.5446 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9794 omega=99.5190 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3251 omega=99.5404 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8320 omega=99.5195 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2741 omega=99.5148 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.9328 omega=99.5023 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.1536 omega=99.5008 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.8346 omega=99.5604 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3239 omega=99.5983 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1986 omega=99.6038 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.5589 omega=99.5873 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.03125
+[RX] SYNCWORD BER: 0.59375
+[MM] mu=0.1578 omega=99.6014 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3381 omega=99.6454 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8886 omega=99.6634 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7088 omega=99.5788 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2970 omega=99.5866 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4084 omega=99.5823 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2578125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7649 omega=99.5671 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3271 omega=99.6095 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.7588 omega=99.6328 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7654 omega=99.6122 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.23046875
+[RX] Dropping failed checksum
+[MM] mu=0.6903 omega=99.5999 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7355 omega=99.5111 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5699 omega=99.5461 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5295 omega=99.5441 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9464 omega=99.5287 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.39453125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8378 omega=99.5279 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5996 omega=99.5010 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0605 omega=99.5503 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4541 omega=99.5222 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5652 omega=99.5659 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.29296875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7453 omega=99.5748 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3236 omega=99.6147 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.6892 omega=99.5156 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2370 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2538 omega=99.5106 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8524 omega=99.5368 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9374 omega=99.7021 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8892 omega=99.6671 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8242 omega=99.6489 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0261 omega=99.7189 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3000 omega=99.7080 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0886 omega=99.6928 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.2501 omega=99.7160 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.0997 omega=99.6738 (nominal=100.0000, clip=±0.50%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5681 omega=99.6669 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6572 omega=99.6240 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9109 omega=99.6639 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7599 omega=99.6413 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6990 omega=99.6219 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.29296875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1928 omega=99.6685 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6675 omega=99.6399 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6629 omega=99.6242 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8545 omega=99.5956 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.296875
+[RX] Dropping failed checksum
+[MM] mu=0.8609 omega=99.5772 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0044 omega=99.5467 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5147 omega=99.5864 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9004 omega=99.5939 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4447 omega=99.5431 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.37109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7344 omega=99.5522 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5367 omega=99.5197 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7052 omega=99.5116 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7367 omega=99.5086 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4430 omega=99.5082 (nominal=100.0000, clip=±0.50%) residual_len=1
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1007 omega=99.5142 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0221 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=5
+[MM] mu=0.5616 omega=99.5092 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.9425 omega=99.5046 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.8966 omega=99.5347 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6074 omega=99.5034 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8996 omega=99.5323 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7730 omega=99.5469 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6357 omega=99.5516 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8598 omega=99.6208 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.3926 omega=99.6543 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1362 omega=99.6968 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0851 omega=99.6970 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.6920 omega=99.7160 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5088 omega=99.6801 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.4032 omega=99.6819 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9229 omega=99.6537 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1002 omega=99.6272 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2770 omega=99.6245 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5552 omega=99.6376 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7704 omega=99.6965 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0358 omega=99.6848 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7009 omega=99.6704 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.15234375
+[RX] Dropping failed checksum
+[MM] mu=0.0487 omega=99.6531 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6523 omega=99.6412 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5110 omega=99.6297 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8279 omega=99.6764 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5209 omega=99.6529 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3683 omega=99.6684 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3464 omega=99.6522 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7710 omega=99.6426 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3366 omega=99.7059 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7674 omega=99.7428 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.18359375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1258 omega=99.6934 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6130 omega=99.7013 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.7807 omega=99.7572 (nominal=100.0000, clip=±0.50%) residual_len=2
+[MM] mu=0.7986 omega=99.7230 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.21875
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.1057 omega=99.6938 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7252 omega=99.7345 (nominal=100.0000, clip=±0.50%) residual_len=15
+[MM] mu=0.7367 omega=99.7349 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3608 omega=99.7397 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3800 omega=99.8031 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3512 omega=99.8652 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6872 omega=99.7705 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2040 omega=99.8510 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3161 omega=99.7933 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9579 omega=99.7257 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.20703125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2601 omega=99.7266 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8613 omega=99.6926 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3992 omega=99.6404 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9246 omega=99.6347 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3697 omega=99.6429 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.20703125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6557 omega=99.6028 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1753 omega=99.6299 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6445 omega=99.6371 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3052 omega=99.6257 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.03125
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.0492 omega=99.6168 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9503 omega=99.6006 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.3863 omega=99.6070 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5497 omega=99.5518 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4331 omega=99.5248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2806 omega=99.5143 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3642 omega=99.5206 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.3919 omega=99.5746 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9858 omega=99.5846 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5413 omega=99.6065 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.27734375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7719 omega=99.6201 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.4426 omega=99.6225 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3094 omega=99.7146 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1483 omega=99.7124 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.16796875
+[RX] Dropping failed checksum
+[MM] mu=0.6054 omega=99.7256 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2437 omega=99.6960 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2216 omega=99.6307 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5471 omega=99.5426 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7941 omega=99.5236 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8972 omega=99.5052 (nominal=100.0000, clip=±0.50%) residual_len=6
+[MM] mu=0.2150 omega=99.5154 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.2398 omega=99.5519 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9868 omega=99.5026 (nominal=100.0000, clip=±0.50%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8467 omega=99.5282 (nominal=100.0000, clip=±0.50%) residual_len=6
+[RX] DATA BER: 0.36328125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9022 omega=99.5129 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5488 omega=99.5680 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0879 omega=99.5392 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8654 omega=99.5454 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1617 omega=99.5752 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.34375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2017 omega=99.5680 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9015 omega=99.5967 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8126 omega=99.5665 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1003 omega=99.5707 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0833 omega=99.5802 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2963 omega=99.6350 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3984 omega=99.6324 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3621 omega=99.6060 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9471 omega=99.5428 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.28125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0265 omega=99.5044 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3149 omega=99.5435 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2009 omega=99.5662 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7793 omega=99.5015 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.6477 omega=99.5490 (nominal=100.0000, clip=±0.50%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7252 omega=99.5706 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3191 omega=99.5877 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8226 omega=99.5754 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8336 omega=99.5734 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.0026 omega=99.5358 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0008 omega=99.5041 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9565 omega=99.5370 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2847 omega=99.5019 (nominal=100.0000, clip=±0.50%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1540 omega=99.5178 (nominal=100.0000, clip=±0.50%) residual_len=8
+[RX] DATA BER: 0.3203125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9350 omega=99.5725 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0589 omega=99.5844 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7415 omega=99.5869 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.8029 omega=99.6084 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7692 omega=99.6200 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.22265625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6274 omega=99.6647 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1178 omega=99.7205 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.7154 omega=99.6881 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5125 omega=99.7300 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.17578125
+[RX] Dropping failed checksum
+[MM] mu=0.2034 omega=99.7589 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6180 omega=99.7188 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9407 omega=99.7029 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3596 omega=99.6767 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.8359 omega=99.6510 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7675 omega=99.7936 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2752 omega=99.7601 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.3700 omega=99.7336 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8955 omega=99.7248 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1701 omega=99.7005 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.21484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4748 omega=99.6328 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1187 omega=99.6300 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7482 omega=99.6586 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2336 omega=99.6440 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6242 omega=99.6581 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.19140625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2542 omega=99.7061 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1658 omega=99.7344 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1430 omega=99.7360 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6374 omega=99.7085 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4565 omega=99.6705 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0625 omega=99.6476 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2250 omega=99.5953 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9373 omega=99.6009 (nominal=100.0000, clip=±0.50%) residual_len=3
+[RX] SYNCWORD BER: 0.09375
+[MM] mu=0.4208 omega=99.5890 (nominal=100.0000, clip=±0.50%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9587 omega=99.6063 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1672 omega=99.5996 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.1241 omega=99.6185 (nominal=100.0000, clip=±0.50%) residual_len=14
+[MM] mu=0.8365 omega=99.6128 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7261 omega=99.6134 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] DATA BER: 0.25390625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7050 omega=99.5839 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.5426 omega=99.6403 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5089 omega=99.6149 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2764 omega=99.5926 (nominal=100.0000, clip=±0.50%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.31640625
+[RX] Dropping failed checksum
+[MM] mu=0.4877 omega=99.6040 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7697 omega=99.6114 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9660 omega=99.5828 (nominal=100.0000, clip=±0.50%) residual_len=4
+[MM] mu=0.6114 omega=99.6201 (nominal=100.0000, clip=±0.50%) residual_len=3
+[MM] mu=0.1753 omega=99.6491 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3992 omega=99.6752 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6860 omega=99.7217 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7541 omega=99.7095 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7468 omega=99.6523 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4348 omega=99.6418 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6371 omega=99.6688 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2254 omega=99.6956 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7056 omega=99.6671 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8415 omega=99.6446 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1692 omega=99.5730 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.265625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3783 omega=99.5987 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0939 omega=99.6255 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3706 omega=99.6167 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9700 omega=99.6077 (nominal=100.0000, clip=±0.50%) residual_len=2
+[RX] DATA BER: 0.37109375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1457 omega=99.6299 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5717 omega=99.5935 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4725 omega=99.6285 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1489 omega=99.6602 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0053 omega=99.6595 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.2734375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5764 omega=99.6542 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5244 omega=99.6933 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0984 omega=99.6292 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1634 omega=99.5818 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.8338 omega=99.5572 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0655 omega=99.5884 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1150 omega=99.6000 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.5658 omega=99.5991 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1979 omega=99.5921 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5625
+[MM] mu=0.3651 omega=99.5115 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3168 omega=99.5705 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8973 omega=99.5439 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5889 omega=99.5533 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4633 omega=99.5654 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3515625
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7869 omega=99.5423 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5491 omega=99.5019 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7610 omega=99.5208 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7202 omega=99.5006 (nominal=100.0000, clip=±0.50%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0703 omega=99.5247 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] DATA BER: 0.30078125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1885 omega=99.5059 (nominal=100.0000, clip=±0.50%) residual_len=16
+[MM] mu=0.3447 omega=99.5179 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5118 omega=99.5001 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.2578 omega=99.5164 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8066 omega=99.5967 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1667 omega=99.5931 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5694 omega=99.5735 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0817 omega=99.5140 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0625
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.4375
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.2692 omega=99.5236 (nominal=100.0000, clip=±0.50%) residual_len=6
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0929 omega=99.5383 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8141 omega=99.5352 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1048 omega=99.5448 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5144 omega=99.5148 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9241 omega=99.5014 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] DATA BER: 0.3359375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9690 omega=99.5372 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8404 omega=99.5474 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5165 omega=99.5713 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1197 omega=99.5357 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5368 omega=99.5775 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.3359375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7150 omega=99.5578 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1082 omega=99.6309 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9498 omega=99.7055 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1040 omega=99.6961 (nominal=100.0000, clip=±0.50%) residual_len=12
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[MM] mu=0.3320 omega=99.7228 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3770 omega=99.6913 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5766 omega=99.7153 (nominal=100.0000, clip=±0.50%) residual_len=11
+[MM] mu=0.0531 omega=99.7024 (nominal=100.0000, clip=±0.50%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2010 omega=99.7264 (nominal=100.0000, clip=±0.50%) residual_len=7
+[RX] DATA BER: 0.21875
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7502 omega=99.6977 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8589 omega=99.7018 (nominal=100.0000, clip=±0.50%) residual_len=10
+[MM] mu=0.8574 omega=99.7057 (nominal=100.0000, clip=±0.50%) residual_len=13
+[MM] mu=0.5664 omega=99.6758 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3729 omega=99.7231 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.21484375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3373 omega=99.7323 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1907 omega=99.7874 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1278 omega=99.7938 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4835 omega=99.7721 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.08984375
+[RX] Dropping failed checksum
+[MM] mu=0.0945 omega=99.7421 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1586 omega=99.7748 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9842 omega=99.7768 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0304 omega=99.7835 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5260 omega=99.7772 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8196 omega=99.7924 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3166 omega=99.7367 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8723 omega=99.7479 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7822 omega=99.7519 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6886 omega=99.6791 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.20703125
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6352 omega=99.6628 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7378 omega=99.6834 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4686 omega=99.7115 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8768 omega=99.6715 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6571 omega=99.6989 (nominal=100.0000, clip=±0.50%) residual_len=10
+[RX] DATA BER: 0.24609375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3540 omega=99.6895 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.5544 omega=99.6538 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1609 omega=99.6209 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3158 omega=99.6112 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9669 omega=99.6007 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0874 omega=99.5122 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8754 omega=99.5005 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2259 omega=99.5007 (nominal=100.0000, clip=±0.50%) residual_len=9
+[MM] mu=0.1526 omega=99.5064 (nominal=100.0000, clip=±0.50%) residual_len=13
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5207 omega=99.5439 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9472 omega=99.5526 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.6676 omega=99.5218 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8773 omega=99.5150 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0625
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.375
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.6921 omega=99.5066 (nominal=100.0000, clip=±0.50%) residual_len=7
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1476 omega=99.5833 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1252 omega=99.5998 (nominal=100.0000, clip=±0.50%) residual_len=7
+[MM] mu=0.5082 omega=99.5735 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.9402 omega=99.5688 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[MM] mu=0.4360 omega=99.5468 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7069 omega=99.5269 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8767 omega=99.5456 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.4489 omega=99.5822 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7480 omega=99.5673 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.375
+[RX] Dropping failed checksum
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9655 omega=99.5536 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0451 omega=99.5002 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7805 omega=99.5215 (nominal=100.0000, clip=±0.50%) residual_len=1
+[MM] mu=0.1316 omega=99.5261 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.3171 omega=99.5074 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1874 omega=99.5383 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.0181 omega=99.5000 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.1687 omega=99.5041 (nominal=100.0000, clip=±0.50%) residual_len=8
+[MM] mu=0.0118 omega=99.5003 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.2635 omega=99.5582 (nominal=100.0000, clip=±0.50%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8380 omega=99.5920 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.7019 omega=99.5775 (nominal=100.0000, clip=±0.50%) residual_len=0
+[MM] mu=0.8065 omega=99.5398 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7634 omega=99.5122 (nominal=100.0000, clip=±0.50%) residual_len=0
+[RX] DATA BER: 0.33984375
+[RX] Dropping failed checksum
+[MM] mu=0.2679 omega=99.5313 (nominal=100.0000, clip=±0.50%) residual_len=4
+

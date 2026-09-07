@@ -14,7 +14,8 @@ from gallant_input.validation import (validate_ndarray, validate_pos_float_or_in
 
 
 def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
-                     max_peaks: int | None = None) -> SpectrumAnalysis:
+                     max_peaks: int | None = None,
+                     min_spacing: float | int | None = None) -> SpectrumAnalysis:
     """Analyze the frequency spectrum of a sampled signal.
 
     Computes the Fast Fourier Transform (FFT) of the supplied real or complex samples,
@@ -41,6 +42,9 @@ def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
         samples: Real or complex-valued input samples.
         sample_rate: Sampling rate of the input samples in Hz.
         max_peaks: [OPTIONAL] The number of SpectralPeak objs to add to SpectrumAnalysis.peaks.
+        min_spacing: [OPTIONAL] Minimum required spacing between accepted peaks, in Hz.
+            Prevents adjacent ripple/leakage bins on a single lobe from being reported as
+            multiple distinct peaks. If None, no minimum spacing is enforced.
 
     Returns:
         A SpectrumAnalysis object containing:
@@ -54,11 +58,13 @@ def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
         ValueError: Bad value.
     """
     # LOCAL VARIABLES
-    fft = None    # Shifted copy of samples where DC is moved from the to the center
-    freqs = None  # Array of evenly spaced freq bins sorted in ascending order from neg to pos freqs
-    mag = None    # The element-wise absolute value of the FFT bins
-    peaks = None  # An array of peak indices
-    props = None  # Dictionary of properties containing metadata about each peak
+    fft = None         # Shifted copy of samples where DC is moved from the to the center
+    freqs = None       # Array of evenly spaced freq bins sorted in order from neg to pos freqs
+    mag = None         # The element-wise absolute value of the FFT bins
+    bin_spacing = 0.0  # Hz per FFT bin
+    distance = None    # min_spacing converted to bins
+    peaks = None       # An array of peak indices
+    props = None       # Dictionary of properties containing metadata about each peak
 
     # INPUT VALIDATION
     validate_ndarray(array=samples, array_name='samples', can_be_empty=False,
@@ -66,12 +72,17 @@ def analyze_spectrum(samples: numpy.ndarray, sample_rate: float | int,
     validate_pos_float_or_int(validate_this=sample_rate, param_name='sample_rate')
     if max_peaks is not None:
         validate_pos_int(max_peaks, 'max_peaks')
+    if min_spacing is not None:
+        validate_pos_float_or_int(min_spacing, 'min_spacing')
 
     # ANALYSZE IT
     fft = numpy.fft.fftshift(numpy.fft.fft(samples))  # FFT bins
     freqs = numpy.fft.fftshift(numpy.fft.fftfreq(len(samples), d=1/sample_rate))  # Frequencies
     mag = numpy.abs(fft)  # Magnitude of the FFT bins
-    peaks, props = find_peaks(mag, prominence=numpy.max(mag) * 0.10)
+    bin_spacing = sample_rate / len(samples)
+    if min_spacing is not None:
+        distance = max(1, int(min_spacing / bin_spacing))
+    peaks, props = find_peaks(mag, prominence=numpy.max(mag) * 0.10, distance=distance)
 
     # STORE IT
     left_ips, right_ips = _calc_width(mag, peaks)

@@ -1,0 +1,28 @@
+EXP1A (Control)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 63 packets, user 2 received 34: 46.03% packet loss.
+User 2 sent 63 packets, user 1 received 38: 39.68% packet loss.
+
+EXP1B (Smaller buffer, more loss?)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 63 packets, user 2 received 41: 34.92% packet loss.
+User 2 sent 63 packets, user 1 received 39: 38.10% packet loss.
+
+EXP1C (Larger buffer, less loss?)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 65 packets, user 2 received 43: 33.85% packet loss.
+User 2 sent 65 packets, user 1 received 44: 32.31% packet loss.
+
+EXP1D (Very large buffer, less loss?)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 184 packets, user 2 received 124: 32.61% packet loss.
+User 2 sent 185 packets, user 1 received 106: 42.70% packet loss.
+
+EXP1E (Watch buffer truncations/wrap-around)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 50 packets, user 2 received 36: 28.00% packet loss.
+User 2 sent 50 packets, user 1 received 11: 78.00% packet loss.
+
+
+
+

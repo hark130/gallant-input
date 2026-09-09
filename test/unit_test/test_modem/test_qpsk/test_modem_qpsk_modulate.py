@@ -232,7 +232,7 @@ class ErrorModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         bits = b'10101010'
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(bits, ValueError,
-                                      'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -298,7 +298,7 @@ class ErrorModemQPSKModulateUnitTest(ModemQPSKModulateUnitTest):
         bits = b'10101010'
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(bits, ValueError,
-                                      'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e13_bad_bin_bytes_type_none(self):
         """Bad bin_bytes: bad type - None."""

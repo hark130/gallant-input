@@ -195,7 +195,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = 800
         test_in = b'10101010'
         self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
-                                      'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -243,7 +243,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         sym_rate = float(-800.0)
         test_in = b'10101010'
         self.run_test_exception_input(samp_rate, sym_rate, test_in, ValueError,
-                                      'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e13_bad_bin_bytes_type_none(self):
         """Bad bin_bytes: bad type - None."""

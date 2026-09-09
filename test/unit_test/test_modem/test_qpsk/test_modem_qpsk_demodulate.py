@@ -348,7 +348,7 @@ class ErrorModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         filt = MatchedFilter.NONE
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, ValueError,
-                                      'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -432,7 +432,7 @@ class ErrorModemQPSKDemodulateUnitTest(ModemQPSKDemodulateUnitTest):
         filt = MatchedFilter.NONE
         self.set_qpsk_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, ValueError,
-                                      'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e13_bad_carrier_recover_type_dict(self):
         """Bad sample rate: bad type - dict."""

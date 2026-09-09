@@ -315,7 +315,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
-                                      'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -369,7 +369,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         test_in = self.SAMPLES_OOK_ALL_01S
         threshold = None  # Automatically determine the threshold
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
-                                      'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e13_bad_samples_type_none(self):
         """Bad samples: bad type - None."""
@@ -433,7 +433,7 @@ class ErrorModemOOKModulateUnitTest(ModemOOKModulateUnitTest):
         test_in = self.SAMPLES_OOK_ALL_10S
         threshold = -0.5
         self.run_test_exception_input(samp_rate, sym_rate, test_in, threshold, ValueError,
-                                      'The "threshold" argument *must* be > 0')
+                                      'The "threshold" argument is not positive')
 
 
 class BoundaryModemOOKModulateUnitTest(ModemOOKModulateUnitTest):

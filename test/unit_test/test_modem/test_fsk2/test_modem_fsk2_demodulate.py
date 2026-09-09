@@ -210,7 +210,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         test_in = self.SAMPLES_OOK_ALL_ZEROES
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
-                                      'The "sample_rate" argument *must* be > 0')
+                                      'The "sample_rate" argument is not positive')
 
     def test_e07_bad_symbol_rate_type_none(self):
         """Bad sample rate: wrong type - None."""
@@ -264,7 +264,7 @@ class ErrorModemFSK2DemodulateUnitTest(ModemFSK2DemodulateUnitTest):
         test_in = self.SAMPLES_OOK_ALL_01S
         self.set_fsk2_ctor_args(samp_rate, sym_rate, None, None, None)
         self.run_test_exception_input(test_in, ValueError,
-                                      'The "symbol_rate" argument *must* be > 0')
+                                      'The "symbol_rate" argument is not positive')
 
     def test_e13_bad_samples_type_none(self):
         """Bad samples: bad type - None."""

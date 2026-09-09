@@ -126,7 +126,7 @@ class ErrorValidatePFOIUnitTest(ValidatePFOIUnitTest):
         param_name = self.test_case_data.name
         abs_tol = -0.01
         self.set_test_input(validate_this, param_name, abs_tol)
-        self.run_test_exception(ValueError, 'The "abs_tol" argument *must* be > 0')
+        self.run_test_exception(ValueError, 'argument is not positive')
 
     def test_e04_bad_abs_tol_value_zero(self):
         """Invalid abs_tol: bad value - zero."""
@@ -142,7 +142,7 @@ class ErrorValidatePFOIUnitTest(ValidatePFOIUnitTest):
         param_name = self.test_case_data.name
         abs_tol = 1e-9
         self.set_test_input(validate_this, param_name, abs_tol)
-        self.run_test_exception(ValueError, 'argument *must* be > 0')
+        self.run_test_exception(ValueError, 'argument is not positive')
 
     def test_e06_compound_negative_int(self):
         """Compound problem: negative int."""

@@ -30,7 +30,9 @@ BAD_MAPPER_KEY: Final[str] = 'The "{}" dictionary contains an out-of-bounds key 
 # Template string for arguments of the wrong data type
 _BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty
-_BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+# Template string or arguments that must be positive (but aren't)
+BAD_VAL_NOT_POS: Final[str] = 'The "{}" argument is not positive'
 
 
 def validate_arraylike(array_like: ArrayLike, param_name: str, num_dim: int | None = None) -> None:
@@ -153,6 +155,19 @@ def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
         raise TypeError(_BAD_TYPE.format(param_name, exp_type, type(validate_this)))
 
 
+def validate_complex(validate_this: complex, param_name: str) -> None:
+    """Validate validate_this as a complex value.
+
+    Args:
+        validate_this: A complex value.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a complex value.
+    """
+    validate_type(validate_this, param_name, complex)
+
+
 def validate_callable(validate_this: Callable, param_name: str) -> None:
     """Validate validate_this as a callable.
 
@@ -242,7 +257,7 @@ def validate_float_or_complex(validate_this: float | complex, param_name: str) -
     # float?
     if not valid:
         try:
-            validate_type(validate_this, param_name, complex)
+            validate_complex(validate_this, param_name)
         except TypeError:
             # I don't want to "raise from" because this exception is shared by two try/excepts
             # pylint: disable=raise-missing-from
@@ -304,30 +319,38 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
     # VALIDATION
     validate_type(validate_this, param_name, list)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
 
 
 def validate_mapper(mapper: dict[int, float | complex], mapper_name: str,
-                    bits_per_symbol: int) -> None:
-    """Validate modulator/demodulator bit mappings against their bits-per-symbol."""
+                    bits_per_symbol: int | None) -> None:
+    """Validate modulator/demodulator bit mappings against their bits-per-symbol.
+
+    Args:
+        mapper: The bits --> symbol dictionary used as a constellation diagram.
+        mapper_name: The name of the original argument to be used in Exception messages.
+        bits_per_symbol: If defined (AKA not None), will be used to validate the length of the
+            mapper and the numerical limits of the keys within.
+    """
     # LOCAL VARIABLES
     upper_bound = 0  # 2^bits-per-symbol
 
     # VALIDATION
     # ...under their own strength
     validate_type(mapper, mapper_name, dict)
-    validate_pos_int(bits_per_symbol, 'bits_per_symbol')
-    # ...with relation to each other
-    upper_bound = math.pow(2, bits_per_symbol)
-    if len(mapper) != upper_bound:
-        raise ValueError(BAD_MAPPER.format(mapper_name, len(mapper), bits_per_symbol))
+    if bits_per_symbol is not None:
+        validate_pos_int(bits_per_symbol, 'bits_per_symbol')
+        # ...with relation to each other
+        upper_bound = math.pow(2, bits_per_symbol)
+        if len(mapper) != upper_bound:
+            raise ValueError(BAD_MAPPER.format(mapper_name, len(mapper), bits_per_symbol))
     for key, value in mapper.items():
-        validate_int(key, 'a key in the mapper dictionary')
+        validate_int(key, f'a key in the {mapper_name} dictionary')
         if key < 0:
-            raise ValueError(f'Keys in the "mapper" dictionary may not be negative: {key}')
-        if key > upper_bound - 1:
+            raise ValueError(f'Keys in the "{mapper_name}" dictionary may not be negative: {key}')
+        if bits_per_symbol is not None and key > upper_bound - 1:
             raise ValueError(BAD_MAPPER_KEY.format(mapper_name, key, bits_per_symbol))
-        validate_float_or_complex(value, 'a value in the mapper dictionary')
+        validate_float_or_complex(value, f'a value in the {mapper_name} dictionary')
 
 
 def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False,
@@ -421,7 +444,7 @@ def validate_pos_float(validate_this: float, param_name: str, abs_tol: float = 1
     if validate_this <= 0 and math.isclose(validate_this, 0, abs_tol=abs_tol):
         raise ValueError(f'The "{param_name}" argument may not be 0')
     if validate_this < 0:
-        raise ValueError(f'The "{param_name}" argument *must* be > 0')
+        raise ValueError(BAD_VAL_NOT_POS.format(param_name))
 
 
 def validate_pos_float_or_int(validate_this: float | int, param_name: str,
@@ -452,22 +475,14 @@ def validate_pos_float_or_int(validate_this: float | int, param_name: str,
 
     # VALIDATE IT
     # positive int?
-    try:
+    if isinstance(validate_this, int):
         validate_pos_int(validate_this, param_name)
-    except TypeError:
-        pass  # Ignoring one failure
-    else:
-        valid = True
     # positive float?
-    if not valid:
-        try:
-            validate_pos_float(validate_this, param_name, abs_tol)
-        except TypeError:
-            # I don't want to "raise from" because this exception is shared by two try/excepts
-            # pylint: disable=raise-missing-from
-            raise TypeError(f'The "{param_name}" argument must be an integer or a '
-                            f'floating point data type instead of type {type(validate_this)}')
-            # pylint: enable=raise-missing-from
+    elif isinstance(validate_this, float):
+        validate_pos_float(validate_this, param_name, abs_tol)
+    else:
+        raise TypeError(_BAD_TYPE.format(param_name, f'{type(1.1)} or {type(1)}',
+                                         type(validate_this)))
 
 
 def validate_pos_int(validate_this: int, param_name: str) -> None:
@@ -507,7 +522,7 @@ def validate_string(validate_this: str, param_name: str, can_be_empty: bool = Fa
     # VALIDATION
     validate_type(validate_this, param_name, str)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
 
 
 def validate_type(var: Any, var_name: str, var_type: type) -> None:

@@ -465,9 +465,6 @@ def validate_pos_float_or_int(validate_this: float | int, param_name: str,
         TypeError: Not a float or int.
         ValueError: validate_this is not positive or abs_tol is negative.
     """
-    # LOCAL VARIABLES
-    valid = False  # Flow control variable
-
     # INPUT VALIDATION
     validate_string(param_name, 'param_name', can_be_empty=True)
     validate_pos_float(abs_tol, 'abs_tol')

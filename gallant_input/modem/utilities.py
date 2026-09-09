@@ -3,7 +3,6 @@
 # Standard Imports
 import math
 # Third Party Imports
-import numpy
 # Local Imports
 from gallant_input.validation import (BAD_VAL_EMPTY, validate_complex, validate_mapper,
                                       validate_pos_float_or_int)

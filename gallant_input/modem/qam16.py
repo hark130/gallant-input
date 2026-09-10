@@ -346,11 +346,12 @@ class QAM16(Modem):
         # DECIDE IT
         reverse_mapper = {point: symbol for symbol, point in self._mapper.items()}
         symbol_values = numpy.asarray([reverse_mapper[point] for point in axis_points],
-                                       dtype=numpy.uint8)
+                                      dtype=numpy.uint8)
 
         # DONE
         return symbol_values
 
+# pylint: disable=too-many-locals
     def _decide_symbols_kmeans(self, symbol_metrics: numpy.ndarray,
                                correct_gain: bool) -> numpy.ndarray:
         """Decide symbol values using the k-means strategy.
@@ -401,6 +402,7 @@ class QAM16(Modem):
 
         # DONE
         return symbol_values
+# pylint: enable=too-many-locals
 
     def _decide_symbols_nearest(self, symbol_metrics: numpy.ndarray) -> numpy.ndarray:
         """Decide symbol values using the which-constellation-point-is-nearest strategy.

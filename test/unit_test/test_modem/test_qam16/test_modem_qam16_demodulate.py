@@ -18,7 +18,7 @@ from tediousstart.tediousstart import execute_test_cases
 from unittest import skip
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QAM16_MAP, QPSK_MAP
+from gallant_input.modem.constants import BPSK_MAP, QAM16_MAP
 from gallant_input.modem.decide_symbols import DecideSymbols
 from gallant_input.modem.matched_filter import MatchedFilter
 from gallant_input.synch.costas_loop import CostasLoop
@@ -86,7 +86,7 @@ class ModemQAM16DemodulateUnitTest(ModemQAM16UnitTest):
             exp_ret: The expected return value from the method call.
         """
         self.set_qam16_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate,
-                                carrier_recovery=carrier_recovery, mapper=mapper)
+                                 carrier_recovery=carrier_recovery, mapper=mapper)
         self.expect_return(exp_ret)
         self.run_test()
 
@@ -542,7 +542,7 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        mapper = {key: QAM16_MAP[key] for key in list(QAM16_MAP)[:1]}  # Only one entry from QAM16_MAP
+        mapper = {key: QAM16_MAP[key] for key in list(QAM16_MAP)[:1]}  # Only one QAM16_MAP entry
         # QAM16().demodulate() input
         samples = self.SAMPLES_OOK_ALL_10S  # Just to get a valid array
         filt = MatchedFilter.NONE
@@ -551,7 +551,7 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         self.run_test_exception_input(samples, filt, strategy, ValueError,
                                       'The length of the "mapper" dictionary')
 
-    def test_e19_bad_mapper_value_not_a_quad_map(self):
+    def test_e19_bad_mapper_value_not_a_full_map(self):
         """Bad mapper: bad value - Binary Phase-Shift Keying (BPSK) mapping."""
         # QAM16Config() input
         samp_rate = 48000
@@ -566,8 +566,8 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         self.run_test_exception_input(samples, filt, strategy, ValueError,
                                       'The length of the "mapper" dictionary')
 
-    def test_e20_bad_mapper_value_almost_a_quad_map(self):
-        """Bad mapper: bad value - one shy of a quad mapping."""
+    def test_e20_bad_mapper_value_almost_a_full_map(self):
+        """Bad mapper: bad value - one shy of a full mapping."""
         # QAM16Config() input
         samp_rate = 48000
         sym_rate = 800
@@ -840,7 +840,7 @@ class BoundaryModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         num_syms = 1       # The number of symbols to generate for this test case
         bits = generate_bin_bytes(num_bits=self.bits_per_symbol*num_syms)  # Source binary
         samples = convert_bin_bytes_to_qam16(bin_bytes=bits, sample_rate=samp_rate,
-                                            symbol_rate=sym_rate, bit_map=mapper)
+                                             symbol_rate=sym_rate, bit_map=mapper)
         filt = MatchedFilter.NONE
         strategy = DecideSymbols.NEAR  # Default value
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
@@ -1200,7 +1200,7 @@ class SpecialModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         strategy = DecideSymbols.NEAR  # Default value
         self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
                                    carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
-                                   snr_db=snr_db, filt=filt)
+                                   snr_db=snr_db, filt=filt, strategy=strategy)
 
     @skip('This test case is invalid until GAIN-26 is completed')
     def test_s19_everything_everywhere_all_at_once(self):
@@ -1218,7 +1218,7 @@ class SpecialModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         strategy = DecideSymbols.NEAR  # Default value
         self.run_test_return_noisy(sample_rate=samp_rate, symbol_rate=sym_rate,
                                    carrier_recovery=carr_rec, mapper=mapper, exp_ret=bits,
-                                   snr_db=snr_db, filt=filt)
+                                   snr_db=snr_db, filt=filt, strategy=strategy)
 
     def test_s20_one_symbol_repeated_zero(self):
         """Exclusively one symbol repeated: 00."""
@@ -1354,7 +1354,7 @@ def create_test_input(sample_rate: int | float, symbol_rate: int | float,
     if mapping is None:
         mapping = QAM16_MAP
     return convert_bin_bytes_to_qam16(bin_bytes=bin_bytes, sample_rate=sample_rate,
-                                     symbol_rate=symbol_rate, bit_map=mapping)
+                                      symbol_rate=symbol_rate, bit_map=mapping)
 
 
 if __name__ == '__main__':

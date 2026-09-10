@@ -100,6 +100,42 @@ def plot_impulse_response(coeffs: numpy.ndarray, now: bool = True) -> None:
              now=now)
 
 
+def plot_mapping(mapping: dict[int, complex], now: bool = True) -> None:
+    """Plot a constellation diagram on a complex plane.
+
+    Args:
+        mapping: The constellation diagram to plot.
+        now: [OPTIONAL] If True, immediately displays the plot.  Otherwise, the caller must call
+            matplotlib.pyplot.show().
+    """
+    # LOCAL VARIABLES
+    complex_numbers = []  # The complex values extracted from the mapping
+    x_coords = []         # X axis coordinates
+    y_coords = []         # Y axis coordinates
+
+    # INPUT VALIDATION
+
+    # PLOT IT
+    complex_numbers = list(mapping.values())
+    x_coords = [num.real for num in complex_numbers]
+    y_coords = [num.imag for num in complex_numbers]
+    plt.figure(figsize=(6, 6))
+    # Plot the constellation points
+    plt.scatter(x_coords, y_coords, color='blue', marker='o', s=100, label='Symbols')
+    # Add labels to each point showing its integer key
+    for key, value in mapping.items():
+        plt.text(value.real, value.imag + 0.1, str(key), fontsize=12, ha='center')
+    # Draw X and Y grid lines through the center (0,0)
+    plt.axhline(0, color='black', linewidth=0.5, linestyle='--')
+    plt.axvline(0, color='black', linewidth=0.5, linestyle='--')
+    plt.grid(True, linestyle=':', alpha=0.6)
+    plt.axis('equal') # Keeps the scale square
+
+    # Configure labels and layout
+    _plot_it(x_label='In-Phase (Real)', y_label='Quadrature (Imaginary)',
+             title='Modulation Constellation Diagram', visible_grid=False, now=now)
+
+
 # Maybe I'll refactor this later...
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def plot_spectrum(samples: numpy.ndarray, samp_rate: int | float | None = None,

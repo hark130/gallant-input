@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import numpy
 # Local Imports
 from gallant_input.signal import compute_spectrum
-from gallant_input.validation import (validate_bool, validate_int_or_float, validate_ndarray,
+from gallant_input.validation import (validate_bool, validate_complex, validate_int_or_float,
+                                      validate_mapper, validate_ndarray,
                                       validate_pos_float, validate_pos_int, validate_string)
 
 
@@ -114,6 +115,9 @@ def plot_mapping(mapping: dict[int, complex], now: bool = True) -> None:
     y_coords = []         # Y axis coordinates
 
     # INPUT VALIDATION
+    validate_mapper(mapper=mapping, mapper_name='mapping', bits_per_symbol=None)
+    for _, value in mapping.items():
+        validate_complex(value, 'value in "mapping" argument')
 
     # PLOT IT
     complex_numbers = list(mapping.values())
@@ -129,7 +133,7 @@ def plot_mapping(mapping: dict[int, complex], now: bool = True) -> None:
     plt.axhline(0, color='black', linewidth=0.5, linestyle='--')
     plt.axvline(0, color='black', linewidth=0.5, linestyle='--')
     plt.grid(True, linestyle=':', alpha=0.6)
-    plt.axis('equal') # Keeps the scale square
+    plt.axis('equal')  # Keeps the scale square
 
     # Configure labels and layout
     _plot_it(x_label='In-Phase (Real)', y_label='Quadrature (Imaginary)',

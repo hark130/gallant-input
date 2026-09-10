@@ -232,7 +232,7 @@ class QAM16ModemCompTest(ModemCompTest):
         """
         config = None  # QAM16() ctor argument
         config = QAM16Config(sample_rate=self.input_sample_rate, symbol_rate=self.input_symbol_rate,
-                            carrier_recovery=self.input_carrier_recovery, mapper=self.input_mapper)
+                             carrier_recovery=self.input_carrier_recovery, mapper=self.input_mapper)
         return QAM16(config=config)
 # pylint: enable=too-many-instance-attributes
 
@@ -1095,7 +1095,7 @@ class SpecialQAM16ModemCompTest(QAM16ModemCompTest):
         self.assertEqual(bin_bytes[:1], b'0', 'Specifically tests this leading bit')
         self.assertNotEqual(len(bin_bytes) % self.bits_per_symbol, 0, 'Input length *must* be off')
         samples = convert_bin_bytes_to_qam16(bin_bytes=bin_bytes, sample_rate=samp_rate,
-                                            symbol_rate=sym_rate, bit_map=mapper)
+                                             symbol_rate=sym_rate, bit_map=mapper)
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.set_test_input_return(bin_bytes=bin_bytes, samples=samples, filt=filt,
                                    strategy=strategy, modem_order=False, skip_exp_ret=True)
@@ -1115,7 +1115,7 @@ class SpecialQAM16ModemCompTest(QAM16ModemCompTest):
         self.assertEqual(bin_bytes[:1], b'1', 'Specifically tests this leading bit')
         self.assertNotEqual(len(bin_bytes) % self.bits_per_symbol, 0, 'Input length *must* be off')
         samples = convert_bin_bytes_to_qam16(bin_bytes=bin_bytes, sample_rate=samp_rate,
-                                            symbol_rate=sym_rate, bit_map=mapper)
+                                             symbol_rate=sym_rate, bit_map=mapper)
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.set_test_input_return(bin_bytes=bin_bytes, samples=samples, filt=filt,
                                    strategy=strategy, modem_order=False, skip_exp_ret=True)

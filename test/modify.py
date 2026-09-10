@@ -77,17 +77,16 @@ def convert_bin_bytes_to_bpsk(bin_bytes: bytes, sample_rate: int | float, symbol
     """Convert a binary bytes object to a BPSK array given a mapping dictionary."""
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
+    bps = 1                                # Bits-per-symbol
     samples = None                         # An array of the sample values
     array = None                           # The numpy.ndarray formed from the samples
 
     # INPUT VALIDATION
-    validate_mapper(bit_map, 'bit_map', bits_per_symbol=1)  # B is for Binary
+    validate_mapper(bit_map, 'bit_map', bits_per_symbol=bps)  # B is for Binary
 
     # COMPUTE IT
-    samples = []
-    for bin_byte in bin_bytes:
-        samples += [int(chr(bin_byte))] * sps
-    array = numpy.array([bit_map[sample] for sample in samples], dtype=numpy.complex64)
+    array = _convert_bin_bytes_to_mod(bin_bytes=bin_bytes, samples_per_symbol=sps,
+                                      bit_map=bit_map, bits_per_symbol=bps)
 
     # DONE
     return array
@@ -107,6 +106,38 @@ def convert_bin_bytes_to_ook(bin_bytes: bytes, sample_rate: int | float,
         samples += [int(chr(bin_byte))] * sps
     samples = b''.join([bytes(str(sample), 'ascii') for sample in samples])
     array = convert_ascii_bin_bytes_to_bits(samples).astype(numpy.complex64)
+
+    # DONE
+    return array
+
+
+def convert_bin_bytes_to_qam16(bin_bytes: bytes, sample_rate: int | float, symbol_rate: int | float,
+                               bit_map: dict[int, complex]) -> numpy.ndarray:
+    """Convert a binary bytes object to a QPSK array given a mapping dictionary.
+
+
+    If the length of bin_bytes does not conform to the implied bit mapping
+    (e.g., len(bin_bytes) % bits-per-symbol != 0) then bin_bytes will be padded with trailing zeros.
+
+    Args:
+        bin_bytes: The binary, as a bytes object, to map to complex samples.
+        sample_rate: The number of samples of a continuous-time signal that are recorded
+            (or generated) per second.
+        symbol_rate: The number of symbols-per-second (AKA baud rate).
+        bit_map: The mapping of bits to complex samples.
+    """
+    # LOCAL VARIABLES
+    sps = int(sample_rate // symbol_rate)  # Samples per symbol
+    bps = 4                                # Bits-per-symbol
+    samples = None                         # An array of the sample values
+    array = None                           # The numpy.ndarray formed from the samples
+
+    # INPUT VALIDATION
+    validate_mapper(bit_map, 'bit_map', bits_per_symbol=bps)  # 16-QAM
+
+    # COMPUTE IT
+    array = _convert_bin_bytes_to_mod(bin_bytes=bin_bytes, samples_per_symbol=sps,
+                                      bit_map=bit_map, bits_per_symbol=bps)
 
     # DONE
     return array
@@ -136,14 +167,9 @@ def convert_bin_bytes_to_qpsk(bin_bytes: bytes, sample_rate: int | float, symbol
     # INPUT VALIDATION
     validate_mapper(bit_map, 'bit_map', bits_per_symbol=bps)  # QPSK == 4PSK == 2^2PSK
 
-    # PREPARE
-    bin_bytes = pad_bin_bytes(bin_bytes, bps)
-
     # COMPUTE IT
-    samples = []
-    for bin_chunk in [bin_bytes[index:index+bps] for index in range(0, len(bin_bytes), bps)]:
-        samples += [int(bin_chunk, 2)] * sps
-    array = numpy.array([bit_map[sample] for sample in samples], dtype=numpy.complex64)
+    array = _convert_bin_bytes_to_mod(bin_bytes=bin_bytes, samples_per_symbol=sps,
+                                      bit_map=bit_map, bits_per_symbol=bps)
 
     # DONE
     return array
@@ -201,3 +227,36 @@ def upsample_test_input(samples: numpy.ndarray, sample_rate: float | int,
                         symbol_rate: float | int) -> numpy.ndarray:
     """Create test case input by upsampling a valid 'samples' array, using production code."""
     return upsample(symbols=samples, samples_per_symbol=calculate_sps(sample_rate, symbol_rate))
+
+
+def _convert_bin_bytes_to_mod(bin_bytes: bytes, samples_per_symbol: int | float,
+                              bit_map: dict[int, complex], bits_per_symbol: int) -> numpy.ndarray:
+    """Convert a binary bytes object to an array given a mapping and generic specifications.
+
+    If the length of bin_bytes does not conform to the implied bit mapping
+    (e.g., len(bin_bytes) % bits-per-symbol != 0) then bin_bytes will be padded with trailing zeros.
+    This function does not validate input.
+
+    Args:
+        bin_bytes: The binary, as a bytes object, to map to complex samples.
+        samples_per_symbol: The number of samples required to represent one symbol.
+        bit_map: The mapping of bits to complex samples.
+        bits_per_symbol: The number of bits represented in one symbol (e.g., BFSK == 1, QPSK == 2,
+            16-QAM == 4).
+    """
+    # LOCAL VARIABLES
+    samples = None  # An array of the sample values
+    array = None    # The numpy.ndarray formed from the samples
+
+    # PREPARE
+    bin_bytes = pad_bin_bytes(bin_bytes, bits_per_symbol)
+
+    # COMPUTE IT
+    samples = []
+    for bin_chunk in [bin_bytes[index:index+bits_per_symbol] \
+                      for index in range(0, len(bin_bytes), bits_per_symbol)]:
+        samples += [int(bin_chunk, 2)] * samples_per_symbol
+    array = numpy.array([bit_map[sample] for sample in samples], dtype=numpy.complex64)
+
+    # DONE
+    return array

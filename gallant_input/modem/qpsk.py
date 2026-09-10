@@ -227,6 +227,7 @@ class QPSK(Modem):
         centers = None        # Cluster centroids as complex values
         label_to_key = {}     # cluster label -> mapper key (0-3)
         symbol_values = None  # Decided mapper key per symbol
+        bit_matrix = None     # Array of uint8 binary values
         bits = None           # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''       # The final binary as a bytes object
 
@@ -234,7 +235,7 @@ class QPSK(Modem):
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=True)
-        n_symbols = 2 ** self._bits_per_sym  # 4 for QPSK
+        n_symbols = 2 ** self._bits_per_sym  # 4 symbols for QPSK
         if len(symbol_metrics) < n_symbols:
             raise ValueError(f'Requires at least {n_symbols} symbols to cluster but received '
                              f'{len(symbol_metrics)}')

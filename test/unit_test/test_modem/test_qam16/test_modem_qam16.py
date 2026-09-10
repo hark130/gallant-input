@@ -34,6 +34,7 @@ from typing import Any
 # Third Party Imports
 from test.unit_test.test_modem.test_modem import ModemUnitTest
 # Local Imports
+from gallant_input.modem.decide_symbols import DecideSymbols
 from gallant_input.modem.qam16 import QAM16
 from gallant_input.modem.qam16_config import QAM16Config
 

@@ -80,7 +80,7 @@ class ModemQAM16UnitTest(ModemUnitTest):
                                     'the function to test.'))
 
     def set_qam16_ctor_args(self, sample_rate: Any, symbol_rate: Any, carrier_recovery: Any,
-                           mapper: Any) -> None:
+                            mapper: Any) -> None:
         """Sets the QAM16() argument values in the test class."""
         self.set_ctor_args(sample_rate=sample_rate, symbol_rate=symbol_rate)
         self.input_carr_recover = carrier_recovery

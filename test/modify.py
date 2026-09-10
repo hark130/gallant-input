@@ -78,7 +78,6 @@ def convert_bin_bytes_to_bpsk(bin_bytes: bytes, sample_rate: int | float, symbol
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
     bps = 1                                # Bits-per-symbol
-    samples = None                         # An array of the sample values
     array = None                           # The numpy.ndarray formed from the samples
 
     # INPUT VALIDATION
@@ -129,7 +128,6 @@ def convert_bin_bytes_to_qam16(bin_bytes: bytes, sample_rate: int | float, symbo
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
     bps = 4                                # Bits-per-symbol
-    samples = None                         # An array of the sample values
     array = None                           # The numpy.ndarray formed from the samples
 
     # INPUT VALIDATION
@@ -161,7 +159,6 @@ def convert_bin_bytes_to_qpsk(bin_bytes: bytes, sample_rate: int | float, symbol
     # LOCAL VARIABLES
     sps = int(sample_rate // symbol_rate)  # Samples per symbol
     bps = 2                                # Bits-per-symbol
-    samples = None                         # An array of the sample values
     array = None                           # The numpy.ndarray formed from the samples
 
     # INPUT VALIDATION
@@ -253,7 +250,7 @@ def _convert_bin_bytes_to_mod(bin_bytes: bytes, samples_per_symbol: int | float,
 
     # COMPUTE IT
     samples = []
-    for bin_chunk in [bin_bytes[index:index+bits_per_symbol] \
+    for bin_chunk in [bin_bytes[index:index+bits_per_symbol]
                       for index in range(0, len(bin_bytes), bits_per_symbol)]:
         samples += [int(bin_chunk, 2)] * samples_per_symbol
     array = numpy.array([bit_map[sample] for sample in samples], dtype=numpy.complex64)

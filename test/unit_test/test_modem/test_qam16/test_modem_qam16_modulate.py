@@ -17,7 +17,7 @@ from typing import Any
 from tediousstart.tediousstart import execute_test_cases
 import numpy
 # Local Imports
-from gallant_input.modem.constants import BPSK_MAP, QAM16_MAP, QPSK_MAP
+from gallant_input.modem.constants import QAM16_MAP, QPSK_MAP
 from gallant_input.synch.costas_loop import CostasLoop
 from test.modify import convert_bin_bytes_to_qam16, generate_bin_bytes, rotate_mapping
 from test.unit_test.test_modem.test_qam16.test_modem_qam16 import ModemQAM16UnitTest

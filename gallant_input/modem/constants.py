@@ -33,3 +33,12 @@ PSK8_MAP: Final[dict[int, complex]] = {
     0b101: 0.0000-1.0000j,   # 270 degrees (3pi/2 rad)
     0b100: 0.7071-0.7071j    # 315 degrees (7pi/4 rad)
 }
+
+# Hybrid Modulation
+# 16-QAM gray coded constellation diagram
+QAM16_MAP: Final[dict[int, complex]] = {
+    0b0000: (-3-3j), 0b0001: (-3-1j), 0b0010: (-3+1j), 0b0011: (-3+3j),
+    0b0100: (-1-3j), 0b0101: (-1-1j), 0b0110: (-1+1j), 0b0111: (-1+3j),
+    0b1000: (1-3j),  0b1001: (1-1j),  0b1010: (1+1j),  0b1011: (1+3j),
+    0b1100: (3-3j),  0b1101: (3-1j),  0b1110: (3+1j),  0b1111: (3+3j),
+}

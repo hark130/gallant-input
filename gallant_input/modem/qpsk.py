@@ -230,13 +230,6 @@ class QPSK(Modem):
         bits = None           # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''       # The final binary as a bytes object
 
-        # threshold = 0.0  # The bit decision threshold
-        # polar_diff = 0   # Difference between the mapper's complex values
-        # deriv_axis = 0   # Derived axis based on the mapper
-        # bits = None      # The final array of 1s and 0s to convert to a bytes object
-        # bin_bytes = b''  # The final binary as a bytes object
-        # reshaped = None  # Reshaped symbol_metrics into a single column
-
         # VALIDATION
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,

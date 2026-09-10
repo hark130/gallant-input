@@ -10,6 +10,7 @@ from gallant_input.codec import (convert_ascii_bin_bytes_to_bits, map_bits_to_sy
                                  stringify_ndarray, upsample)
 from gallant_input.convolvemode import ConvolveMode
 from gallant_input.filters import apply_fir, create_rect_fir, create_rrc_fir
+from gallant_input.modem.decide_symbols import DecideSymbols
 from gallant_input.modem.qam16_config import QAM16Config
 from gallant_input.modem.modem import Modem
 from gallant_input.modem.matched_filter import MatchedFilter
@@ -61,7 +62,8 @@ class QAM16(Modem):
         # DONE
         return iq
 
-    def demodulate(self, samples: numpy.ndarray, filt: MatchedFilter = MatchedFilter.NONE) -> bytes:
+    def demodulate(self, samples: numpy.ndarray, filt: MatchedFilter = MatchedFilter.NONE,
+                   symbol_strategy: DecideSymbols = DecideSymbols.NEAR) -> bytes:
         """DEMoodulate binary data.
 
         Args:
@@ -69,6 +71,8 @@ class QAM16(Modem):
             filt: [OPTIONAL] The matched filter to apply.  MatchedFilter.RECT_FIR may be the
                 optimal matched filter for a modulator that did not do any pulse shaping but
                 the default is MatchedFilter.NONE (no matched filter applied).
+            symbol_strategy: [OPTIONAL] The strategy to use to 'decide symbols'.  Default strategy
+                is to find the nearest constellation point.
 
         Returns:
             The demodulated binary data.
@@ -94,7 +98,7 @@ class QAM16(Modem):
         # Step 2: Recover symbols
         symbol_metrics = self.recover_symbols(metric=metric)
         # Step 3: Decide symbols
-        bit_stream = self.decide_symbols(symbol_metrics)
+        bit_stream = self.decide_symbols(symbol_metrics, symbol_strategy=symbol_strategy)
 
         # DONE
         return bit_stream
@@ -199,7 +203,8 @@ class QAM16(Modem):
 
     # Step 3: Decide symbols
 
-    def decide_symbols(self, symbol_metrics: numpy.ndarray) -> bytes:
+    def decide_symbols(self, symbol_metrics: numpy.ndarray,
+                       symbol_strategy: DecideSymbols) -> bytes:
         """Convert recovered symbol metrics into digital symbol decisions (Demod Step 3/3).
 
         Summary: Map each recovered symbol value to the discrete symbol/bit representation.
@@ -208,6 +213,7 @@ class QAM16(Modem):
 
         Args:
             symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            symbol_strategy: The strategy to use to 'decide symbols'.
 
         Returns:
             The demodulated binary data.
@@ -219,6 +225,7 @@ class QAM16(Modem):
         # LOCAL VARIABLES
         n_symbols = 0         # 16 for 16-QAM
         symbol_values = None  # Decided mapper key per symbol
+        bit_matrix = None     # Array of uint8 binary values
         bits = None           # The final array of 1s and 0s to convert to a bytes object
         bin_bytes = b''       # The final binary as a bytes object
 
@@ -226,13 +233,32 @@ class QAM16(Modem):
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=True)
-        n_symbols = 2 ** self._bits_per_sym  # 4 for 16-QAM
+        n_symbols = 2 ** self._bits_per_sym  # 16 symbols for 16-QAM
         if len(symbol_metrics) < n_symbols:
             raise ValueError(f'Requires at least {n_symbols} symbols to cluster but received '
                              f'{len(symbol_metrics)}')
 
         # DECIDE IT
-        # TO DO: DON'T DO NOW... Implement this
+        match symbol_strategy:
+            case DecideSymbols.AXIS:
+                symbol_values = self._decide_symbols_axis(symbol_metrics=symbol_metrics)
+            case DecideSymbols.KMEANS | DecideSymbols.KMEANS_GAIN:
+                symbol_values = self._decide_symbols_kmeans(
+                    symbol_metrics=symbol_metrics,
+                    correct_gain=symbol_strategy is DecideSymbols.KMEANS_GAIN)
+            case DecideSymbols.NEAR:
+                symbol_values = self._decide_symbols_nearest(symbol_metrics=symbol_metrics)
+            case _:
+                raise NotImplementedError('No support for "DecideSymbols.'
+                                          f'{symbol_strategy.name}" yet')
+        if symbol_values is None or len(symbol_values) <= 0:
+            raise RuntimeError(f'The DecideSymbols.{symbol_strategy.name} stragey failed')
+
+        # 4. Unpack the symbol values into binary
+        bit_matrix = ((symbol_values[:, None] >>
+                       numpy.arange(self._bits_per_sym - 1, -1, -1)) & 1).astype(numpy.uint8)
+        bits = bit_matrix.flatten()
+        bin_bytes = stringify_ndarray(bits)
 
         # DONE
         return bin_bytes
@@ -297,6 +323,113 @@ class QAM16(Modem):
         # DONE
         return filtered
 
+    def _decide_symbols_axis(self, symbol_metrics: numpy.ndarray) -> numpy.ndarray:
+        """Decide symbol values using the axis strategy.
+
+        Quantize values to the nearest 16-QAM axis level.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+
+        Returns:
+            Symbol values to be unpacked into binary.
+        """
+        # LOCAL VARIABLES
+        real_values = symbol_metrics.real               # Array of real values
+        imag_values = symbol_metrics.imag               # Array of imaginary values
+        real_metrics = _decide_axis(real_values)        # Real value symbol metrics
+        imag_metrics = _decide_axis(imag_values)        # Imaginary value symbol metrics
+        axis_points = real_metrics + 1j * imag_metrics  # Metrics glued back together
+        reverse_mapper = {}                             # Reversed constellation diagram
+        symbol_values = None                            # Array of symbol values to be unpacked
+
+        # DECIDE IT
+        reverse_mapper = {point: symbol for symbol, point in self._mapper.items()}
+        symbol_values = numpy.asarray([reverse_mapper[point] for point in axis_points],
+                                       dtype=numpy.uint8)
+
+        # DONE
+        return symbol_values
+
+    def _decide_symbols_kmeans(self, symbol_metrics: numpy.ndarray,
+                               correct_gain: bool) -> numpy.ndarray:
+        """Decide symbol values using the k-means strategy.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+            correct_gain: Estimate and correct unknown channel gain if True.
+
+        Returns:
+            Symbol values to be unpacked into binary.
+        """
+        # LOCAL VARIABLES
+        n_symbols = 2 ** self._bits_per_sym  # 16 for 16-QAM
+        features = None                      # Stacked columns of real and imaginary symbol metrics
+        kmeans = None                        # The KMeans() object
+        labels = None                        # Array of cluster labels (not symbols)
+        centers = None                       # Centroids
+        label_to_key = {}                    # Cluster label -> mapper key
+        symbol_values = None                 # Numpy array of symbol values ready to be unpacked
+
+        # DECIDE IT
+        # 1. Cluster in the complex plane
+        features = numpy.column_stack([symbol_metrics.real, symbol_metrics.imag])
+        kmeans = KMeans(n_clusters=n_symbols, n_init='auto')
+        labels = kmeans.fit_predict(features)
+        centers = kmeans.cluster_centers_[:, 0] + 1j * kmeans.cluster_centers_[:, 1]
+
+        # 2. Estimate and correct unknown channel gain?
+        if correct_gain is True:
+            mapper_values = numpy.array(list(self._mapper.values()))
+            observed_rms = numpy.sqrt(numpy.mean(numpy.abs(centers) ** 2))  # Actual RMS
+            ideal_rms = numpy.sqrt(numpy.mean(numpy.abs(mapper_values) ** 2))  # Mapper's RMS
+            if observed_rms == 0:
+                raise ValueError('Observed constellation collapsed to the origin (zero RMS).  '
+                                 'Cannot estimate channel gain')
+            scale = ideal_rms / observed_rms
+            centers_normalized = centers * scale  # Scale observed centers to mapper's fixed radii
+        else:
+            centers_normalized = centers  # Don't scale it
+
+        # 3. Match each (normalized?) centroid to its nearest mapper entry
+        for label, center in enumerate(centers_normalized):
+            distances = {key: abs(center - value) for key, value in self._mapper.items()}
+            label_to_key[label] = min(distances, key=distances.get)
+
+        # 4. Resolve each sample's cluster label to its mapper key (0-15)
+        symbol_values = numpy.array([label_to_key[label] for label in labels], dtype=numpy.uint8)
+
+        # DONE
+        return symbol_values
+
+    def _decide_symbols_nearest(self, symbol_metrics: numpy.ndarray) -> numpy.ndarray:
+        """Decide symbol values using the which-constellation-point-is-nearest strategy.
+
+        Quantize values to the nearest 16-QAM axis level.
+
+        Args:
+            symbol_metrics: One recovered symbol metric for each transmitted symbol.
+
+        Returns:
+            Symbol values to be unpacked into binary.
+        """
+        # LOCAL VARIABLES
+        symbol_values = None  # Array of symbol values to be unpacked
+        distances = None      # The distance from every received symbol to every constellation point
+        nearest = None        # The shortest distance to a constellation point for each symbol
+        # Array of symbol keys
+        map_symbols = numpy.asarray(list(self._mapper.keys()), dtype=numpy.uint8)
+        # Array containing the corresponding constellation points
+        const_points = numpy.asarray(list(self._mapper.values()), dtype=numpy.complex64)
+
+        # DECIDE IT
+        distances = numpy.abs(symbol_metrics[:, None] - const_points[None, :])  # Calc distance
+        nearest = numpy.argmin(distances, axis=1)  # Get the nearest values
+        symbol_values = map_symbols[nearest]  # Convert the const. array indices back to symbol keys
+
+        # DONE
+        return symbol_values
+
     def _parse(self) -> None:
         """Parse user input."""
         self._parse_abc()
@@ -313,3 +446,26 @@ class QAM16(Modem):
     def _validate(self) -> None:
         """Validate attribute values."""
         self._validate_abc()
+
+
+def _decide_axis(metric_axis: numpy.ndarray) -> numpy.ndarray:
+    """Decide symbol values using the axis strategy.
+
+    Quantize values to the nearest 16-QAM axis level.
+
+    Args:
+        metric_axis: One recovered symbol metric for each transmitted symbol.
+
+    Returns:
+        Symbol values to be unpacked into binary.
+    """
+    # LOCAL VARIABLES
+    symbol_values = None  # Numpy array of symbol values ready to be unpacked
+
+    # DECIDE IT
+    symbol_values = numpy.where(metric_axis < -2, -3,
+                                numpy.where(metric_axis < 0, -1,
+                                            numpy.where(metric_axis < 2, 1, 3,),),)
+
+    # DONE
+    return symbol_values

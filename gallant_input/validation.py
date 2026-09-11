@@ -12,6 +12,7 @@ validated.
     validate_string(self._makefile_rule, 'makefile_rule')
 """
 # Standard Imports
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Final
 import math
@@ -21,10 +22,17 @@ from numpy.typing import ArrayLike
 import numpy
 # Local Imports
 
+# Template string for bad mapper lengths: argument name, mapper length, bits per symbol
+BAD_MAPPER: Final[str] = 'The length of the "{}" dictionary ({}) does not equal {}'
+# Template string for an out-of-bounds value for a mapper key
+BAD_MAPPER_KEY: Final[str] = 'The "{}" dictionary contains an out-of-bounds key value ({}) for ' \
+                             'a mapper of bits-per-symbol {}'
 # Template string for arguments of the wrong data type
 _BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty
-_BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+# Template string or arguments that must be positive (but aren't)
+BAD_VAL_NOT_POS: Final[str] = 'The "{}" argument is not positive'
 
 
 def validate_arraylike(array_like: ArrayLike, param_name: str, num_dim: int | None = None) -> None:
@@ -147,6 +155,33 @@ def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
         raise TypeError(_BAD_TYPE.format(param_name, exp_type, type(validate_this)))
 
 
+def validate_complex(validate_this: complex, param_name: str) -> None:
+    """Validate validate_this as a complex value.
+
+    Args:
+        validate_this: A complex value.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a complex value.
+    """
+    validate_type(validate_this, param_name, complex)
+
+
+def validate_callable(validate_this: Callable, param_name: str) -> None:
+    """Validate validate_this as a callable.
+
+    Args:
+        validate_this: A callable.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a callable.
+    """
+    if not callable(validate_this):
+        raise TypeError(_BAD_TYPE.format(param_name, Callable, type(validate_this)))
+
+
 def validate_file(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
     """Validate validate_this as a Path object to a file that exists.
 
@@ -195,6 +230,42 @@ def validate_int(validate_this: int, param_name: str) -> None:
     validate_type(validate_this, param_name, int)
 
 
+def validate_float_or_complex(validate_this: float | complex, param_name: str) -> None:
+    """Validate an argument, which could be an float or complex, on behalf of this package.
+
+    The codec module will accept these data types within the mapper argument so this function will
+    be used as a SPOT for all(?) float or complex validation.
+
+    Args:
+        validate_this: The parameter to validate as an int or float.
+        param_name: The name of the parameter to be used in exception messages.
+
+    Raises:
+        TypeError: validate_this is not a float or complex.
+    """
+    # LOCAL VARIABLES
+    valid = False  # Flow control variable
+
+    # VALIDATE IT
+    # int?
+    try:
+        validate_float(validate_this, param_name)
+    except TypeError:
+        pass  # Ignoring one failure
+    else:
+        valid = True
+    # float?
+    if not valid:
+        try:
+            validate_complex(validate_this, param_name)
+        except TypeError:
+            # I don't want to "raise from" because this exception is shared by two try/excepts
+            # pylint: disable=raise-missing-from
+            raise TypeError(f'The "{param_name}" argument must be a float or complex '
+                            f'data type instead of type {type(validate_this)}')
+            # pylint: enable=raise-missing-from
+
+
 def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
     """Validate an argument, which could be an int or float, on behalf of this package.
 
@@ -206,8 +277,7 @@ def validate_int_or_float(validate_this: int | float, param_name: str) -> None:
         param_name: The name of the parameter to be used in exception messages.
 
     Raises:
-        TypeError: validate_this is not a string.
-        ValueError: validate_this is empty and can_be_empty is False.
+        TypeError: validate_this is not a int or float.
     """
     # LOCAL VARIABLES
     valid = False  # Flow control variable
@@ -249,7 +319,38 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
     # VALIDATION
     validate_type(validate_this, param_name, list)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
+
+
+def validate_mapper(mapper: dict[int, float | complex], mapper_name: str,
+                    bits_per_symbol: int | None) -> None:
+    """Validate modulator/demodulator bit mappings against their bits-per-symbol.
+
+    Args:
+        mapper: The bits --> symbol dictionary used as a constellation diagram.
+        mapper_name: The name of the original argument to be used in Exception messages.
+        bits_per_symbol: If defined (AKA not None), will be used to validate the length of the
+            mapper and the numerical limits of the keys within.
+    """
+    # LOCAL VARIABLES
+    upper_bound = 0  # 2^bits-per-symbol
+
+    # VALIDATION
+    # ...under their own strength
+    validate_type(mapper, mapper_name, dict)
+    if bits_per_symbol is not None:
+        validate_pos_int(bits_per_symbol, 'bits_per_symbol')
+        # ...with relation to each other
+        upper_bound = math.pow(2, bits_per_symbol)
+        if len(mapper) != upper_bound:
+            raise ValueError(BAD_MAPPER.format(mapper_name, len(mapper), bits_per_symbol))
+    for key, value in mapper.items():
+        validate_int(key, f'a key in the {mapper_name} dictionary')
+        if key < 0:
+            raise ValueError(f'Keys in the "{mapper_name}" dictionary may not be negative: {key}')
+        if bits_per_symbol is not None and key > upper_bound - 1:
+            raise ValueError(BAD_MAPPER_KEY.format(mapper_name, key, bits_per_symbol))
+        validate_float_or_complex(value, f'a value in the {mapper_name} dictionary')
 
 
 def validate_ndarray(array: numpy.ndarray, array_name: str, can_be_empty: bool = False,
@@ -307,6 +408,17 @@ def validate_path(validate_this: Path, param_name: str, must_exist: bool = True)
                                 f'"{str(validate_this.absolute())}"')
 
 
+def validate_phase(phase: float, param_name: str) -> None:
+    """Validate phase within the bounds of 0 and 2π, inclusive."""
+    upper_bound = 2 * math.pi  # Upper limit for phase
+    validate_float(phase, param_name)
+    if phase < 0:
+        raise ValueError(f'The {param_name} value may not be negative: {phase}')
+    if phase > upper_bound:
+        raise ValueError(f'The {param_name} value may not be greater than {upper_bound}: '
+                         f'{phase}')
+
+
 def validate_pos_float(validate_this: float, param_name: str, abs_tol: float = 1e-9) -> None:
     """Validate validate_this as a positive float.
 
@@ -332,7 +444,42 @@ def validate_pos_float(validate_this: float, param_name: str, abs_tol: float = 1
     if validate_this <= 0 and math.isclose(validate_this, 0, abs_tol=abs_tol):
         raise ValueError(f'The "{param_name}" argument may not be 0')
     if validate_this < 0:
-        raise ValueError(f'The "{param_name}" argument *must* be > 0')
+        raise ValueError(BAD_VAL_NOT_POS.format(param_name))
+
+
+def validate_pos_float_or_int(validate_this: float | int, param_name: str,
+                              abs_tol: float = 1e-9) -> None:
+    """Validate validate_this as a positive float or int.
+
+    IMPORTANT NOTE: Positive values are greater than zero.  To put it another way, zero is
+    *NOT* positive.
+
+    Args:
+        validate_this: The parameter to validate.
+        param_name: The name of the parameter to be used in exception messages.
+        abs_tol: [OPTIONAL] The maximum difference for being considered "close" to zero,
+            regardless of the magnitude of the input values.  This value is used to test if
+            validate_this is equivalent to zero.  (see: math.isclose(abs_tol) for more information)
+
+    Raises:
+        TypeError: Not a float or int.
+        ValueError: validate_this is not positive or abs_tol is negative.
+    """
+    # INPUT VALIDATION
+    validate_string(param_name, 'param_name', can_be_empty=True)
+    validate_pos_float(abs_tol, 'abs_tol')
+    validate_int_or_float(validate_this, param_name)
+
+    # VALIDATE IT
+    # positive int?
+    if isinstance(validate_this, int):
+        validate_pos_int(validate_this, param_name)
+    # positive float?
+    elif isinstance(validate_this, float):
+        validate_pos_float(validate_this, param_name, abs_tol)
+    else:
+        raise TypeError(_BAD_TYPE.format(param_name, f'{type(1.1)} or {type(1)}',
+                                         type(validate_this)))
 
 
 def validate_pos_int(validate_this: int, param_name: str) -> None:
@@ -372,7 +519,7 @@ def validate_string(validate_this: str, param_name: str, can_be_empty: bool = Fa
     # VALIDATION
     validate_type(validate_this, param_name, str)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
 
 
 def validate_type(var: Any, var_name: str, var_type: type) -> None:

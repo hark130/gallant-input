@@ -17,12 +17,12 @@ from gallant_input.validation import (validate_arraylike, validate_bool, validat
 # pylint: disable=too-many-arguments, too-many-positional-arguments
 
 
-def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
+def apply_fir(samples: numpy.ndarray, coeffs: numpy.ndarray,
               mode: ConvolveMode | None = ConvolveMode.SAME) -> numpy.ndarray:
     """Apply a filter to a signal using convolution.
 
     Args:
-        signal: The signal to apply a filter to.
+        samples: The signal to apply a filter to.
         coeffs: A 1-dimensional array of filter coefficients (AKA impulse response).
         mode: [OPTIONAL] Specifies the method of convolution.  None will result in the default mode.
     """
@@ -30,7 +30,7 @@ def apply_fir(signal: numpy.ndarray, coeffs: numpy.ndarray,
     result = None  # signal convoluted with coeffs
 
     # APPLY IT
-    result = _call_convolve(signal=signal, coeffs=coeffs, mode=mode)
+    result = _call_convolve(samples=samples, coeffs=coeffs, mode=mode)
 
     # DONE
     return result
@@ -72,6 +72,96 @@ def create_basic_lpf(numtaps: int = 101, cutoff: float | ArrayLike = 0.25,
     """
     return design_lpf(numtaps=numtaps, cutoff=cutoff, width=width, window=window,
                       scale=scale, fs=fs)
+
+
+def create_rect_fir(sps: int, force_odd: bool = False) -> numpy.ndarray:
+    """Create a rectangular finite infinite response (FIR) filter.
+
+    Args:
+        sps: samples per symbol.
+        force_odd: [OPTIONAL] The sps value is used for the length of the taps, which probably
+            should be odd.  If True, adds one to even values.
+
+    Returns:
+        Rectangular FIR filter coefficients in a numpy.ndarray.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    taps = None  # The rectangular FIR
+
+    # INPUT VALIDATION
+    validate_pos_int(sps, 'sps')
+    validate_bool(force_odd, 'force_odd')
+
+    # SETUP
+    if force_odd is True and 0 == sps % 2:
+        sps += 1  # Make it odd
+
+    # CREATE IT
+    taps = numpy.ones(sps, dtype=numpy.float32)
+    taps /= taps.sum()
+
+    # DONE
+    return taps
+
+
+def create_rrc_fir(sps: int, span: int = 8, beta: float = 1.0) -> numpy.ndarray:
+    """Generate Root Raised Cosine (RRC) FIR taps.
+
+    Args:
+        sps: samples per symbol.
+        span: [OPTIONAL] Length of the filter in symbols.
+        beta: [OPTIONAL] Rolloff factor in [0, 1].
+
+    Returns:
+        RRC FIR filter coefficients in a numpy.ndarray.
+
+    Raises:
+        TypeError: Bad data type.
+        ValueError: Bad value.
+    """
+    # LOCAL VARIABLES
+    num = 0           # Number of sample intervals spanned by the filter
+    time_vect = None  # Time vector expressed in symbol times
+    taps = None       # FIR coefficients
+
+    # INPUT VALIDATION
+    validate_pos_int(sps, 'sps')
+    validate_pos_int(span, 'span')
+    validate_float(beta, 'beta')
+    if not 0.0 <= beta <= 1.0:
+        raise ValueError('The "beta" argument must be between 0 and 1, inclusive, '
+                         f'instead of {beta}')
+
+    # SETUP
+    # Time vector (units of symbols)
+    num = span * sps
+    time_vect = numpy.arange(-num / 2, num / 2 + 1) / sps
+    taps = numpy.zeros_like(time_vect)
+
+    for index, time_val in enumerate(time_vect):
+        # Special case: time_vect == 0
+        if numpy.isclose(time_val, 0.0):
+            taps[index] = 1.0 + beta * (4 / numpy.pi - 1)
+        # Special case: |t| = T / (4β)
+        elif (beta != 0 and numpy.isclose(abs(time_val), 1 / (4 * beta))):
+            taps[index] = (beta / numpy.sqrt(2) * ((1 + 2 / numpy.pi)
+                           * numpy.sin(numpy.pi / (4 * beta))
+                           + (1 - 2 / numpy.pi) * numpy.cos(numpy.pi / (4 * beta))))
+        # General case
+        else:
+            numerator = (numpy.sin(numpy.pi * time_val * (1 - beta)) + 4 * beta * time_val
+                         * numpy.cos(numpy.pi * time_val * (1 + beta)))
+            denominator = (numpy.pi * time_val * (1 - (4 * beta * time_val) ** 2))
+            taps[index] = numerator / denominator
+    # Normalize to unit energy
+    taps /= numpy.sqrt(numpy.sum(taps**2))
+
+    # DONE
+    return taps.astype(numpy.float32)
 
 
 def design_hpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = None,
@@ -143,7 +233,7 @@ def design_lpf(numtaps: int, cutoff: float | ArrayLike, width: float | None = No
                         pass_zero=FIRWIN_LPF, scale=scale, fs=fs)
 
 
-def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
+def _call_convolve(samples: numpy.ndarray, coeffs: numpy.ndarray,
                    mode: ConvolveMode | None) -> numpy.ndarray:
     """A SPOT to call numpy.convolve().
 
@@ -152,19 +242,19 @@ def _call_convolve(signal: numpy.ndarray, coeffs: numpy.ndarray,
     help(numpy.convolve).
 
     Args:
-        signal: First one-dimensional input array.
+        samples: First one-dimensional input array.
         coeffs: Second one-dimensional input array.
         mode: If None, this kwarg will be ommitted from the function call.
 
     Returns:
-        Discrete, linear convolution of `signal` and `coeffs`.
+        Discrete, linear convolution of `samples` and `coeffs`.
     """
     # LOCAL VARIABLES
-    result = None                                # Discrete linear convolution of signal and coeffs
-    dynamic_kwargs = {'a': signal, 'v': coeffs}  # Dynamic keyword arguments
+    result = None                                 # Discrete linear convolution of signal and coeffs
+    dynamic_kwargs = {'a': samples, 'v': coeffs}  # Dynamic keyword arguments
 
     # INPUT VALIDATION
-    validate_ndarray(array=signal, array_name='signal', can_be_empty=False, num_dim=1,
+    validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                      must_be_complex=False)
     validate_ndarray(array=coeffs, array_name='coeffs', can_be_empty=False, num_dim=1,
                      must_be_complex=False)

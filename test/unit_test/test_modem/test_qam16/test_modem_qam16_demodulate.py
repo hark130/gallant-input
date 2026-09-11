@@ -655,7 +655,7 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         strategy = DecideSymbols.NEAR
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"filt" argument should have been of type')
 
     def test_e26_bad_filt_type_str(self):
         """Bad filt: bad type - string."""
@@ -670,7 +670,7 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         strategy = DecideSymbols.NEAR
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"filt" argument should have been of type')
 
     def test_e27_bad_filt_type_int(self):
         """Bad filt: bad type - int."""
@@ -685,24 +685,25 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         strategy = DecideSymbols.NEAR
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"filt" argument should have been of type')
 
-    def test_e25_bad_strategy_type_none(self):
+    def test_e28_bad_strategy_type_none(self):
         """Bad strategy: bad type - None."""
         # QAM16Config() input
         samp_rate = 48000
         sym_rate = 800
         carr_rec = None
-        mapper = None  # Defaults to QAM16_MAP
+        mapper = QAM16_MAP
         # QAM16().demodulate() input
-        samples = self.SAMPLES_OOK_ALL_10S  # Just to get a valid array
-        filt = None  # As opposed to MatchedFilter.NONE
+        samples = create_test_input(sample_rate=samp_rate, symbol_rate=sym_rate,
+                                    bin_bytes=generate_bin_bytes(num_bits=256), bit_map=mapper)
+        filt = MatchedFilter.NONE
         strategy = None
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"symbol_strategy" argument should have been of type')
 
-    def test_e26_bad_strategy_type_str(self):
+    def test_e29_bad_strategy_type_str(self):
         """Bad strategy: bad type - string."""
         # QAM16Config() input
         samp_rate = 48000
@@ -711,13 +712,13 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         mapper = None  # Defaults to QAM16_MAP
         # QAM16().demodulate() input
         samples = self.SAMPLES_OOK_ALL_10S  # Just to get a valid array
-        filt = None
+        filt = MatchedFilter.NONE
         strategy = DecideSymbols.NEAR.name  # As opposed to DecideSymbols.NEAR
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"symbol_strategy" argument should have been of type')
 
-    def test_e27_bad_strategy_type_int(self):
+    def test_e30_bad_strategy_type_int(self):
         """Bad strategy: bad type - int."""
         # QAM16Config() input
         samp_rate = 48000
@@ -726,11 +727,11 @@ class ErrorModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):
         mapper = None  # Defaults to QAM16_MAP
         # QAM16().demodulate() input
         samples = self.SAMPLES_OOK_ALL_10S  # Just to get a valid array
-        filt = None
+        filt = MatchedFilter.NONE
         strategy = DecideSymbols.NEAR.value  # As opposed to DecideSymbols.NEAR
         self.set_qam16_ctor_args(samp_rate, sym_rate, carr_rec, mapper)
         self.run_test_exception_input(samples, filt, strategy, TypeError,
-                                      'argument should have been of type')
+                                      '"symbol_strategy" argument should have been of type')
 
 
 class BoundaryModemQAM16DemodulateUnitTest(ModemQAM16DemodulateUnitTest):

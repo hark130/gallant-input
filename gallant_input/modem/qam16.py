@@ -91,6 +91,7 @@ class QAM16(Modem):
         validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                          must_be_complex=False)
         validate_type(filt, 'filt', MatchedFilter)
+        validate_type(symbol_strategy, 'symbol_strategy', DecideSymbols)
 
         # DEMODULATE IT
         # Step 1: Demodulate to metrics
@@ -233,6 +234,7 @@ class QAM16(Modem):
         self.parse()  # Validate and parse
         validate_ndarray(array=symbol_metrics, array_name='symbol_metrics', can_be_empty=False,
                          num_dim=1, must_be_complex=True)
+        validate_type(symbol_strategy, 'symbol_strategy', DecideSymbols)
         n_symbols = 2 ** self._bits_per_sym  # 16 symbols for 16-QAM
         if len(symbol_metrics) < n_symbols:
             raise ValueError(f'Requires at least {n_symbols} symbols to cluster but received '

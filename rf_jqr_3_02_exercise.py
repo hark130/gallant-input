@@ -82,7 +82,7 @@ def get_bpsk_signal(sample_rate: int) -> np.ndarray:
     n = np.arange(N)
     h = np.sinc(n - (N - 1) / 2 - delay)
     h *= np.hamming(N)
-    h /= np.sum(h) 
+    h /= np.sum(h)
     samples = np.convolve(samples, h)
     fo = 300
     Ts = 1 / fs
@@ -103,8 +103,8 @@ def plot_bpsk_signal(samples: np.ndarray, fs: int,
     axes_1.set_ylabel('power')
     axes_1.set_title(title1)
     axes_1.plot(f, psd)
-    fig, axes_2 = plt.subplots(1, figsize=(5,5))
-    plt.scatter(np.real(samples[5::8]),np.imag(samples[5::8]),marker='o')
+    fig, axes_2 = plt.subplots(1, figsize=(5, 5))
+    plt.scatter(np.real(samples[5::8]), np.imag(samples[5::8]), marker='o')
     plt.title(title2)
     plt.xlabel('real')
     plt.ylabel('imag')

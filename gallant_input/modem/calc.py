@@ -240,6 +240,35 @@ def extract_bits_from_single_cluster(samples: numpy.ndarray,
     return bits
 
 
+def measure_phase_change(samples: numpy.ndarray) -> numpy.ndarray:
+    """Measure the phase changes of complex samples.
+
+    Multiplying a complex array by the conjugate of another signal results in the difference of
+    the phase angles.  If the "other signal" is actually signal[n+1], this measures the change
+    in phase between samples.
+
+    Args:
+        samples: A 1-dimensional array to trim.
+
+    Returns:
+        An array of phase differences between samples 1 --> N.  The array is one shorter than
+        samples because there is nothing to compare samples[0] to.  The caller is responsible
+        for any padding.
+    """
+    # LOCAL VARIABLES
+    dphi = None  # The difference between angles (instantaneous frequency)
+
+    # VALIDATION
+    validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
+                     must_be_complex=True)
+
+    # MEASURE IT
+    dphi = numpy.angle(samples[1:] * numpy.conj(samples[:-1]))
+
+    # DONE
+    return dphi
+
+
 def reshape_to_symbols(samples: numpy.ndarray, samples_per_symbol: int) -> numpy.ndarray:
     """Trim a 1-dimension array of samples and reshape it to a shape containing symbols.
 

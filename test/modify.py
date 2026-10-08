@@ -97,6 +97,8 @@ def convert_bytes_to_str(binary: bytes, clean_it: bool = False) -> str:
     """
     validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
     validate_bool(clean_it, 'clean_it')
+    while len(binary) % 8:
+        binary = binary + b'0'
     string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
     if clean_it:
         string = sanitize_ascii(string)

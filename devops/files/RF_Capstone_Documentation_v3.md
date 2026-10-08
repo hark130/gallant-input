@@ -490,7 +490,7 @@ However, this feature/refactor would require significant safety guards.
 
 ```bash
 sudo apt update
-sudo apt install -y libuhd-dev uhd-host python3-uhd
+sudo apt install -y libuhd-dev uhd-host python3-uhd python3-venv python3-pip
 
 # Download the FPGA/firmware images UHD needs to talk to the B200/B205/B206
 sudo uhd_images_downloader

@@ -77,9 +77,9 @@ class FrequencyCorrector:
             The frequency-corrected samples, same dtype and length as the input.
         """
         if not self._locked:
-            measured = self._measure(samples, noise_floor_db)
-            if measured is not None:
-                self._candidates.append(measured)
+            estimated_cfo = self._estimate_cfo(samples, noise_floor_db)
+            if estimated_cfo is not None:
+                self._candidates.append(estimated_cfo)
                 if len(self._candidates) > self._buffer_size:
                     self._candidates.pop(0)
 
@@ -133,7 +133,7 @@ class FrequencyCorrector:
 
 # Leave me be, Pylint!
 # pylint: disable=too-many-locals
-    def _measure(self, samples: numpy.ndarray, noise_floor_db: float | None) -> float | None:
+    def _estimate_cfo(self, samples: numpy.ndarray, noise_floor_db: float | None) -> float | None:
         """Measure a candidate FCD from one chunk of samples, if a confident detection exists.
 
         Locates the two expected FSK tones via a Welch-averaged PSD, requires each to

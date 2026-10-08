@@ -6,8 +6,10 @@ import random
 import numpy
 # Local Imports
 from gallant_input.codec import convert_ascii_bin_bytes_to_bits, upsample
+from gallant_input.converters import sanitize_ascii
 from gallant_input.modem.calc import calculate_sps
-from gallant_input.validation import (validate_float, validate_int_or_float, validate_mapper,
+from gallant_input.validation import (validate_bool, validate_binary_bytes, validate_float,
+                                      validate_int_or_float, validate_mapper,
                                       validate_ndarray, validate_pos_int, validate_type)
 
 
@@ -70,6 +72,35 @@ def change_sample_phase(sample: complex, delta_phase: float) -> complex:
 
     # DONE
     return sample * numpy.exp(1j * delta_phase)
+
+
+def convert_bytes_to_str(binary: bytes, clean_it: bool = False) -> str:
+    """Convert a bytes-representation of a binary number to an ASCII string.
+
+    This implementation is the legacy version of
+    gallant_input.converters.convert_bin_bytes_to_ascii().  This function is valid for use with
+    test code.
+
+    Example Usage:
+        convert_bin_bytes_to_ascii(b'01010111011010000110111100111111') -> 'Who?'
+
+    Args:
+        binary: A binary literal in a bytes object.
+        clean_it: [OPTIONAL] Remove characters that aren't: printable ASCII, tabs, newlines.
+
+    Returns:
+        The binary values converted to ASCII, as a string.
+
+    Raises:
+        TypeError: Invalid data type.
+        ValueError: The bytes object contains non-binary characters.
+    """
+    validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
+    validate_bool(clean_it, 'clean_it')
+    string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
+    if clean_it:
+        string = sanitize_ascii(string)
+    return string
 
 
 def convert_bin_bytes_to_bpsk(bin_bytes: bytes, sample_rate: int | float, symbol_rate: int | float,

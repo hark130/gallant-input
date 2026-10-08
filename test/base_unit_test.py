@@ -37,6 +37,7 @@ import numpy
 from gallant_input.constants import SIG_GLOB_DESCRIPTION_KEY
 from gallant_input.gain_sigmf.sigmfmetaparser import SigMFMetaParser
 from gallant_input.io import read_samples
+from gallant_input.validation import BAD_TYPE, BAD_VAL_EMPTY, BAD_VAL_NON_BINARY
 from test import REPO_TL_DIR
 
 
@@ -158,6 +159,21 @@ class BaseUnitTest(TediousUnitTest):
 
     # COMMON-USE METHODS
     # Methods listed in alphabetical order
+
+    @staticmethod
+    def format_except_msg_empty_val(var_name: str) -> str:
+        """Format an expected 'empty value' exception message."""
+        return BAD_VAL_EMPTY.format(var_name)
+
+    @staticmethod
+    def format_except_msg_invalid_type(act_var: Any, var_name: str, exp_type: type) -> str:
+        """Format an expected 'bad type' exception message."""
+        return BAD_TYPE.format(var_name, exp_type, type(act_var))
+
+    @staticmethod
+    def format_except_msg_non_binary_val(var_name: str) -> str:
+        """Format an expected 'non-binary' exception message."""
+        return BAD_VAL_NON_BINARY.format(var_name)
 
     def get_test_file_input(self, file_input: Path, sample_dtype: DTypeLike = numpy.complex64,
                             sigmf_data: bool = True) -> Tuple[numpy.ndarray, bytes]:

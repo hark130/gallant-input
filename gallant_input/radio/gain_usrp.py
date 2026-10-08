@@ -4,7 +4,8 @@
 import threading
 # Third Party Imports
 import numpy
-import uhd
+# See GAIN-32 for insight on this Pylint disable
+import uhd  # pylint: disable=import-error
 # Local Imports
 from gallant_input.radio.config_direction import ConfigDirection
 from gallant_input.validation import validate_pos_float_or_int, validate_int, validate_type

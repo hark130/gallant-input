@@ -17,7 +17,10 @@ from gallant_input.gain_sigmf.sigmfdatatype import SigMFDataType
 from gallant_input.gain_sigmf.sigmfmetabuilder import build_dataset_format, build_default_metadata
 from gallant_input.io import write_samples
 from gallant_input.modem.calc import calculate_baud_rate, calculate_sps
+from gallant_input.modem.constants import QAM16_MAP
 from gallant_input.modem.fsk2 import FSK2
+from gallant_input.modem.qam16 import QAM16
+from gallant_input.modem.qam16_config import QAM16Config
 from gallant_input.spacetime import create_rfc_3339_z_time
 
 
@@ -93,6 +96,19 @@ def modulate_bfsk(sample_rate: int | float, symbol_rate: int | float,
     freq1 = baud_rate / 2                                             # The 'on' freq baseband dev.
     fsk2_obj = FSK2(sample_rate, symbol_rate)                         # FSK2() object
     samples = fsk2_obj.modulate(bin_bytes, freq0, freq1)              # Modulated binary
+
+    # DONE
+    return samples
+
+
+def modulate_qam16(sample_rate: int | float, symbol_rate: int | float,
+                   bin_bytes: bytes) -> numpy.ndarray:
+    """Modulate binary into BFSK using the calculated baud rate to determine freq0 and freq1."""
+    # LOCAL VARIABLES
+    mapper = QAM16_MAP
+    config = QAM16Config(sample_rate=sample_rate, symbol_rate=symbol_rate, mapper=mapper)
+    qam16_obj = QAM16(config=config)
+    samples = qam16_obj.modulate(bin_bytes)
 
     # DONE
     return samples
@@ -184,6 +200,39 @@ def create_bfsk_input3(preamble: str = 'bfsk_mod3') -> None:
                   metadata=metadata, overwrite=True)
 
 
+def create_qam16_input1(preamble: str = 'qam16_mod1') -> None:
+    """Build 16-QAM input 1 and write it to a file.
+
+    "What is happening?"
+
+    Args:
+        preamble: The beginning of the filename.  E.g., 'my_capture'
+    """
+    # LOCAL VARIABLES
+    samp_rate = 480000     # Test case sample rate
+    sym_rate = 800         # Test case symbol rate
+    samples = None         # An ndarray of modulated binary to write to disk
+    dataset_format = None  # SigMF metadata "global":"core:datatype" e.g., 'cf32_le'
+    metadata = {}          # SigMF metadata dictionary: dict[str:Any]
+    filename = None        # Path object with the output filename
+    # Digital data to modulate
+    bin_bytes = b'0010000000100000001000000010000001010111011010000110000101110100' \
+                b'0010000001101001011100110010000001101000011000010111000001110000' \
+                b'0110010101101110011010010110111001100111001111110010000100100000' \
+                b'001000000010000000100000'
+
+    # BUILT IT
+    samples = modulate_qam16(samp_rate, sym_rate, bin_bytes)
+    data_format = build_dataset_format(is_complex=True, data_type=SigMFDataType.FLOAT,
+                                       bit_width=64, little_e=True)
+    metadata = build_metadata(dataset_format=data_format, samp_rate=samp_rate,
+                              center_freq=None, description=bin_bytes.decode('ascii'))
+    filename = Path(create_filename(preamble, samp_rate, sym_rate))
+    write_samples(filename=filename, samples=samples, sample_dtype=numpy.complex64,
+                  metadata=metadata, overwrite=True)
+    print(f'Wrote samples to: {filename.absolute()}')
+
+
 def main() -> int:
     """Entry-level function."""
     # LOCAL VARIABLES
@@ -191,9 +240,10 @@ def main() -> int:
 
     # CREATE SAMPLES
     try:
-        create_bfsk_input1()
-        create_bfsk_input2()
-        create_bfsk_input3()
+        # create_bfsk_input1()
+        # create_bfsk_input2()
+        # create_bfsk_input3()
+        create_qam16_input1()
     except (LookupError, NotImplementedError, TypeError, ValueError) as err:
         print(f'Failed with: {repr(err)}')
         exit_code = 1  # Failed

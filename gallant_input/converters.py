@@ -47,8 +47,10 @@ def convert_bin_bytes_to_ascii(binary: bytes, clean_it: bool = False) -> str:
     """
     validate_binary_bytes(validate_this=binary, param_name='binary', exact_len=None)
     validate_bool(clean_it, 'clean_it')
-    string = ''.join(chr(int(binary[i:i+8], 2)) for i in range(0, len(binary), 8))
+    bits = numpy.frombuffer(binary, dtype=numpy.uint8) - ord('0')
+    string = numpy.packbits(bits).tobytes().decode('ascii', errors='replace')
     if clean_it:
+        string = string.replace('\ufffd', '.')
         string = sanitize_ascii(string)
     return string
 

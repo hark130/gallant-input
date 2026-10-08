@@ -28,9 +28,11 @@ BAD_MAPPER: Final[str] = 'The length of the "{}" dictionary ({}) does not equal 
 BAD_MAPPER_KEY: Final[str] = 'The "{}" dictionary contains an out-of-bounds key value ({}) for ' \
                              'a mapper of bits-per-symbol {}'
 # Template string for arguments of the wrong data type
-_BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
+BAD_TYPE: Final[str] = 'The "{}" argument should have been of type "{}" but was "{}" instead'
 # Template string for arguments that may not be empty
-_BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+BAD_VAL_EMPTY: Final[str] = 'The "{}" argument can not be empty'
+# Template string for binary arguments that contain non-binary values
+BAD_VAL_NON_BINARY: Final[str] = 'Invalid binary value detected in "{}"'
 
 
 def validate_arraylike(array_like: ArrayLike, param_name: str, num_dim: int | None = None) -> None:
@@ -84,7 +86,7 @@ def validate_binary_bytes(validate_this: bytes, param_name: str, exact_len: int 
     validate_bytes(validate_this, param_name, exact_len)
     # Content
     if not all(bin_char in b'01' for bin_char in validate_this):
-        raise ValueError(f'Invalid binary value detected in "{param_name}"')
+        raise ValueError(BAD_VAL_NON_BINARY.format(param_name))
 
 
 def validate_bool(validate_this: bytes, param_name: str) -> None:
@@ -150,7 +152,7 @@ def validate_bytes_or_str(validate_this: bytes | str, param_name: str) -> None:
 
     # VALIDATE IT
     if not _validate_type(validate_this, bytes) and not _validate_type(validate_this, str):
-        raise TypeError(_BAD_TYPE.format(param_name, exp_type, type(validate_this)))
+        raise TypeError(BAD_TYPE.format(param_name, exp_type, type(validate_this)))
 
 
 def validate_callable(validate_this: Callable, param_name: str) -> None:
@@ -164,7 +166,7 @@ def validate_callable(validate_this: Callable, param_name: str) -> None:
         TypeError: validate_this is not a callable.
     """
     if not callable(validate_this):
-        raise TypeError(_BAD_TYPE.format(param_name, Callable, type(validate_this)))
+        raise TypeError(BAD_TYPE.format(param_name, Callable, type(validate_this)))
 
 
 def validate_file(validate_this: Path, param_name: str, must_exist: bool = True) -> None:
@@ -304,7 +306,7 @@ def validate_list(validate_this: list, param_name: str, can_be_empty: bool = Tru
     # VALIDATION
     validate_type(validate_this, param_name, list)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
 
 
 def validate_mapper(mapper: dict[int, float | complex], mapper_name: str,
@@ -507,7 +509,7 @@ def validate_string(validate_this: str, param_name: str, can_be_empty: bool = Fa
     # VALIDATION
     validate_type(validate_this, param_name, str)
     if not validate_this and not can_be_empty:
-        raise ValueError(_BAD_VAL_EMPTY.format(param_name))
+        raise ValueError(BAD_VAL_EMPTY.format(param_name))
 
 
 def validate_type(var: Any, var_name: str, var_type: type) -> None:
@@ -524,7 +526,7 @@ def validate_type(var: Any, var_name: str, var_type: type) -> None:
         TypeError: Invalid data type.
     """
     if not _validate_type(var, var_type):
-        raise TypeError(_BAD_TYPE.format(var_name, var_type, type(var)))
+        raise TypeError(BAD_TYPE.format(var_name, var_type, type(var)))
 
 
 def _validate_arraylike_ndim(var: ArrayLike, var_name: str, num_dim: int | None) -> None:

@@ -264,7 +264,7 @@ class BaseUnitTest(TediousUnitTest):
             # Data Type
             if return_value.dtype != dtype:
                 self._add_test_failure(f'{def_error.format("dtype")} Expected '
-                                       f'{dtype} shape '
+                                       f'{dtype} data type '
                                        f'but received {return_value.dtype} instead')
             # Final Catch All
             # Floating point type arrays require special comparison

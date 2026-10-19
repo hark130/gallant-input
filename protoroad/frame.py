@@ -11,7 +11,7 @@ def apply_fec(binary: bytes, repeats: int) -> bytes:
     return b''.join(bytes([bit]) * repeats for bit in binary)
 
 
-def build_header(dst: int, src: int, type: int, seq: int, msg_len: int) -> bytes:
+def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> bytes:
     """Build the header.
 
     Args:
@@ -44,7 +44,7 @@ def build_payload(payload: bytes) -> bytes:
     return payload
 
 
-def decode_fec(binary: bytes, repetition: int) -> bytes:
+def decode_fec(binary: bytes, repeats: int) -> bytes:
     """Decode FEC."""
     decoded = bytearray()
     for i in range(0, len(binary), repeats):

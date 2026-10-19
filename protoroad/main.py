@@ -1,6 +1,7 @@
 """Entry point."""
 
 # Standard Imports
+from typing import Final
 import sys
 # Third Party Imports
 # Local Imports
@@ -25,8 +26,8 @@ def main() -> int:
 
     # DO IT
     payload = build_payload(message)
-    header = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, type=UNUSED_FIELD, seq=UNUSED_FIELD,
-                          msg_len=len(message))
+    header = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
+                          seq=UNUSED_FIELD, msg_len=len(message))
     frame = build_frame(preamble=preamble, syncword=syncword, header=header, payload=payload,
                         fec_repeats=fec_repeats)
 

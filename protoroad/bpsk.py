@@ -22,6 +22,20 @@ class BPSK():
         self._values = np.array(list(mapping.keys()), dtype=np.int64)
         self._points = np.array(list(mapping.values()), dtype=np.complex64)
 
+    def demap(self, values: np.ndarray) -> np.ndarray:
+        """Symbol values --> bits, MSB first."""
+        shifts = np.arange(self._bits_per_symb - 1, -1, -1)
+        return ((values[:, None] >> shifts) & 1).astype(np.uint8).ravel()
+
+    def demodulate(self, symbols: np.ndarray) -> np.ndarray:
+        """Demodulate 1 sample-per-symbol to an np.ndarray of uint8 binary values."""
+        return self.demap(self.detect(symbols))
+
+    def detect(self, symbols: np.ndarray) -> np.ndarray:
+        """Minimum-distance decision: nearest constellation point --> symbol value."""
+        dist_sqrd = np.abs(symbols[:, None] - self._points[None, :])**2  # Squared distances
+        return self._values[np.argmin(dist_sqrd, axis=1)]
+
     def modulate(self, binary: bytes) -> np.ndarray:
         """Modulate binary."""
         # LOCAL VARIABLES
@@ -52,17 +66,3 @@ class BPSK():
 
         # DONE
         return samples
-
-    def demodulate(self, samples: np.ndarray) -> np.ndarray:
-        """Demodulate samples to a np.ndarray of a uint8 binary values."""
-        # Calculate, and square, the distances between each sample and the constellation points
-        dist_sqrd = np.abs(samples[:, None] - self._points[None, :])**2     # Squared distances
-        # Convert the point indices to corresponding symbol values
-        symbols = self._values[np.argmin(dist_sqrd, axis=1)]                # Nearest const. point
-        # Determine which bit positions to extract
-        shifts = np.arange(self._bits_per_symb - 1, -1, -1)                 # Bits to extract
-        # Extract the bits using shifts and a bit mask
-        bits = ((symbols[:, None] >> shifts) & 1).astype(np.uint8).ravel()  # Binary values in array
-
-        # DONE
-        return bits

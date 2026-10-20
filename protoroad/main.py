@@ -3,6 +3,8 @@
 # Standard Imports
 from typing import Final
 import sys
+import threading
+import time
 # Third Party Imports
 # Local Imports
 from protoroad.bpsk import BPSK
@@ -10,7 +12,15 @@ from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, 
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.frame import build_frame, build_header, build_payload
+from protoroad.radio import build_usrp, configure_usrp, transmit
+from protoroad.signals import create_rrc_taps
 
+DEBUG_SLEEP: Final[int | float] = 1  # A "tasteful" debug sleep
+DEFAULT_GAIN: Final[float] = 30  # Default gain value
+LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
+LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
+PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
+PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
 PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
 PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
 PROTOCOL_SAMP_RATE: Final[int] = PROTOCOL_SPS * PROTOCOL_BAUD
@@ -18,31 +28,123 @@ TEST_MESSAGE: Final[bytes] = b"This is my test input.  Mine?!?"  # 32 bytes of '
 UNUSED_FIELD: Final[int] = 0xAA  # Value for unused 8-bit header fields
 
 
+def calc_bandwidth(symbol_rate: int, alpha: float = PROTOCOL_ALPHA) -> float:
+    """Occupied RF bandwidth of RRC-shaped linear modulation (e.g., BPSK).
+
+    B = Rs * (1 + alpha).  Spectrum spans +/- B/2 around the carrier.
+    """
+    return symbol_rate * (1.0 + alpha)
+
+
+def calc_lpf_cutoff(symbol_rate: int, alpha: float = PROTOCOL_ALPHA, max_offset_hz: float = 0,
+                    margin_hz: float = 20_000) -> float:
+    """Pre-AGC channel-select LPF cutoff (one-sided, baseband).
+
+    The full RRC signal must make it through the filter even at worst-case frequency offset.
+    The matched filter does the precise filtering.  Max offset of 0 Hz should be acceptable if
+    frequency offset has already been corrected.
+
+    NOTE: The margin_hz default value is a rule-of-thumb placeholder.  Verify it:
+        1. Manually by...
+            - plotting the frequency response with scipy.signal.freqz(lpf_taps, fs=SAMPLE_RATE)
+            - verify the response is flat to within about 0.1 dB out to the signal edge plus offset
+            - It’s down at least 40 dB by at the edge of the transition.
+        2. Programmatically by...
+            - designing the FIR with Parks-McClellan (scipy.signal.remez)
+    """
+    half_bw = calc_bandwidth(symbol_rate, alpha) / 2  # Half the bandwidth
+    cutoff = half_bw + max_offset_hz + margin_hz      # Add up the buffer zones
+    return math.ceil(cutoff / 1000) * 1000            # Round up to next kHz
+
+
+def create_tailored_lpf(sample_rate: float, symbol_rate: int,
+                        numtaps: int = 101) -> numpy.ndarray:
+    """Create a LPF for the protocol."""
+    cutoff = calc_lpf_cutoff(symbol_rate=symbol_rate)              # LPF cutoff
+    return firwin(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)  # LPF taps
+
+
+def get_rrc_taps(sps: int, span: int = 11, alpha: float = PROTOCOL_ALPHA) -> np.ndarray:
+    """Get the RRC matched filter taps for the protocol."""
+    return create_rrc_taps(sps=sps, span=span, alpha=alpha)
+
+
+def get_tx_msg() -> bytes:
+    """Get a message to transmit."""
+    return TEST_MESSAGE
+
+
+# def transmit_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, tx_sleep: float | int = 0) -> None:
+#     """Start transmitting messages."""
+#     # LOCAL VARIABLES
+#     # Matched filter taps
+#     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)
+#     # Modulator/demodulator
+#     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
+
+#     while True:
+#         tmp_msg = get_tx_msg()
+#         tmp_dat = build_payload(tmp_msg)
+#         tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
+#                                seq=UNUSED_FIELD, msg_len=len(tmp_msg))
+#         tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
+#                                 payload=tmp_dat, fec_repeats=FEC_REPEATS)
+#         tmp_samples = modem.modulate(binary=tmp_frame)
+#         print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
+#         tmp_sent = transmit(usrp=usrp, samples=tmp_samples)
+#         print(LOG_STR_TX.format(action="Sent", message=f"{tmp_sent}-of-{len(tmp_samples)} samples"))
+#         if tx_sleep:
+#             print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
+#             time.sleep(tx_sleep)
+
+
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
-    exit_code = EXIT_SUCCESS   # Exit status
-    fec_repeats = FEC_REPEATS  # FEC Repeats
-    preamble = PREAMBLE        # Preamble
-    syncword = SYNCWORD        # Syncword
-    header = b''               # The header
-    payload = b''              # The payload
-    message = TEST_MESSAGE     # The message used to form the payload
-    mapping = BPSK_MAP         # The constellation diagram
-    sps = PROTOCOL_SPS         # Samples per symbol
-    baud = PROTOCOL_BAUD       # Symbol rate
-    modem = BPSK(mapping=mapping, samples_per_symbol=sps, symbol_rate=baud)
+    exit_code = EXIT_SUCCESS                   # Exit status
+    tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
+    sdr_serial = None                          # Placeholder for feature to choose serial number
+    rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
+    usrp = build_usrp(serial=sdr_serial)       # USRP SDR object
+    stop_event = threading.Event()             # Signal the child thread to exit
+    # Modulator/demodulator
+    modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
 
-    # DO IT
-    payload = build_payload(message)
-    header = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
-                          seq=UNUSED_FIELD, msg_len=len(message))
-    frame = build_frame(preamble=preamble, syncword=syncword, header=header, payload=payload,
-                        fec_repeats=fec_repeats)
-    samples = modem.modulate(binary=convert_msg_to_binary(message))
-    result = convert_bit_array_to_bytes(modem.demodulate(symbols=samples))
-    print(f"ORIGINAL:  {message}")  # DEBUGGING
-    print(f"MOD/DEMOD: {convert_bin_bytes_to_ascii(result[::sps])}")  # DEBUGGING
+    # SETUP
+    configure_usrp(usrp=usrp, samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
+                   gain=DEFAULT_GAIN)
+
+    # START IT
+    try:
+    # Start listening thread
+        while True:
+            try:
+                # Start transmitting
+                tmp_msg = get_tx_msg()
+                tmp_dat = build_payload(tmp_msg)
+                tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
+                                       seq=UNUSED_FIELD, msg_len=len(tmp_msg))
+                tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
+                                        payload=tmp_dat, fec_repeats=FEC_REPEATS)
+                tmp_samples = modem.modulate(binary=tmp_frame)
+                print(tmp_samples)  # DEBUGGING
+                print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
+                tmp_sent = transmit(usrp=usrp, samples=tmp_samples)
+                print(LOG_STR_TX.format(action="Sent",
+                                        message=f"{tmp_sent}-of-{len(tmp_samples)} samples"))
+                if tx_sleep:
+                    print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
+                    time.sleep(tx_sleep)
+            except KeyboardInterrupt:
+                time.sleep(0.2)  # Let the receive thread finish?
+                stop_event.set()  # Tell the receive thread to stop
+                # rx_thread.join()  # Wait for it
+                print()
+                break
+    except (RuntimeError, IndexError, LookupError, KeyError) as err:
+        print(err)
+        exit_code = EXIT_FAIL
+        raise err from err  # DEBUGGING
 
     # DONE
     return exit_code

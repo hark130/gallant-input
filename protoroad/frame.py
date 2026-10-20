@@ -22,11 +22,11 @@ def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> b
         len: Length of the payload in bytes.
         fec_repeats: FEC repeats.
     """
-    destination = convert_int_to_binary(dst)      # Destination node address
-    source = convert_int_to_binary(src)           # Source node address
-    message_type = convert_int_to_binary(type)    # Use an IntEnum later
-    seq_num = convert_int_to_binary(seq)          # Sequence number
-    message_len = convert_int_to_binary(msg_len)  # Payload length in bytes
+    destination = convert_int_to_binary(dst)        # Destination node address
+    source = convert_int_to_binary(src)             # Source node address
+    message_type = convert_int_to_binary(msg_type)  # Use an IntEnum later
+    seq_num = convert_int_to_binary(seq)            # Sequence number
+    message_len = convert_int_to_binary(msg_len)    # Payload length in bytes
     header = destination + source + message_type + seq_num + message_len
     return header
 
@@ -36,6 +36,7 @@ def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
     """Build an entire frame."""
     header = apply_fec(header, fec_repeats)
     data = apply_fec(payload, fec_repeats)
+    # If/when you interleave, interleave the header and data here
     return preamble + syncword + header + data + tail
 
 

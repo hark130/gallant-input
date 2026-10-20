@@ -3,7 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
-from protoroad.convert import convert_int_to_binary
+from protoroad.convert import convert_int_to_binary, convert_msg_to_binary
 
 
 def apply_fec(binary: bytes, repeats: int) -> bytes:
@@ -42,7 +42,7 @@ def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
 
 def build_payload(payload: bytes) -> bytes:
     """Build the payload."""
-    return payload
+    return convert_msg_to_binary(payload)
 
 
 def decode_fec(binary: bytes, repeats: int) -> bytes:

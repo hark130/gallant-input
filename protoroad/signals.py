@@ -7,6 +7,41 @@ import numpy as np
 # Local Imports
 
 
+def create_rrc_taps(sps: int, span: int, alpha: float) -> np.ndarray:
+    """Root-raised-cosine FIR taps, unit energy.
+
+    Total taps = span * sps + 1, always odd.
+
+    Args:
+        sps: Samples per symbol.
+        span: Filter length in symbols.
+        alpha: roll-off / excess bandwidth (0 < alpha <= 1).
+    """
+    num_taps = span * sps + 1                             # Number of taps
+    t = (np.arange(num_taps) - (num_taps - 1) / 2) / sps  # Time in symbol periods, centered on 0
+    h = np.empty(num_taps)
+
+    # Special case 1: t == 0
+    at_zero = np.isclose(t, 0.0)
+    h[at_zero] = 1.0 - alpha + 4.0 * alpha / np.pi
+
+    # Special case 2: t == ±1/(4*alpha) (denominator goes to zero)
+    at_sing = np.isclose(np.abs(t), 1.0 / (4.0 * alpha))
+    h[at_sing] = (alpha / np.sqrt(2)) * (
+        (1 + 2 / np.pi) * np.sin(np.pi / (4 * alpha))
+        + (1 - 2 / np.pi) * np.cos(np.pi / (4 * alpha))
+    )
+
+    # General case
+    g = ~(at_zero | at_sing)
+    tg = t[g]
+    h[g] = (np.sin(np.pi * tg * (1 - alpha)) + 4 * alpha * tg * np.cos(np.pi * tg * (1 + alpha))) / (
+        np.pi * tg * (1 - (4 * alpha * tg) ** 2)
+    )
+
+    return h / np.sqrt(np.sum(h ** 2))  # Unit energy --> TX + RX peak = 1
+
+
 def upsample(symbols: np.ndarray, samples_per_symbol: int, zero_stuff: bool = True) -> np.ndarray:
     """Convert symbols into samples.
 

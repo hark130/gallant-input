@@ -5,7 +5,7 @@ import sys
 # Third Party Imports
 import numpy as np
 # Local Imports
-from protoroad.signal import upsample
+from protoroad.signals import upsample
 
 
 class BPSK():

@@ -40,7 +40,7 @@ def main() -> int:
     frame = build_frame(preamble=preamble, syncword=syncword, header=header, payload=payload,
                         fec_repeats=fec_repeats)
     samples = modem.modulate(binary=convert_msg_to_binary(message))
-    result = convert_bit_array_to_bytes(modem.demodulate(samples=samples))
+    result = convert_bit_array_to_bytes(modem.demodulate(symbols=samples))
     print(f"ORIGINAL:  {message}")  # DEBUGGING
     print(f"MOD/DEMOD: {convert_bin_bytes_to_ascii(result[::sps])}")  # DEBUGGING
 

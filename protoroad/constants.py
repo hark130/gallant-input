@@ -6,6 +6,7 @@ from typing import Final
 # Local Imports
 from protoroad.convert import convert_hex_str_to_binary
 
+BPSK_MAP: Final[dict[int, complex]] = {0: -1+0j, 1: 1+0j}
 EXIT_FAIL: Final[int] = 1
 EXIT_SUCCESS: Final[int] = 0
 FEC_REPEATS: Final[int] = 3

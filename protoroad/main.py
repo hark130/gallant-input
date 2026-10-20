@@ -2,6 +2,8 @@
 
 # Standard Imports
 from typing import Final
+import math
+import numpy as np
 import sys
 import threading
 import time
@@ -127,11 +129,11 @@ def main() -> int:
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
                                         payload=tmp_dat, fec_repeats=FEC_REPEATS)
                 tmp_samples = modem.modulate(binary=tmp_frame)
-                print(tmp_samples)  # DEBUGGING
+                tmp_shaped = np.convolve(tmp_samples, rrc_taps)
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                tmp_sent = transmit(usrp=usrp, samples=tmp_samples)
+                tmp_sent = transmit(usrp=usrp, samples=tmp_shaped)
                 print(LOG_STR_TX.format(action="Sent",
-                                        message=f"{tmp_sent}-of-{len(tmp_samples)} samples"))
+                                        message=f"{tmp_sent}-of-{len(tmp_shaped)} samples"))
                 if tx_sleep:
                     print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)

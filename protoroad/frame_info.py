@@ -1,10 +1,9 @@
-"""Data types describing frames: what was sent, and how it was received."""
+"""Data types describing frames that are to be sent, were sent, received, or expected."""
 
 # Standard Imports
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import IntEnum
 from typing import Final
-import time
 # Third Party Imports
 # Local Imports
 from protoroad.constants import MAX_DATA_LEN
@@ -25,11 +24,11 @@ class MsgType(IntEnum):
 class FrameInfo:
     """One frame's contents: header fields + payload."""
 
-    dst: int           # Destination node address; BROADCAST_ADDR for everyone
-    src: int           # Source node address
-    msg_type: MsgType  # Header type field
-    seq: int           # Sequence number, wraps at 255
-    payload: bytes     # Meaningful payload bytes only (header length applied, no pad)
+    dst: int        # Destination node address; BROADCAST_ADDR for everyone
+    src: int        # Source node address
+    msg_type: int   # Header type field (use the MsgType IntEnum on TX)
+    seq: int        # Sequence number, wraps at 255
+    payload: bytes  # Meaningful payload bytes only (header length applied, no pad)
 
     def __post_init__(self):
         """Validate field ranges so a bad frame fails here, not deep in the modulator."""

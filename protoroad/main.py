@@ -3,26 +3,30 @@
 # Standard Imports
 from typing import Final
 import math
-import numpy as np
-import sys
 import threading
 import time
 # Third Party Imports
+import numpy as np
+from scipy.signal import firwin
 # Local Imports
 from protoroad.bpsk import BPSK
 from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, PREAMBLE, SYNCWORD
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.frame import build_frame, build_header, build_payload
-from protoroad.radio import build_usrp, configure_usrp, transmit
+from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
 DEBUG_SLEEP: Final[int | float] = 1  # A "tasteful" debug sleep
-DEFAULT_GAIN: Final[float] = 30  # Default gain value
+DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
+DEFAULT_TX_GAIN: Final[float] = 10.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
 LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
 LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
 PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
 PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
+# PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
+PROTOCOL_LO_OFFSET: Final[float] = 100_000  # Analog LO offset moves the DC spike out of band
+# PROTOCOL_LO_OFFSET: Final[float] = 1_000_000  # Analog LO offset moves the DC spike out of band
 PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
 PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
 PROTOCOL_SAMP_RATE: Final[int] = PROTOCOL_SPS * PROTOCOL_BAUD
@@ -76,30 +80,6 @@ def get_tx_msg() -> bytes:
     return TEST_MESSAGE
 
 
-# def transmit_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, tx_sleep: float | int = 0) -> None:
-#     """Start transmitting messages."""
-#     # LOCAL VARIABLES
-#     # Matched filter taps
-#     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)
-#     # Modulator/demodulator
-#     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
-
-#     while True:
-#         tmp_msg = get_tx_msg()
-#         tmp_dat = build_payload(tmp_msg)
-#         tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
-#                                seq=UNUSED_FIELD, msg_len=len(tmp_msg))
-#         tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
-#                                 payload=tmp_dat, fec_repeats=FEC_REPEATS)
-#         tmp_samples = modem.modulate(binary=tmp_frame)
-#         print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-#         tmp_sent = transmit(usrp=usrp, samples=tmp_samples)
-#         print(LOG_STR_TX.format(action="Sent", message=f"{tmp_sent}-of-{len(tmp_samples)} samples"))
-#         if tx_sleep:
-#             print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
-#             time.sleep(tx_sleep)
-
-
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
@@ -107,18 +87,16 @@ def main() -> int:
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
     sdr_serial = None                          # Placeholder for feature to choose serial number
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
-    usrp = build_usrp(serial=sdr_serial)       # USRP SDR object
     stop_event = threading.Event()             # Signal the child thread to exit
     # Modulator/demodulator
     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
-
-    # SETUP
-    configure_usrp(usrp=usrp, samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
-                   gain=DEFAULT_GAIN)
+    radio = Radio(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
+                  rx_gain=DEFAULT_RX_GAIN, tx_gain=DEFAULT_TX_GAIN,
+                  serial=sdr_serial, lo_offset=PROTOCOL_LO_OFFSET)
 
     # START IT
     try:
-    # Start listening thread
+        # Start listening thread
         while True:
             try:
                 # Start transmitting
@@ -131,7 +109,7 @@ def main() -> int:
                 tmp_samples = modem.modulate(binary=tmp_frame)
                 tmp_shaped = np.convolve(tmp_samples, rrc_taps)
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                tmp_sent = transmit(usrp=usrp, samples=tmp_shaped)
+                tmp_sent = radio.transmit(samples=tmp_shaped)
                 print(LOG_STR_TX.format(action="Sent",
                                         message=f"{tmp_sent}-of-{len(tmp_shaped)} samples"))
                 if tx_sleep:
@@ -146,7 +124,7 @@ def main() -> int:
     except (RuntimeError, IndexError, LookupError, KeyError) as err:
         print(err)
         exit_code = EXIT_FAIL
-        raise err from err  # DEBUGGING
+        raise err  # DEBUGGING
 
     # DONE
     return exit_code

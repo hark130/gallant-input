@@ -2,6 +2,7 @@
 
 # Standard Imports
 # Third Party Imports
+from scipy.signal import lfilter
 import numpy as np
 # Local Imports
 

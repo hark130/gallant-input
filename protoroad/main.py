@@ -14,7 +14,7 @@ from protoroad.bpsk import BPSK
 from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, PREAMBLE, SYNCWORD
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
-from protoroad.frame import build_frame, build_header, build_payload
+from protoroad.frame import build_frame, build_header, build_payload, parse_frame
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
@@ -22,11 +22,17 @@ from protoroad.signals import create_rrc_taps
 #################### TEMPORARY IMPORTS TO SAVE IDEALIZED PACKETS TO SIGMF FILES ####################
 ####################################################################################################
 from gallant_input.gain_sigmf.sigmfmetabuilder import build_default_metadata
-from gallant_input.io import write_samples
+from gallant_input.io import read_samples, write_samples
 from gallant_input.spacetime import create_rfc_3339_z_time
 
 RX_TEST_01: Final[str] = "./data/protoroad_01_s1M_b250k_ideal_frame.sigmf-data"
 RX_TEST_02: Final[str] = "./data/protoroad_02_s1M_b250k_shaped_frame.sigmf-data"
+
+
+def print_ndarray_details(array: np.ndarray, num_samps: int = 5) -> None:
+    """Inspect an ndarray."""
+    print(f"Shape: {array.shape} | Type: {array.dtype} | Real/Complex: {array.dtype.kind}: "
+          f"Samples: {array[:num_samps]}")
 
 def write_it(samp_rate: float, center_freq: float, filename: str, samples: np.ndarray,
              description: str) -> None:
@@ -35,6 +41,23 @@ def write_it(samp_rate: float, center_freq: float, filename: str, samples: np.nd
     meta_data = build_default_metadata(samp_rate=samp_rate, date_time=date_time,
                                        center_freq=center_freq, description=description)
     write_samples(filename=filename, samples=samples, metadata=meta_data, overwrite=True)
+
+
+def test_ideal(modem: BPSK, rrc_taps: np.ndarray, sps: int, fec_repeats: int) -> None:
+    """Matched filter -> ideal downsample -> demodulate -> parse.  Simulation only."""
+    samples = read_samples(filename=RX_TEST_02, sigmf_data=True)
+    # print(f"SAMPLES: {samples}")  # DEBUGGING
+    filtered = np.convolve(samples, rrc_taps)  # RX matched filter
+    # print_ndarray_details(filtered)  # DEBUGGING
+    # print(f"FILTERED: {filtered}")  # DEBUGGING
+    symbols = filtered[len(rrc_taps) - 1::sps]  # Stand-in for timing recovery
+    # print_ndarray_details(symbols)  # DEBUGGING
+    bit_array = modem.demodulate(symbols)
+    # print_ndarray_details(bit_array)  # DEBUGGING
+    bits = convert_bit_array_to_bytes(bit_array)
+    print(f"BITS: {bits}")  # DEBUGGING
+    frameinfo = parse_frame(bits, SYNCWORD, fec_repeats)
+    print_frame(frameinfo=frameinfo, print_all=True)
 
 
 ####################################################################################################
@@ -117,6 +140,19 @@ def print_debug(radio: Radio) -> None:
         print("Shaped peak |x| (first frame) printed below")
 
 
+def print_frame(frameinfo: FrameInfo, print_all: bool = False) -> None:
+    """Print contents of frameinfo as appropriate."""
+    if frameinfo is not None:
+        if print_all is True:
+            print(f"DESTINATION:  {frameinfo.dst}")
+            print(f"SOURCE:       {frameinfo.srd}")
+            print(f"MESSAGE TYPE: {frameinfo.msg_type}")
+            print(f"SEQUENCE NUM: {frameinfo.seq}")
+        print(f"PAYLOAD:      {frameinfo.payload}")
+    else:
+        print("No frame to print?!")
+
+
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
@@ -133,6 +169,10 @@ def main() -> int:
 
     # SETUP
     print_debug(radio=radio)  # DEBUGGING
+
+    # TESTING
+    test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
+    return exit_code  # TESTING
 
     # START IT
     try:

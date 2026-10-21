@@ -26,7 +26,7 @@ PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
 PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
 PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
 PROTOCOL_SAMP_RATE: Final[int] = PROTOCOL_SPS * PROTOCOL_BAUD
-TEST_MESSAGE: Final[bytes] = b"This is my test input.  Mine?!?"  # 32 bytes of 'known' message
+TEST_MESSAGE: Final[bytes] = b"This is my test input.  Mine?!?!"  # 32 bytes of 'known' message
 UNUSED_FIELD: Final[int] = 0xAA  # Value for unused 8-bit header fields
 
 

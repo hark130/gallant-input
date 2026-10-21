@@ -18,6 +18,29 @@ from protoroad.frame import build_frame, build_header, build_payload
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
+####################################################################################################
+#################### TEMPORARY IMPORTS TO SAVE IDEALIZED PACKETS TO SIGMF FILES ####################
+####################################################################################################
+from gallant_input.gain_sigmf.sigmfmetabuilder import build_default_metadata
+from gallant_input.io import write_samples
+from gallant_input.spacetime import create_rfc_3339_z_time
+
+RX_TEST_01: Final[str] = "./data/protoroad_01_s1M_b250k_ideal_frame.sigmf-data"
+RX_TEST_02: Final[str] = "./data/protoroad_02_s1M_b250k_shaped_frame.sigmf-data"
+
+def write_it(samp_rate: float, center_freq: float, filename: str, samples: np.ndarray,
+             description: str) -> None:
+    """Write some samples to a SigMF file."""
+    date_time = create_rfc_3339_z_time()
+    meta_data = build_default_metadata(samp_rate=samp_rate, date_time=date_time,
+                                       center_freq=center_freq, description=description)
+    write_samples(filename=filename, samples=samples, metadata=meta_data, overwrite=True)
+
+
+####################################################################################################
+####################################################################################################
+####################################################################################################
+
 DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
 DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
 DEFAULT_TX_GAIN: Final[float] = 30.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
@@ -125,9 +148,17 @@ def main() -> int:
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
                                         payload=tmp_dat, fec_repeats=FEC_REPEATS)
                 tmp_samples = modem.modulate(binary=tmp_frame)
+                # print(f"TMP FRAME: {tmp_frame}")  # DEBUGGING
+                # write_it(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER * 1.0,
+                #          filename=RX_TEST_01, samples=tmp_samples,
+                #          description=tmp_frame.decode("ascii"))  # TESTING
                 tmp_shaped = np.convolve(tmp_samples, rrc_taps)
+                # write_it(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER * 1.0,
+                #          filename=RX_TEST_02, samples=tmp_shaped,
+                #          description=tmp_frame.decode("ascii"))  # TESTING
+                # break  # TESTING
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                print(f"peak {np.abs(tmp_shaped).max()}")  # DEBUGGING
+                # print(f"peak {np.abs(tmp_shaped).max()}")  # DEBUGGING
                 tmp_sent = radio.transmit(samples=tmp_shaped)
                 print(LOG_STR_TX.format(action="Sent",
                                         message=f"{tmp_sent} samples ({len(tmp_shaped)} + pad)"))

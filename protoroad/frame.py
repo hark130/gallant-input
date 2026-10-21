@@ -10,8 +10,6 @@ from protoroad.convert import (convert_bin_bytes_to_ascii, convert_int_to_binary
                                convert_msg_to_binary)
 from protoroad.frame_info import FrameInfo, MsgType
 
-HEADER_LEN: Final[int] = 5  # Header length in bytes: dst, src, type, seq, len
-PAD_BYTE: Final[bytes] = b" "  # Pads short payloads to MAX_DATA_LEN (also use in build_payload)
 _BIT_CHARS: Final[bytes] = b"01"  # The only valid characters in a bits bytes object
 _MAX_ASCII: Final[int] = 0x7F  # Highest valid ASCII byte value
 
@@ -55,6 +53,13 @@ def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
     data = apply_fec(payload, fec_repeats)
     # If/when you interleave, interleave the header and data here
     return preamble + syncword + header + data + tail
+
+
+def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo,
+                          fec_repeats: int) -> bytes:
+    """FrameInfo --> complete frame bits (preamble through tail)."""
+    header = build_header(frame.dst, frame.src, frame.msg_type, frame.seq, frame.length)
+    return build_frame(preamble, syncword, header, build_payload(frame.payload), fec_repeats)
 
 
 def build_payload(payload: bytes) -> bytes:

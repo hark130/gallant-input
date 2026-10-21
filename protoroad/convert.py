@@ -45,7 +45,8 @@ def convert_bit_array_to_bytes(bits: np.ndarray) -> bytes:
 
 def convert_hex_str_to_binary(hex_str: str) -> bytes:
     """Convert a hex string into binary bytes."""
-    return np.array(f"{int(hex_str, 16):08b}", dtype="S8")
+    digits = hex_str.removeprefix("0x").removeprefix("0X")
+    return f"{int(digits, 16):0{4 * len(digits)}b}".encode("ascii")
 
 
 def convert_msg_to_binary(message: bytes) -> bytes:

@@ -1,7 +1,6 @@
 """BPSK implementation."""
 
 # Standard Imports
-import sys
 # Third Party Imports
 import numpy as np
 # Local Imports

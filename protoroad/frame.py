@@ -57,5 +57,3 @@ def decode_fec(binary: bytes, repeats: int) -> bytes:
         ones = group.count(ord('1'))
         decoded.append(ord('1') if ones > repeats // 2 else ord('0'))
     return bytes(decoded)
-
-

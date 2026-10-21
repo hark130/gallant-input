@@ -38,7 +38,7 @@ def configure_usrp(usrp: uhd.usrp.multi_usrp.MultiUSRP, samp_rate: float | int,
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
-def transmit(usrp: uhd.usrp.multi_usrp.MultiUSRP, samples: numpy.ndarray) -> int:
+def transmit(usrp: uhd.usrp.multi_usrp.MultiUSRP, samples: np.ndarray) -> int:
     """Transmit an array of samples."""
     stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
     stream_args.channels = [0]

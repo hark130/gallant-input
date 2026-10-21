@@ -60,7 +60,7 @@ def calc_lpf_cutoff(symbol_rate: int, alpha: float = PROTOCOL_ALPHA, max_offset_
 
 
 def create_tailored_lpf(sample_rate: float, symbol_rate: int,
-                        numtaps: int = 101) -> numpy.ndarray:
+                        numtaps: int = 101) -> np.ndarray:
     """Create a LPF for the protocol."""
     cutoff = calc_lpf_cutoff(symbol_rate=symbol_rate)              # LPF cutoff
     return firwin(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)  # LPF taps

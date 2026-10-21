@@ -3,6 +3,7 @@
 # Standard Imports
 from typing import Final
 import math
+import sys
 import threading
 import time
 # Third Party Imports
@@ -17,15 +18,15 @@ from protoroad.frame import build_frame, build_header, build_payload
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
-DEBUG_SLEEP: Final[int | float] = 1  # A "tasteful" debug sleep
+DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
 DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
-DEFAULT_TX_GAIN: Final[float] = 10.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
+DEFAULT_TX_GAIN: Final[float] = 30.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
 LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
 LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
 PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
 PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
-# PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
-PROTOCOL_LO_OFFSET: Final[float] = 100_000  # Analog LO offset moves the DC spike out of band
+PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
+# PROTOCOL_LO_OFFSET: Final[float] = 100_000  # Analog LO offset moves the DC spike out of band
 # PROTOCOL_LO_OFFSET: Final[float] = 1_000_000  # Analog LO offset moves the DC spike out of band
 PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
 PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
@@ -80,12 +81,25 @@ def get_tx_msg() -> bytes:
     return TEST_MESSAGE
 
 
+def print_debug(radio: Radio) -> None:
+    """Debug logging."""
+    if radio:
+        usrp, ch = radio.usrp, 0
+        print("MCR      :", usrp.get_master_clock_rate())
+        print("TX rate  :", usrp.get_tx_rate(ch))
+        print("TX freq  :", usrp.get_tx_freq(ch))
+        print("TX gain  :", usrp.get_tx_gain(ch), usrp.get_tx_gain_range(ch))
+        print("TX ant   :", usrp.get_tx_antenna(ch), "of", usrp.get_tx_antennas(ch))
+        print("TX bw    :", usrp.get_tx_bandwidth(ch))
+        print("Shaped peak |x| (first frame) printed below")
+
+
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
     exit_code = EXIT_SUCCESS                   # Exit status
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
-    sdr_serial = None                          # Placeholder for feature to choose serial number
+    sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
     stop_event = threading.Event()             # Signal the child thread to exit
     # Modulator/demodulator
@@ -94,12 +108,16 @@ def main() -> int:
                   rx_gain=DEFAULT_RX_GAIN, tx_gain=DEFAULT_TX_GAIN,
                   serial=sdr_serial, lo_offset=PROTOCOL_LO_OFFSET)
 
+    # SETUP
+    print_debug(radio=radio)  # DEBUGGING
+
     # START IT
     try:
         # Start listening thread
+        # Start transmitting
+        input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
         while True:
             try:
-                # Start transmitting
                 tmp_msg = get_tx_msg()
                 tmp_dat = build_payload(tmp_msg)
                 tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
@@ -109,9 +127,10 @@ def main() -> int:
                 tmp_samples = modem.modulate(binary=tmp_frame)
                 tmp_shaped = np.convolve(tmp_samples, rrc_taps)
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
+                print(f"peak {np.abs(tmp_shaped).max()}")  # DEBUGGING
                 tmp_sent = radio.transmit(samples=tmp_shaped)
                 print(LOG_STR_TX.format(action="Sent",
-                                        message=f"{tmp_sent}-of-{len(tmp_shaped)} samples"))
+                                        message=f"{tmp_sent} samples ({len(tmp_shaped)} + pad)"))
                 if tx_sleep:
                     print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)
@@ -121,8 +140,14 @@ def main() -> int:
                 # rx_thread.join()  # Wait for it
                 print()
                 break
-    except (RuntimeError, IndexError, LookupError, KeyError) as err:
+    except (RuntimeError, LookupError, KeyError) as err:
         print(err)
+        if 'No devices found' in err.args[0]:
+                print(f"\nDid you neglect to connect SDR serial number {sdr_serial}?"
+                      "If not, it seems to be unavailable.  "
+                      "Verify with `uhd_find_devices`.", file=sys.stderr)
+        else:
+            print("\nThere are no devices available.", file=sys.stderr)
         exit_code = EXIT_FAIL
         raise err  # DEBUGGING
 

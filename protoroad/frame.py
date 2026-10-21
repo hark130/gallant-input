@@ -3,6 +3,7 @@
 # Standard Imports
 # Third Party Imports
 # Local Imports
+from protoroad.constants import MAX_DATA_LEN
 from protoroad.convert import convert_int_to_binary, convert_msg_to_binary
 
 
@@ -42,6 +43,9 @@ def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
 
 def build_payload(payload: bytes) -> bytes:
     """Build the payload."""
+    if len(payload) > MAX_DATA_LEN:
+        raise ValueError(f"Does not support messages of greater than {MAX_DATA_LEN} length.")
+    payload = payload.ljust(32, b" ")  # Pad to a minimum length of 32 bytes
     return convert_msg_to_binary(payload)
 
 

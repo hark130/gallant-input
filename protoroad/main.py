@@ -11,13 +11,33 @@ import numpy as np
 from scipy.signal import firwin
 # Local Imports
 from protoroad.bpsk import BPSK
+from protoroad.burst_detector import detect_bursts
 from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, PREAMBLE, SYNCWORD
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
-from protoroad.frame import build_frame, build_header, build_payload, parse_frame
+from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
 from protoroad.frame_info import FrameInfo, MsgType
+from protoroad.plots import plot_burst_start
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
+from protoroad.timing_recovery import GardnerTimingRecovery
+
+DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
+# DEBUG_SLEEP: Final[int | float] = 0  # TESTING
+DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
+DEFAULT_TX_GAIN: Final[float] = 30.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
+LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
+LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
+PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
+PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
+PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
+# PROTOCOL_LO_OFFSET: Final[float] = 100_000  # Analog LO offset moves the DC spike out of band
+# PROTOCOL_LO_OFFSET: Final[float] = 1_000_000  # Analog LO offset moves the DC spike out of band
+PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
+PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
+PROTOCOL_SAMP_RATE: Final[int] = PROTOCOL_SPS * PROTOCOL_BAUD
+TEST_MESSAGE: Final[bytes] = b"This is my test input.  Mine?!?!"  # 32 bytes of 'known' message
+UNUSED_FIELD: Final[int] = 0xAA  # Value for unused 8-bit header fields
 
 ####################################################################################################
 #################### TEMPORARY IMPORTS TO SAVE IDEALIZED PACKETS TO SIGMF FILES ####################
@@ -28,12 +48,36 @@ from gallant_input.spacetime import create_rfc_3339_z_time
 
 RX_TEST_01: Final[str] = "./data/protoroad_01_s1M_b250k_ideal_frame.sigmf-data"
 RX_TEST_02: Final[str] = "./data/protoroad_02_s1M_b250k_shaped_frame.sigmf-data"
+RX_TEST_03: Final[str] = "./data/protoroad_03_s1M_b250k_ota_one_msg.sigmf-data"
 
 
-def print_ndarray_details(array: np.ndarray, num_samps: int = 5) -> None:
+def diagnose(samples: np.ndarray, modem: BPSK, rrc_taps: np.ndarray, sps: int) -> None:
+    """Try coarse frequency correction + every sampling phase on one capture."""
+    samples = samples - np.mean(samples)                      # Crude DC removal
+    sq = samples ** 2                                         # BPSK squared -> tone at 2*df
+    nfft = 1 << 18
+    spec = np.abs(np.fft.fftshift(np.fft.fft(sq, nfft)))
+    freqs = np.fft.fftshift(np.fft.fftfreq(nfft, d=1 / PROTOCOL_SAMP_RATE))
+    offset = freqs[np.argmax(spec)] / 2
+    print(f"Estimated frequency offset: {offset:.0f} Hz")
+    for label, freq in (("uncorrected", 0.0), ("corrected", offset)):
+        n = np.arange(samples.size)
+        fixed = samples * np.exp(-2j * np.pi * freq * n / PROTOCOL_SAMP_RATE)
+        filtered = np.convolve(fixed, rrc_taps)
+        for phase in range(sps):
+            bits = convert_bit_array_to_bytes(modem.demodulate(filtered[phase::sps]))
+            match = find_syncword(bits, SYNCWORD)
+            frame = parse_frame(bits, SYNCWORD, FEC_REPEATS)
+            print(f"{label:11} phase {phase}: sync {match}, frame {frame is not None}")
+
+
+def print_ndarray_details(array: np.ndarray, num_samps: int = 5, title: str = '') -> None:
     """Inspect an ndarray."""
-    print(f"Shape: {array.shape} | Type: {array.dtype} | Real/Complex: {array.dtype.kind}: "
-          f"Samples: {array[:num_samps]}")
+    details = f"Shape: {array.shape} | Type: {array.dtype} | Real/Complex: {array.dtype.kind}: " \
+              f"Samples: {array[:num_samps]}"
+    if title:
+        details = f"{title} - {details}"
+    print(details)
 
 def write_it(samp_rate: float, center_freq: float, filename: str, samples: np.ndarray,
              description: str) -> None:
@@ -59,27 +103,39 @@ def test_ideal(modem: BPSK, rrc_taps: np.ndarray, sps: int, fec_repeats: int) ->
     # print(f"BITS: {bits}")  # DEBUGGING
     frameinfo = parse_frame(bits, SYNCWORD, fec_repeats)
     print_frame(frameinfo=frameinfo, print_all=True)
+    if frameinfo is None:
+        diagnose(samples=samples, modem=modem, rrc_taps=rrc_taps, sps=sps)
+
+
+def test_ota(filename: str, modem: BPSK, rrc_taps: np.ndarray, sps: int, fec_repeats: int) -> None:
+    """Matched filter -> ideal downsample -> demodulate -> parse.  Simulation only."""
+    samples = read_samples(filename=filename, sigmf_data=True)
+    # print(f"SAMPLES: {samples}")  # DEBUGGING
+    # print(f"AMP: {np.sqrt(np.mean(np.abs(samples) ** 2))}")  # DEBUGGING
+    filtered = np.convolve(samples, rrc_taps)  # RX matched filter
+    print_ndarray_details(filtered, title="Filtered")  # DEBUGGING
+    # print(f"FILTERED: {filtered}")  # DEBUGGING
+    bursts = detect_bursts(filtered, min_len=2_000)
+    burst = bursts[0].samples     # Just the burst, no noise gaps
+    burst = burst / np.sqrt(np.mean(np.abs(burst) ** 2))          # TEMPORARY stand-in for AGC
+    print_ndarray_details(burst, title="Burst")  # DEBUGGING
+    ted = GardnerTimingRecovery(sps=sps)
+    symbols = ted.process(samples=burst)
+    print_ndarray_details(symbols, title="Symbols")  # DEBUGGING
+    bit_array = modem.demodulate(symbols)
+    # print_ndarray_details(bit_array)  # DEBUGGING
+    bits = convert_bit_array_to_bytes(bit_array)
+    # print(f"BITS: {bits}")  # DEBUGGING
+    frameinfo = parse_frame(bits, SYNCWORD, fec_repeats)
+    print_frame(frameinfo=frameinfo, print_all=True)
+    if frameinfo is None:
+        diagnose(samples=samples, modem=modem, rrc_taps=rrc_taps, sps=sps)
+    plot_burst_start(filtered, bursts[0], timing=ted, sync_index=61, sps=PROTOCOL_SPS)
 
 
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
-
-DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
-DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
-DEFAULT_TX_GAIN: Final[float] = 30.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
-LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
-LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
-PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
-PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
-PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
-# PROTOCOL_LO_OFFSET: Final[float] = 100_000  # Analog LO offset moves the DC spike out of band
-# PROTOCOL_LO_OFFSET: Final[float] = 1_000_000  # Analog LO offset moves the DC spike out of band
-PROTOCOL_SPS: Final[int] = 4  # The protocol's samples-per-symbol
-PROTOCOL_BAUD: Final[int] = 250_000  # The protocol's symbol rate
-PROTOCOL_SAMP_RATE: Final[int] = PROTOCOL_SPS * PROTOCOL_BAUD
-TEST_MESSAGE: Final[bytes] = b"This is my test input.  Mine?!?!"  # 32 bytes of 'known' message
-UNUSED_FIELD: Final[int] = 0xAA  # Value for unused 8-bit header fields
 
 
 def calc_bandwidth(symbol_rate: int, alpha: float = PROTOCOL_ALPHA) -> float:
@@ -167,7 +223,9 @@ def main() -> int:
     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
 
     # TESTING
-    test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
+    # test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
+    test_ota(filename=RX_TEST_03, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
+             fec_repeats=FEC_REPEATS)
     return exit_code  # TESTING
 
     # DO IT
@@ -210,6 +268,7 @@ def main() -> int:
                 if tx_sleep:
                     print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)
+                # break  # TESTING
             except KeyboardInterrupt:
                 time.sleep(0.2)  # Let the receive thread finish?
                 stop_event.set()  # Tell the receive thread to stop

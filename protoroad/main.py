@@ -15,6 +15,7 @@ from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, 
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.frame import build_frame, build_header, build_payload, parse_frame
+from protoroad.frame_info import FrameInfo
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
@@ -145,7 +146,7 @@ def print_frame(frameinfo: FrameInfo, print_all: bool = False) -> None:
     if frameinfo is not None:
         if print_all is True:
             print(f"DESTINATION:  {frameinfo.dst}")
-            print(f"SOURCE:       {frameinfo.srd}")
+            print(f"SOURCE:       {frameinfo.src}")
             print(f"MESSAGE TYPE: {frameinfo.msg_type}")
             print(f"SEQUENCE NUM: {frameinfo.seq}")
         print(f"PAYLOAD:      {frameinfo.payload}")
@@ -161,29 +162,33 @@ def main() -> int:
     sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
     stop_event = threading.Event()             # Signal the child thread to exit
+    radio = None                               # Radio() object
     # Modulator/demodulator
     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
-    radio = Radio(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
-                  rx_gain=DEFAULT_RX_GAIN, tx_gain=DEFAULT_TX_GAIN,
-                  serial=sdr_serial, lo_offset=PROTOCOL_LO_OFFSET)
-
-    # SETUP
-    print_debug(radio=radio)  # DEBUGGING
 
     # TESTING
     test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
     return exit_code  # TESTING
 
-    # START IT
+    # DO IT
     try:
+        # SETUP
+        radio = Radio(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
+                      rx_gain=DEFAULT_RX_GAIN, tx_gain=DEFAULT_TX_GAIN,
+                      serial=sdr_serial, lo_offset=PROTOCOL_LO_OFFSET)
+        print_debug(radio=radio)  # DEBUGGING
+
+        # HEY, LISTEN!
         # Start listening thread
+
+        # TRANSMIT
         # Start transmitting
         input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
         while True:
             try:
                 tmp_msg = get_tx_msg()
                 tmp_dat = build_payload(tmp_msg)
-                tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=UNUSED_FIELD,
+                tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=MsgType.UNUSED,
                                        seq=UNUSED_FIELD, msg_len=len(tmp_msg))
                 tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
                                         payload=tmp_dat, fec_repeats=FEC_REPEATS)
@@ -213,12 +218,10 @@ def main() -> int:
                 break
     except (RuntimeError, LookupError, KeyError) as err:
         print(err)
-        if 'No devices found' in err.args[0]:
+        if 'No devices found'.lower() in str(err).lower():
                 print(f"\nDid you neglect to connect SDR serial number {sdr_serial}?"
                       "If not, it seems to be unavailable.  "
                       "Verify with `uhd_find_devices`.", file=sys.stderr)
-        else:
-            print("\nThere are no devices available.", file=sys.stderr)
         exit_code = EXIT_FAIL
         raise err  # DEBUGGING
 

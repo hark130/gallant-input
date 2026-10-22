@@ -11,18 +11,19 @@ DEFAULT_LOOP_BW: Final[float] = 0.02      # Loop noise bandwidth, normalized to 
                                           # 0.01 sometimes hangs up on a 64-symbol preamble
 GARDNER_TED_GAIN: Final[float] = 0.265    # TED slope (per sample of timing error), measured for
                                           # RRC alpha=0.35, 4 sps, symbols at +/-1
-_INTERP_BEFORE: Final[int] = 1            # Cubic interpolation needs 1 sample before index i...
-_INTERP_AFTER: Final[int] = 2             # ...and 2 samples after it
+MAX_RATE_CORRECTION: Final[float] = 0.25  # Max clock-rate correction (samples per symbol)
+_SAMPLES_BEFORE: Final[int] = 1           # Cubic interpolation at index n + frac reads
+_SAMPLES_AFTER: Final[int] = 2            # samples n-1, n, n+1, and n+2
 
 
 class GardnerTimingRecovery:
     """Recover symbol timing from matched-filtered samples using a Gardner timing error detector.
 
-    Classic closed-loop structure:
-        1. Interpolator: cubic (Lagrange) interpolation at a fractional sample position
+    Classic closed-loop structure, run once per symbol:
+        1. Interpolator: read the signal at a fractional sample position (cubic Lagrange)
         2. Timing error detector (TED): Gardner, e = Re{ y*(k-1/2) * (y(k-1) - y(k)) }
         3. Loop filter: proportional-plus-integral (second-order loop)
-        4. Controller: advance the fractional position by sps + loop filter output
+        4. Controller: next position = this position + sps + loop filter output
 
     Gardner needs two samples per symbol (the symbol and the midpoint between symbols) and is
     insensitive to carrier phase, so it runs BEFORE carrier recovery.
@@ -55,22 +56,30 @@ class GardnerTimingRecovery:
         if not 0 < loop_bw < 0.5:
             raise ValueError(f"loop_bw must be in (0, 0.5), got {loop_bw}")
 
-        # LOCAL VARIABLES
-        theta = loop_bw / (damping + 1 / (4 * damping))      # Standard 2nd-order loop design
-        denom = 1 + 2 * damping * theta + theta ** 2         # Common denominator
-        self._sps = sps                                      # Nominal samples per symbol
-        self._half = sps / 2                                 # Midpoint offset (samples)
-        self._kp = (4 * damping * theta / denom) / ted_gain  # Proportional gain
-        self._ki = (4 * theta ** 2 / denom) / ted_gain       # Integral gain
-        self._max_rate = 0.25                                # Integrator limit (samples per symbol)
-        self._max_step = sps / 2                             # Per-symbol adjustment limit
-        # Loop state (see reset())
-        self._buffer = np.zeros(0, dtype=np.complex64)  # Unconsumed samples (+ history)
-        self._index = 0                                 # Next symbol: integer index...
-        self._mu = 0.0                                  # ...plus fractional offset [0, 1)
-        self._integrator = 0.0                          # Loop filter integrator (rate error)
-        self._prev = 0j                                 # Previous symbol
-        self._dropped = 0                               # Samples discarded from _buffer so far
+        # LOOP FILTER GAINS
+        # Textbook second-order loop design: pick the loop's noise bandwidth and damping, and
+        # these formulas give the proportional and integral gains.  Dividing by the TED gain
+        # turns "timing error the TED reports" back into "samples of timing error."
+        theta = loop_bw / (damping + 1 / (4 * damping))  # Normalized natural frequency
+        denom = 1 + 2 * damping * theta + theta ** 2     # Shared denominator
+        self._gain_prop = (4 * damping * theta / denom) / ted_gain  # Proportional (kp): fix offset
+        self._gain_int = (4 * theta ** 2 / denom) / ted_gain        # Integral (ki)s: track drift
+
+        # CONSTANTS
+        self._sps = sps                         # Nominal samples per symbol
+        self._half_symbol = sps / 2             # Distance from a symbol to its midpoint
+        self._max_step_correction = sps / 2     # Never move more than half a symbol per symbol
+        self._max_rate_correction = MAX_RATE_CORRECTION
+
+        # LOOP STATE (initialized by reset())
+        # Samples kept for the next call
+        self._carryover = np.zeros(0, dtype=np.complex64)
+        self._next_index = 0         # Next symbol's position: integer sample index into...
+        self._next_frac = 0.0        # ...self._carryover, plus a fraction [0, 1) ("mu")
+        self._rate_correction = 0.0  # Integrator: clock-rate mismatch (samples per symbol)
+        self._prev_symbol = 0j       # The TED compares each symbol to the one before it
+        self._discarded = 0          # Samples dropped since reset(); maps positions to absolute
+
         # DEBUG: absolute sample position of each symbol from the most recent call
         # (absolute since the last reset)
         self.last_offsets = np.zeros(0)
@@ -89,42 +98,70 @@ class GardnerTimingRecovery:
         """
         # LOCAL VARIABLES
         samples = np.asarray(samples, dtype=np.complex64)
-        buffer = None  # Leftover samples + this chunk
-        symbols = []   # Recovered symbols
-        offsets = []   # DEBUG: absolute position of each symbol
-        keep = 0       # First buffer index still needed after this call
+        signal = None     # Carryover from the last call + this chunk
+        symbols = []      # Recovered symbols
+        positions = []    # DEBUG: absolute sample position of each symbol
+        first_needed = 0  # Earliest sample the next symbol still needs
 
         # INPUT VALIDATION
         if samples.ndim != 1:
             raise ValueError(f"Expected a 1-D array, got shape {samples.shape}")
 
-        # RECOVER IT
-        buffer = np.concatenate([self._buffer, samples])
-        while self._index + _INTERP_AFTER < buffer.size:
-            now = _interpolate(buffer, self._index, self._mu)
-            mid = _interpolate(buffer, *_split(self._index, self._mu - self._half))
-            error = (mid.real * (self._prev.real - now.real)
-                     + mid.imag * (self._prev.imag - now.imag))  # Re{conj(mid) * (prev - now)}
-            # Loop filter (PI), then advance to the next symbol
-            # Limit the loop so one wild error can't run it off the rails
-            self._integrator = float(np.clip(self._integrator + self._ki * error,
-                                             -self._max_rate, self._max_rate))
-            adjust = float(np.clip(self._kp * error + self._integrator,
-                                   -self._max_step, self._max_step))
-            symbols.append(now)
-            offsets.append(self._dropped + self._index + self._mu)
-            self._prev = now
-            self._index, self._mu = _split(self._index, self._mu + self._sps + adjust)
+        # RECOVER SYMBOLS (one loop iteration per symbol)
+        #
+        #    prev symbol         midpoint          this symbol
+        #        |                   |                   |
+        #   -----*---------+---------*---------+---------*-----> sample index
+        #     y(k-1)             y(k-1/2)              y(k)
+        #        |<------------- sps samples ----------->|
+        #
+        signal = np.concatenate([self._carryover, samples])
+        while self._next_index + _SAMPLES_AFTER < signal.size:
+            # 1. INTERPOLATOR: read the signal at this symbol and at the midpoint before it
+            symbol = _interpolate_cubic(signal, self._next_index, self._next_frac)
+            midpoint = _interpolate_cubic(signal, *_normalize_position(
+                self._next_index, self._next_frac - self._half_symbol))
 
-        # Only keep what the next symbol still needs (its midpoint reaches back half a symbol)
-        keep = _split(self._index, self._mu - self._half)[0] - _INTERP_BEFORE
-        keep = min(max(keep, 0), buffer.size)
-        self._buffer = buffer[keep:]
-        self._index -= keep  # Integer shift: exact, so chunking can't change the result
-        self._dropped += keep
+            # 2. TIMING ERROR DETECTOR (Gardner): Re{ conj(midpoint) * (prev - this) }
+            # On a +1 -> -1 transition, (prev - this) is +2, and a correctly timed midpoint
+            # sits on the zero crossing, so the error is 0.  Sampling late puts the midpoint
+            # past the crossing (negative), so the error goes negative; early goes positive.
+            # No transition (prev == this) means no timing information: the error is 0.
+            # That's why the preamble alternates 1010...: a transition every symbol.
+            timing_error = (midpoint.real * (self._prev_symbol.real - symbol.real)
+                            + midpoint.imag * (self._prev_symbol.imag - symbol.imag))
+
+            # 3. LOOP FILTER (proportional + integral), both clamped so one wild error (e.g.,
+            # an input far too loud) can't run the loop backward or off the rails.
+            # Integral: accumulates persistent error, e.g., the TX/RX clock-rate mismatch.
+            self._rate_correction = float(np.clip(
+                self._rate_correction + self._gain_int * timing_error,
+                -self._max_rate_correction, self._max_rate_correction))
+            # Proportional: reacts to this symbol's error, plus the rate correction.
+            step_correction = float(np.clip(
+                self._gain_prop * timing_error + self._rate_correction,
+                -self._max_step_correction, self._max_step_correction))
+
+            # 4. CONTROLLER: emit this symbol, then step to the next one.  Late (error < 0)
+            # makes the step shorter; early (error > 0) makes it longer.
+            symbols.append(symbol)
+            positions.append(self._discarded + self._next_index + self._next_frac)
+            self._prev_symbol = symbol
+            self._next_index, self._next_frac = _normalize_position(
+                self._next_index, self._next_frac + self._sps + step_correction)
+
+        # KEEP ONLY WHAT THE NEXT SYMBOL STILL NEEDS
+        # Its midpoint reaches back half a symbol, and interpolating there reads one sample
+        # earlier still.  Everything before that can go.
+        first_needed = _normalize_position(
+            self._next_index, self._next_frac - self._half_symbol)[0] - _SAMPLES_BEFORE
+        first_needed = min(max(first_needed, 0), signal.size)
+        self._carryover = signal[first_needed:]
+        self._next_index -= first_needed  # Integer shift: exact, so chunking can't change results
+        self._discarded += first_needed
 
         # DONE
-        self.last_offsets = np.asarray(offsets)
+        self.last_offsets = np.asarray(positions)
         return np.asarray(symbols, dtype=np.complex64)
 
     def recover(self, burst: np.ndarray) -> np.ndarray:
@@ -134,24 +171,41 @@ class GardnerTimingRecovery:
 
     def reset(self) -> None:
         """Return the loop to its initial state (e.g., at the start of a new burst)."""
-        self._buffer = np.zeros(0, dtype=np.complex64)
-        self._index = self._sps  # First symbol: far enough in for its midpoint + history
-        self._mu = 0.0
-        self._integrator = 0.0
-        self._prev = 0j
-        self._dropped = 0
+        self._carryover = np.zeros(0, dtype=np.complex64)
+        # First symbol starts one symbol in: far enough for its midpoint and the samples the
+        # interpolator reads around it.  The loop pulls it onto the real peak from there.
+        self._next_index = self._sps
+        self._next_frac = 0.0
+        self._rate_correction = 0.0
+        self._prev_symbol = 0j
+        self._discarded = 0
 
 
-def _interpolate(samples: np.ndarray, i: int, mu: float) -> complex:
-    """Cubic Lagrange interpolation of samples at index i + mu (needs i >= 1, 0 <= mu < 1)."""
-    x_m1, x_0, x_1, x_2 = samples[i - 1], samples[i], samples[i + 1], samples[i + 2]
-    return (x_m1 * (-mu * (mu - 1) * (mu - 2) / 6)
-            + x_0 * ((mu + 1) * (mu - 1) * (mu - 2) / 2)
-            + x_1 * (-(mu + 1) * mu * (mu - 2) / 2)
-            + x_2 * ((mu + 1) * mu * (mu - 1) / 6))
+def _interpolate_cubic(signal: np.ndarray, index: int, frac: float) -> complex:
+    """Estimate signal at position index + frac by fitting a cubic through 4 neighbors.
+
+    Lagrange form: each neighbor is weighted by a cubic in frac that is 1 at its own position
+    and 0 at the other three, so the curve passes through all four samples exactly.  frac = 0
+    returns signal[index]; frac = 0.5 returns a smooth estimate halfway to signal[index + 1].
+
+    Args:
+        signal: The samples.
+        index: Integer sample index (needs index >= 1 and index + 2 < len(signal)).
+        frac: Fraction of a sample past index, in [0, 1).
+    """
+    before, at, after, after2 = (signal[index - 1], signal[index],
+                                 signal[index + 1], signal[index + 2])
+    return (before * (-frac * (frac - 1) * (frac - 2) / 6)
+            + at * ((frac + 1) * (frac - 1) * (frac - 2) / 2)
+            + after * (-(frac + 1) * frac * (frac - 2) / 2)
+            + after2 * ((frac + 1) * frac * (frac - 1) / 6))
 
 
-def _split(index: int, offset: float) -> tuple[int, float]:
-    """Normalize index + offset into (integer index, fractional offset in [0, 1))."""
+def _normalize_position(index: int, offset: float) -> tuple[int, float]:
+    """Turn index + offset (any float) into (integer index, fraction in [0, 1)).
+
+    Example: (10, 2.75) -> (12, 0.75) and (10, -0.25) -> (9, 0.75).  Keeping the integer part
+    separate from the fraction keeps positions exact no matter how far the stream runs.
+    """
     whole = int(np.floor(offset))
     return index + whole, offset - whole

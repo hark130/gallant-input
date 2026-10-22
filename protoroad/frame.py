@@ -26,6 +26,23 @@ def apply_fec(binary: bytes, repeats: int) -> bytes:
     return b''.join(bytes([bit]) * repeats for bit in binary)
 
 
+def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
+                fec_repeats: int, tail: bytes = b'00000000') -> bytes:
+    """Build an entire frame."""
+    header = apply_fec(header, fec_repeats)
+    data = apply_fec(payload, fec_repeats)
+    # If/when you interleave, interleave the header and data here
+    return preamble + syncword + header + data + tail
+
+
+def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo,
+                          fec_repeats: int) -> bytes:
+    """FrameInfo --> complete frame bits (preamble through tail)."""
+    header = build_header(frameinfo.dst, frameinfo.src, frameinfo.msg_type,
+                          frameinfo.seq, frameinfo.length)
+    return build_frame(preamble, syncword, header, build_payload(frameinfo.payload), fec_repeats)
+
+
 def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> bytes:
     """Build the header.
 
@@ -46,27 +63,11 @@ def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> b
     return header
 
 
-def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
-                fec_repeats: int, tail: bytes = b'00000000') -> bytes:
-    """Build an entire frame."""
-    header = apply_fec(header, fec_repeats)
-    data = apply_fec(payload, fec_repeats)
-    # If/when you interleave, interleave the header and data here
-    return preamble + syncword + header + data + tail
-
-
-def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo,
-                          fec_repeats: int) -> bytes:
-    """FrameInfo --> complete frame bits (preamble through tail)."""
-    header = build_header(frame.dst, frame.src, frame.msg_type, frame.seq, frame.length)
-    return build_frame(preamble, syncword, header, build_payload(frame.payload), fec_repeats)
-
-
 def build_payload(payload: bytes) -> bytes:
     """Build the payload."""
     if len(payload) > MAX_DATA_LEN:
         raise ValueError(f"Does not support messages of greater than {MAX_DATA_LEN} length.")
-    payload = payload.ljust(32, b" ")  # Pad to a minimum length of 32 bytes
+    payload = payload.ljust(MAX_DATA_LEN, PAD_BYTE)  # Pad to the maximum data length
     return convert_msg_to_binary(payload)
 
 

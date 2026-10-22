@@ -56,12 +56,14 @@ class GardnerTimingRecovery:
             raise ValueError(f"loop_bw must be in (0, 0.5), got {loop_bw}")
 
         # LOCAL VARIABLES
-        theta = loop_bw / (damping + 1 / (4 * damping))  # Standard 2nd-order loop design
-        denom = 1 + 2 * damping * theta + theta ** 2      # Common denominator
-        self._sps = sps                                       # Nominal samples per symbol
-        self._half = sps / 2                                  # Midpoint offset (samples)
+        theta = loop_bw / (damping + 1 / (4 * damping))      # Standard 2nd-order loop design
+        denom = 1 + 2 * damping * theta + theta ** 2         # Common denominator
+        self._sps = sps                                      # Nominal samples per symbol
+        self._half = sps / 2                                 # Midpoint offset (samples)
         self._kp = (4 * damping * theta / denom) / ted_gain  # Proportional gain
         self._ki = (4 * theta ** 2 / denom) / ted_gain       # Integral gain
+        self._max_rate = 0.25                                # Integrator limit (samples per symbol)
+        self._max_step = sps / 2                             # Per-symbol adjustment limit
         # Loop state (see reset())
         self._buffer = np.zeros(0, dtype=np.complex64)  # Unconsumed samples (+ history)
         self._index = 0                                 # Next symbol: integer index...
@@ -69,8 +71,9 @@ class GardnerTimingRecovery:
         self._integrator = 0.0                          # Loop filter integrator (rate error)
         self._prev = 0j                                 # Previous symbol
         self._dropped = 0                               # Samples discarded from _buffer so far
-        self.last_offsets = np.zeros(0)  # DEBUG: absolute sample position of each symbol from
-                                         # the most recent call (absolute since the last reset)
+        # DEBUG: absolute sample position of each symbol from the most recent call
+        # (absolute since the last reset)
+        self.last_offsets = np.zeros(0)
         self.reset()
 
     def process(self, samples: np.ndarray) -> np.ndarray:
@@ -103,13 +106,15 @@ class GardnerTimingRecovery:
             error = (mid.real * (self._prev.real - now.real)
                      + mid.imag * (self._prev.imag - now.imag))  # Re{conj(mid) * (prev - now)}
             # Loop filter (PI), then advance to the next symbol
-            self._integrator += self._ki * error
+            # Limit the loop so one wild error can't run it off the rails
+            self._integrator = float(np.clip(self._integrator + self._ki * error,
+                                             -self._max_rate, self._max_rate))
+            adjust = float(np.clip(self._kp * error + self._integrator,
+                                   -self._max_step, self._max_step))
             symbols.append(now)
             offsets.append(self._dropped + self._index + self._mu)
             self._prev = now
-            self._index, self._mu = _split(self._index,
-                                           self._mu + self._sps + self._kp * error
-                                           + self._integrator)
+            self._index, self._mu = _split(self._index, self._mu + self._sps + adjust)
 
         # Only keep what the next symbol still needs (its midpoint reaches back half a symbol)
         keep = _split(self._index, self._mu - self._half)[0] - _INTERP_BEFORE

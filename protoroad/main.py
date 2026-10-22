@@ -15,7 +15,7 @@ from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, 
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.frame import build_frame, build_header, build_payload, parse_frame
-from protoroad.frame_info import FrameInfo
+from protoroad.frame_info import FrameInfo, MsgType
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 
@@ -56,7 +56,7 @@ def test_ideal(modem: BPSK, rrc_taps: np.ndarray, sps: int, fec_repeats: int) ->
     bit_array = modem.demodulate(symbols)
     # print_ndarray_details(bit_array)  # DEBUGGING
     bits = convert_bit_array_to_bytes(bit_array)
-    print(f"BITS: {bits}")  # DEBUGGING
+    # print(f"BITS: {bits}")  # DEBUGGING
     frameinfo = parse_frame(bits, SYNCWORD, fec_repeats)
     print_frame(frameinfo=frameinfo, print_all=True)
 

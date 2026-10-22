@@ -14,4 +14,4 @@ HEADER_LEN: Final[int] = 5  # Header length in bytes: dst, src, type, seq, len
 MAX_DATA_LEN: Final[int] = 32  # Maximum length, in bytes, of one payload
 PAD_BYTE: Final[bytes] = b" "  # Pads short payloads to MAX_DATA_LEN (also use in build_payload)
 PREAMBLE: Final[bytes] = b"10" * 32
-SYNCWORD: Final[bytes] = convert_hex_str_to_binary("0x4954CE1F")
+SYNCWORD: Final[bytes] = convert_hex_str_to_binary("0x4954CE1F")  # Alternate: 0x0C9BCA57

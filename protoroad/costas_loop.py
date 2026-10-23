@@ -8,6 +8,7 @@ import numpy as np
 from protoroad.validation import validate_ndarray
 
 
+# pylint: disable=too-few-public-methods
 class CostasLoop:
     """Second-order BPSK Costas loop for fine carrier recovery.
 
@@ -97,9 +98,11 @@ class CostasLoop:
         if self._computed is not True:
             # Calculate the second-order digital PLL coefficients
             # Characteristic closed-loop transfer function polynomial denominator in the Z-domain
-            denom = 1.0 + 2.0 * self._damping_factor * self._loop_bandwidth + self._loop_bandwidth**2
+            denom = \
+                1.0 + 2.0 * self._damping_factor * self._loop_bandwidth + self._loop_bandwidth**2
             # Proportional gain coefficient; Adjusts phase estimate based on the current phase error
             self._alpha = 4.0 * self._damping_factor * self._loop_bandwidth / denom
             # Integral gain coefficient; Accumulates phase error over time to adjust freq estimate
             self._beta = 4.0 * self._loop_bandwidth**2 / denom
             self._computed = True
+# pylint: enable=too-few-public-methods

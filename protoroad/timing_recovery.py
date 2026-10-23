@@ -7,15 +7,16 @@ import numpy as np
 # Local Imports
 
 DEFAULT_DAMPING: Final[float] = 0.707     # Loop damping factor (zeta); 1/sqrt(2) is the classic
-DEFAULT_LOOP_BW: Final[float] = 0.02      # Loop noise bandwidth, normalized to the symbol rate;
-                                          # 0.01 sometimes hangs up on a 64-symbol preamble
-GARDNER_TED_GAIN: Final[float] = 0.265    # TED slope (per sample of timing error), measured for
-                                          # RRC alpha=0.35, 4 sps, symbols at +/-1
+# Loop noise bandwidth, normalized to the symbol rate
+DEFAULT_LOOP_BW: Final[float] = 0.02      # 0.01 sometimes hangs up on a 64-symbol preamble
+# TED slope (per sample of timing error), measured for RRC alpha=0.35, 4 sps, symbols at +/-1
+GARDNER_TED_GAIN: Final[float] = 0.265
 MAX_RATE_CORRECTION: Final[float] = 0.25  # Max clock-rate correction (samples per symbol)
 _SAMPLES_BEFORE: Final[int] = 1           # Cubic interpolation at index n + frac reads
 _SAMPLES_AFTER: Final[int] = 2            # samples n-1, n, n+1, and n+2
 
 
+# pylint: disable=too-many-instance-attributes
 class GardnerTimingRecovery:
     """Recover symbol timing from matched-filtered samples using a Gardner timing error detector.
 
@@ -179,6 +180,7 @@ class GardnerTimingRecovery:
         self._rate_correction = 0.0
         self._prev_symbol = 0j
         self._discarded = 0
+# pylint: enable=too-many-instance-attributes
 
 
 def _interpolate_cubic(signal: np.ndarray, index: int, frac: float) -> complex:

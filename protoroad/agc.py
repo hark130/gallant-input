@@ -6,17 +6,18 @@ from typing import Final
 import numpy as np
 # Local Imports
 
-DEFAULT_ATTACK: Final[float] = 0.9      # Fraction (in dB) of the error removed per block when
-                                        # the signal is too loud: fast, so bursts settle quickly
+# Fraction (in dB) of the error removed per block when the signal is too loud
+DEFAULT_ATTACK: Final[float] = 0.9      # Fast, so bursts settle quickly
 DEFAULT_BLOCK_LEN: Final[int] = 32      # Samples per gain update (8 symbols @ 4 sps)
-DEFAULT_DECAY: Final[float] = 0.05      # Same, when the signal is too quiet: slow, so the gain
-                                        # doesn't race up on noise between bursts
+# Same, when the signal is too quiet: slow, so the gain doesn't race up on noise between bursts
+DEFAULT_DECAY: Final[float] = 0.05
 DEFAULT_MAX_GAIN: Final[float] = 1e6    # Gain ceiling (linear): +120 dB
-DEFAULT_TARGET_RMS: Final[float] = 1.0  # Output RMS.  1.0 suits a matched-filter OUTPUT with
-                                        # unit-energy RRC taps (symbols land near +/-1)
+# Output RMS. 1.0 suits a matched-filter output with unit-energy RRC taps (symbols land near +/-1)
+DEFAULT_TARGET_RMS: Final[float] = 1.0
 _MIN_POWER: Final[float] = 1e-30        # Below this a block is treated as silence
 
 
+# pylint: disable=too-many-instance-attributes
 class AGC:
     """Normalize signal amplitude to a target RMS level.
 
@@ -162,3 +163,4 @@ class AGC:
             ratio = np.sqrt(self._target_power / power)  # Gain change that would hit target
             rate = self._attack if ratio < 1 else self._decay
         self._gain = min(float(self._gain * ratio ** rate), self._max_gain)
+# pylint: enable=too-many-instance-attributes

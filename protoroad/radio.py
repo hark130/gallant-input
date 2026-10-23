@@ -17,6 +17,7 @@ TX_ANTENNA: Final[str] = "TX/RX"     # Transmit port
 TX_SEND_TIMEOUT: Final[float] = 1.0  # Seconds to wait on streamer.send()
 
 
+# pylint: disable=too-many-instance-attributes
 class Radio:
     """Own one USRP and its streamers for the life of the program."""
 
@@ -130,6 +131,7 @@ class Radio:
         stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
         stream_args.channels = [self._channel]
         return stream_args
+# pylint: enable=too-many-instance-attributes
 
 
 def _build_usrp(serial: str | None, master_clock_rate: float) -> uhd.usrp.MultiUSRP:

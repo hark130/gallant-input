@@ -26,6 +26,7 @@ def apply_fec(binary: bytes, repeats: int) -> bytes:
     return b''.join(bytes([bit]) * repeats for bit in binary)
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
                 fec_repeats: int, tail: bytes = b'00000000') -> bytes:
     """Build an entire frame."""
@@ -33,6 +34,7 @@ def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
     data = apply_fec(payload, fec_repeats)
     # If/when you interleave, interleave the header and data here
     return preamble + syncword + header + data + tail
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo,

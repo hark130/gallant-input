@@ -304,9 +304,9 @@ def main() -> int:
     except (RuntimeError, LookupError, KeyError) as err:
         print(err)
         if 'No devices found'.lower() in str(err).lower():
-                print(f"\nDid you neglect to connect SDR serial number {sdr_serial}?"
-                      "If not, it seems to be unavailable.  "
-                      "Verify with `uhd_find_devices`.", file=sys.stderr)
+            print(f"\nDid you neglect to connect SDR serial number {sdr_serial}?"
+                  "If not, it seems to be unavailable.  "
+                  "Verify with `uhd_find_devices`.", file=sys.stderr)
         exit_code = EXIT_FAIL
         raise err  # DEBUGGING
 

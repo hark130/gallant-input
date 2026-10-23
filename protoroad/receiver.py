@@ -33,6 +33,7 @@ DEFAULT_COSTAS_BW: Final[float] = 0.05  # Pulls in the worst-case +/-3.7 kHz rad
 DEFAULT_MIN_BURST: Final[int] = 2_000   # Samples; a frame is ~4,000, so this rejects blips
 
 
+# pylint: disable=too-many-instance-attributes
 class FrameReceiver:
     """Stateful RX chain: feed it consecutive chunks of raw samples, get back decoded frames."""
 
@@ -103,6 +104,7 @@ class FrameReceiver:
 
         # DONE
         return frames
+# pylint: enable=too-many-instance-attributes
 
 
 def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,

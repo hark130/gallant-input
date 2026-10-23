@@ -1,7 +1,6 @@
 """Modify signals."""
 
 # Standard Imports
-import sys
 # Third Party Imports
 import numpy as np
 # Local Imports
@@ -36,7 +35,7 @@ def create_rrc_taps(sps: int, span: int, alpha: float) -> np.ndarray:
     g = ~(at_zero | at_sing)
     tg = t[g]
     h[g] = (np.sin(np.pi * tg * (1 - alpha)) + 4 * alpha * tg * np.cos(np.pi * tg * (1 + alpha))) \
-           / (np.pi * tg * (1 - (4 * alpha * tg) ** 2))
+        / (np.pi * tg * (1 - (4 * alpha * tg) ** 2))
 
     # DONE
     return h / np.sqrt(np.sum(h ** 2))  # Unit energy --> TX + RX peak = 1

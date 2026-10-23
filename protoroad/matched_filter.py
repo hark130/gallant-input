@@ -8,6 +8,7 @@ import numpy as np
 from protoroad.validation import validate_ndarray
 
 
+# pylint: disable=too-few-public-methods
 class MatchedFilter:
     """Maintain state while applying matched filter taps to signal chunks."""
 
@@ -32,3 +33,4 @@ class MatchedFilter:
 
         # DONE
         return output
+# pylint: enable=too-few-public-methods

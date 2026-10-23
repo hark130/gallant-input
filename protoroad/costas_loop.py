@@ -5,6 +5,7 @@
 from numpy.typing import NDArray
 import numpy as np
 # Local Imports
+from protoroad.validation import validate_ndarray
 
 
 class CostasLoop:
@@ -14,7 +15,7 @@ class CostasLoop:
     with a feedback loop.  It recovers phase and frequency without needing an extra pilot tone.
     """
 
-    def __init__(self, loop_bandwidth: float = 0.01, damping_factor: float = 0.707) -> None:
+    def __init__(self, loop_bandwidth: float = 0.05, damping_factor: float = 0.707) -> None:
         """CostasLoop ctor.
 
         Args:
@@ -34,16 +35,16 @@ class CostasLoop:
         """
         # PUBLIC ATTRIBUTES
         # Ctor input
-        self.loop_bandwidth = loop_bandwidth  # Expressed in radians/sample
-        self.damping_factor = damping_factor  # Controls the internal oscillator response
+        self._loop_bandwidth = loop_bandwidth  # Expressed in radians/sample
+        self._damping_factor = damping_factor  # Controls the internal oscillator response
         # Calculated second-order digital PLL coefficients (see: self._compute())
         # Adjusts the phase estimate based on the current phase error
-        self.alpha = 0.0                      # Proportional gain coefficient
+        self._alpha = 0.0                      # Proportional gain coefficient
         # Accumulates the phase error over time to adjust freq estimate
-        self.beta = 0.0                       # Integral gain coefficient
+        self._beta = 0.0                       # Integral gain coefficient
         # Track offsets as samples are processed
-        self.phase = 0.0                      # Tracking phase offset
-        self.frequency = 0.0                  # Tracking frequency offset
+        self._phase = 0.0                      # Tracking phase offset
+        self._frequency = 0.0                  # Tracking frequency offset
 
         # PRIVATE ATTRIBUTES
         self._computed = False                # Validate and calculate coefficients once
@@ -65,7 +66,7 @@ class CostasLoop:
         output = None  # Corrected samples
 
         # INPUT VALIDATION
-        # CFT?!?
+        validate_ndarray(samples, "samples", dtype=np.complex64, check_finite=True)
 
         # PREPARE
         self._compute()  # Validate and parse the input once
@@ -74,16 +75,16 @@ class CostasLoop:
         output = np.empty_like(samples)
         for index, sample in enumerate(samples):
             # Rotate the input by the current phase estimate
-            corrected = sample * np.exp(-1j * self.phase)
+            corrected = sample * np.exp(-1j * self._phase)
             # Save corrected sample
             output[index] = corrected
             # BPSK phase detector
             error = corrected.real * corrected.imag
             # Second-order loop filter
-            self.frequency += self.beta * error
-            self.phase += self.frequency + self.alpha * error
+            self._frequency += self._beta * error
+            self._phase += self._frequency + self._alpha * error
             # Wrap phase to [-pi, pi)
-            self.phase = ((self.phase + np.pi) % (2.0 * np.pi)) - np.pi
+            self._phase = ((self._phase + np.pi) % (2.0 * np.pi)) - np.pi
 
         # DONE
         return output
@@ -96,9 +97,9 @@ class CostasLoop:
         if self._computed is not True:
             # Calculate the second-order digital PLL coefficients
             # Characteristic closed-loop transfer function polynomial denominator in the Z-domain
-            denom = 1.0 + 2.0 * self.damping_factor * self.loop_bandwidth + self.loop_bandwidth**2
+            denom = 1.0 + 2.0 * self._damping_factor * self._loop_bandwidth + self._loop_bandwidth**2
             # Proportional gain coefficient; Adjusts phase estimate based on the current phase error
-            self.alpha = 4.0 * self.damping_factor * self.loop_bandwidth / denom
+            self._alpha = 4.0 * self._damping_factor * self._loop_bandwidth / denom
             # Integral gain coefficient; Accumulates phase error over time to adjust freq estimate
-            self.beta = 4.0 * self.loop_bandwidth**2 / denom
+            self._beta = 4.0 * self._loop_bandwidth**2 / denom
             self._computed = True

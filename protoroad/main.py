@@ -184,7 +184,7 @@ def create_tailored_lpf(sample_rate: float, symbol_rate: int,
     return firwin(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)  # LPF taps
 
 
-def generate_address() -> bytes:
+def generate_address() -> int:
     """Generate an address.
 
     Derive a one-byte integer address from the current thread identifier.

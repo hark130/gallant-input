@@ -23,7 +23,7 @@ class MatchedFilter:
         output = chunk
 
         # INPUT VALIDATION
-        validate_ndarray(chunk, "chunk", dtype=np.complex64)
+        chunk = validate_ndarray(chunk, "chunk", dtype=np.complex64)
 
         # PROCESS IT
         if chunk.size > 0:

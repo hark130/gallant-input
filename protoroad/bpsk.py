@@ -24,7 +24,7 @@ class BPSK():
 
     def demap(self, values: np.ndarray) -> np.ndarray:
         """Symbol values --> bits, MSB first."""
-        validate_ndarray(values, "values", kinds=KINDS_INTEGER)
+        values = validate_ndarray(values, "values", kinds=KINDS_INTEGER)
         shifts = np.arange(self._bits_per_symb - 1, -1, -1)
         return ((values[:, None] >> shifts) & 1).astype(np.uint8).ravel()
 

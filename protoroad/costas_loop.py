@@ -66,7 +66,7 @@ class CostasLoop:
         output = None  # Corrected samples
 
         # INPUT VALIDATION
-        validate_ndarray(samples, "samples", dtype=np.complex64, check_finite=True)
+        samples = validate_ndarray(samples, "samples", dtype=np.complex64, check_finite=True)
 
         # PREPARE
         self._compute()  # Validate and parse the input once

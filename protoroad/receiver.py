@@ -121,22 +121,13 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
             this value.
         debug: [OPTIONAL] If True, enables more verbose logging.
     """
-    # LOCAL VARIABLES
-    call_func = True  # Whether to call on_frame or not
-
     # RECEIVE IT
     radio.start_receiving()
     try:
         while not stop_event.is_set():
             for frame in receiver.process(radio.receive()):
-                if frame is None:
-                    call_func = False  # No need(?) to print non-frames
-                else:
-                    if isinstance(address, int):
-                        call_func = _accept(frame_info=frame, address=address, debug=debug)
-                if call_func:
+                if address is None or _accept(frame_info=frame, address=address, debug=debug):
                     on_frame(frame, debug)
-                call_func = True  # Reset temp var
     finally:
         radio.stop_receiving()  # Always stop the stream, even on an exception
 
@@ -144,22 +135,19 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
 def _accept(frame_info: FrameInfo, address: int, debug: bool) -> bool:
     """Prints relevant log message and indicates whether or not to call on_frame()."""
     # LOCAL VARIABLES
-    call_func = True
+    accepted = False  # Whether to call on_frame()
 
     # ACCEPT IT?
-    # Implicitly accept our own frame since it was addressed to us
-    if frame_info.dst == address:
-        print(LOG_STR_RX.format(action="Receiving",
-                                message=f"Src addr #{frame_info.src} Seq #{frame_info.seq}"))
-    elif frame_info.src == address:
-        call_func = False  # Don't print our own frame
-        if debug:
-            print(LOG_STR_RX.format(action="Dropping", message=f"My own seq #{frame_info.seq}"))
-    else:
-        call_func = False  # We didn't send it and we aren't the recipient
-        if debug:
-            print(LOG_STR_RX.format(action="Dropping",
-                                    message=f"Frame for addr #{frame_info.dst}"))
+    if frame_info is not None:
+        if frame_info.src == address and frame_info.dst != address:
+            if debug:  # Our own transmission (self-addressed test frames still get through)
+                print(LOG_STR_RX.format(action="Dropping", message=f"My own seq #{frame_info.seq}"))
+        elif frame_info.dst in (address, BROADCAST_ADDR):
+            accepted = True
+            print(LOG_STR_RX.format(action="Receiving",
+                                    message=f"Src addr #{frame_info.src} Seq #{frame_info.seq}"))
+        elif debug:  # We didn't send it and it isn't for us
+            print(LOG_STR_RX.format(action="Dropping", message=f"Frame for addr #{frame_info.dst}"))
 
     # DONE
-    return call_func
+    return accepted

@@ -19,7 +19,7 @@ from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_
 from protoroad.costas_loop import CostasLoop
 from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
 from protoroad.frame_info import FrameInfo, MsgType
-from protoroad.plots import plot_burst_start
+# from protoroad.plots import plot_burst_start
 from protoroad.radio import Radio
 from protoroad.signals import create_rrc_taps
 from protoroad.timing_recovery import GardnerTimingRecovery

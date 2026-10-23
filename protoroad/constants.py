@@ -7,6 +7,7 @@ from typing import Final
 from protoroad.convert import convert_hex_str_to_binary
 
 BPSK_MAP: Final[dict[int, complex]] = {0: -1+0j, 1: 1+0j}
+BROADCAST_ADDR: Final[int] = 0xFF  # Destination address meaning "every node"
 EXIT_FAIL: Final[int] = 1
 EXIT_SUCCESS: Final[int] = 0
 FEC_REPEATS: Final[int] = 3

@@ -6,9 +6,8 @@ from enum import IntEnum
 from typing import Final
 # Third Party Imports
 # Local Imports
-from protoroad.constants import MAX_DATA_LEN
+from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN
 
-BROADCAST_ADDR: Final[int] = 0xFF  # Destination address meaning "every node"
 _MAX_BYTE_VAL: Final[int] = 0xFF  # Maximum value for an 8-bit field
 
 

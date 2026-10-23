@@ -261,10 +261,10 @@ def main() -> int:
         print(LOG_STR_RX.format(action="Ready", message="Listening for bursts..."))
 
         # TRANSMIT
-        # Start transmitting
-        input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
-        while True:
-            try:
+        try:
+            # Start transmitting
+            input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
+            while True:
                 tmp_msg = get_tx_msg()
                 tmp_dat = build_payload(tmp_msg)
                 tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=MsgType.UNUSED,
@@ -290,11 +290,14 @@ def main() -> int:
                     print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)
                 # break  # TESTING
-            except KeyboardInterrupt:
-                stop_event.set()  # Tell the receive thread to stop
-                rx_thread.join()  # Wait for it
-                print()
-                break
+                if not rx_thread.is_alive():
+                    print(LOG_STR_TX.format(action="Error", message="RX thread is not alive?!"))
+                    exit_code = EXIT_FAIL
+                    break  # Stop TX
+        except KeyboardInterrupt:
+            stop_event.set()  # Tell the receive thread to stop
+            rx_thread.join()  # Wait for it
+            print()
         if radio is not None:
             print(LOG_STR_RX.format(action="Stopped",
                                     message=f"{radio.overflows} overflows"))

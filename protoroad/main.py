@@ -13,7 +13,8 @@ from scipy.signal import firwin
 from protoroad.agc import AGC
 from protoroad.bpsk import BPSK
 from protoroad.burst_detector import detect_bursts
-from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, PREAMBLE, SYNCWORD
+from protoroad.constants import (BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, LOG_STR_RX,
+                                 LOG_STR_TX, PREAMBLE, SYNCWORD)
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.costas_loop import CostasLoop
@@ -21,15 +22,15 @@ from protoroad.frame import build_frame, build_header, build_payload, find_syncw
 from protoroad.frame_info import FrameInfo, MsgType
 # from protoroad.plots import plot_burst_start
 from protoroad.radio import Radio
+from protoroad.receiver import frame_receiver, FrameReceiver
 from protoroad.signals import create_rrc_taps
 from protoroad.timing_recovery import GardnerTimingRecovery
 
-DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
+DEBUG_SLEEP: Final[int | float] = 1  # A slow, meandering debug sleep
+# DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
 # DEBUG_SLEEP: Final[int | float] = 0  # TESTING
 DEFAULT_RX_GAIN: Final[float] = 30.0  # RX gain (dB); B2xx range ~0-76
 DEFAULT_TX_GAIN: Final[float] = 30.0  # TX gain (dB); B2xx range ~0-89.8; start low, raise as needed
-LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
-LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
 PROTOCOL_ALPHA: Final[float] = 0.35  # Protocol roll-off factor: matched filter, bandwidth calc.
 PROTOCOL_CENTER: Final[float] = 913_000_000  # Center frequency of the protocol
 PROTOCOL_LO_OFFSET: Final[float] = 0  # Analog LO offset moves the DC spike out of band
@@ -223,6 +224,7 @@ def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
     exit_code = EXIT_SUCCESS                   # Exit status
+    debug_mode = True                          # Placeholder for args?
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
     sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
@@ -235,9 +237,9 @@ def main() -> int:
     # test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
     # test_ota(filename=RX_TEST_03, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
     #          fec_repeats=FEC_REPEATS)
-    test_ota(filename=RX_TEST_04, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
-             fec_repeats=FEC_REPEATS)
-    return exit_code  # TESTING
+    # test_ota(filename=RX_TEST_04, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
+    #          fec_repeats=FEC_REPEATS)
+    # return exit_code  # TESTING
 
     # DO IT
     try:
@@ -245,10 +247,18 @@ def main() -> int:
         radio = Radio(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER,
                       rx_gain=DEFAULT_RX_GAIN, tx_gain=DEFAULT_TX_GAIN,
                       serial=sdr_serial, lo_offset=PROTOCOL_LO_OFFSET)
-        print_debug(radio=radio)  # DEBUGGING
+        # print_debug(radio=radio)  # DEBUGGING
 
         # HEY, LISTEN!
         # Start listening thread
+        receiver = FrameReceiver(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
+                                 syncword=SYNCWORD, fec_repeats=FEC_REPEATS,
+                                 pre_pad=BURST_DETECT_PRE_PAD)
+        stop_event = threading.Event()
+        rx_thread = threading.Thread(target=frame_receiver, daemon=True,
+                                     args=(radio, receiver, stop_event, print_frame, debug_mode))
+        rx_thread.start()
+        print(LOG_STR_RX.format(action="Ready", message="Listening for bursts..."))
 
         # TRANSMIT
         # Start transmitting
@@ -281,11 +291,13 @@ def main() -> int:
                     time.sleep(tx_sleep)
                 # break  # TESTING
             except KeyboardInterrupt:
-                time.sleep(0.2)  # Let the receive thread finish?
                 stop_event.set()  # Tell the receive thread to stop
-                # rx_thread.join()  # Wait for it
+                rx_thread.join()  # Wait for it
                 print()
                 break
+        if radio is not None:
+            print(LOG_STR_RX.format(action="Stopped",
+                                    message=f"{radio.overflows} overflows"))
     except (RuntimeError, LookupError, KeyError) as err:
         print(err)
         if 'No devices found'.lower() in str(err).lower():

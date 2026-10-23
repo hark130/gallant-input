@@ -25,6 +25,7 @@ from protoroad.radio import Radio
 from protoroad.receiver import frame_receiver, FrameReceiver
 from protoroad.signals import create_rrc_taps
 from protoroad.timing_recovery import GardnerTimingRecovery
+from protoroad.transmitter import FrameTransmitter
 
 DEBUG_SLEEP: Final[int | float] = 1  # A slow, meandering debug sleep
 # DEBUG_SLEEP: Final[int | float] = 0.1  # A "tasteful" debug sleep
@@ -183,6 +184,24 @@ def create_tailored_lpf(sample_rate: float, symbol_rate: int,
     return firwin(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)  # LPF taps
 
 
+def generate_address() -> bytes:
+    """Generate an address.
+
+    Derive a one-byte integer address from the current thread identifier.
+    """
+    # LOCAL VARIABLES
+    tid = threading.get_ident()
+    address = 0
+
+    # GENERATE IT
+    while tid:
+        address ^= tid & 0xFF
+        tid >>= 8
+
+    # DONE
+    return address
+
+
 def get_rrc_taps(sps: int, span: int = PROTOCOL_RRC_SPAN,
                  alpha: float = PROTOCOL_ALPHA) -> np.ndarray:
     """Get the RRC matched filter taps for the protocol."""
@@ -225,11 +244,13 @@ def main() -> int:
     # LOCAL VARIABLES
     exit_code = EXIT_SUCCESS                   # Exit status
     debug_mode = True                          # Placeholder for args?
+    address = generate_address()               # Frame source address
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
     sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
     stop_event = threading.Event()             # Signal the child thread to exit
     radio = None                               # Radio() object
+    frame_tx = None                            # FrameTransmitter() object
     # Modulator/demodulator
     modem = BPSK(mapping=BPSK_MAP, samples_per_symbol=PROTOCOL_SPS, symbol_rate=PROTOCOL_BAUD)
 
@@ -256,36 +277,33 @@ def main() -> int:
                                  pre_pad=BURST_DETECT_PRE_PAD)
         stop_event = threading.Event()
         rx_thread = threading.Thread(target=frame_receiver, daemon=True,
-                                     args=(radio, receiver, stop_event, print_frame, debug_mode))
+                                     args=(radio, receiver, stop_event, print_frame,
+                                           address, debug_mode))
         rx_thread.start()
         print(LOG_STR_RX.format(action="Ready", message="Listening for bursts..."))
 
         # TRANSMIT
+        frame_tx = FrameTransmitter(radio=radio, modem=modem, rrc_taps=rrc_taps, preamble=PREAMBLE,
+                                    syncword=SYNCWORD, fec_repeats=FEC_REPEATS, address=address)
         try:
             # Start transmitting
             input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
             while True:
+                tmp_dst = address  # Send messages to ourselves for the time being
                 tmp_msg = get_tx_msg()
-                tmp_dat = build_payload(tmp_msg)
-                tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=MsgType.UNUSED,
-                                       seq=UNUSED_FIELD, msg_len=len(tmp_msg))
-                tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
-                                        payload=tmp_dat, fec_repeats=FEC_REPEATS)
-                tmp_samples = modem.modulate(binary=tmp_frame)
-                # print(f"TMP FRAME: {tmp_frame}")  # DEBUGGING
-                # write_it(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER * 1.0,
-                #          filename=RX_TEST_01, samples=tmp_samples,
-                #          description=tmp_frame.decode("ascii"))  # TESTING
-                tmp_shaped = np.convolve(tmp_samples, rrc_taps)
-                # write_it(samp_rate=PROTOCOL_SAMP_RATE, center_freq=PROTOCOL_CENTER * 1.0,
-                #          filename=RX_TEST_02, samples=tmp_shaped,
-                #          description=tmp_frame.decode("ascii"))  # TESTING
-                # break  # TESTING
+                # tmp_dat = build_payload(tmp_msg)
+                # tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=MsgType.UNUSED,
+                #                        seq=UNUSED_FIELD, msg_len=len(tmp_msg))
+                # tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
+                #                         payload=tmp_dat, fec_repeats=FEC_REPEATS)
+                # tmp_samples = modem.modulate(binary=tmp_frame)
+                # tmp_shaped = np.convolve(tmp_samples, rrc_taps)
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                # print(f"peak {np.abs(tmp_shaped).max()}")  # DEBUGGING
-                tmp_sent = radio.transmit(samples=tmp_shaped)
-                print(LOG_STR_TX.format(action="Sent",
-                                        message=f"{tmp_sent} samples ({len(tmp_shaped)} + pad)"))
+                # tmp_sent = radio.transmit(samples=tmp_shaped)
+                tmp_frame = frame_tx.send_message(dst=tmp_dst, message=tmp_msg)
+                print(LOG_STR_TX.format(
+                    action="Sent",
+                    message=f"Seq #{tmp_frame.seq} to addr #{tmp_frame.dst}"))
                 if tx_sleep:
                     print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)

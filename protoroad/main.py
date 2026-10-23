@@ -16,6 +16,7 @@ from protoroad.burst_detector import detect_bursts
 from protoroad.constants import BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, PREAMBLE, SYNCWORD
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
+from protoroad.costas_loop import CostasLoop
 from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
 from protoroad.frame_info import FrameInfo, MsgType
 from protoroad.plots import plot_burst_start
@@ -126,6 +127,8 @@ def test_ota(filename: str, modem: BPSK, rrc_taps: np.ndarray, sps: int, fec_rep
     ted = GardnerTimingRecovery(sps=sps)
     symbols = ted.process(samples=burst)
     # print_ndarray_details(symbols, title="Symbols")  # DEBUGGING
+    pll = CostasLoop()  # Phase Lock Loop
+    symbols = pll.process(symbols)
     bit_array = modem.demodulate(symbols)
     # print_ndarray_details(bit_array)  # DEBUGGING
     bits = convert_bit_array_to_bytes(bit_array)

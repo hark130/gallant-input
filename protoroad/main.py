@@ -53,6 +53,7 @@ from gallant_input.spacetime import create_rfc_3339_z_time
 RX_TEST_01: Final[str] = "./data/protoroad_01_s1M_b250k_ideal_frame.sigmf-data"
 RX_TEST_02: Final[str] = "./data/protoroad_02_s1M_b250k_shaped_frame.sigmf-data"
 RX_TEST_03: Final[str] = "./data/protoroad_03_s1M_b250k_ota_one_msg.sigmf-data"
+RX_TEST_04: Final[str] = "./data/protoroad_04_s1M_b250k_one_lonely_message.sigmf-data"
 
 
 def diagnose(samples: np.ndarray, modem: BPSK, rrc_taps: np.ndarray, sps: int) -> None:
@@ -232,7 +233,9 @@ def main() -> int:
 
     # TESTING
     # test_ideal(modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS, fec_repeats=FEC_REPEATS)
-    test_ota(filename=RX_TEST_03, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
+    # test_ota(filename=RX_TEST_03, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
+    #          fec_repeats=FEC_REPEATS)
+    test_ota(filename=RX_TEST_04, modem=modem, rrc_taps=rrc_taps, sps=PROTOCOL_SPS,
              fec_repeats=FEC_REPEATS)
     return exit_code  # TESTING
 

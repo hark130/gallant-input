@@ -61,6 +61,9 @@ class FrameReceiver:
         self._agc = AGC()
         self._timing = GardnerTimingRecovery(sps=sps)
         self._costas_bw = costas_bw  # CostasLoop has no reset(), so build one per burst
+        # Packet loss tracking
+        self.bursts_detected = 0     # Bursts the burst detector found
+        self.bursts_undecoded = 0    # Of those, how many produced no valid frame
 
         # PROTOCOL
         self._modem = modem
@@ -94,12 +97,15 @@ class FrameReceiver:
 
         # DECODE EACH BURST
         for burst in bursts:
+            self.bursts_detected += 1
             symbols = self._agc.normalize(burst.samples)        # Symbols near +/-1
             symbols = self._timing.recover(symbols)             # 1 sample per symbol
             symbols = CostasLoop(loop_bandwidth=self._costas_bw).process(symbols)  # Derotate
             bits = convert_bit_array_to_bytes(self._modem.demodulate(symbols))
             frame = parse_frame(bits, self._syncword, self._fec_repeats)
-            if frame is not None:  # None: false alarm, noise, or a frame too damaged to trust
+            if frame is None:
+                self.bursts_undecoded += 1  # Noise, collision, or too damaged to trust
+            else:
                 frames.append(frame)
 
         # DONE
@@ -109,7 +115,7 @@ class FrameReceiver:
 
 def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
                    on_frame: Callable[[FrameInfo, bool], None], address: int | None = None,
-                   debug: bool = False) -> None:
+                   debug: bool = False, stats: LinkStats | None = None) -> None:
     """Thread body: pull samples from the radio, decode frames, hand each one to on_frame.
 
     Args:
@@ -121,12 +127,21 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
             this value.
         debug: [OPTIONAL] If True, enables more verbose logging.
     """
+    # LOCAL VARIABLES
+    accepted = False  # Do we accept this frame?
+
     # RECEIVE IT
     radio.start_receiving()
     try:
         while not stop_event.is_set():
             for frame in receiver.process(radio.receive()):
-                if address is None or _accept(frame_info=frame, address=address, debug=debug):
+                accepted = address is None or _accept(frame_info=frame, address=address,
+                                                      debug=debug)
+                if stats is not None:
+                    if frame.src != address:  # Others' frames only, BEFORE filtering
+                        stats.record_frame(frame)
+                    stats.record_routing(accepted)
+                if accepted:
                     on_frame(frame, debug)
     finally:
         radio.stop_receiving()  # Always stop the stream, even on an exception

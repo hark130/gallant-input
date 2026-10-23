@@ -9,6 +9,7 @@ from typing import Final
 from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN, SEQ_MODULUS, START_SEQ_NUM
 
 _MAX_BYTE_VAL: Final[int] = 0xFF  # Maximum value for an 8-bit field
+_SEQ_CYCLE: Final[int] = SEQ_MODULUS - START_SEQ_NUM  # Values actually used: 1..255 = 255
 
 
 class MsgType(IntEnum):
@@ -39,6 +40,11 @@ class FrameInfo:
             raise ValueError(f"message is {len(self.message)} bytes; max is {MAX_DATA_LEN}")
 
     @property
+    def is_broadcast(self) -> bool:
+        """True if addressed to every node."""
+        return self.dst == BROADCAST_ADDR
+
+    @property
     def length(self) -> int:
         """Payload length in bytes (what the header's length field carries)."""
         return len(self.message)
@@ -46,17 +52,26 @@ class FrameInfo:
     @property
     def next_seq(self) -> int:
         """Determine the next expected sequence number that should follow this frame."""
-        next_seq = (self.seq + 1) % SEQ_MODULUS
-        if next_seq == 0:
-            next_seq = START_SEQ_NUM
-        return next_seq
+        return get_next_seq(seq=self.seq)
 
     @property
     def text(self) -> str:
         """Payload as text; undecodable bytes show as U+FFFD instead of raising."""
         return self.message.decode("ascii", errors="replace")
 
-    @property
-    def is_broadcast(self) -> bool:
-        """True if addressed to every node."""
-        return self.dst == BROADCAST_ADDR
+
+def get_next_seq(seq: int) -> int:
+    """Calculate the next expected sequence number to follow seq.
+
+    The sequence number after seq: 1, 2, ..., 255, then back to 1 (0 is skipped).
+    """
+    seq = (seq + 1) % SEQ_MODULUS
+    return START_SEQ_NUM if seq == 0 else seq
+
+
+def measure_seq_nums(prev: int, seq: int) -> int:
+    """Measure how many sequence numbers between prev and seq (0 means seq == prev).
+
+    Example: seq_distance(254, 2) == 3  (254 -> 255 -> 1 -> 2)
+    """
+    return (seq - prev) % _SEQ_CYCLE

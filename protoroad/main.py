@@ -20,6 +20,7 @@ from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_
 from protoroad.costas_loop import CostasLoop
 from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
 from protoroad.frame_info import FrameInfo, MsgType
+from protoroad.link_stats import LinkStats
 # from protoroad.plots import plot_burst_start
 from protoroad.radio import Radio
 from protoroad.receiver import frame_receiver, FrameReceiver
@@ -244,6 +245,7 @@ def main() -> int:
     # LOCAL VARIABLES
     exit_code = EXIT_SUCCESS                   # Exit status
     debug_mode = True                          # Placeholder for args?
+    stats = LinkStats()                        # Capture statistics
     address = generate_address()               # Frame source address
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
     sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
@@ -278,7 +280,7 @@ def main() -> int:
         stop_event = threading.Event()
         rx_thread = threading.Thread(target=frame_receiver, daemon=True,
                                      args=(radio, receiver, stop_event, print_frame,
-                                           address, debug_mode))
+                                           address, debug_mode, stats))
         rx_thread.start()
         print(LOG_STR_RX.format(action="Ready", message="Listening for bursts..."))
 
@@ -319,6 +321,9 @@ def main() -> int:
         if radio is not None:
             print(LOG_STR_RX.format(action="Stopped",
                                     message=f"{radio.overflows} overflows"))
+            print(stats.report(bursts_detected=receiver.bursts_detected,
+                               bursts_undecoded=receiver.bursts_undecoded,
+                               overflows=radio.overflows))
     except (RuntimeError, LookupError, KeyError) as err:
         print(err)
         if 'No devices found'.lower() in str(err).lower():

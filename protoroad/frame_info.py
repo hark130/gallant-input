@@ -72,6 +72,6 @@ def get_next_seq(seq: int) -> int:
 def measure_seq_nums(prev: int, seq: int) -> int:
     """Measure how many sequence numbers between prev and seq (0 means seq == prev).
 
-    Example: seq_distance(254, 2) == 3  (254 -> 255 -> 1 -> 2)
+    Example: measure_seq_nums(254, 2) == 3  (254 -> 255 -> 1 -> 2)
     """
     return (seq - prev) % _SEQ_CYCLE

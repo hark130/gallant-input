@@ -26,6 +26,7 @@ from protoroad.convert import convert_bit_array_to_bytes
 from protoroad.costas_loop import CostasLoop
 from protoroad.frame import parse_frame
 from protoroad.frame_info import FrameInfo
+from protoroad.link_stats import LinkStats
 from protoroad.matched_filter import MatchedFilter
 from protoroad.timing_recovery import GardnerTimingRecovery
 
@@ -116,16 +117,24 @@ class FrameReceiver:
 def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
                    on_frame: Callable[[FrameInfo, bool], None], address: int | None = None,
                    debug: bool = False, stats: LinkStats | None = None) -> None:
-    """Thread body: pull samples from the radio, decode frames, hand each one to on_frame.
+    """Thread body: pull samples from the radio, decode frames, hand each accepted one to on_frame.
+
+    Runs until stop_event is set.  The radio's RX stream is started on entry and always stopped
+    on exit, even if an exception escapes.
 
     Args:
-        radio: Anything with start_receiving(), receive() -> chunk, and stop_receiving().
+        radio: Anything with start_receiving(), receive() -> chunk, and stop_receiving()
+            (e.g., protoroad.radio.Radio).
         receiver: The FrameReceiver to feed.
         stop_event: Set it to make this function return.
-        on_frame: Called with each decoded FrameInfo (e.g., print_frame).
-        address: [OPTIONAL] If defined with an integer, will drop any frames whose src matches
-            this value.
-        debug: [OPTIONAL] If True, enables more verbose logging.
+        on_frame: Called as on_frame(frame, debug) for each accepted frame (e.g., print_frame).
+        address: [OPTIONAL] This node's address.  If given, a frame is accepted only if it's
+            addressed to this node or to BROADCAST_ADDR; this node's own transmissions are
+            dropped (except self-addressed test frames).  If None, every frame is accepted.
+        debug: [OPTIONAL] If True, also log dropped frames, and pass True through to on_frame.
+        stats: [OPTIONAL] A LinkStats to update.  Every valid frame from another node is
+            recorded (for sequence-gap counting) BEFORE address filtering, and every frame is
+            counted as accepted or ignored.
     """
     # LOCAL VARIABLES
     accepted = False  # Do we accept this frame?
@@ -138,9 +147,11 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
                 accepted = address is None or _accept(frame_info=frame, address=address,
                                                       debug=debug)
                 if stats is not None:
-                    if frame.src != address:  # Others' frames only, BEFORE filtering
-                        stats.record_frame(frame)
-                    stats.record_routing(accepted)
+                    if frame.src == address and frame.dst != address:
+                        stats.record_own()  # Our own TX, heard back (not for us)
+                    else:
+                        stats.record_frame(frame)  # Before filtering: sees every seq
+                        stats.record_routing(accepted)
                 if accepted:
                     on_frame(frame, debug)
     finally:

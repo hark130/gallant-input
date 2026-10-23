@@ -36,8 +36,9 @@ class LinkStats:
     def __init__(self):
         """Class ctor."""
         self._senders: dict[int, SenderStats] = {}  # Keyed by src address
-        self.accepted = 0                           # Frames for us (or broadcast)
-        self.ignored = 0                            # Valid frames not for us, or our own
+        self.accepted = 0                           # Others' frames for us (or broadcast)
+        self.ignored = 0                            # Others' frames for someone else
+        self.own = 0                                # Our own transmissions, heard back
 
     def record_frame(self, frame: FrameInfo) -> None:
         """Account for one valid frame from another node (call BEFORE address filtering).
@@ -67,8 +68,12 @@ class LinkStats:
                     sender.missed += distance - 1
         sender.last_seq = frame.seq
 
+    def record_own(self) -> None:
+        """Count one of our own transmissions heard back (half-duplex RX hears its own TX)."""
+        self.own += 1
+
     def record_routing(self, accepted: bool) -> None:
-        """Count a frame as accepted (for us, or broadcast) or ignored (own, or for others)."""
+        """Count another node's frame as accepted (for us, or broadcast) or ignored."""
         if accepted:
             self.accepted += 1
         else:
@@ -93,7 +98,8 @@ class LinkStats:
         lines.append(f"Bursts detected: {bursts_detected}, undecoded: {bursts_undecoded}, "
                      f"radio overflows: {overflows}")
         lines.append(f"Frames from others: {received} (accepted {self.accepted}, "
-                     f"ignored {self.ignored}), missed: {missed}"
+                     f"ignored {self.ignored}); own frames heard back: {self.own}")
+        lines.append(f"Frames missed: {missed}"
                      + (f" ({100 * missed / (received + missed):.1f}% loss)"
                         if received + missed else ""))
         for src in sorted(self._senders):

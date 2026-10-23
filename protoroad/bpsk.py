@@ -5,6 +5,7 @@
 import numpy as np
 # Local Imports
 from protoroad.signals import upsample
+from protoroad.validation import KINDS_INTEGER, validate_ndarray
 
 
 class BPSK():
@@ -23,6 +24,7 @@ class BPSK():
 
     def demap(self, values: np.ndarray) -> np.ndarray:
         """Symbol values --> bits, MSB first."""
+        validate_ndarray(values, "values", kinds=KINDS_INTEGER)
         shifts = np.arange(self._bits_per_symb - 1, -1, -1)
         return ((values[:, None] >> shifts) & 1).astype(np.uint8).ravel()
 

@@ -5,6 +5,7 @@
 from scipy.signal import lfilter
 import numpy as np
 # Local Imports
+from protoroad.validation import validate_ndarray
 
 
 class MatchedFilter:
@@ -18,6 +19,16 @@ class MatchedFilter:
 
     def process(self, chunk: np.ndarray) -> np.ndarray:
         """Apply the matched filter taps to a chunk of samples, maintaining filter delay values."""
-        # Output of the digital filter, final filter delay values
-        output, self._state = lfilter(self._taps, 1.0, chunk, zi=self._state)
+        # LOCAL VARIABLES
+        output = chunk
+
+        # INPUT VALIDATION
+        validate_ndarray(chunk, "chunk", dtype=np.complex64)
+
+        # PROCESS IT
+        if chunk.size > 0:
+            # Output of the digital filter, final filter delay values
+            output, self._state = lfilter(self._taps, 1.0, chunk, zi=self._state)
+
+        # DONE
         return output

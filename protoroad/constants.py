@@ -17,4 +17,6 @@ LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
 MAX_DATA_LEN: Final[int] = 32  # Maximum length, in bytes, of one decoded payload (max len(message))
 PAD_BYTE: Final[bytes] = b" "  # Pads short payloads to MAX_DATA_LEN (also use in build_payload)
 PREAMBLE: Final[bytes] = b"10" * 32
+SEQ_MODULUS: Final[int] = 256  # The header's seq field is 8 bits, so it wraps at 256
+START_SEQ_NUM: Final[int] = 1  # Humans start counting at 1
 SYNCWORD: Final[bytes] = convert_hex_str_to_binary("0x4954CE1F")  # Alternate: 0x0C9BCA57

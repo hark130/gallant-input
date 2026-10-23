@@ -13,11 +13,9 @@ from typing import Final
 import numpy as np
 # Local Imports
 from protoroad.bpsk import BPSK
+from protoroad.constants import SEQ_MODULUS, START_SEQ_NUM
 from protoroad.frame import build_frame_frameinfo
 from protoroad.frame_info import FrameInfo, MsgType
-
-SEQ_MODULUS: Final[int] = 256  # The header's seq field is 8 bits, so it wraps at 256
-START_SEQ_NUM: Final[int] = 1  # Humans start counting at 1
 
 
 class FrameTransmitter:
@@ -94,11 +92,5 @@ class FrameTransmitter:
         frame = FrameInfo(dst=dst, src=self._address, msg_type=msg_type, seq=self._next_seq,
                           message=message)
         self.send(frame)
-        self._advance_next_seq()  # Only advance once it's sent
+        self._next_seq = frame.next_seq
         return frame
-
-    def _advance_next_seq(self) -> None:
-        """Advance the next sequence number attribute by one, skipping zero."""
-        self._next_seq = (self._next_seq + 1) % SEQ_MODULUS
-        if self._next_seq == 0:
-            self._next_seq = START_SEQ_NUM

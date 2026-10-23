@@ -6,7 +6,7 @@ from enum import IntEnum
 from typing import Final
 # Third Party Imports
 # Local Imports
-from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN
+from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN, SEQ_MODULUS, START_SEQ_NUM
 
 _MAX_BYTE_VAL: Final[int] = 0xFF  # Maximum value for an 8-bit field
 
@@ -42,6 +42,14 @@ class FrameInfo:
     def length(self) -> int:
         """Payload length in bytes (what the header's length field carries)."""
         return len(self.message)
+
+    @property
+    def next_seq(self) -> int:
+        """Determine the next expected sequence number that should follow this frame."""
+        next_seq = (self.seq + 1) % SEQ_MODULUS
+        if next_seq == 0:
+            next_seq = START_SEQ_NUM
+        return next_seq
 
     @property
     def text(self) -> str:

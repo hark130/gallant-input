@@ -234,7 +234,7 @@ def print_frame(frameinfo: FrameInfo, print_all: bool = False) -> None:
             print(f"SOURCE:       {frameinfo.src}")
             print(f"MESSAGE TYPE: {frameinfo.msg_type}")
             print(f"SEQUENCE NUM: {frameinfo.seq}")
-        print(f"PAYLOAD:      {frameinfo.payload}")
+        print(f"MESSAGE:      {frameinfo.message}")
     else:
         print("No frame to print?!")
 

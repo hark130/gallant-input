@@ -92,7 +92,7 @@ class FrameTransmitter:
             The FrameInfo that was sent (e.g., to log it, or to match an ACK against later).
         """
         frame = FrameInfo(dst=dst, src=self._address, msg_type=msg_type, seq=self._next_seq,
-                          payload=message)
+                          message=message)
         self.send(frame)
         self._advance_next_seq()  # Only advance once it's sent
         return frame

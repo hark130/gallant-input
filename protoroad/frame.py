@@ -42,7 +42,7 @@ def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo
     """FrameInfo --> complete frame bits (preamble through tail)."""
     header = build_header(frameinfo.dst, frameinfo.src, frameinfo.msg_type,
                           frameinfo.seq, frameinfo.length)
-    return build_frame(preamble, syncword, header, build_payload(frameinfo.payload), fec_repeats)
+    return build_frame(preamble, syncword, header, build_payload(frameinfo.message), fec_repeats)
 
 
 def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> bytes:
@@ -65,12 +65,12 @@ def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> b
     return header
 
 
-def build_payload(payload: bytes) -> bytes:
-    """Build the payload."""
-    if len(payload) > MAX_DATA_LEN:
+def build_payload(message: bytes) -> bytes:
+    """Build the payload from a meaningful message."""
+    if len(message) > MAX_DATA_LEN:
         raise ValueError(f"Does not support messages of greater than {MAX_DATA_LEN} length.")
-    payload = payload.ljust(MAX_DATA_LEN, PAD_BYTE)  # Pad to the maximum data length
-    return convert_msg_to_binary(payload)
+    message = message.ljust(MAX_DATA_LEN, PAD_BYTE)  # Pad to the maximum data length
+    return convert_msg_to_binary(message)
 
 
 def decode_fec(binary: bytes, repeats: int) -> bytes:
@@ -238,4 +238,4 @@ def _validate_frame(raw: bytes) -> FrameInfo | None:
         return None  # Non-ASCII payload byte: corrupted
 
     # DONE
-    return FrameInfo(dst=dst, src=src, msg_type=msg_type, seq=seq, payload=data[:length])
+    return FrameInfo(dst=dst, src=src, msg_type=msg_type, seq=seq, message=data[:length])

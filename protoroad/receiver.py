@@ -21,7 +21,7 @@ import numpy as np
 from protoroad.agc import AGC
 from protoroad.bpsk import BPSK
 from protoroad.burst_detector import BurstDetector
-from protoroad.constants import LOG_STR_RX
+from protoroad.constants import BROADCAST_ADDR, LOG_STR_RX
 from protoroad.convert import convert_bit_array_to_bytes
 from protoroad.costas_loop import CostasLoop
 from protoroad.frame import parse_frame

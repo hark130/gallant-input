@@ -5,7 +5,7 @@ from typing import Final, NamedTuple
 # Third Party Imports
 import numpy as np
 # Local Imports
-from protoroad.constants import HEADER_LEN, MAX_DATA_LEN, PAD_BYTE
+from protoroad.constants import HEADER_LEN, MAX_DATA_LEN, PAD_BYTE, START_SEQ_NUM
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_int_to_binary,
                                convert_msg_to_binary)
 from protoroad.frame_info import FrameInfo, MsgType
@@ -226,6 +226,8 @@ def _validate_frame(raw: bytes) -> FrameInfo | None:
     data = raw[HEADER_LEN:]                             # Padded payload
 
     # VALIDATE IT
+    if seq < START_SEQ_NUM:
+        return None  # Sequence numbers should not be less than the starting number
     if length > MAX_DATA_LEN:
         return None  # Impossible length: garbage or a corrupted header
     try:

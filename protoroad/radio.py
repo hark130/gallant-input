@@ -12,6 +12,7 @@ DEFAULT_MCR: Final[float] = 32e6     # Master clock rate; 32 MHz / 1 Msps = 32
 DEFAULT_TAIL_PAD: Final[int] = 256   # Zero samples appended to every TX burst
 RATE_TOLERANCE: Final[float] = 1.0   # Max |requested - actual| sample rate (S/s)
 RX_ANTENNA: Final[str] = "RX2"       # Receive port
+RX_RECV_TIMEOUT: Final[float] = 0.1  # Seconds to wait on streamer.recv()
 TX_ANTENNA: Final[str] = "TX/RX"     # Transmit port
 TX_SEND_TIMEOUT: Final[float] = 1.0  # Seconds to wait on streamer.send()
 
@@ -50,12 +51,37 @@ class Radio:
         self._tx_streamer = self._usrp.get_tx_stream(self._build_stream_args())
         self._rx_streamer = self._usrp.get_rx_stream(self._build_stream_args())
         self._tx_max_samps = self._tx_streamer.get_max_num_samps()
+        self._rx_buffer = np.zeros((1, self._rx_streamer.get_max_num_samps()),
+                                   dtype=np.complex64)  # recv() fills [channel, sample]
+        self._rx_metadata = uhd.types.RXMetadata()      # Errors/timestamps from each recv()
+        self.overflows = 0                              # Times samples were dropped ("O")
     # pylint: enable=too-many-arguments,too-many-positional-arguments
 
-    @property
-    def usrp(self) -> uhd.usrp.MultiUSRP:
-        """Escape hatch to the underlying MultiUSRP (debugging, sensors, etc.)."""
-        return self._usrp
+    def receive(self, timeout: float = RX_RECV_TIMEOUT) -> np.ndarray:
+        """Return the next chunk of received samples (possibly empty on a timeout).
+
+        An overflow means the host didn't read fast enough and the radio dropped samples.
+        It's counted, not raised: the stream continues, and the frame in flight (if any) is
+        lost, which the protocol has to tolerate anyway.
+        """
+        num = self._rx_streamer.recv(self._rx_buffer, self._rx_metadata, timeout)
+        error = self._rx_metadata.error_code
+        if error == uhd.types.RXMetadataErrorCode.overflow:
+            self.overflows += 1
+        elif error not in (uhd.types.RXMetadataErrorCode.none,
+                           uhd.types.RXMetadataErrorCode.timeout):
+            raise RuntimeError(f"RX error: {self._rx_metadata.strerror()}")
+        return self._rx_buffer[0, :num].copy()  # Copy: the buffer is reused on the next call
+
+    def start_receiving(self) -> None:
+        """Start the continuous RX stream (call once, before receive())."""
+        stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
+        stream_cmd.stream_now = True
+        self._rx_streamer.issue_stream_cmd(stream_cmd)
+
+    def stop_receiving(self) -> None:
+        """Stop the continuous RX stream."""
+        self._rx_streamer.issue_stream_cmd(uhd.types.StreamCMD(uhd.types.StreamMode.stop_cont))
 
     def transmit(self, samples: np.ndarray, tail_pad: int = DEFAULT_TAIL_PAD) -> int:
         """Transmit an array of samples as one burst.
@@ -93,6 +119,11 @@ class Radio:
 
         # DONE
         return sent
+
+    @property
+    def usrp(self) -> uhd.usrp.MultiUSRP:
+        """Escape hatch to the underlying MultiUSRP (debugging, sensors, etc.)."""
+        return self._usrp
 
     def _build_stream_args(self) -> uhd.usrp.StreamArgs:
         """Host format complex float32, over-the-wire format complex int16."""

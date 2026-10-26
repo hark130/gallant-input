@@ -36,7 +36,8 @@ class FrameTransmitter:
         """
         # INPUT VALIDATION
         if not NULL_ADDR < address < BROADCAST_ADDR:  # The broadcast address is never a source
-            raise ValueError(f"address must be in [0, 0xFE], got {address}")
+            raise ValueError(f"address must be in [{NULL_ADDR+1}, {BROADCAST_ADDR-1}], "
+                             f"got {address}")
 
         # TX CHAIN
         self._radio = radio

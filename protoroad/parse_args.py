@@ -1,6 +1,7 @@
 """Parse the CLI arguments."""
 
 # Standard Imports
+from typing import Final
 import argparse
 import random
 # Third Party Imports
@@ -43,5 +44,5 @@ def parse_args() -> argparse.Namespace:
 
 
 def _generate_address() -> int:
-    """Generate a pseudo-random node address in [0, BROADCAST_ADDR) (never broadcast)."""
+    """Generate a pseudo-random node address in [_MIN_ADDR, BROADCAST_ADDR) (never broadcast)."""
     return random.randrange(_MIN_ADDR, BROADCAST_ADDR)

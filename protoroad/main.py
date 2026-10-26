@@ -87,6 +87,7 @@ def print_ndarray_details(array: np.ndarray, num_samps: int = 5, title: str = ''
         details = f"{title} - {details}"
     print(details)
 
+
 def write_it(samp_rate: float, center_freq: float, filename: str, samples: np.ndarray,
              description: str) -> None:
     """Write some samples to a SigMF file."""
@@ -293,15 +294,7 @@ def main() -> int:
             while True:
                 tmp_dst = address  # Send messages to ourselves for the time being
                 tmp_msg = get_tx_msg()
-                # tmp_dat = build_payload(tmp_msg)
-                # tmp_hdr = build_header(dst=UNUSED_FIELD, src=UNUSED_FIELD, msg_type=MsgType.UNUSED,
-                #                        seq=UNUSED_FIELD, msg_len=len(tmp_msg))
-                # tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, header=tmp_hdr,
-                #                         payload=tmp_dat, fec_repeats=FEC_REPEATS)
-                # tmp_samples = modem.modulate(binary=tmp_frame)
-                # tmp_shaped = np.convolve(tmp_samples, rrc_taps)
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                # tmp_sent = radio.transmit(samples=tmp_shaped)
                 tmp_frame = frame_tx.send_message(dst=tmp_dst, message=tmp_msg)
                 print(LOG_STR_TX.format(
                     action="Sent",

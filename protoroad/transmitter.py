@@ -8,12 +8,11 @@ sequence number it stamps on each frame it sends.
 """
 
 # Standard Imports
-from typing import Final
 # Third Party Imports
 import numpy as np
 # Local Imports
 from protoroad.bpsk import BPSK
-from protoroad.constants import SEQ_MODULUS, START_SEQ_NUM
+from protoroad.constants import START_SEQ_NUM
 from protoroad.frame import build_frame_frameinfo
 from protoroad.frame_info import FrameInfo, MsgType
 

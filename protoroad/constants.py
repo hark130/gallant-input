@@ -15,6 +15,7 @@ HEADER_LEN: Final[int] = 5  # Header length in bytes: dst, src, type, seq, len
 LOG_STR_RX: Final[str] = "[RX] {action} - {message}"  # Receiver format string
 LOG_STR_TX: Final[str] = "[TX] {action} - {message}"  # Transmit format string
 MAX_DATA_LEN: Final[int] = 32  # Maximum length, in bytes, of one decoded payload (max len(message))
+NULL_ADDR: Final[int] = 0x00  # Addresses of 0 are not accepted
 PAD_BYTE: Final[bytes] = b" "  # Pads short payloads to MAX_DATA_LEN (also use in build_payload)
 PREAMBLE: Final[bytes] = b"10" * 32
 SEQ_MODULUS: Final[int] = 256  # The header's seq field is 8 bits, so it wraps at 256

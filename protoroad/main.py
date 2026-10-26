@@ -271,7 +271,8 @@ def main() -> int:
                                      args=(radio, receiver, stop_event, print_frame,
                                            address, debug_mode, stats))
         rx_thread.start()
-        print(LOG_STR_RX.format(action="Ready", message="Listening for bursts..."))
+        print(LOG_STR_RX.format(action="Ready",
+                                message=f"Address {address}: listening for bursts..."))
 
         # TRANSMIT
         frame_tx = FrameTransmitter(radio=radio, modem=modem, rrc_taps=rrc_taps, preamble=PREAMBLE,
@@ -284,6 +285,7 @@ def main() -> int:
                 if debug_mode:
                     print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
                 tmp_frame = frame_tx.send_message(dst=destination, message=tmp_msg)
+                stats.record_sent(tmp_frame)
                 print(LOG_STR_TX.format(
                     action="Sent",
                     message=f"Seq #{tmp_frame.seq} to addr #{tmp_frame.dst}"))
@@ -302,7 +304,7 @@ def main() -> int:
             print()
         if radio is not None:
             print(LOG_STR_RX.format(action="Stopped",
-                                    message=f"{radio.overflows} overflows"))
+                                    message=f"Address {address}: {radio.overflows} overflows"))
             print(stats.report(bursts_detected=receiver.bursts_detected,
                                bursts_undecoded=receiver.bursts_undecoded,
                                overflows=radio.overflows))

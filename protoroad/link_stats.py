@@ -30,7 +30,8 @@ class SenderStats:
 class LinkStats:
     """Accumulate per-sender loss statistics plus receiver-wide counts; report at exit.
 
-    Not thread-safe by design: record from the RX thread, report after joining it.
+    Not thread-safe by design: record_sent() from the TX thread, everything else from the
+    RX thread (they touch different counters), and report() only after joining the RX thread.
     """
 
     def __init__(self):
@@ -39,6 +40,8 @@ class LinkStats:
         self.accepted = 0                           # Others' frames for us (or broadcast)
         self.ignored = 0                            # Others' frames for someone else
         self.own = 0                                # Our own transmissions, heard back
+        self.sent = 0                               # Frames we transmitted
+        self.sent_broadcast = 0                     # Of those, how many went to BROADCAST_ADDR
 
     def record_frame(self, frame: FrameInfo) -> None:
         """Account for one valid frame from another node (call BEFORE address filtering).
@@ -79,6 +82,12 @@ class LinkStats:
         else:
             self.ignored += 1
 
+    def record_sent(self, frame: FrameInfo) -> None:
+        """Count one frame we transmitted (call from the TX side, after a successful send)."""
+        self.sent += 1
+        if frame.is_broadcast:
+            self.sent_broadcast += 1
+
     def report(self, bursts_detected: int = 0, bursts_undecoded: int = 0,
                overflows: int = 0) -> str:
         """Summarize the run as printable lines.
@@ -97,6 +106,7 @@ class LinkStats:
         # SUMMARIZE IT
         lines.append(f"Bursts detected: {bursts_detected}, undecoded: {bursts_undecoded}, "
                      f"radio overflows: {overflows}")
+        lines.append(f"Frames sent: {self.sent} (broadcast {self.sent_broadcast})")
         lines.append(f"Frames from others: {received} (accepted {self.accepted}, "
                      f"ignored {self.ignored}); own frames heard back: {self.own}")
         lines.append(f"Frames missed: {missed}"

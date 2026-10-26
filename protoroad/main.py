@@ -3,6 +3,7 @@
 # Standard Imports
 from typing import Final
 import math
+import random
 import sys
 import threading
 import time
@@ -21,6 +22,7 @@ from protoroad.costas_loop import CostasLoop
 from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
 from protoroad.frame_info import FrameInfo, MsgType
 from protoroad.link_stats import LinkStats
+from protoroad.parse_args import parse_args
 # from protoroad.plots import plot_burst_start
 from protoroad.radio import Radio
 from protoroad.receiver import frame_receiver, FrameReceiver
@@ -186,24 +188,6 @@ def create_tailored_lpf(sample_rate: float, symbol_rate: int,
     return firwin(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)  # LPF taps
 
 
-def generate_address() -> int:
-    """Generate an address.
-
-    Derive a one-byte integer address from the current thread identifier.
-    """
-    # LOCAL VARIABLES
-    tid = threading.get_ident()
-    address = 0
-
-    # GENERATE IT
-    while tid:
-        address ^= tid & 0xFF
-        tid >>= 8
-
-    # DONE
-    return address
-
-
 def get_rrc_taps(sps: int, span: int = PROTOCOL_RRC_SPAN,
                  alpha: float = PROTOCOL_ALPHA) -> np.ndarray:
     """Get the RRC matched filter taps for the protocol."""
@@ -244,12 +228,14 @@ def print_frame(frameinfo: FrameInfo, print_all: bool = False) -> None:
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
+    args = parse_args()                        # CLI arguments
     exit_code = EXIT_SUCCESS                   # Exit status
-    debug_mode = True                          # Placeholder for args?
+    debug_mode = args.debug                    # Debug mode
     stats = LinkStats()                        # Capture statistics
-    address = generate_address()               # Frame source address
+    address = args.address                     # Frame source address
+    destination = args.peer                    # Destination address
     tx_sleep = DEBUG_SLEEP                     # A tasteful sleeep
-    sdr_serial = "351B80B"                     # Choose serial number (351B80B or 352825E or None)
+    sdr_serial = args.serial                   # Choosen serial number (351B80B or 352825E or None)
     rrc_taps = get_rrc_taps(sps=PROTOCOL_SPS)  # Matched filter taps
     stop_event = threading.Event()             # Signal the child thread to exit
     radio = None                               # Radio() object
@@ -292,10 +278,9 @@ def main() -> int:
             # Start transmitting
             input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
             while True:
-                tmp_dst = address  # Send messages to ourselves for the time being
                 tmp_msg = get_tx_msg()
                 print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                tmp_frame = frame_tx.send_message(dst=tmp_dst, message=tmp_msg)
+                tmp_frame = frame_tx.send_message(dst=destination, message=tmp_msg)
                 print(LOG_STR_TX.format(
                     action="Sent",
                     message=f"Seq #{tmp_frame.seq} to addr #{tmp_frame.dst}"))

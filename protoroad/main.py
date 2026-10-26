@@ -193,9 +193,12 @@ def get_rrc_taps(sps: int, span: int = PROTOCOL_RRC_SPAN,
     return create_rrc_taps(sps=sps, span=span, alpha=alpha)
 
 
-def get_tx_msg() -> bytes:
+def get_tx_msg(debug: bool) -> bytes:
     """Get a message to transmit."""
-    return TEST_MESSAGE
+    msg = TEST_MESSAGE
+    if not debug:
+        msg = input("Input a message: ").encode()
+    return msg
 
 
 def print_debug(radio: Radio) -> None:
@@ -277,14 +280,16 @@ def main() -> int:
             # Start transmitting
             input(LOG_STR_TX.format(action="Ready", message="Press <ENTER> to start"))
             while True:
-                tmp_msg = get_tx_msg()
-                print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
+                tmp_msg = get_tx_msg(debug=debug_mode)
+                if debug_mode:
+                    print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
                 tmp_frame = frame_tx.send_message(dst=destination, message=tmp_msg)
                 print(LOG_STR_TX.format(
                     action="Sent",
                     message=f"Seq #{tmp_frame.seq} to addr #{tmp_frame.dst}"))
                 if tx_sleep:
-                    print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
+                    if debug_mode:
+                        print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
                     time.sleep(tx_sleep)
                 # break  # TESTING
                 if not rx_thread.is_alive():

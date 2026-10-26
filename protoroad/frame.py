@@ -9,6 +9,7 @@ from protoroad.constants import (BROADCAST_ADDR, HEADER_LEN, MAX_DATA_LEN, NULL_
                                  START_SEQ_NUM)
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_int_to_binary,
                                convert_msg_to_binary)
+from protoroad.crc import CRC_LEN, check_crc16, crc16_bytes
 from protoroad.frame_info import FrameInfo, MsgType
 
 _BIT_CHARS: Final[bytes] = b"01"  # The only valid characters in a bits bytes object
@@ -29,12 +30,13 @@ def apply_fec(binary: bytes, repeats: int) -> bytes:
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
-                fec_repeats: int, tail: bytes = b'00000000') -> bytes:
-    """Build an entire frame."""
+               crc: bytes, fec_repeats: int, tail: bytes = b'00000000') -> bytes:
+    """Build an entire frame: preamble + syncword + FEC(header + payload + CRC) + tail."""
     header = apply_fec(header, fec_repeats)
     data = apply_fec(payload, fec_repeats)
-    # If/when you interleave, interleave the header and data here
-    return preamble + syncword + header + data + tail
+    crc = apply_fec(crc, fec_repeats)
+    # If/when you interleave, interleave the header, data, and CRC here
+    return preamble + syncword + header + data + crc + tail
 # pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
@@ -43,7 +45,10 @@ def build_frame_frameinfo(preamble: bytes, syncword: bytes, frameinfo: FrameInfo
     """FrameInfo --> complete frame bits (preamble through tail)."""
     header = build_header(frameinfo.dst, frameinfo.src, frameinfo.msg_type,
                           frameinfo.seq, frameinfo.length)
-    return build_frame(preamble, syncword, header, build_payload(frameinfo.message), fec_repeats)
+    payload = build_payload(frameinfo.message)
+    # CRC over the header + payload BYTES (before FEC), sent as bits like everything else
+    crc = convert_msg_to_binary(crc16_bytes(convert_bin_bytes_to_ascii(header + payload)))
+    return build_frame(preamble, syncword, header, payload, crc, fec_repeats)
 
 
 def build_header(dst: int, src: int, msg_type: int, seq: int, msg_len: int) -> bytes:
@@ -187,7 +192,7 @@ def parse_frame(bits: bytes, syncword: bytes, fec_repeats: int,
         raise ValueError(f"fec_repeats must be >= 1, got {fec_repeats}")
 
     # FIND IT
-    block_len = (HEADER_LEN + MAX_DATA_LEN) * 8 * fec_repeats
+    block_len = (HEADER_LEN + MAX_DATA_LEN + CRC_LEN) * 8 * fec_repeats
     match = find_syncword(bits, syncword, max_errors)
     if match is not None:
         block = bits[match.index + len(syncword):][:block_len]
@@ -196,8 +201,9 @@ def parse_frame(bits: bytes, syncword: bytes, fec_repeats: int,
             if match.inverted:
                 block = invert_bits(block)
             raw = convert_bin_bytes_to_ascii(decode_fec(block, fec_repeats))
-            # CHECK IT
-            frame = _validate_frame(raw)
+            # CHECK IT: CRC first, then the field-by-field checks
+            if check_crc16(raw):
+                frame = _validate_frame(raw[:-CRC_LEN])
 
     # DONE
     return frame
@@ -219,7 +225,7 @@ def _validate_bits(bits: bytes, name: str) -> None:
 def _validate_frame(raw: bytes) -> FrameInfo | None:
     """Turn decoded header + payload bytes into a FrameInfo, or None if anything is invalid.
 
-    Without a CRC these checks are the only defense against false syncs and miscorrected
+    These checks are an additional defense against false syncs and miscorrected
     bits, so they're deliberately strict.
     """
     # LOCAL VARIABLES

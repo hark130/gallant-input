@@ -12,7 +12,7 @@ sequence number it stamps on each frame it sends.
 import numpy as np
 # Local Imports
 from protoroad.bpsk import BPSK
-from protoroad.constants import START_SEQ_NUM
+from protoroad.constants import BROADCAST_ADDR, NULL_ADDR, START_SEQ_NUM
 from protoroad.frame import build_frame_frameinfo
 from protoroad.frame_info import FrameInfo, MsgType
 
@@ -35,7 +35,7 @@ class FrameTransmitter:
             address: This node's address, stamped as src on every frame it sends.
         """
         # INPUT VALIDATION
-        if not 0 <= address < 0xFF:  # 0xFF is the broadcast address: never a source
+        if not NULL_ADDR < address < BROADCAST_ADDR:  # The broadcast address is never a source
             raise ValueError(f"address must be in [0, 0xFE], got {address}")
 
         # TX CHAIN

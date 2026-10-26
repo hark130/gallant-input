@@ -6,7 +6,7 @@ from enum import IntEnum
 from typing import Final
 # Third Party Imports
 # Local Imports
-from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN, SEQ_MODULUS, START_SEQ_NUM
+from protoroad.constants import BROADCAST_ADDR, MAX_DATA_LEN, NULL_ADDR, SEQ_MODULUS, START_SEQ_NUM
 
 _MAX_BYTE_VAL: Final[int] = 0xFF  # Maximum value for an 8-bit field
 _SEQ_CYCLE: Final[int] = SEQ_MODULUS - START_SEQ_NUM  # Values actually used: 1..255 = 255
@@ -38,6 +38,9 @@ class FrameInfo:
                 raise ValueError(f"{name} must fit in 8 bits, got {value}")
         if self.length > MAX_DATA_LEN:
             raise ValueError(f"message is {len(self.message)} bytes; max is {MAX_DATA_LEN}")
+        # Special case check for reserved address
+        if self.dst <= NULL_ADDR:
+            raise ValueError(f"Destination address ({self.dst}) must be greater than {NULL_ADDR}")
 
     @property
     def is_broadcast(self) -> bool:

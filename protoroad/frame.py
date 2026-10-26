@@ -5,7 +5,8 @@ from typing import Final, NamedTuple
 # Third Party Imports
 import numpy as np
 # Local Imports
-from protoroad.constants import HEADER_LEN, MAX_DATA_LEN, PAD_BYTE, START_SEQ_NUM
+from protoroad.constants import (BROADCAST_ADDR, HEADER_LEN, MAX_DATA_LEN, NULL_ADDR, PAD_BYTE,
+                                 START_SEQ_NUM)
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_int_to_binary,
                                convert_msg_to_binary)
 from protoroad.frame_info import FrameInfo, MsgType
@@ -226,14 +227,24 @@ def _validate_frame(raw: bytes) -> FrameInfo | None:
     data = raw[HEADER_LEN:]                             # Padded payload
 
     # VALIDATE IT
+    # Destination address
+    if dst == NULL_ADDR:
+        return None  # The NULL address is reserved
+    # Source address
+    if src in (NULL_ADDR, BROADCAST_ADDR):
+        return None  # Invalid source address
+    # Sequence number
     if seq < START_SEQ_NUM:
         return None  # Sequence numbers should not be less than the starting number
+    # Data length
     if length > MAX_DATA_LEN:
         return None  # Impossible length: garbage or a corrupted header
+    # Message type
     try:
         MsgType(msg_type)
     except ValueError:
         return None  # Unknown message type
+    # Data contents
     if data[length:] != PAD_BYTE * (MAX_DATA_LEN - length):
         return None  # Padding must be untouched
     if any(byte > _MAX_ASCII for byte in data[:length]):

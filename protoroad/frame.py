@@ -59,7 +59,7 @@ def apply_fec(binary: bytes, repeats: int) -> bytes:
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
 def build_frame(preamble: bytes, syncword: bytes, header: bytes, payload: bytes,
-               crc: bytes, fec_repeats: int, tail: bytes = b'00000000') -> bytes:
+                crc: bytes, fec_repeats: int, tail: bytes = b'00000000') -> bytes:
     """Build an entire frame: preamble + syncword + FEC(header + payload + CRC) + tail."""
     header = apply_fec(header, fec_repeats)
     data = apply_fec(payload, fec_repeats)

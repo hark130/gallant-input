@@ -19,7 +19,8 @@ from protoroad.constants import (BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS,
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
                                convert_bit_array_to_bytes, convert_msg_to_binary)
 from protoroad.costas_loop import CostasLoop
-from protoroad.frame import build_frame, build_header, build_payload, find_syncword, parse_frame
+from protoroad.frame import (build_frame, build_frame_frameinfo, build_header, build_payload,
+                             find_syncword, parse_frame)
 from protoroad.frame_info import FrameInfo, MsgType
 from protoroad.link_stats import LinkStats
 from protoroad.parse_args import parse_args
@@ -55,6 +56,29 @@ def calc_bandwidth(symbol_rate: int, alpha: float = PROTOCOL_ALPHA) -> float:
     B = Rs * (1 + alpha).  Spectrum spans +/- B/2 around the carrier.
     """
     return symbol_rate * (1.0 + alpha)
+
+
+def calc_frame_time_ms(symbol_rate: int = PROTOCOL_BAUD, rrc_span: int = PROTOCOL_RRC_SPAN,
+                       include_filter_tail: bool = True) -> float:
+    """Airtime of one frame, in milliseconds.
+
+    Every frame is the same length (the payload is always padded to MAX_DATA_LEN), so this
+    builds a real frame and counts its bits instead of re-deriving the frame format here.
+    BPSK sends 1 bit per symbol, so bits / symbol_rate is the airtime.
+
+    Args:
+        symbol_rate: [OPTIONAL] Symbols per second.
+        rrc_span: [OPTIONAL] RRC filter span in symbols.  Pulse shaping stretches the burst
+            by about this many symbols (the filter's ramp-up and ramp-down).
+        include_filter_tail: [OPTIONAL] If False, count only the frame's bits.
+    """
+    # LOCAL VARIABLES
+    frame = FrameInfo(dst=1, src=2, msg_type=MsgType.DATA, seq=1, message=TEST_MESSAGE)  # Any
+    num_bits = len(build_frame_frameinfo(PREAMBLE, SYNCWORD, frame, FEC_REPEATS))        # 1 bit/sym
+    num_symbols = num_bits + (rrc_span if include_filter_tail else 0)                    # On-air
+
+    # DONE
+    return 1_000 * num_symbols / symbol_rate
 
 
 def calc_lpf_cutoff(symbol_rate: int, alpha: float = PROTOCOL_ALPHA, max_offset_hz: float = 0,

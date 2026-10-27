@@ -355,7 +355,7 @@ sudo uhd_images_downloader
 # 2. A virtual environment that can still see the system UHD bindings
 python3 -m venv --system-site-packages .venv
 source .venv/bin/activate
-pip install -r protoroad/requirements.txt
+pip install -e .
 
 # 3. Sanity checks
 python3 -c "import uhd, numpy, scipy; print('Dependencies: OK')"

@@ -1,4 +1,0 @@
-# This file documents the requirements to execute this package.
-
-numpy>=1.20.0
-scipy

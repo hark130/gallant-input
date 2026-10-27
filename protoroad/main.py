@@ -3,6 +3,7 @@
 # Standard Imports
 from typing import Final
 import math
+import random
 import sys
 import threading
 import time
@@ -197,7 +198,7 @@ def get_tx_msg(debug: bool) -> bytes:
     """Get a message to transmit."""
     msg = TEST_MESSAGE
     if not debug:
-        msg = input("Input a message: ").encode()
+        msg = input("Input a message: ").encode("ascii", errors="replace")  # Non-ASCII -> '?'
     return msg
 
 
@@ -284,7 +285,11 @@ def main() -> int:
                 tmp_msg = get_tx_msg(debug=debug_mode)
                 if debug_mode:
                     print(LOG_STR_TX.format(action="Sending", message=tmp_msg))
-                tmp_frame = frame_tx.send_message(dst=destination, message=tmp_msg)
+                try:
+                    tmp_frame = frame_tx.send_message(dst=destination, message=tmp_msg)
+                except ValueError as err:
+                    print(LOG_STR_TX.format(action="Rejected", message=str(err)))
+                    continue
                 stats.record_sent(tmp_frame)
                 print(LOG_STR_TX.format(
                     action="Sent",
@@ -292,13 +297,14 @@ def main() -> int:
                 if tx_sleep:
                     if debug_mode:
                         print(LOG_STR_TX.format(action="Sleeping", message=f"{tx_sleep} seconds"))
-                    time.sleep(tx_sleep)
+                    # time.sleep(tx_sleep)
+                    time.sleep(random.uniform(0.1, tx_sleep))
                 # break  # TESTING
                 if not rx_thread.is_alive():
                     print(LOG_STR_TX.format(action="Error", message="RX thread is not alive?!"))
                     exit_code = EXIT_FAIL
                     break  # Stop TX
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):  # Ctrl-C, or Ctrl-D / end of input
             stop_event.set()  # Tell the receive thread to stop
             rx_thread.join()  # Wait for it
             print()

@@ -24,7 +24,7 @@ from protoroad.burst_detector import BurstDetector
 from protoroad.constants import BROADCAST_ADDR, LOG_STR_RX
 from protoroad.convert import convert_bit_array_to_bytes
 from protoroad.costas_loop import CostasLoop
-from protoroad.frame import parse_frame
+from protoroad.frame import DecodeResult, decode_frame
 from protoroad.frame_info import FrameInfo
 from protoroad.link_stats import LinkStats
 from protoroad.matched_filter import MatchedFilter
@@ -91,10 +91,10 @@ class FrameReceiver:
         filtered = self._matched_filter.process(chunk)
         return self._decode_bursts(self._burst_detector.process(filtered))
 
-    def _decode_bursts(self, bursts: list) -> list[FrameInfo]:
-        """Run each complete burst through the rest of the chain; keep the valid frames."""
+    def _decode_bursts(self, bursts: list) -> list[DecodeResult]:
+        """Run each complete burst through the rest of the chain; keep every result."""
         # LOCAL VARIABLES
-        frames = []  # Decoded frames
+        results = []  # One DecodeResult per burst
 
         # DECODE EACH BURST
         for burst in bursts:
@@ -103,14 +103,13 @@ class FrameReceiver:
             symbols = self._timing.recover(symbols)             # 1 sample per symbol
             symbols = CostasLoop(loop_bandwidth=self._costas_bw).process(symbols)  # Derotate
             bits = convert_bit_array_to_bytes(self._modem.demodulate(symbols))
-            frame = parse_frame(bits, self._syncword, self._fec_repeats)
-            if frame is None:
+            result = decode_frame(bits, self._syncword, self._fec_repeats)
+            if result.frame is None:
                 self.bursts_undecoded += 1  # Noise, collision, or too damaged to trust
-            else:
-                frames.append(frame)
+            results.append(result)
 
         # DONE
-        return frames
+        return results
 # pylint: enable=too-many-instance-attributes
 
 
@@ -143,7 +142,12 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
     radio.start_receiving()
     try:
         while not stop_event.is_set():
-            for frame in receiver.process(radio.receive()):
+            for result in receiver.process(radio.receive()):
+                if stats is not None:
+                    stats.record_decode(result)  # Every burst, decoded or not
+                frame = result.frame
+                if frame is None:
+                    continue  # Nothing to route
                 accepted = address is None or _accept(frame_info=frame, address=address,
                                                       debug=debug)
                 if stats is not None:

@@ -10,9 +10,11 @@ Otherwise frames a sender addressed to someone else would look like losses.
 """
 
 # Standard Imports
+from collections import Counter
 from dataclasses import dataclass
 # Third Party Imports
 # Local Imports
+from protoroad.frame import DecodeResult, DecodeStatus
 from protoroad.frame_info import FrameInfo, measure_seq_nums, START_SEQ_NUM
 
 
@@ -42,6 +44,20 @@ class LinkStats:
         self.own = 0                                # Our own transmissions, heard back
         self.sent = 0                               # Frames we transmitted
         self.sent_broadcast = 0                     # Of those, how many went to BROADCAST_ADDR
+        # Decode outcomes and BER measurements (from every burst, decoded or not)
+        self._decodes: Counter = Counter()  # DecodeStatus -> bursts
+        self._sync_errors = 0               # Bit errors in matched syncwords
+        self._sync_bits = 0                 # Syncword bits examined
+        self._fec_disagreements = 0         # Coded bits that disagreed with their majority
+        self._coded_bits = 0                # Coded bits examined
+
+    def record_decode(self, result: DecodeResult) -> None:
+        """Account for one decoded (or failed) burst: its outcome and its bit errors."""
+        self._decodes[result.status] += 1
+        self._sync_errors += result.sync_errors
+        self._sync_bits += result.sync_bits
+        self._fec_disagreements += result.fec_disagreements
+        self._coded_bits += result.coded_bits
 
     def record_frame(self, frame: FrameInfo) -> None:
         """Account for one valid frame from another node (call BEFORE address filtering).
@@ -106,6 +122,7 @@ class LinkStats:
         # SUMMARIZE IT
         lines.append(f"Bursts detected: {bursts_detected}, undecoded: {bursts_undecoded}, "
                      f"radio overflows: {overflows}")
+        lines.append(self._decode_report())
         lines.append(f"Frames sent: {self.sent} (broadcast {self.sent_broadcast})")
         lines.append(f"Frames from others: {received} (accepted {self.accepted}, "
                      f"ignored {self.ignored}); own frames heard back: {self.own}")
@@ -119,3 +136,25 @@ class LinkStats:
 
         # DONE
         return "\n".join(lines)
+
+    def _decode_report(self) -> str:
+        """Decode outcomes, frame error rate, and BER estimates, as printable lines."""
+        # LOCAL VARIABLES
+        found = sum(n for status, n in self._decodes.items()
+                    if status != DecodeStatus.NO_SYNC)        # Bursts with a syncword
+        failed = found - self._decodes[DecodeStatus.OK]       # Syncword, but no valid frame
+
+        # DONE
+        return (f"Decodes: ok {self._decodes[DecodeStatus.OK]}, "
+                f"CRC fail {self._decodes[DecodeStatus.CRC_FAIL]}, "
+                f"invalid {self._decodes[DecodeStatus.INVALID]}, "
+                f"truncated {self._decodes[DecodeStatus.TRUNCATED]}, "
+                f"no syncword {self._decodes[DecodeStatus.NO_SYNC]}"
+                + (f" (FER {100 * failed / found:.1f}%)" if found else "") + "\n"
+                f"Raw BER (FEC estimate): {_ratio(self._fec_disagreements, self._coded_bits)}; "
+                f"syncword BER: {_ratio(self._sync_errors, self._sync_bits)}")
+
+
+def _ratio(errors: int, bits: int) -> str:
+    """'errors / bits' as a BER string, e.g. '2.1e-04 (12 of 56,160 bits)'."""
+    return f"{errors / bits:.1e} ({errors:,} of {bits:,} bits)" if bits else "n/a"

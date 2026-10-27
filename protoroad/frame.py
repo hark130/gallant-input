@@ -18,6 +18,16 @@ _BIT_CHARS: Final[bytes] = b"01"  # The only valid characters in a bits bytes ob
 _MAX_ASCII: Final[int] = 0x7F  # Highest valid ASCII byte value
 
 
+class DecodeStatus(IntEnum):
+    """What happened when decoding one burst (why there is, or isn't, a frame)."""
+
+    OK = 0         # Valid frame
+    NO_SYNC = 1    # No syncword: noise, a false alarm, or a badly damaged frame
+    TRUNCATED = 2  # Syncword found, but the burst ended before the frame did
+    CRC_FAIL = 3   # Decoded, but the CRC didn't match: corrupted beyond what FEC could fix
+    INVALID = 4    # CRC matched, but a header field or the padding was impossible
+
+
 @dataclass(frozen=True)
 class DecodeResult:
     """The outcome of decoding one burst, plus the measurements BER is calculated from.
@@ -32,16 +42,6 @@ class DecodeResult:
     fec_disagreements: int = 0      # Coded bits that disagreed with their group's majority
     coded_bits: int = 0             # Coded (pre-FEC) bits examined
     raw: bytes = b""                # Decoded header + payload + CRC bytes (for true BER later)
-
-
-class DecodeStatus(IntEnum):
-    """What happened when decoding one burst (why there is, or isn't, a frame)."""
-
-    OK = 0         # Valid frame
-    NO_SYNC = 1    # No syncword: noise, a false alarm, or a badly damaged frame
-    TRUNCATED = 2  # Syncword found, but the burst ended before the frame did
-    CRC_FAIL = 3   # Decoded, but the CRC didn't match: corrupted beyond what FEC could fix
-    INVALID = 4    # CRC matched, but a header field or the padding was impossible
 
 
 class SyncMatch(NamedTuple):

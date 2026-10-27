@@ -28,10 +28,10 @@ class CostasLoop:
             damping_factor: [OPTIONAL] Controls how the internal oscillator responds to phase
                 changes.  There are effectively three types of transient responses: over-damped,
                 critically damped, and under-damped.  Over-damped (>1.0) - The loop responds very
-                slowly, preventing overshoot but greatly increasing the time needed to achieve lock.
-                Critically damped (0.707 to 1.0) - The loop reaches a locked state as fast as
-                possible without any major phase ringing or overshoot.
-                Under-damped (<0.707(depending on design?)) - The loop locks quickly, but the
+                slowly, preventing overshoot but greatly increasing the time needed to achieve
+                lock.  Critically damped (0.707 to 1.0) - The loop reaches a locked state as fast
+                as possible without any major phase ringing or overshoot.  Under-damped
+                (<0.707(depending on design?)) - The loop locks quickly, but the
                 phase error overshoots and rings back and forth before settling.
         """
         # PUBLIC ATTRIBUTES
@@ -100,7 +100,7 @@ class CostasLoop:
             # Characteristic closed-loop transfer function polynomial denominator in the Z-domain
             denom = \
                 1.0 + 2.0 * self._damping_factor * self._loop_bandwidth + self._loop_bandwidth**2
-            # Proportional gain coefficient; Adjusts phase estimate based on the current phase error
+            # Proportional gain coefficient; Adjusts phase estimate based on current phase error
             self._alpha = 4.0 * self._damping_factor * self._loop_bandwidth / denom
             # Integral gain coefficient; Accumulates phase error over time to adjust freq estimate
             self._beta = 4.0 * self._loop_bandwidth**2 / denom

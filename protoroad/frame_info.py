@@ -20,6 +20,9 @@ class MsgType(IntEnum):
     ACK = 0x02     # Acknowledgement (future: ALOHA/ARQ)
 
 
+KNOWN_MSG_TYPES: Final[frozenset[int]] = frozenset(MsgType)  # Valid header type values
+
+
 @dataclass(frozen=True)
 class FrameInfo:
     """One frame's contents: header fields + message."""
@@ -31,7 +34,7 @@ class FrameInfo:
     message: bytes  # Meaningful data bytes only (no pad, encoding, FEC, etc)
 
     def __post_init__(self):
-        """Validate field ranges so a bad frame fails here, not deep in the modulator."""
+        """Validate every field, so an invalid frame can't be built on TX or accepted on RX."""
         for name in ("dst", "src", "msg_type", "seq"):
             value = getattr(self, name)
             if not 0 <= value <= _MAX_BYTE_VAL:
@@ -41,6 +44,14 @@ class FrameInfo:
         # Special case check for reserved address
         if self.dst <= NULL_ADDR:
             raise ValueError(f"Destination address ({self.dst}) must be greater than {NULL_ADDR}")
+        if self.src in (NULL_ADDR, BROADCAST_ADDR):
+            raise ValueError(f"Source address ({self.src}) can't be NULL or broadcast")
+        if self.seq < START_SEQ_NUM:
+            raise ValueError(f"Sequence number ({self.seq}) must be at least {START_SEQ_NUM}")
+        if self.msg_type not in KNOWN_MSG_TYPES:
+            raise ValueError(f"Unknown message type {self.msg_type}")
+        if not self.message.isascii():
+            raise ValueError("message must be ASCII")
 
     @property
     def is_broadcast(self) -> bool:

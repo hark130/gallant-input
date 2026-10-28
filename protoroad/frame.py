@@ -285,36 +285,22 @@ def _validate_bits(bits: bytes, name: str) -> None:
 def _validate_frame(raw: bytes) -> FrameInfo | None:
     """Turn decoded header + payload bytes into a FrameInfo, or None if anything is invalid.
 
-    These checks are an additional defense against false syncs and miscorrected
-    bits, so they're deliberately strict.
+    FrameInfo enforces what a valid frame IS (addresses, sequence number, type, ASCII), for TX
+    and RX alike.  This function only adds the wire-format checks FrameInfo can't see: the
+    length field and the padding.
     """
     # LOCAL VARIABLES
     dst, src, msg_type, seq, length = raw[:HEADER_LEN]  # Header fields
     data = raw[HEADER_LEN:]                             # Padded payload
+    frame = None                                        # The frame, if valid
 
     # VALIDATE IT
-    # Destination address
-    if dst == NULL_ADDR:
-        return None  # The NULL address is reserved
-    # Source address
-    if src in (NULL_ADDR, BROADCAST_ADDR):
-        return None  # Invalid source address
-    # Sequence number
-    if seq < START_SEQ_NUM:
-        return None  # Sequence numbers should not be less than the starting number
-    # Data length
-    if length > MAX_DATA_LEN:
-        return None  # Impossible length: garbage or a corrupted header
-    # Message type
-    try:
-        MsgType(msg_type)
-    except ValueError:
-        return None  # Unknown message type
-    # Data contents
-    if data[length:] != PAD_BYTE * (MAX_DATA_LEN - length):
-        return None  # Padding must be untouched
-    if any(byte > _MAX_ASCII for byte in data[:length]):
-        return None  # Non-ASCII payload byte: corrupted
+    if length <= MAX_DATA_LEN and data[length:] == PAD_BYTE * (MAX_DATA_LEN - length):
+        try:
+            frame = FrameInfo(dst=dst, src=src, msg_type=msg_type, seq=seq,
+                              message=data[:length])
+        except ValueError:
+            pass  # A field FrameInfo rejects: frame stays None (log the reason here later)
 
     # DONE
-    return FrameInfo(dst=dst, src=src, msg_type=msg_type, seq=seq, message=data[:length])
+    return frame

@@ -166,8 +166,8 @@ def build_dataset_format(is_complex: bool = True, data_type: SigMFDataType = Sig
 
 
 def build_default_metadata(dataset_format: str = 'cf32_le', samp_rate: int | float | None = None,
-                           date_time: str | None = None,
-                           center_freq: float | None = None) -> dict[str:Any]:
+                           date_time: str | None = None, center_freq: float | None = None,
+                           description: str | None = None) -> dict[str:Any]:
     """Build a basic SigMF metadata dictionary.
 
     Creates a basic dictionary with a global object, captures array, and an annotations array.
@@ -181,6 +181,7 @@ def build_default_metadata(dataset_format: str = 'cf32_le', samp_rate: int | flo
             specified by sample_start.  Use spacetime.create_rfc_3339_z_time() to generate a valid
             string.
         center_freq: [OPTIONAL] The center frequency of the signal in Hz.
+        description: [OPTIONAL] A text description of the SigMF Recording.
 
     Returns:
         A basic SigMF dictionary containing a global object, captures array, and an
@@ -195,7 +196,8 @@ def build_default_metadata(dataset_format: str = 'cf32_le', samp_rate: int | flo
 
     # BUILD IT
     metadata_dict[SIG_FIELD_GLOBAL_KEY] = build_global_object(dataset_format=dataset_format,
-                                                              samp_rate=samp_rate)
+                                                              samp_rate=samp_rate,
+                                                              description=description)
     metadata_dict[SIG_FIELD_CAPTURE_KEY] = build_captures_array(date_time=date_time,
                                                                 center_freq=center_freq)
     metadata_dict[SIG_FIELD_ANNOTATION_KEY] = build_annotations_array()

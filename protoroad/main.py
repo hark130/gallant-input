@@ -11,16 +11,10 @@ import time
 import numpy as np
 from scipy.signal import firwin
 # Local Imports
-from protoroad.agc import AGC
 from protoroad.bpsk import BPSK
-from protoroad.burst_detector import detect_bursts
 from protoroad.constants import (BPSK_MAP, EXIT_FAIL, EXIT_SUCCESS, FEC_REPEATS, LOG_STR_RX,
                                  LOG_STR_TX, PREAMBLE, SYNCWORD)
-from protoroad.convert import (convert_bin_bytes_to_ascii, convert_bit_array_to_ascii,
-                               convert_bit_array_to_bytes, convert_msg_to_binary)
-from protoroad.costas_loop import CostasLoop
-from protoroad.frame import (build_frame, build_frame_frameinfo, build_header, build_payload,
-                             find_syncword, parse_frame)
+from protoroad.frame import build_frame_frameinfo
 from protoroad.frame_info import FrameInfo, MsgType
 from protoroad.link_stats import LinkStats
 from protoroad.parse_args import parse_args
@@ -28,7 +22,6 @@ from protoroad.parse_args import parse_args
 from protoroad.radio import Radio
 from protoroad.receiver import frame_receiver, FrameReceiver
 from protoroad.signals import create_rrc_taps
-from protoroad.timing_recovery import GardnerTimingRecovery
 from protoroad.transmitter import FrameTransmitter
 
 DEBUG_SLEEP: Final[int | float] = 1  # A slow, meandering debug sleep
@@ -149,6 +142,7 @@ def print_frame(frameinfo: FrameInfo, print_all: bool = False) -> None:
         print("No frame to print?!")
 
 
+# pylint: disable=too-many-locals,too-many-statements
 def main() -> int:
     """do_it()."""
     # LOCAL VARIABLES
@@ -238,3 +232,4 @@ def main() -> int:
 
     # DONE
     return exit_code
+# pylint: enable=too-many-locals,too-many-statements

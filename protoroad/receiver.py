@@ -113,6 +113,7 @@ class FrameReceiver:
 # pylint: enable=too-many-instance-attributes
 
 
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
                    on_frame: Callable[[FrameInfo, bool], None], address: int | None = None,
                    debug: bool = False, stats: LinkStats | None = None) -> None:
@@ -160,6 +161,7 @@ def frame_receiver(radio, receiver: FrameReceiver, stop_event: threading.Event,
                     on_frame(frame, debug)
     finally:
         radio.stop_receiving()  # Always stop the stream, even on an exception
+# pylint: enable=too-many-arguments,too-many-positional-arguments
 
 
 def _accept(frame_info: FrameInfo, address: int, debug: bool) -> bool:

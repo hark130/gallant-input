@@ -7,12 +7,11 @@ from typing import Final, NamedTuple
 # Third Party Imports
 import numpy as np
 # Local Imports
-from protoroad.constants import (BROADCAST_ADDR, HEADER_LEN, MAX_DATA_LEN, NULL_ADDR, PAD_BYTE,
-                                 START_SEQ_NUM)
+from protoroad.constants import HEADER_LEN, MAX_DATA_LEN, PAD_BYTE
 from protoroad.convert import (convert_bin_bytes_to_ascii, convert_int_to_binary,
                                convert_msg_to_binary)
 from protoroad.crc import CRC_LEN, check_crc16, crc16_bytes
-from protoroad.frame_info import FrameInfo, MsgType
+from protoroad.frame_info import FrameInfo
 
 _BIT_CHARS: Final[bytes] = b"01"  # The only valid characters in a bits bytes object
 _MAX_ASCII: Final[int] = 0x7F  # Highest valid ASCII byte value

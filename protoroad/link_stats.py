@@ -29,6 +29,7 @@ class SenderStats:
     last_seq: int | None = None  # Most recent sequence number heard
 
 
+# pylint: disable=too-many-instance-attributes
 class LinkStats:
     """Accumulate per-sender loss statistics plus receiver-wide counts; report at exit.
 
@@ -153,6 +154,7 @@ class LinkStats:
                 + (f" (FER {100 * failed / found:.1f}%)" if found else "") + "\n"
                 f"Raw BER (FEC estimate): {_ratio(self._fec_disagreements, self._coded_bits)}; "
                 f"syncword BER: {_ratio(self._sync_errors, self._sync_bits)}")
+# pylint: enable=too-many-instance-attributes
 
 
 def _ratio(errors: int, bits: int) -> str:

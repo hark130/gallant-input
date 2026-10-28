@@ -17,6 +17,7 @@ from protoroad.frame import build_frame_frameinfo
 from protoroad.frame_info import FrameInfo, MsgType
 
 
+# pylint: disable=too-many-instance-attributes
 class FrameTransmitter:
     """Turn frames into pulse-shaped bursts and send them through a radio."""
 
@@ -94,3 +95,4 @@ class FrameTransmitter:
         self.send(frame)
         self._next_seq = frame.next_seq
         return frame
+# pylint: enable=too-many-instance-attributes

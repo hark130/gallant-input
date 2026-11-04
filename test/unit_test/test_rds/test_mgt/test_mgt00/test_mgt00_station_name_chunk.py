@@ -17,6 +17,7 @@ from tediousstart.tediousstart import execute_test_cases
 from test.unit_test.test_rds.test_mgt.test_mgt00.test_mgt00 import RDSMsgGrpType00UnitTest
 
 
+# pylint: disable=too-many-ancestors
 class RDSMsgGrpType00SNCUnitTest(RDSMsgGrpType00UnitTest):
     """Parent class for all RDSMsgGroupType00.station_name_chunk property unit tests.
 

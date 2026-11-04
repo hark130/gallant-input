@@ -80,13 +80,13 @@ class NormalRDSGroupVGIUnitTest(RDSGroupVGIUnitTest):
 
     def test_n01_valid_coherent_group1(self):
         """Valid example of a coherent RDS Group."""
-        rds_group = self.GOOD_GROUP1
+        rds_group = self.good_group1
         assume_na = True
         self.run_test_return(rds_group, assume_na)
 
     def test_n02_valid_coherent_group1_different_continent(self):
         """Valid example of a coherent RDS Group but assume it's not from North America."""
-        rds_group = self.GOOD_GROUP1
+        rds_group = self.good_group1
         assume_na = False
         self.run_test_return(rds_group, assume_na)
 
@@ -103,8 +103,8 @@ class ErrorRDSGroupVGIUnitTest(RDSGroupVGIUnitTest):
 
     def test_e02_rds_group_bad_type_tuple(self):
         """Bad rds_group type: tuple."""
-        rds_group = tuple((self.GOOD_BLOCK_A3, self.GOOD_BLOCK_B3,
-                           self.GOOD_BLOCK_C3, self.GOOD_BLOCK_D3))
+        rds_group = tuple((self.good_block_a3, self.good_block_b3,
+                           self.good_block_c3, self.good_block_d3))
         assume_na = True
         self.run_test_exception(rds_group, assume_na, TypeError,
                                 'argument should have been of type')
@@ -125,48 +125,48 @@ class ErrorRDSGroupVGIUnitTest(RDSGroupVGIUnitTest):
 
     def test_e05_rds_group_bad_value_short(self):
         """Bad rds_group value: short."""
-        rds_group = self.GOOD_GROUP1[:RDS_GROUP_LEN-1]
+        rds_group = self.good_group1[:RDS_GROUP_LEN-1]
         assume_na = True
         self.run_test_exception(rds_group, assume_na, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e06_rds_group_bad_value_long(self):
         """Bad rds_group value: long."""
-        rds_group = self.GOOD_GROUP1 + b'0'
+        rds_group = self.good_group1 + b'0'
         assume_na = True
         self.run_test_exception(rds_group, assume_na, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e07_rds_group_bad_value_two_blocks(self):
         """Bad rds_group value: two groups."""
-        rds_group = self.GOOD_GROUP1 + self.GOOD_GROUP1
+        rds_group = self.good_group1 + self.good_group1
         assume_na = True
         self.run_test_exception(rds_group, assume_na, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e08_rds_group_bad_value_binary(self):
         """Bad rds_group value: binary contains an invalid character."""
-        rds_group = self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.BAD_BLOCK8
+        rds_group = self.good_block_a3 + self.good_block_b3 + self.good_block_c3 + self.BAD_BLOCK8
         assume_na = True
         self.run_test_exception(rds_group, assume_na, ValueError, 'Invalid binary value detected')
 
     def test_e09_assume_na_bad_type_none(self):
         """Bad assume_na type: None."""
-        rds_group = self.GOOD_GROUP1
+        rds_group = self.good_group1
         assume_na = None
         self.run_test_exception(rds_group, assume_na, TypeError,
                                 'argument should have been of type')
 
     def test_e10_assume_na_bad_type_tuple(self):
         """Bad assume_na type: tuple."""
-        rds_group = self.GOOD_GROUP1
-        assume_na = tuple((self.GOOD_GROUP1, True))
+        rds_group = self.good_group1
+        assume_na = tuple((self.good_group1, True))
         self.run_test_exception(rds_group, assume_na, TypeError,
                                 'argument should have been of type')
 
     def test_e11_assume_na_bad_type_int(self):
         """Bad assume_na type: int."""
-        rds_group = self.GOOD_GROUP1
+        rds_group = self.good_group1
         assume_na = 1  # True value
         self.run_test_exception(rds_group, assume_na, TypeError,
                                 'argument should have been of type')
@@ -177,32 +177,32 @@ class SpecialRDSGroupGBIUnitTest(RDSGroupVGIUnitTest):
 
     def test_s01_out_of_order_group_shift1(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
-        rds_group = self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3 \
-            + self.GOOD_BLOCK_C3
+        rds_group = self.good_block_d3 + self.good_block_a3 + self.good_block_b3 \
+            + self.good_block_c3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
 
     def test_s02_out_of_order_group_shift2(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 2."""
-        rds_group = self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 \
-            + self.GOOD_BLOCK_B3
+        rds_group = self.good_block_c3 + self.good_block_d3 + self.good_block_a3 \
+            + self.good_block_b3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
 
     def test_s03_out_of_order_group_shift3(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 3."""
-        rds_group = self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 \
-            + self.GOOD_BLOCK_A3
+        rds_group = self.good_block_b3 + self.good_block_c3 + self.good_block_d3 \
+            + self.good_block_a3
         assume_na = True
         self.run_test_exception(rds_group, assume_na, RDSIntegrityFailure,
                                 'This RDS group failed its integrity check:')
 
     def test_s04_valid_yet_disparate_blocks(self):
         """A group of RDS blocks that are not necessarily related to each other."""
-        rds_group = self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1 \
-            + self.GOOD_BLOCK_D3
+        rds_group = self.good_block_a1 + self.good_block_b3 + self.good_block_c1 \
+            + self.good_block_d3
         assume_na = True
         self.run_test_return(rds_group, assume_na)
 

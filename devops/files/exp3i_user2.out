@@ -1,0 +1,1851 @@
+[INFO] [UHD] linux; GNU C++ version 15.2.0; Boost_109000; UHD_4.9.0.1-1ubuntu1
+[INFO] [B200] Loading firmware image: /usr/share/uhd/4.9.0/images/usrp_b200_fw.hex...
+[ERROR] [USB] USB open failed: insufficient permissions.
+See the application notes for your device.
+
+[INFO] [B200] Detected Device: B206mini
+[INFO] [B200] Loading FPGA image: /usr/share/uhd/4.9.0/images/usrp_b205mini_fpga.bin...
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+OURS: UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+THEIRS: UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+RX GAIN: 40
+TX GAIN: 40
+SAMPLE RATE: 240000.0 (fs/2 == 120000.0)
+SYMBOL RATE: 2400
+FREQ SEP: 4800
+BANDWIDTH: 9600
+CUTOFF: 5000.0
+[INFO] [B200] Asking for clock rate 61.440000 MHz... 
+[INFO] [B200] Actually got clock rate 61.440000 MHz.
+[RX] Starting
+RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 100000 (CONTROL: 100000)
+EXP3I: Stateful Symbol Timing - Stateful M&M (interpolated w/ smaller gain_mu override and loosened relative limit)
+[MM] Starting Values: samples_per_symbol=100.0000 interp=16 gain_mu=0.0100 gain_omega=0.0000 omega_relative_limit=0.0100
+[MM] mu=0.0000 omega=100.0000 (nominal=100.0000, clip=±1.00%) residual_len=0
+You have 5 seconds to start the other user!
+[MM] mu=0.8481 omega=99.9999 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.6586 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.5511 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.3566 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.1785 omega=99.9999 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.1010 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.8072 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.5993 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2459 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.0175 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.8173 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.5517 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.0866 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6432 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2407 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=1
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7651 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4003 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0111 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.8583 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7850 omega=99.9999 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6437 omega=99.9999 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.4003 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.4119 omega=100.0000 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.3886 omega=100.0000 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4897 omega=100.0001 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5954 omega=100.0001 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.3871 omega=99.9998 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.1028 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.8091 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5141 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=1
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2147 omega=99.9997 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.7197 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2246 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7563 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2821 omega=99.9996 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.6693 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.1306 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.6099 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1554 omega=99.9995 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5231 omega=99.9994 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6416 omega=99.9990 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4632 omega=99.9988 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.2991 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1952 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9331 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.5524 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.2286 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.9320 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.7131 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5627 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.5154 omega=99.9990 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.6362 omega=99.9991 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6343 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7356 omega=99.9991 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.0806 omega=99.9993 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.2067 omega=99.9992 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.3869 omega=99.9992 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3900 omega=99.9990 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3220 omega=99.9989 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.0339 omega=99.9988 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7467 omega=99.9988 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.1959 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7124 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3940 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0445 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.5639 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9298 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.34375
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.53125
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2733 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7046 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.0369 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.3403 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5550 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9189 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1966 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.5700 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.9308 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5606 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3384 omega=99.9988 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.0011 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.6986 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3691 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=2
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.0577 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7225 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.3210 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.9987 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4474 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9120 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4103 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=2
+[MM] mu=0.9056 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.3180 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6757 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1068 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.4149 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.6565 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9408 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1377 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2934 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5376 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.6677 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8182 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7875 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.7901 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.0710 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5033 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0585 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6931 omega=99.9987 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.3268 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9612 omega=99.9986 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.3465 omega=99.9985 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7209 omega=99.9984 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0638 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.3277 omega=99.9983 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.2406 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.0422 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7413 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.4082 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.0178 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.6515 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.1636 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6577 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2095 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.6638 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.1588 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5661 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9839 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.3712 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.7522 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.1397 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.5505 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0051 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.3139 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.5974 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8878 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0577 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3067 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7109 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.0232 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1206 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3797 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4508 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.6072 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.6978 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9023 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1526 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5158 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.8098 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.0455 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.28125
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2952 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.6969 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1120 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.5937 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0736 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5822 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0469 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5037 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7668 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9133 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2218 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.5751 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0096 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.5204 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.8137 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=11
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1024 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.4218 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6238 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6009 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6298 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.9289 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.2523 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6405 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1054 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7762 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.5240 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.4395 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3307 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.3876 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=6
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3627 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.2464 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.1424 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1355 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3234 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.3522 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.4420 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.4843 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5129 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5095 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6243 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.5980 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.7157 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6999 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5370 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.3039 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8626 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.4331 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0608 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.7280 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.4041 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1058 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9770 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9126 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.8983 omega=99.9981 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.0438 omega=99.9982 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.0515 omega=99.9980 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9606 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7359 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.2474 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.7216 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.9018 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.1379 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=3
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5490 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.0389 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.3976 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7535 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1350 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.3441 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.5648 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.7501 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9646 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2574 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.4710 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.6485 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.6824 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7781 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9733 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2282 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.3854 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.6526 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8941 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2146 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.6262 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.1410 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6604 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2104 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8036 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.3945 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.9234 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4424 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9406 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4571 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.1633 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.9336 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.7049 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=13
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3117 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.8090 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3732 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9694 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5709 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2257 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.6955 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1192 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6096 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1552 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.6068 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.8808 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2393 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6947 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9315 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.2810 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.8840 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5052 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1799 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.6712 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2557 omega=99.9976 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.9856 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7971 omega=99.9979 (nominal=100.0000, clip=±1.00%) residual_len=3
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4930 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.3742 omega=99.9978 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0609 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.6568 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2415 omega=99.9977 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7078 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0096 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.2933 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.6200 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8743 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1305 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=3
+[MM] mu=0.4711 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.9371 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3885 omega=99.9975 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5544 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6496 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7416 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.8289 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7300 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3901 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0796 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.4991 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0423 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.4788 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8090 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.2198 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.9217 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.28125
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[MM] mu=0.3527 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8797 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.3980 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0286 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.7478 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.5449 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4024 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.1445 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.9403 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7843 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5877 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3874 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.3186 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.1042 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5658 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.1875
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.375
+[RX] SYNCWORD BER: 0.5625
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9950 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.5178 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.1546 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8185 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5441 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3819 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.3428 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5761 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7780 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0074 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2021 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.4090 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4982 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.6014 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.8254 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=12
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1406 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.4174 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6257 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7608 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9182 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.1175 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.3194 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2586 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0062 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8102 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.5779 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3604 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.1375 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1674 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2167 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.1695 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0151 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8639 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7021 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.4792 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4170 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.3845 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1882 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9709 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4794 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0211 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5227 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8804 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3403 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.1859 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.0947 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.0077 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9913 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8856 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.8489 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5892 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3616 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1081 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9589 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7886 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.7736 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7853 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7179 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.6046 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5938 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.6511 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.6929 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6450 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.7945 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.9450 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8126 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6064 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4157 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2887 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.0978 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0309 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0726 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2934 omega=99.9974 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.3365 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.4558 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3357 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2746 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2277 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2287 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.2517 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2686 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.2003 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0755 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.9617 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9563 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0496 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.0379 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8946 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7821 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7649 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7513 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8956 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0643 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.3312 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.5914 omega=99.9973 (nominal=100.0000, clip=±1.00%) residual_len=15
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6897 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6675 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.6919 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8059 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9521 omega=99.9972 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.9193 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6064 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2165 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.7941 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=13
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4463 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0933 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.8227 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.3877 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9401 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5466 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0203 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.4598 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6425 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9646 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.4292 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.8471 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0851 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.2926 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=5
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6238 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.5813 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.4551 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2655 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9258 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7424 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6471 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4945 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.3475 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2049 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.1391 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2028 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.2447 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1813 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0506 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0159 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.9757 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.9655 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0488 omega=99.9962 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4321 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.8021 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.9922 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.1722 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.2126 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=5
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1673 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.1372 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.0760 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9741 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0112 omega=99.9962 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.3305 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.8123 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2584 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5745 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8294 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.4134 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2799 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.1169 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0869 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0224 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.9887 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7471 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.5513 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3764 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.0446 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6481 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0972 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2568 omega=99.9962 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4539 omega=99.9962 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.4857 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5451 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.8282 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1188 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6246 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2404 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.8980 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.6271 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.3577 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8317 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.3509 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.1145 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6815 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2961 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.1845 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.9119 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.7637 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5320 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1009 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.7996 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.6767 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0931 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4838 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7098 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0384 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5295 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0625 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6740 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.2431 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7226 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.0981 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5319 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8871 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3184 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.8150 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.4965 omega=99.9967 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3580 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2788 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.0549 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.8513 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.6322 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4893 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[MM] mu=0.2649 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.1236 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.8377 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6531 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6846 omega=99.9971 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5456 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.3399 omega=99.9968 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.2323 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1490 omega=99.9970 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0347 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.8634 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.6539 omega=99.9969 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1881 omega=99.9966 (nominal=100.0000, clip=±1.00%) residual_len=4
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.6705 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=9
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1089 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=13
+[MM] mu=0.5468 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9793 omega=99.9965 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3121 omega=99.9964 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3948 omega=99.9962 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.3919 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3657 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.2606 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0111 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6310 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2567 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.0787 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.8466 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3655 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1943 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.0185 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.0919 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.1422 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1008 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7917 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.4682 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.1017 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9607 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9393 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.8266 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6032 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3630 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=5
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1931 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0732 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.0295 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1829 omega=99.9963 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.1018 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.9345 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7298 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6348 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.5376 omega=99.9960 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4973 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5336 omega=99.9961 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3644 omega=99.9959 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.0706 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.4575 omega=99.9955 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7882 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2965 omega=99.9956 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.7038 omega=99.9955 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.0751 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.1661 omega=99.9951 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2243 omega=99.9951 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1796 omega=99.9950 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.3245 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4098 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5673 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=12
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7585 omega=99.9953 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8654 omega=99.9951 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.1118 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.3677 omega=99.9953 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8188 omega=99.9956 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3285 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.9467 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5630 omega=99.9957 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.2382 omega=99.9958 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6300 omega=99.9955 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9241 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4142 omega=99.9956 (nominal=100.0000, clip=±1.00%) residual_len=5
+[MM] mu=0.8463 omega=99.9956 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.1182 omega=99.9953 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2435 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4073 omega=99.9953 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.5111 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.5826 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7988 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1934 omega=99.9955 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.5455 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9450 omega=99.9954 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.2056 omega=99.9953 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3485 omega=99.9952 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4203 omega=99.9951 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.4214 omega=99.9951 (nominal=100.0000, clip=±1.00%) residual_len=12
+[MM] mu=0.3743 omega=99.9950 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2332 omega=99.9949 (nominal=100.0000, clip=±1.00%) residual_len=6
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.0611 omega=99.9949 (nominal=100.0000, clip=±1.00%) residual_len=12
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6768 omega=99.9947 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1142 omega=99.9945 (nominal=100.0000, clip=±1.00%) residual_len=6
+[MM] mu=0.6525 omega=99.9946 (nominal=100.0000, clip=±1.00%) residual_len=13
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8516 omega=99.9943 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8154 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.8106 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0147 omega=99.9943 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1012 omega=99.9942 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9630 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7315 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5015 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.3511 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0890 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8154 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7189 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.7420 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6824 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.5846 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2652 omega=99.9938 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0800 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.7033 omega=99.9938 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.4460 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2753 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2404 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.2675 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2379 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.0782 omega=99.9940 (nominal=100.0000, clip=±1.00%) residual_len=14
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0339 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1371 omega=99.9942 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.0312 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=14
+[MM] mu=0.0158 omega=99.9941 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7670 omega=99.9939 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.4120 omega=99.9938 (nominal=100.0000, clip=±1.00%) residual_len=15
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0077 omega=99.9937 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2376 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.3578 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4296 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.4529 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.6567 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.8499 omega=99.9933 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8947 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0577 omega=99.9933 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2796 omega=99.9933 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6087 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.8949 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.3215 omega=99.9935 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.8847 omega=99.9937 (nominal=100.0000, clip=±1.00%) residual_len=8
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2048 omega=99.9935 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.7320 omega=99.9936 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1859 omega=99.9935 (nominal=100.0000, clip=±1.00%) residual_len=7
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3884 omega=99.9933 (nominal=100.0000, clip=±1.00%) residual_len=15
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6398 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6456 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5136 omega=99.9929 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.2020 omega=99.9929 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0443 omega=99.9930 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8043 omega=99.9929 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5798 omega=99.9930 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.4866 omega=99.9930 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.5093 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4151 omega=99.9930 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0164 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.7106 omega=99.9929 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6163 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.6928 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6807 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0304 omega=99.9935 (nominal=100.0000, clip=±1.00%) residual_len=7
+[MM] mu=0.3421 omega=99.9934 (nominal=100.0000, clip=±1.00%) residual_len=15
+[MM] mu=0.5205 omega=99.9933 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5435 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6210 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.6810 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7026 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.8081 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=16
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8275 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8237 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.7429 omega=99.9931 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.7727 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8760 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.8925 omega=99.9932 (nominal=100.0000, clip=±1.00%) residual_len=16
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7728 omega=99.9929 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2965 omega=99.9927 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.5610 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7909 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9299 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1745 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.2545 omega=99.9922 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3207 omega=99.9922 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4838 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7188 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0466 omega=99.9926 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5070 omega=99.9927 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.1217 omega=99.9927 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.6320 omega=99.9926 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2158 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0506 omega=99.9930 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.7787 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4493 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9493 omega=99.9927 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5404 omega=99.9927 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.2433 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=16
+[MM] mu=0.9026 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.28125
+[MM] mu=0.4656 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=8
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9702 omega=99.9926 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5277 omega=99.9928 (nominal=100.0000, clip=±1.00%) residual_len=8
+[MM] mu=0.9366 omega=99.9926 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1952 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=8
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3965 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6728 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0465 omega=99.9925 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3637 omega=99.9925 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.6306 omega=99.9924 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.7938 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=9
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.0454 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2601 omega=99.9925 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.4168 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5803 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6375 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7554 omega=99.9923 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.9305 omega=99.9925 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9991 omega=99.9922 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8966 omega=99.9921 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8665 omega=99.9921 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.7307 omega=99.9920 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6837 omega=99.9921 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.5422 omega=99.9920 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.3707 omega=99.9921 (nominal=100.0000, clip=±1.00%) residual_len=9
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3244 omega=99.9921 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.2049 omega=99.9920 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.8734 omega=99.9918 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.5720 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1139 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5895 omega=99.9916 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.0889 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.6451 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.28125
+[MM] mu=0.3300 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1265 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.8536 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4598 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0866 omega=99.9918 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.8830 omega=99.9920 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6163 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3499 omega=99.9919 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.8628 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3287 omega=99.9916 (nominal=100.0000, clip=±1.00%) residual_len=9
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8756 omega=99.9917 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4077 omega=99.9916 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.7969 omega=99.9915 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0096 omega=99.9914 (nominal=100.0000, clip=±1.00%) residual_len=9
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0625 omega=99.9913 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1360 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.9113 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7879 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.6120 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.4046 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1603 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8694 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.4370 omega=99.9907 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1096 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.6623 omega=99.9907 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.1682 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.7772 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3393 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9485 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.6518 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.5005 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3157 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2911 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.3044 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.3299 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1926 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.8346 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4436 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1985 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8901 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.5494 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1348 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.7014 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2702 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.1104 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.1105 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.9259 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.7340 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.2551 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8345 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.5924 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3713 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0906 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.8465 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.5075 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3188 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.1810 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.9746 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=11
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9582 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9394 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.9709 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.9184 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9584 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0147 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=9
+[MM] mu=0.0220 omega=99.9912 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.8382 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.21875
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.625
+[MM] mu=0.6852 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=0
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5804 omega=99.9911 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2627 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.7417 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.0846 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[MM] mu=0.4745 omega=99.9905 (nominal=100.0000, clip=±1.00%) residual_len=11
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9759 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4479 omega=99.9907 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.7653 omega=99.9905 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.1277 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.5752 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9515 omega=99.9905 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.4698 omega=99.9907 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.9499 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=11
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.2597 omega=99.9905 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.9700 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=11
+[MM] mu=0.7333 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4555 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2075 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[RX] SYNCWORD BER: 0.0
+[MM] mu=0.0196 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[RX] DATA BER: 0.0
+[RX] Dropping failed checksum
+[RX] Dropping failed checksum (exp=192, act=128, checksum_bits=b'11000000', data_bits_required=768)
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7393 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.5319 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.2124 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.0020 omega=99.9910 (nominal=100.0000, clip=±1.00%) residual_len=10
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[MM] mu=0.7759 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.4468 omega=99.9909 (nominal=100.0000, clip=±1.00%) residual_len=10
+[MM] mu=0.9968 omega=99.9908 (nominal=100.0000, clip=±1.00%) residual_len=0
+[MM] mu=0.3844 omega=99.9906 (nominal=100.0000, clip=±1.00%) residual_len=10
+

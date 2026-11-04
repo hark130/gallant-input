@@ -65,10 +65,7 @@ class RDSUnitTest(RootUnitTest):
     GOOD_BLOCK_C_PRIME2 = bytes('11000011110000110110000001', 'utf-8')  # External example
     GOOD_BLOCK_D2 = bytes('01100110011001100111001101', 'utf-8')        # External example
     GOOD_BLOCK_E2 = bytes('11110000111100001001100110', 'utf-8')        # External example
-    GOOD_BLOCK_A3 = bytes('01010111000111010101011100', 'utf-8')        # RF JQR 5.03 RDS group
-    GOOD_BLOCK_B3 = bytes('00100001001001011011001000', 'utf-8')        # RF JQR 5.03 RDS group
-    GOOD_BLOCK_C3 = bytes('11001101110011011010110011', 'utf-8')        # RF JQR 5.03 RDS group
-    GOOD_BLOCK_D3 = bytes('01000110010011010001001011', 'utf-8')        # RF JQR 5.03 RDS group
+    # SPOT moved to BaseUnitTest() parent class (see: test.base_unit_test.py)
 
     # BAD BLOCK VALUES
     BAD_BLOCK1 = None  # TypeError: None
@@ -81,11 +78,23 @@ class RDSUnitTest(RootUnitTest):
     BAD_BLOCK7 = bytes('0101011100011101010101110000100001001001011011001000', 'utf-8')
     BAD_BLOCK8 = bytes('01000110010021010001001011', 'utf-8')    # ValueError: "I thought I saw a 2"
 
-    # GOOD GROUP VALUES
-    GOOD_GROUP1 = GOOD_BLOCK_A3 + GOOD_BLOCK_B3 + GOOD_BLOCK_C3 + GOOD_BLOCK_D3  # RF JQR 5.03 RDS
-
     # CORE CLASS METHODS
     # Methods listed in call order
+
+    def __init__(self, *args, **kwargs) -> None:
+        """RootUnitTest ctor."""
+        super().__init__(*args, **kwargs)
+        # ATTRIBUTES
+        # SPOT moved to BaseUnitTest() parent class (see: test.base_unit_test.py)
+        # KNOWN GOOD BLOCK VALUES
+        self.good_block_a1 = self.GOOD_BLOCK_A1  # RF JQR 5.03 RDS output
+        self.good_block_a3 = self.RDS_BLOCK_A3   # RF JQR 5.03 RDS group
+        self.good_block_b3 = self.RDS_BLOCK_B3   # RF JQR 5.03 RDS group
+        self.good_block_c1 = self.GOOD_BLOCK_C1  # RF JQR 5.03 RDS output
+        self.good_block_c3 = self.RDS_BLOCK_C3   # RF JQR 5.03 RDS group
+        self.good_block_d3 = self.RDS_BLOCK_D3   # RF JQR 5.03 RDS group
+        # GOOD GROUP VALUES
+        self.good_group1 = self.RDS_GROUP1      # RF JQR 5.03 RDS
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

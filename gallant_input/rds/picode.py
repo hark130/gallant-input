@@ -64,6 +64,21 @@ class RDSPICode:
         """
         self._add_rds_group(rds_group=rds_group, var_name='rds_group')
 
+    def count_rds_groups(self) -> int:
+        """Counts the number of RDS Groups added to this PI Code."""
+        # LOCAL VARIABLES
+        num_groups = 0  # The number of RDS Groups
+
+        # VALIDATION
+        self.verify_pi_code_integrity()
+
+        # COUNT THEM
+        if self._rds_group_objs:
+            num_groups = len(self._rds_group_objs)
+
+        # DONE
+        return num_groups
+
     def get_pi_code(self) -> bytes:
         """Get the PI code."""
         self.verify_pi_code_integrity()

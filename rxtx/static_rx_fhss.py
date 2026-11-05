@@ -162,15 +162,15 @@ def main() -> None:
         if arg_vals.debug:
             plot_time_domain(samples=samples, samp_rate=sample_rate,
                              title='Time Domain (post-decimation)', now=False)
-            plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                          convert_db=True, center_freq=None,
-                          title='Magnitude Spectrum (post-decimation)', now=False)
+            # plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+            #               convert_db=True, center_freq=None,
+            #               title='Magnitude Spectrum (post-decimation)', now=False)
 
         # [?] Squelch!
         # Identify noise floor
-        if arg_vals.debug:
-            plot_welch_psd(samples=samples, sample_rate=sample_rate,
-                           title='Welch Power Spectral Density (pre-squelch)', now=False)
+        # if arg_vals.debug:
+        #     plot_welch_psd(samples=samples, sample_rate=sample_rate,
+        #                    title='Welch Power Spectral Density (pre-squelch)', now=False)
         # Squelch?
         if squelch_db is not None:
             samples = squelch_signal(samples=samples, threshold=squelch_db)
@@ -191,10 +191,10 @@ def main() -> None:
             if det_signal.center_frequency > 0 or det_signal.center_frequency < 0:
                 samples = downconvert_signal(samples=samples, sample_rate=sample_rate,
                                              center_freq=det_signal.center_frequency)
-                if arg_vals.debug:
-                    plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
-                                  convert_db=True, center_freq=None,
-                                  title='Magnitude Spectrum (post-baseband translation)', now=False)
+                # if arg_vals.debug:
+                #     plot_spectrum(samples=samples, samp_rate=sample_rate, shift_result=True,
+                #                   convert_db=True, center_freq=None,
+                #                   title='Magnitude Spectrum (post-baseband translation)', now=False)
 
         # DEMOD
         # NOTE: Modem() and ModemConfig() objects are (essentially) reset between these

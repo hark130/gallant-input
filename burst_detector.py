@@ -75,6 +75,9 @@ class BurstDetector:
         self._window: int = window                           # Moving-average length (samples)
         self._kernel: np.ndarray = np.ones(window) / window  # Equal weights = moving average
         self._history: np.ndarray = np.zeros(window - 1)     # Last window - 1 magnitudes seen
+
+        # Bursts during training: hold the envelope, then replay it once the floor exists
+        self._replay: List[np.ndarray] = []  # Training envelope, not yet scanned for bursts
     # pylint: enable=too-many-arguments,too-many-positional-arguments
 
     def detect_chunk(self, chunk: np.ndarray) -> None:
@@ -85,10 +88,16 @@ class BurstDetector:
         detect_env = envelope[num_train:]                                          # Scan these
         idle = None                                                                # Idle mask
 
-        # TRAIN IT (the floor must exist before anything can be detected)
+        # TRAIN IT (hold the training envelope; it's scanned for bursts once the floor exists)
         if num_train > 0:
-            self._abs_index += num_train
             self._floor_tracker.update(envelope[:num_train])
+            self._replay.append(envelope[:num_train])
+
+        # REPLAY IT (detect bursts that happened during training; the floor already saw them)
+        if self._replay and self._floor_tracker.get_floor() is not None:
+            self._run_state_machine(envelope=np.concatenate(self._replay),
+                                    floor=self._floor_tracker.get_floor())
+            self._replay = []
 
         # DETECT IT
         if detect_env.size > 0:

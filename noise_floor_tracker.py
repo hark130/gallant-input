@@ -21,13 +21,16 @@ class NoiseFloorTracker:
     per sample, so the floor adapts at the same rate regardless of batch size.
     """
 
-    def __init__(self, train_len: int, alpha: float):
+    def __init__(self, train_len: int, alpha: float, train_percentile: float = 50.0):
         """Class ctor.
 
         Args:
             train_len: Number of samples used to estimate the initial floor.
             alpha: Per-sample EMA weight for tracking, in (0, 1].  Smaller adapts slower; the
                 floor's time constant is roughly 1 / alpha samples.
+            train_percentile: [OPTIONAL] Percentile of the training samples used as the initial
+                floor.  The default (50, the median) assumes bursts fill less than half of the
+                training window; lower it for a busy band (e.g., 10 tolerates 90% busy).
 
         Raises:
             TypeError: Bad data type.
@@ -42,13 +45,16 @@ class NoiseFloorTracker:
             raise TypeError(f"alpha must be a float, got {type(alpha)}")
         if not 0 < alpha <= 1:
             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
+        if not 0 < train_percentile < 100:
+            raise ValueError(f"train_percentile must be in (0, 100), got {train_percentile}")
 
         # ATTRIBUTES
-        self._train_len: int = train_len       # Samples needed to finish training
-        self._alpha: float = float(alpha)      # Per-sample EMA weight
-        self._floor: float | None = None       # Linear floor estimate (None = training)
-        self._training: List[np.ndarray] = []  # Training samples collected so far
-        self._num_trained: int = 0             # Total samples in _training
+        self._train_len: int = train_len                  # Samples needed to finish training
+        self._alpha: float = float(alpha)                 # Per-sample EMA weight
+        self._floor: float | None = None                  # Linear floor estimate (None = training)
+        self._training: List[np.ndarray] = []             # Training samples collected so far
+        self._num_trained: int = 0                        # Total samples in _training
+        self._train_percentile: float = train_percentile  # Initial floor's percentile
 
     def get_floor(self) -> float | None:
         """Return the current linear floor estimate, or None while still training."""
@@ -94,14 +100,16 @@ class NoiseFloorTracker:
         """
         # LOCAL VARIABLES
         needed = self._train_len - self._num_trained  # Samples training still needs
-        taken = noise_env[:needed]                     # Samples consumed by training
-        leftover = noise_env[needed:]                  # Samples left over for tracking
+        taken = noise_env[:needed]                    # Samples consumed by training
+        leftover = noise_env[needed:]                 # Samples left over for tracking
 
         # TRAIN IT
         self._training.append(taken)
         self._num_trained += taken.size
         if self._num_trained >= self._train_len:
-            self._floor = max(float(np.median(np.concatenate(self._training))), MIN_NOISE_FLOOR)
+            training = np.concatenate(self._training)  # Every training sample
+            self._floor = max(float(np.percentile(training, self._train_percentile)),
+                              MIN_NOISE_FLOOR)
             self._training = []  # Free the memory; training is done
 
         # DONE

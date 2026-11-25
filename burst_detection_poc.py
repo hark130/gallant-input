@@ -16,19 +16,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 # Local Imports
-from burst_detector import BurstDetector
-from channel_plan import ChannelPlan, FhssProfile, HopPattern
+from burst_corpus import BurstCorpus, BurstRecord, save_corpus
+from burst_detector import Burst, BurstDetector
+from channel_plan import ChannelMatch, ChannelPlan, FhssProfile, HopPattern
 from frequency_estimator import CentroidFrequencyEstimator
 from gallant_input.io import read_samples
-from gallant_input.plot import plot_spectrum, plot_time_domain
-from gallant_input.signal import compute_magnitude_spectrum, convert_mag_to_db
+from gallant_input.modem.calc import calculate_sps
+from gallant_input.plot import plot_spectrum, plot_symbol_boundaries, plot_time_domain
+from gallant_input.signal import (compute_magnitude_spectrum, convert_mag_to_db, decimate_samples,
+                                  downconvert_signal)
+from gallant_input.synch.timing import recover_clock_mm
 from noise_floor_tracker import NoiseFloorTracker
+from rxtx.static_rx_fhss import build_modem, build_modem_config
 
 CENTER_FREQ: Final[float] = 915e6
 FILENAME: Final[Path] = Path() / "data" / "fhss_915mhz_26msps.iq"
 MIN_WINDOW_SYMS: Final[float] = 1.0  # An envelope null lasts about one symbol
 SAMPLE_RATE: Final[float] = 26e6
-SYMBOL_RATE: Final[float] = 250_000  # 250kbd
+SYMBOL_RATE: Final[float] = 250_000  # 250kbd (or is it encoded and actually 125kbd?!)
 # MIN_BURST_SEC: Final[float] = 7.5e-6  # Shortest burst: 0.0075 ms
 # MIN_GAP_SEC: Final[float] = 0.75e-6   # Shortest gap: 0.00075 ms
 MIN_BURST_SEC: Final[float] = 7.5e-3  # Shortest burst: 7.5 ms
@@ -49,198 +54,8 @@ HOP_PATTERN: Final[Tuple[int, ...]] = (
     13,35,27,41,44,30,34,18,31,28,17,47,36,33,7,16,9,43,20,15,5,45,8,24,42,
     32,40,38,39,4,37,14,1,50,3,46,6,26,49,19,25,21,12,11,22,48,23,10,29,2)
 TRAIN_PERCENTILE: Final[float] = 10.0  # Busy band: >= 10% noise
-
-
-# class Burst(NamedTuple):
-#     """Store the start and stop indices of detected bursts."""
-#     start: int
-#     stop: int
-
-
-# class State(Enum):
-#     """Basic state information for BurstDetector."""
-#     IDLE = auto()
-#     BURST = auto()
-
-
-# class BurstDetector:
-#     """Basic timing burst detection."""
-
-#     def __init__(self, threshold: float, window: int, min_len: int = 1):
-#         """Class ctor.
-
-#         Args:
-#             threshold: Min magnitude (dB) of the smoothed envelope to start a burst.
-#             window: Moving-average length (samples) used to smooth the envelope.
-#             min_len: [OPTIONAL] Bursts shorter than this (samples) are discarded.
-
-#         Raises:
-#             ValueError: Bad value.
-#         """
-#         # INPUT VALIDATION
-#         if window < 1:
-#             raise ValueError(f'window must be >= 1, got {window}')
-#         if min_len < 1:
-#             raise ValueError(f'min_len must be >= 1, got {min_len}')
-
-#         # CONSTRUCT IT
-#         self._abs_index: int = -1           # Starting index
-#         self._bursts: List[Burst] = []      # List of Burst NamedTuples
-#         self._state: State = State.IDLE     # Current state
-#         self._threshold: float = threshold  # Min threshold to count the start of a burst
-#         self._abs_start = 0                 # Temp var for absolute index of a burst start
-#         self._abs_stop = 0                  # Temp var for absolute index of a burst stop
-
-#         # Detect bursts within a window to smooth out brief dips in amplitude
-#         self._window: int = window               # Moving-average length (samples)
-#         self._kernel = np.ones(window) / window  # Equal weights = moving average
-#         self._history = np.zeros(window - 1)     # Last window - 1 magnitudes seen
-#         self._min_len: int = min_len             # Shortest burst kept (samples)
-
-#     def detect_chunk(self, chunk: np.ndarray) -> None:
-#         """Detect the start and stop index of bursts from a chunk."""
-#         mag = compute_magnitude_spectrum(chunk)
-#         padded = np.concatenate((self._history, mag))  # Prepend the previous chunk's tail
-#         envelope = np.convolve(padded, self._kernel, mode='valid')  # len(envelope) == len(chunk)
-#         self._history = padded[len(padded) - (self._window - 1):]  # Keep tail for the next chunk
-#         mag_db = convert_mag_to_db(envelope)
-#         for value in mag_db:
-#             self._abs_index += 1
-#             if value > self._threshold:
-#                 if self._state is not State.BURST:
-#                     self._abs_start = self._abs_index
-#                     self._state = State.BURST
-#             else:
-#                 if self._state is State.BURST:
-#                     self._state = State.IDLE
-#                     self._abs_stop = self._abs_index - 1
-#                     self._process_burst()
-
-#     def flush(self) -> None:
-#         """Flush everything."""
-#         self._reset()
-#         self._bursts = []
-#         self._abs_index = -1
-
-#     def get_bursts(self) -> List[Burst]:
-#         """Fetch all detected Bursts."""
-#         return list(self._bursts)
-
-#     def _process_burst(self) -> None:
-#         """Add a Burst to the _bursts list, if it's long enough, and reset."""
-#         if self._abs_stop - self._abs_start >= self._min_len:
-#             self._bursts.append(Burst(start=self._abs_start, stop=self._abs_stop))
-#         self._reset()
-
-#     def _reset(self) -> None:
-#         """Reset the state machine."""
-#         self._abs_start = 0
-#         self._abs_stop = 0
-#         self._state = State.IDLE
-
-
-# class NoiseFloorTracker:
-#     """Estimate, then track, the noise floor of a stream (linear magnitude).
-
-#     Training: the median of the first train_len samples becomes the initial floor.  The median
-#         tolerates bursts in the training data, as long as they cover less than half of it.
-#     Tracking: each later batch nudges the floor toward the batch mean, using an exponential
-#         moving average (EMA).  The caller must only pass samples it classified as noise.
-
-#     Stateful: feed it consecutive batches of any size.  The adaptation rate (alpha) is defined
-#     per sample, so the floor adapts at the same rate regardless of batch size.
-#     """
-
-#     def __init__(self, train_len: int, alpha: float):
-#         """Class ctor.
-
-#         Args:
-#             train_len: Number of samples used to estimate the initial floor.
-#             alpha: Per-sample EMA weight for tracking, in (0, 1].  Smaller adapts slower; the
-#                 floor's time constant is roughly 1 / alpha samples.
-
-#         Raises:
-#             TypeError: Bad data type.
-#             ValueError: Bad value.
-#         """
-#         # INPUT VALIDATION
-#         if not isinstance(train_len, int) or isinstance(train_len, bool):
-#             raise TypeError(f"train_len must be an int, got {type(train_len)}")
-#         if train_len < 1:
-#             raise ValueError(f"train_len must be >= 1, got {train_len}")
-#         if not isinstance(alpha, (int, float)) or isinstance(alpha, bool):
-#             raise TypeError(f"alpha must be a float, got {type(alpha)}")
-#         if not 0 < alpha <= 1:
-#             raise ValueError(f"alpha must be in (0, 1], got {alpha}")
-
-#         # ATTRIBUTES
-#         self._train_len: int = train_len       # Samples needed to finish training
-#         self._alpha: float = float(alpha)      # Per-sample EMA weight
-#         self._floor: float | None = None       # Linear floor estimate (None = training)
-#         self._training: List[np.ndarray] = []  # Training samples collected so far
-#         self._num_trained: int = 0             # Total samples in _training
-
-#     def get_floor(self) -> float | None:
-#         """Return the current linear floor estimate, or None while still training."""
-#         return self._floor
-
-#     def update(self, noise_env: np.ndarray) -> None:
-#         """Fold envelope samples the caller classified as noise into the estimate.
-
-#         Args:
-#             noise_env: 1-D array of linear envelope (magnitude) samples.  May be empty (e.g., a
-#                 chunk that was entirely inside a burst), which changes nothing.
-
-#         Raises:
-#             TypeError: Bad data type.
-#             ValueError: Bad value.
-#         """
-#         # LOCAL VARIABLES
-#         remaining = noise_env  # Samples not yet consumed by training
-
-#         # INPUT VALIDATION
-#         if not isinstance(noise_env, np.ndarray):
-#             raise TypeError(f"noise_env must be a numpy.ndarray, got {type(noise_env)}")
-#         if noise_env.ndim != 1:
-#             raise ValueError(f"noise_env must be 1-D, got {noise_env.ndim} dimensions")
-#         if np.iscomplexobj(noise_env):
-#             raise TypeError("noise_env must be real (pass the envelope, not the IQ samples)")
-
-#         # UPDATE IT
-#         if self._floor is None:
-#             remaining = self._train_floor(noise_env)
-#         if self._floor is not None and remaining.size > 0:
-#             self._track_floor(remaining)
-
-#     def _train_floor(self, noise_env: np.ndarray) -> np.ndarray:
-#         """Collect training samples; set the initial floor once there are enough.
-
-#         Returns:
-#             The samples training didn't need, for tracking (possibly empty).
-#         """
-#         # LOCAL VARIABLES
-#         needed = self._train_len - self._num_trained  # Samples training still needs
-#         taken = noise_env[:needed]                     # Samples consumed by training
-#         leftover = noise_env[needed:]                  # Samples left over for tracking
-
-#         # TRAIN IT
-#         self._training.append(taken)
-#         self._num_trained += taken.size
-#         if self._num_trained >= self._train_len:
-#             self._floor = max(float(np.median(np.concatenate(self._training))), MIN_NOISE_FLOOR)
-#             self._training = []  # Free the memory; training is done
-
-#         # DONE
-#         return leftover
-
-#     def _track_floor(self, noise_env: np.ndarray) -> None:
-#         """Nudge the floor toward the batch mean with a per-sample EMA weight."""
-#         # LOCAL VARIABLES
-#         weight = 1 - (1 - self._alpha) ** noise_env.size  # Batch weight == n per-sample steps
-#         batch_mean = float(np.mean(noise_env))            # Batch estimate of the floor
-
-#         # TRACK IT
-#         self._floor = max((1 - weight) * self._floor + weight * batch_mean, MIN_NOISE_FLOOR)
+CORPUS_FILENAME: Final[Path] = Path() / "data" / "fhss_corpus.json"
+FSK_DEV_HZ: Final[float] = 127_000  # FSK Tone Deviation in Hz (full distance, peak-to-peak)
 
 
 def compute_window_size(samp_rate: float, symbol_rate: float, min_burst_syms: int,
@@ -288,6 +103,64 @@ def compute_window_size(samp_rate: float, symbol_rate: float, min_burst_syms: in
 
     # DONE
     return window
+
+
+def demodulate_burst(burst: np.ndarray, sample_rate: float | int,
+                     symbol_rate: float | int, debug: bool = False) -> str:
+    """Demodulate a sliced burst and return the binary as a string.
+
+    Args:
+        burst: The sliced burst of samples to demodulate.
+        sample_rate: The sample rate of the capture in samples per second.
+        symbol_rate: The number of symbols-per-second (1 / symbol time).
+    """
+    # LOCAL VARIABLES
+    binary: str = ""  # Demodulated binary bytes converted to a string
+    sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Samples-per-symbol
+    config = build_modem_config(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                                freq0=-FSK_DEV_HZ/2, freq1=FSK_DEV_HZ/2)
+    modem = build_modem(config=config)
+    decimate = 8           # Decimation (e.g., 1 to skip decimation)
+    metric = None          # Instantaneous frequency measurements
+    symbol_metrics = None  # Soft symbols
+    symbols = None         # Binary bytes
+
+    # PREPARE
+    if decimate > 1:
+        burst = decimate_samples(samples=burst, decimate=decimate)
+        sample_rate = sample_rate / decimate  # Update the sample rate
+        sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)  # Calc new sps
+    if sps > 20 and arg_vals.debug:
+        print(f'Consider decimating the samples-per-symbol, currently "{sps}", below 20')
+
+    # DEMODULATE IT
+    # NOTE TO FUTURE HARK... UN-GAIN THIS IMPLEMENTATION BY USING A BETTER DEMOD/TIMING SYNCH
+    # Step 1 - Demod to Metrics
+    metric = modem.demodulate_to_metric(samples=burst)
+    if debug:
+        plot_time_domain(samples=metric, samp_rate=sample_rate,
+                         title='Time Domain (Demod Step 1: Metrics)', now=False)
+        plot_symbol_boundaries(real_wave=metric, sps=sps,
+                               title='Symbol Boundaries (Demod Step 1: Metrics)', now=False)
+    # Step 2 - Time Sync w/ Interpolation(?)
+    # symbol_metrics = recover_clock_mm(metric, sps, interp=None)  # Do not interpolate
+    symbol_metrics = recover_clock_mm(metric, sps, interp=16)  # Interp for better boundary
+    if debug:
+        plot_time_domain(samples=symbol_metrics, samp_rate=sample_rate,
+                         title='Time Domain (Demod Step 2: Symbol Metrics)', now=False)
+        plot_symbol_boundaries(real_wave=symbol_metrics, sps=1,
+                               title='Symbol Boundaries (Demod Step 2: Symbol Metrics)',
+                               now=False)
+    # Step 3 - Symbol Decisions
+    symbols = modem.decide_symbols(symbol_metrics=symbol_metrics)
+    # Step 4 - Convert binary bytes to a string
+    binary = symbols.decode("ascii")
+    if debug:
+        plt.show()  # Plot them all *now*
+        exit()  # TESTING
+
+    # DONE
+    return binary
 
 
 def detect_bursts_1(samples: np.ndarray, sample_rate: float) -> None:
@@ -410,6 +283,42 @@ def plot_burst_verification(samples, is_burst, sample_rate, start_sec=2.0, durat
     plt.show()
 
 
+def save_bursts_as_corpus(samples: np.ndarray, window: int, min_len: int, bursts: List[Burst],
+                          matches: List[ChannelMatch],
+                          filename: Path | str = CORPUS_FILENAME) -> None:
+    """Save burst details, with respect to a FHSS hop pattern, to a corpus for offline analysis.
+
+    Args:
+        window: Moving-average length (samples) used to smooth the envelope in the burst detector.
+        min_len: Minimum length of a valid burst.
+        bursts: A list of detected bursts.
+        matches: A list of matches against a ChannelPlan (see: FHSS hop pattern).
+        filename: [OPTIONAL] The output filename for the JSON corpus.
+    """
+    _burst = None  # The downconverted samples sliced out of the samples array
+    corpus = BurstCorpus(capture=filename, samp_rate=SAMPLE_RATE, center_freq=CENTER_FREQ,
+                         symbol_rate=SYMBOL_RATE,
+                         params={"on_db": ON_DB, "off_db": OFF_DB, "window": window,
+                                 "min_len": min_len, "train_percentile": TRAIN_PERCENTILE,
+                                 "channel_spacing": CHANNEL_SPACING})
+    for number, (burst, match) in enumerate(zip(bursts, matches), start=1):
+        _burst = samples[burst.start:burst.stop]
+        if match.residual_hz != 0.0:
+            _burst = downconvert_signal(samples=_burst, sample_rate=SAMPLE_RATE,
+                                        center_freq=-match.residual_hz)  # Downconvert to baseband
+        _binary = demodulate_burst(burst=_burst, sample_rate=SAMPLE_RATE, symbol_rate=SYMBOL_RATE,
+                                   debug=True,  # DEBUGGING
+                                   )
+        corpus.add_record(BurstRecord(number=number, start=burst.start, stop=burst.stop,
+                                      channel=match.channel,
+                                      freq_hz=match.channel_freq + match.residual_hz,
+                                      residual_hz=match.residual_hz,
+                                      # bits=demodulate_burst(...)))  # Your rxtx demod
+                                      # bits="01010101"))  # PLACEHOLDER
+                                      bits=_binary))
+    save_corpus(corpus, filename)
+
+
 def main():
     """do_it()."""
     samples = read_samples(filename=FILENAME)
@@ -417,6 +326,7 @@ def main():
     # burst_thresh = -40  # Burst mag threshold in dB
     # burst_thresh = -45  # Burst mag threshold in dB
     # burst_thresh = -50  # Burst mag threshold in dB
+    min_len = round(SAMPLE_RATE * MIN_BURST_SEC)  # Minimum length for valid bursts
     floor_tracker = NoiseFloorTracker(train_len=round(SAMPLE_RATE * TRAIN_SEC),
                                       alpha=1 / (SAMPLE_RATE * FLOOR_TAU_SEC),
                                       train_percentile=TRAIN_PERCENTILE)
@@ -424,7 +334,7 @@ def main():
                                  min_burst_syms=(SYMBOL_RATE / MIN_BURST_SEC),
                                  min_gap_syms=(SYMBOL_RATE / MIN_GAP_SEC))
     detector = BurstDetector(floor_tracker=floor_tracker, on_db=ON_DB, off_db=OFF_DB,
-                             window=window, min_len=round(SAMPLE_RATE * MIN_BURST_SEC))
+                             window=window, min_len=min_len)
     chunk_size = 10_000
     act_min_burst_time = 100_000  # Actual shortest burst time
     # NOTE: This channel construction assumed channel numbering 0-49
@@ -491,6 +401,10 @@ def main():
     print(f"Matched {alignment.num_matched} of {len(bursts)} at pattern offset "
           f"{alignment.offset}")
     # print(f"Shortest burst time: {act_min_burst_time} s")
+
+    # Save the corpus
+    save_bursts_as_corpus(samples=samples, window=window, min_len=min_len, bursts=bursts,
+                          matches=matches)
 
 
 if __name__ == "__main__":

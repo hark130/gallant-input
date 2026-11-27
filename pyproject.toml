@@ -1,0 +1,43 @@
+# python3 -m build                      # → dist/protoroad-0.1.0-py3-none-any.whl/tar.gz
+# python3 -m pip install dist/protoroad-0.1.0-py3-none-any.whl
+# protoroad --help                      # The command [project.scripts] creates
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protoroad"
+dynamic = ["version"]
+description = "Half-duplex BPSK text chat over USRP software-defined radios"
+readme = "protoroad/README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Joseph Harkleroad" }]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy",
+    # UHD's Python bindings ("import uhd") come from the system package (e.g. python3-uhd),
+    # not PyPI: install them first, and use a venv created with --system-site-packages.
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Communications :: Ham Radio",
+]
+
+[project.urls]
+Repository = "https://github.com/hark130/gallant-input"
+
+[project.scripts]
+protoroad = "protoroad.main:main"
+
+[tool.setuptools]
+packages = ["protoroad"]  # Only protoroad: not gallant_input, rxtx, test, ...
+
+[tool.setuptools.package-data]
+protoroad = ["README.md"]  # Ship the docs inside the installed package too
+
+[tool.setuptools.dynamic]
+version = { attr = "protoroad.__version__" }

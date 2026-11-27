@@ -180,12 +180,12 @@ class RDSPICodeUnitTest(RDSUnitTest):
 
     def __init__(self, *args, **kwargs) -> None:
         """RDSPICodeUnitTest ctor."""
+        super().__init__(*args, **kwargs)
+
         # ATTRIBUTES
         self.input_pi_code = None                                  # Test input: RDSPICode(pi_code)
-        self.def_good_pic = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
+        self.def_good_pic = self.good_group1[:RDS_BLOCK_DATA_LEN]  # A default "good" PI code
         self.test_obj = None                                       # PICode() test object
-
-        super().__init__(*args, **kwargs)
 
     def call_callable(self):
         """Defines how the class will invoke the function call.

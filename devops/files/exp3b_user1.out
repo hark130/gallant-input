@@ -1,0 +1,1157 @@
+[INFO] [UHD] linux; GNU C++ version 15.2.0; Boost_109000; UHD_4.9.0.1-1ubuntu1
+[INFO] [B200] Detected Device: B205mini
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+OURS: UserFreqs(center=912035600.0, f0=-2400.0, f1=2400.0)
+THEIRS: UserFreqs(center=912064400.0, f0=-2400.0, f1=2400.0)
+RX GAIN: 40
+TX GAIN: 40
+SAMPLE RATE: 240000.0 (fs/2 == 120000.0)
+SYMBOL RATE: 2400
+FREQ SEP: 4800
+BANDWIDTH: 9600
+CUTOFF: 5000.0
+[INFO] [B200] Asking for clock rate 61.440000 MHz... 
+[INFO] [B200] Actually got clock rate 61.440000 MHz.
+[RX] Starting
+RECEIVE FRAME EXP DATA: b'0100110001101111011100100110010101101101001000000110100101110000011100110111010101101101001000000110010001101111011011000110111101110010001000000111001101101001011101000010000001100001011011010110010101110100001011000010000001011111010111110101111100111111' (debug is True)
+BUFFER THRESHOLD: 100000 (CONTROL: 100000)
+EXP3B: Stateful Symbol Timing - Original M&M no interpolation)
+You have 5 seconds to start the other user!
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4249 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1832 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5182 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7307 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4106 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2812 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2732 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7668 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4688 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8969 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1064 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0753 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0876 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2842 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9464 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4558 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9062 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2767 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8606 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6153 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3303 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1174 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3467 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4780 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0489 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3056 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5796 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7669 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8877 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3703 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1066 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4052 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3094 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2734 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4669 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2678 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1622 omega=None
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1044 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5361 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4350 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5543 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6767 omega=None
+[RX] SYNCWORD BER: 0.03125
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1461 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2854 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2572 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7774 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6643 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9843 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0443 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5325 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0537 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6138 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4905 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5152 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8422 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0658 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4863 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4328 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0291 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6594 omega=None
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2336 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0470 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9277 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4813 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2897 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9775 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0591 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9560 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2809 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7673 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7913 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5358 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5285 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0486 omega=None
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RX] SYNCWORD BER: 0.40625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6725 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1773 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0660 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0617 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1407 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3638 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2050 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5349 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4039 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4056 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5019 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0443 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1435 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6296 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4653 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RX] SYNCWORD BER: 0.625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2606 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9240 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1478 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8421 omega=None
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RX] SYNCWORD BER: 0.40625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4887 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1297 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2551 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3854 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1630 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1859 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6985 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0550 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3484 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5411 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2885 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9086 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1735 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6121 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8385 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3563 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9118 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1524 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3265 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2765 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8512 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5630 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4424 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6732 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1720 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1015 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5926 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1935 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4573 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7564 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4050 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6803 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9341 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5940 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2045 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7100 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4129 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2725 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1742 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4167 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2035 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2576 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1309 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1474 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1460 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4049 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0777 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0640 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[TX] Sending - Lorem ipsum dolor sit amet, ___?[RC MM] mu=0.3612 omega=None
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7737 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7894 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1291 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7262 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8481 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2390 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2297 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5349 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1358 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0110 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5488 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5394 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5406 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4327 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2196 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4458 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4803 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8945 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3335 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7243 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2411 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5372 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4973 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1585 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6398 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8949 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2552 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7817 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4789 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8666 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3463 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4984 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6181 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0472 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6995 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5653 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1445 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3187 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5106 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2052 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7500 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0119 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3928 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1196 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7845 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2338 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5183 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8627 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6957 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3171 omega=None
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RX] SYNCWORD BER: 0.40625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0166 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4941 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5828 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6668 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5396 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5737 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0535 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2265 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1040 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4195 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7136 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5283 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6497 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3185 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RX] SYNCWORD BER: 0.625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3746 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6065 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4040 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9961 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7102 omega=None
+[RX] SYNCWORD BER: 0.53125
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6461 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3244 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7063 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2589 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0033 omega=None
+[RX] SYNCWORD BER: 0.28125
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4508 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1940 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8404 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5135 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2789 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] mu=0.7387 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5204 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3085 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2775 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5913 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0114 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4588 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0510 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8055 omega=None
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1891 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8927 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9580 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4246 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7263 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6360 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6304 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4025 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0728 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1279 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4652 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0562 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1462 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4795 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3783 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8612 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7290 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5793 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4211 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4754 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9990 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0527 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5526 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0063 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2071 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5027 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7279 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2314 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3425 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9900 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8479 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1241 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1010 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8577 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5439 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1774 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9363 omega=None
+[RX] SYNCWORD BER: 0.25
+[RX] SYNCWORD BER: 0.625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1746 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0894 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8232 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0435 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0944 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2255 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5157 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3651 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0616 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5501 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2521 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7603 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3131 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2641 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9966 omega=None
+[RX] SYNCWORD BER: 0.03125
+[RX] SYNCWORD BER: 0.59375
+[RX] SYNCWORD BER: 0.40625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.5
+[RX] SYNCWORD BER: 0.625
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6269 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0687 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1871 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6057 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8003 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3970 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7977 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5158 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4991 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9499 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0901 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2874 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2902 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4613 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7043 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5226 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1405 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6621 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8806 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0558 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6265 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1768 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1475 omega=None
+[RX] SYNCWORD BER: 0.15625
+[RX] SYNCWORD BER: 0.59375
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9433 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8112 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9325 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9450 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8725 omega=None
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.5625
+[RX] SYNCWORD BER: 0.46875
+[RX] SYNCWORD BER: 0.65625
+[RX] SYNCWORD BER: 0.5
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8953 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3572 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9621 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6999 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8491 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4890 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0575 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6013 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6371 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8843 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7526 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2464 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8588 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9658 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1614 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9314 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2666 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9138 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.2854 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.7477 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9393 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3992 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8429 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8760 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1431 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5644 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8362 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.5115 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3943 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8694 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4668 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9409 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6081 omega=None
+[RX] SYNCWORD BER: 0.0
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6119 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1181 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.8060 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.3355 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.4892 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.6043 omega=None
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9101 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0440 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1735 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9581 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+[TX] Sending - Lorem ipsum dolor sit amet, ___?
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1549 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0838 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.0986 omega=None
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.1971 omega=None
+[RX] SYNCWORD BER: 0.0
+[RC MM] Starting Values: samples_per_symbol=100.0000 interp=None loop_react=0.3000
+[RC MM] mu=0.9380 omega=None
+[RX] DATA BER: 0.0
+
+[RX] Received: Lorem ipsum dolor sit amet, ___?
+
+

@@ -1,0 +1,618 @@
+"""This script utilizes GAIN and RXTX to implement, rx, and tx a custom protocol.
+
+USAGE:
+
+# 1. Help
+python rf_capstone_v3.py --help
+
+# 2. Same Machine, Two SDRs
+uhd_find_devices
+# Terminal 1
+python rf_capstone_v3.py --serial 317650F --user 1
+# Terminal 2
+python rf_capstone_v3.py --serial 3512A99 --user 2
+
+# Calculate BER / Packet Loss (must be same machine)
+uhd_find_devices
+# Terminal 1
+export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
+export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
+export USER2_OUTPUT=$TMP_OUTPUT/rf_capstone_user2.out  # The error rate script will use this env var
+# python -u rf_capstone_v3.py --serial 317650F --user 1 --debug > "$USER1_OUTPUT" 2>&1
+python -u rf_capstone_v3.py --serial 352825E --user 1 --debug > "$USER1_OUTPUT" 2>&1
+# Terminal 2
+export TMP_OUTPUT=/tmp                                 # The error rate script will use this env var
+export USER1_OUTPUT=$TMP_OUTPUT/rf_capstone_user1.out  # The error rate script will use this env var
+export USER2_OUTPUT=$TMP_OUTPUT/rf_capstone_user2.out  # The error rate script will use this env var
+python -u rf_capstone_v3.py --serial 3512A99 --user 2 --debug > "$USER2_OUTPUT" 2>&1
+# POST-TERMINATION
+# Follow the instructions in the rf_capstone_calc_error_rate.py docstring
+
+NOTES:
+    - Include the following in the specification (not the user documentation):
+        FSK deviation/separation      4.8 kHz
+        estimated occupied bandwidth  9.6 kHz
+        guard space                   4.8 kHz
+        channel spacing               14.4 kHzs
+"""
+
+
+# Standard Imports
+from collections import namedtuple
+from dataclasses import dataclass, field
+from scipy.signal import freqz
+from time import sleep
+from typing import Any, Final, List
+import argparse
+import numpy
+import math
+import random
+import sys
+import threading
+import time
+# Third Party Imports
+from scipy import signal
+import matplotlib.pyplot as plt
+import numpy
+import uhd
+# Local Imports
+from gallant_input.analyze import analyze_spectrum
+from gallant_input.converters import (convert_ascii_to_bin_bytes, convert_bin_bytes_to_ascii,
+                                      convert_bin_bytes_to_int, convert_bin_bytes_to_ndarray)
+from gallant_input.filters import apply_fir, create_basic_lpf, design_lpf
+from gallant_input.io import write_samples
+from gallant_input.modem.calc import calculate_sps
+from gallant_input.modem.modem import Modem
+from gallant_input.modem.modem_config import ModemConfig
+from gallant_input.modem.fsk2 import FSK2
+from gallant_input.modem.fsk2_config import FSK2Config
+from gallant_input.modscheme import ModScheme
+from gallant_input.plot import (plot_filter_taps, plot_impulse_response, plot_spectrum,
+                                plot_symbol_boundaries, plot_time_domain, plot_welch_psd)
+from gallant_input.gain_sigmf.sigmfmetabuilder import build_default_metadata
+from gallant_input.modscheme import ModScheme
+from gallant_input.radio.config_direction import ConfigDirection
+from gallant_input.radio.gain_usrp import configure_usrp, receive, transmit
+from gallant_input.signal import (decimate_samples, detect_signal, downconvert_signal,
+                                  squelch_signal)
+from gallant_input.spacetime import create_rfc_3339_z_time
+from gallant_input.synch.frame import correlate_it, find_frame_start
+from gallant_input.synch.frequency_corrector import FrequencyCorrector
+from gallant_input.synch.timing import recover_clock_mm
+from gallant_input.validation import (validate_bool, validate_pos_float_or_int, validate_pos_int,
+                                      validate_type)
+from rxtx.frame_receiver import FrameReceiver
+from rxtx.utilities import apply_fec_repetition, convert_field_val, evaluate_payload
+
+
+CLI_ARG_DEBUG: Final[str] = 'debug'
+CLI_ARG_FREQ: Final[str] = 'center_freq'
+CLI_ARG_INTERACT: Final[str] = 'interact'
+CLI_ARG_SERIAL: Final[str] = 'serial'
+CLI_ARG_USER: Final[str] = 'user'
+CLI_ARG_KEYS: Final[List[str]] = [CLI_ARG_DEBUG, CLI_ARG_FREQ, CLI_ARG_INTERACT,
+                                  CLI_ARG_SERIAL, CLI_ARG_USER]
+
+
+# DEBUGGING
+DEBUG: Final[bool] = True  # In lieu of parsed args
+
+# TXRX SPECIFICATIONS
+CENTER_FREQ: Final[float] = 912050e3
+SAMPLE_RATE: Final[float] = 240e3
+MAX_USERS: Final[int] = 2  # Currently only supports two users
+
+# PROTOCOL SPECIFICATIONS
+DATA_LEN_WIDTH: Final[int] = 8         # Fixed width of the data length field, in bits
+CHECKSUM_WIDTH: Final[int] = 8         # Fixed width of the checksum filed, in bits
+MAX_DATA_FIELD_BYTES: Final[int] = 32  # Maximum width of the DATA field in bytes (not counting FEC)
+MAX_DATA_FIELD: Final[int] = MAX_DATA_FIELD_BYTES * 8  # Maximum width of the DATA field in bits
+SYMBOL_RATE: Final[int] = 2400
+FEC_REPEAT: Final[int | None] = 3      # Forward Error Correction (FEC) repeat value
+GFSK_BT: Final[float | None] = 0.4     # Gaussian pulse shaping bandwidth-time product
+
+# MESSAGES TO TRANSMIT
+# MESSAGE 1: test
+MSG1: Final[bytes] = convert_ascii_to_bin_bytes(message='test', clean_it=True)
+# MESSAGE 2: abc123
+MSG2: Final[bytes] = convert_ascii_to_bin_bytes(message='abc123', clean_it=True)
+# MESSAGE 3: This is my test input.
+MSG3: Final[bytes] = convert_ascii_to_bin_bytes(message='This is my test input.', clean_it=True)
+# MESSAGE 4: This we'll defend
+MSG4: Final[bytes] = convert_ascii_to_bin_bytes(message="This we'll defend", clean_it=True)
+# MESSAGE 5: Now what do I do?
+MSG5: Final[bytes] = convert_ascii_to_bin_bytes(message='Now what do I do?', clean_it=True)
+# MESSAGE 6: 123 (with non-printable characters)
+MSG6: Final[bytes] = convert_ascii_to_bin_bytes(message='1\n\t2\r\x00\x013', clean_it=False)
+# MESSAGE 7: Lorem ipsum dolor sit amet, ___?  (used for DEBUG mode)
+MSG7: Final[bytes] = convert_ascii_to_bin_bytes(message='Lorem ipsum dolor sit amet, ___?')
+MESSAGES: Final[List] = [MSG1, MSG2, MSG3, MSG4, MSG5, MSG6, MSG7]
+
+# PROTOCOL MACROS
+PREAMBLE: Final[bytes] = 32 * b'10'
+SYNCWORD: Final[bytes] = b'11011000110111000101000100101110'  # 0xD8DC512E
+
+
+# Each user sends on theirs but receives on the other user's
+UserFreqs = namedtuple('UserFreqs', ['center', 'f0', 'f1'])
+
+
+class CommFreqs():
+    """Dataclass containing user frequencies."""
+
+    def __init__(self, user: int, center_freq: float | int, symbol_rate: int):
+        """Class ctor.
+
+        Arg:
+            user:  sThis customer's user number.
+        """
+        self._user = user
+        self._center_freq = center_freq
+        self._symbol_rate = symbol_rate
+
+    def get_my_freqs(self) -> UserFreqs:
+        """Get the frequencies for this user."""
+        return self.get_user_freqs(user=self._user)
+
+    def get_user_freqs(self, user: int) -> UserFreqs:
+        """Get the frequencies for a particular user."""
+        return calc_freqs(center_freq=self._center_freq, user=user,
+                          symbol_rate=self._symbol_rate)
+
+
+def build_modem(config: ModemConfig) -> Modem:
+    """Build a Modem child class object."""
+    modem_obj = FSK2(config=config)
+    return modem_obj
+
+
+def build_modem_config(sample_rate: float | int, symbol_rate: float | int,
+                       freqs: UserFreqs) -> ModemConfig:
+    """Build a ModemConfig child class object."""
+    config = FSK2Config(sample_rate=sample_rate, symbol_rate=symbol_rate,
+                        freq0=freqs.f0, freq1=freqs.f1)
+    return config
+
+
+def build_frame(preamble: bytes, syncword: bytes, message: bytes, fec_repeat: int | None) -> bytes:
+    """Build a frame."""
+    checksum = convert_field_val(generate_checksum(message), max_bit_len=CHECKSUM_WIDTH)
+    if fec_repeat is not None:
+        message = apply_fec_repetition(bits=message, repeats=fec_repeat)
+    # print(f'MESSAGE LEN: {len(message)} DATA LEN: {len(message) // 8}')  # DEBUGGING
+    data_len = convert_field_val(len(message) // 8, max_bit_len=DATA_LEN_WIDTH)
+    header = preamble + syncword
+    payload = data_len + message + checksum
+    return header + payload
+
+
+def build_usrp(serial: str) -> uhd.usrp.MultiUSRP:
+    """Build the USRP object."""
+    if serial:
+        usrp = uhd.usrp.MultiUSRP('serial=' + serial)
+    else:
+        usrp = uhd.usrp.MultiUSRP("type=b200")
+    return usrp
+
+
+def calc_bandwidth(symbol_rate: int) -> int:
+    """Calculate the bandwidth using Carson's Rule.
+
+    Carson's Rule: Bt = freq_sep + (2 * Baud)
+    """
+    bandwidth = calc_freq_sep(symbol_rate) + (2 * symbol_rate)
+    return bandwidth
+
+
+def calc_lpf_cutoff(chan_bandwidth: int) -> float:
+    """Calculate the LPF cutoff based on the channel bandwidth."""
+    cutoff = round(chan_bandwidth, -3) / 2  # Round up to the nearest 1000s, centered
+    return cutoff
+
+
+def calc_threshold(sample_rate: float | int, symbol_rate: float | int, num_symbols: int) -> int:
+    """Calculate the threshold at which the receiver will process a chunk of the buffer.
+
+    Args:
+        sample_rate: The sample rate of the capture in samples per second.
+        symbol_rate: The number of symbols-per-second (1 / symbol time).
+        num_symbols: Consider using the maximum frame length, in bits, here.
+    """
+    sps = calculate_sps(sample_rate=sample_rate, symbol_rate=symbol_rate)
+    buff_size = math.ceil(sps * num_symbols)
+    return buff_size
+
+
+def calc_freq_sep(symbol_rate: int) -> int:
+    """Calculate the frequency separation."""
+    freq_sep = 2 * symbol_rate
+    return freq_sep
+
+
+def calc_freqs(center_freq: float | int, user: int, symbol_rate: int) -> UserFreqs:
+    """Calculate the user-specific center frequency, off freq, and on freq."""
+    # LOCAL VARIABLES
+    freq_sep = calc_freq_sep(symbol_rate)    # Frequency separation
+    bandwidth = calc_bandwidth(symbol_rate)  # (Carson's Rule) Bt = freq_sep + (2 * Baud)
+    freq0 = -(freq_sep / 2)                  # Off freq (User 1 default)
+    freq1 = (freq_sep / 2)                   # On freq (User 1 default)
+    new_center = 0.0                         # The user's new center freq
+    channel_spacing = 0                      # Each channel needs this much room
+
+    # INPUT VALIDATION
+    validate_pos_float_or_int(center_freq, 'center_freq')
+    _validate_user(user)
+    validate_pos_int(symbol_rate, 'symbol_rate')
+
+    # CALC FREQS
+    channel_spacing = bandwidth + (2 * symbol_rate)
+    if user == 1:
+        new_center = center_freq - channel_spacing  # Shift user 1 left
+    elif user == 2:
+        new_center = center_freq + channel_spacing  # Shift user 2 right
+    else:
+        raise NotImplementedError(f'Unsupported number of users {user}')
+
+    # DONE
+    return UserFreqs(center=new_center, f0=freq0, f1=freq1)
+
+
+def create_tailored_lpf(sample_rate: float | int, symbol_rate: int,
+                        numtaps: int = 101) -> numpy.ndarray:
+    """Create a LPF for the protocol using the channel bandwidth to determine the cutoff.
+
+    Default cutoff values were allowing the transmit channel to 'leak' into the receive channel.
+    """
+    chan_bandwidth = calc_bandwidth(symbol_rate=symbol_rate)
+    cutoff = calc_lpf_cutoff(chan_bandwidth)
+    taps = design_lpf(numtaps=numtaps, cutoff=cutoff, fs=sample_rate)
+
+    # DONE
+    return taps
+
+
+def generate_checksum(data_field: bytes) -> int:
+    """Generates an 8-bit checksum by adding, then ignoring the MSBits, all the byte values."""
+    return sum(data_field) & 0xFF  # Mask off the MSBits
+
+
+def get_tx_msg(debug_mode: bool, interact_mode: bool) -> bytes:
+    """Get a message to transmit based on --debug and --interact CLI args.
+
+                       INTERACT
+    DEBUG         True          False
+      True      MSG7        MSG7
+      False     input()     rand(MESSAGES)
+
+    Returns:
+        An ASCII message to transmit converted to binary bytes.
+    """
+    # LOCAL VARIABLES
+    msg = None  # The message to transmit
+
+    # INPUT VALIDATION
+    validate_bool(debug_mode, 'debug_mode')
+    validate_bool(interact_mode, 'interact_mode')
+
+    # GET IT
+    if debug_mode is True:
+        msg = MSG7
+    else:
+        if interact_mode is True:
+            tmp_msg = input(f'Enter a {MAX_DATA_FIELD_BYTES} character message to transmit: ')
+            msg = convert_ascii_to_bin_bytes(message=tmp_msg[:MAX_DATA_FIELD_BYTES], clean_it=True)
+        else:
+            msg = random.choice(MESSAGES)  # Choose a random message
+
+    # DONE
+    return msg
+
+
+def parse_frame(frame: numpy.ndarray, modem: Modem) -> None:
+    """Parse the frame by field instead of all at once."""
+    header_len = len(PREAMBLE+SYNCWORD)  # Length of the header
+    meta_len = header_len + 8            # Preamble + Syncword + Data Len
+    metadata = modem.decide_symbols(symbol_metrics=frame[:meta_len])
+    # print(f'RAW PREAMBLE + SYNCWORD + DATA LEN: {metadata}')  # DEBUGGING
+    data_len = convert_bin_bytes_to_int(metadata[:8])
+    # print(f'DATA LEN: {data_len}')  # DEBUGGING
+    data = modem.decide_symbols(symbol_metrics=frame[meta_len:meta_len+(data_len)])
+    # print(f'DATA: {data}')  # DEBUGGING
+    print_message(data_field=data)
+
+
+def parse_args() -> dict[str:Any]:
+    """Parse the command line arguments.
+
+    Returns:
+        A dictionary of keys and their associataed values.
+    """
+    # LOCAL VARIABLES
+    parser = None  # ArgumentParser object
+    args = None    # Parsed argument Namespace
+
+    # SETUP
+    parser = argparse.ArgumentParser(prog='RF Captstone v3.0',
+                                     description='Custom Bidirectional SDR Communication Protocol')
+    # Debug mode
+    parser.add_argument(f'-{CLI_ARG_DEBUG[0]}', f'--{CLI_ARG_DEBUG}', action='store_true',
+                        default=False, required=False,
+                        help='Enable verbose DEBUG print statements and utilize predictable '
+                             'payloads to aid in BER calculation.')
+    # Center frequency
+    # parser.add_argument(f'-{CLI_ARG_FREQ[0]}', f'--{CLI_ARG_FREQ}', type=float,
+    #                     action='store', help='Center frequency for communication', required=True)
+    # Interactive mode
+    parser.add_argument(f'-{CLI_ARG_INTERACT[0]}', f'--{CLI_ARG_INTERACT}', action='store_true',
+                        default=False, required=False,
+                        help='Allows the user to control when (in debug mode) or what (non-debug) '
+                             'messages are transmitted')
+    # SDR Serial Number
+    parser.add_argument(f'-{CLI_ARG_SERIAL[0]}', f'--{CLI_ARG_SERIAL}', type=str,
+                        action='store', help='Serial number of the desired device', required=False)
+    # User
+    parser.add_argument(f'-{CLI_ARG_USER[0]}', f'--{CLI_ARG_USER}', type=int,
+                        action='store',
+                        help=f'Which user are you?  Only {MAX_USERS} are supported.',
+                        required=True)
+
+    # PARSE IT
+    args = parser.parse_args()
+
+    # DONE
+    return _construct_arg_dict(args=args)
+
+
+def print_message(data_field: bytes) -> None:
+    """Print one data field."""
+    message = convert_bin_bytes_to_ascii(data_field, clean_it=True)
+    print(f'\n[RX] Received: {message}\n')
+
+
+def receive_frames(usrp: uhd.usrp.multi_usrp.MultiUSRP, modem: Modem, preamble: numpy.ndarray,
+                   syncword: numpy.ndarray, stop_event: threading.Event, debug: bool,
+                   lpf: numpy.ndarray):
+    """Capture an infinite number of frames (until stop_event triggers)."""
+    sps = 0  # Samples per symbol
+    lpf = lpf  # Use the same taps to RX as to TX
+    fec_repeat = FEC_REPEAT
+    max_data_bytes = MAX_DATA_FIELD_BYTES
+    if fec_repeat is not None:
+        max_data_bytes = max_data_bytes * fec_repeat
+    frame_receiver = FrameReceiver(modem=modem, syncword=syncword, checksum=generate_checksum,
+                                   fec_repeat=fec_repeat, max_data_bytes=max_data_bytes,
+                                   debug=debug)
+    stream_args = uhd.usrp.StreamArgs("fc32", "sc16")
+    stream_args.channels = [0]
+    streamer = usrp.get_rx_stream(stream_args)
+    buffer = numpy.empty((1, streamer.get_max_num_samps()), dtype=numpy.complex64)
+    metadata = uhd.types.RXMetadata()
+    received = numpy.empty(0, dtype=numpy.complex64)
+    total = 0
+    datum = []  # Data pulled from frames
+    exp_data = MSG7 if debug is True else None  # Calculate and print BERs in DEBUG mode
+    threshold = 0  # Threshold to process samples
+    mm_sync = None  # Instantiate the object once modem is parseds
+    freq_corr = None  # FrequencyCorrector() object
+    freq_lock = False  # Has the frequency corrector locked in yet?
+
+    # Start continuous RX.
+    stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.start_cont)
+    stream_cmd.stream_now = True
+    streamer.issue_stream_cmd(stream_cmd)
+
+    try:
+        print('[RX] Starting')
+        modem.parse()  # Update the sps attribute
+        sps = modem._sps  # Samples per symbol
+        max_frame_len = len(PREAMBLE) + len(SYNCWORD) + 8 + max_data_bytes + 8
+        threshold = modem._sps * 1000  # Threshold to process samples
+        freq_corr = FrequencyCorrector(sample_rate=SAMPLE_RATE, freq_sep=calc_freq_sep(SYMBOL_RATE),
+                                       snr_threshold_db=20)
+        while not stop_event.is_set():
+            count = streamer.recv(buffer, metadata)
+            if metadata.error_code != uhd.types.RXMetadataErrorCode.none:
+                raise RuntimeError(f'RX error: {metadata.strerror()}')
+            received = numpy.concatenate([received, buffer[0, :count]])  # Store it
+            if len(received) > threshold:
+                # Filter
+                received = apply_fir(samples=received, coeffs=lpf)
+
+                # Frequency Correction
+                received = freq_corr.process(received, debug=False)
+                if debug and freq_corr and not freq_lock:
+                    print(freq_corr.debug_state())
+                    freq_lock = freq_corr.is_locked()  # No need to see debug_state() every time
+
+                # DEMOD STEPS 1, 2, and then 3
+                # Step 1 - Demod to Metrics
+                metric = modem.demodulate_to_metric(samples=received)
+                # Step 2 - Time Sync w/ Interpolation (for better boundaries)
+                symbol_metrics = recover_clock_mm(metric, modem._sps, interp=16)
+                # Step 3 - Parse Frames (which will decide symbols)
+                datum = frame_receiver.process(symbol_metrics=symbol_metrics, exp_data=exp_data)
+                for data in datum:
+                    print_message(data_field=data)  # Print any messages
+                received = numpy.empty(0, dtype=numpy.complex64)  # Empty the array
+    finally:
+        print('\n[RX] Stopping')
+        stream_cmd = uhd.types.StreamCMD(uhd.types.StreamMode.stop_cont)
+        streamer.issue_stream_cmd(stream_cmd)
+
+
+def wait_until_interval(num_sec: float | int) -> None:
+    """Pauses until the clock reaches a repeating pattern based on num_sec."""
+    now = time.time()
+    num_sec = float(num_sec)  # Explicitly convert it to a float
+    step = 2                  # The repeating pattern size (alternating seconds)
+    # Shift time backward by the offset to calculate alignment
+    shifted_now = now - num_sec
+    target_shifted = math.ceil(shifted_now / step) * step
+    # If we are exactly on the boundary, push to the next step
+    if target_shifted == shifted_now:
+        target_shifted += step
+    # Shift back to get the final absolute timestamp
+    target_time = target_shifted + num_sec
+    # Busy-wait loop with a tiny sleep to minimize CPU usage
+    while time.time() < target_time:
+        time.sleep(0.001)
+
+
+def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:
+    """Construct an ArgVals data class from the parsed args."""
+    # LOCAL VARIABLES
+    arg_dict = {}            # Dictionary of args and their values
+    arg_keys = CLI_ARG_KEYS  # List of all supported CLI arg keys
+
+    # INPUT VALIDATION
+    validate_type(var=args, var_name='args', var_type=argparse.Namespace)
+
+    # GET IT
+    for arg_key in arg_keys:
+        arg_dict[arg_key] = _get_eafp_attr(args=args, attr=arg_key)
+
+    # DONE
+    return arg_dict
+
+
+def _get_eafp_attr(args: argparse.Namespace, attr: str) -> Any:
+    """Safely retrieve values from a Namespace (if they exist)."""
+    # LOCAL VARIABLES
+    value = None  # Retrieved value
+
+    # GET IT
+    try:
+        value = getattr(args, attr)
+    except AttributeError:
+        pass  # Easier to ask for forgiveness than permission (EAFP)
+
+    # DONE
+    return value
+
+
+def _validate_user(user: int) -> None:
+    """Validate a 'user' argument."""
+    # INPUT VALIDATION
+    validate_pos_int(user, 'user')
+    if user > MAX_USERS:
+        raise RuntimeError(f'Invalid number of users ({user}) for a maximum of {MAX_USERS}')
+
+
+def main() -> None:
+    """do_it()."""
+    try:
+        # LOCAL VARIABLES
+        arg_dict = parse_args()                             # Read user input
+        usrp = build_usrp(serial=arg_dict[CLI_ARG_SERIAL])  # Build the SDR object
+        samp_rate = SAMPLE_RATE                             # Sample rate
+        symb_rate = SYMBOL_RATE                             # Symbol rate
+        # Calculate the new frequencies for both users
+        comm_freqs = CommFreqs(user=arg_dict[CLI_ARG_USER], center_freq=CENTER_FREQ,
+                               symbol_rate=symb_rate)
+        our_freqs = comm_freqs.get_my_freqs()
+        their_freqs = comm_freqs.get_user_freqs(2 if arg_dict[CLI_ARG_USER] == 1 else 1)
+        sps = calculate_sps(sample_rate=samp_rate, symbol_rate=symb_rate)
+        rx_gain = 40                                        # RX gain
+        tx_gain = 40                                        # TX gain
+        channel = 0                                         # SDR channel
+        squelch_db = None    # Squelch threshold in db (e.g., -48, -55); skip w/ None
+        modem_config = build_modem_config(sample_rate=samp_rate, symbol_rate=symb_rate,
+                                          freqs=our_freqs)  # FSK2()'s demod doesn't use freqs
+        modem = build_modem(config=modem_config)
+        stop_event = threading.Event()                      # Signal the child thread to exit
+        rx_thread = None                                    # The "receive" thread
+        fec_repeat = FEC_REPEAT                             # Implement FEC repeats or not
+        current_msg = 1                                     # Used to discretely number test msgs
+
+        # SETUP
+        if arg_dict[CLI_ARG_DEBUG]:
+            print(f'OURS: {our_freqs}\nTHEIRS: {their_freqs}')
+            print(f'RX GAIN: {rx_gain}\nTX GAIN: {tx_gain}')
+            print(f'SAMPLE RATE: {samp_rate} (fs/2 == {samp_rate/2})')
+            print(f'SYMBOL RATE: {symb_rate}')
+            print(f'BANDWIDTH: {calc_bandwidth(symb_rate)}')
+            print(f'LPF CUTOFF: {calc_lpf_cutoff(calc_bandwidth(symb_rate))}')
+            print(f'FREQ SEP: {calc_freq_sep(symb_rate)}')
+        lpf = create_tailored_lpf(sample_rate=samp_rate, symbol_rate=symb_rate)
+        configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=their_freqs.center,
+                       gain=rx_gain, channel=channel, direction=ConfigDirection.RX)
+        configure_usrp(usrp=usrp, samp_rate=samp_rate, center_freq=our_freqs.center,
+                       gain=tx_gain, channel=channel, direction=ConfigDirection.TX)
+
+        # RECEIVE
+        # Start
+        rx_thread = threading.Thread(
+            target=receive_frames,
+            args=(usrp, modem, PREAMBLE, SYNCWORD, stop_event, arg_dict[CLI_ARG_DEBUG], lpf)
+        )
+        rx_thread.start()
+        time.sleep(0.1)  # Give the receive thread a head start
+
+        # TRANSMIT
+        try:
+            debug_sleep = 5  # ...seconds to start the other user
+            half_dup_offset = 1  # Force half-duplex at these second intervals
+            if arg_dict[CLI_ARG_DEBUG]:
+                print(f'You have {debug_sleep} seconds to start the other user!')
+                sleep(debug_sleep)
+            while True:
+                # Build the frame
+                tmp_msg = get_tx_msg(debug_mode=arg_dict[CLI_ARG_DEBUG],
+                                     interact_mode=arg_dict[CLI_ARG_INTERACT])
+                ############################################################
+                # CREATE A STATIC CAPTURE WITH DISCRETELY LABELED MESSAGES #
+                ############################################################
+                # total_msgs = 10
+                # if current_msg > total_msgs:
+                #     sleep(2)  # Let the other user finish sending messages, if applicable
+                #     raise KeyboardInterrupt(f'Sent {total_msgs} messages')
+                # tmp_msg = convert_ascii_to_bin_bytes(message=f'This is message #{current_msg}')
+                # current_msg += 1  # Advance to the next message number
+                ###########################################################
+                tmp_frame = build_frame(preamble=PREAMBLE, syncword=SYNCWORD, message=tmp_msg,
+                                        fec_repeat=fec_repeat)
+                tx_samples = modem.modulate(bin_bytes=tmp_frame, gauss_bt=GFSK_BT)
+                # [?] Filter?
+                tx_samples = apply_fir(samples=tx_samples, coeffs=lpf)
+
+                # Determine timing
+                if arg_dict[CLI_ARG_DEBUG]:
+                    if arg_dict[CLI_ARG_INTERACT]:
+                        input(f'Press <ENTER> to transmit the {CLI_ARG_DEBUG} message...')
+                    else:
+                        # Force half-duplex
+                        wait_until_interval(num_sec=half_dup_offset + arg_dict[CLI_ARG_USER] - 1)
+                else:
+                    if arg_dict[CLI_ARG_INTERACT]:
+                        pass  # Transmit *now*!
+                    else:
+                        # tmp_sleep = random.randint(1, 5)  # Between 1 and 5 seconds
+                        tmp_sleep = random.randint(2, 5) * 0.1  # Between 0.2 and 0.5 seconds
+                        # tmp_sleep = 0.1  # CW2 Mode
+                        # tmp_sleep = 0.5  # Harklemode
+                        print(f'[TX] Sleeping - {tmp_sleep:.3} secs')
+                        time.sleep(tmp_sleep)
+                print(f'[TX] Sending - {convert_bin_bytes_to_ascii(tmp_msg, clean_it=True)}')
+                transmit(usrp=usrp, samples=tx_samples)
+        except KeyboardInterrupt:
+            time.sleep(0.2)  # Let the receive thread finish?
+            stop_event.set()  # Tell the receive thread to stop
+            rx_thread.join()
+            print()
+    except (RuntimeError, LookupError, KeyError) as err:
+        print(err)
+        if 'No devices found' in err.args[0]:
+            if arg_dict[CLI_ARG_DEBUG] is True:
+                if arg_dict[CLI_ARG_SERIAL]:
+                    print('\nDid you neglect to connect SDR serial number '
+                          f'"{arg_dict[CLI_ARG_SERIAL]}"?  If not, it seems to be unavailable.  '
+                          'Verify with `uhd_find_devices`.', file=sys.stderr)
+                else:
+                    print('\nThere are no devices available.  Either connect another SDR or '
+                          f'use the --{CLI_ARG_SERIAL} CLI argument.', file=sys.stderr)
+        if arg_dict[CLI_ARG_DEBUG] is True:
+            raise err
+
+
+if __name__ == '__main__':
+    main()

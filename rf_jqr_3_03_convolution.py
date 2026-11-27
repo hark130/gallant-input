@@ -130,13 +130,13 @@ def parse_args() -> dict[str:Any]:
     return _construct_arg_dict(args=args)
 
 
-def print_threshold_indices(signal: numpy.ndarray, threshold: int | float, use_db: bool = True,
+def print_threshold_indices(samples: numpy.ndarray, threshold: int | float, use_db: bool = True,
                             title: str | None = 'Signal exceeds threshold at indices: ',
                             ) -> numpy.ndarray:
     """Print the indices of samples whose magnitude exceeds the threshold.
 
     Args:
-        signal: A 1-dimensional array of samples to evaluate against the threhold.
+        samples: A 1-dimensional array of samples to evaluate against the threhold.
         threshold: The minimum magnitude, linear or dB (as determined by use_db) for an index
             to qualify.
         use_db: [OPTIONAL] Convert the signal magnitude to decibels.
@@ -145,7 +145,7 @@ def print_threshold_indices(signal: numpy.ndarray, threshold: int | float, use_d
     # LOCAL VARIABLES
     mag_map = None  # Numpy.ndarray of magnitudes
     # INPUT VALIDATION
-    validate_ndarray(array=signal, array_name='signal', can_be_empty=False, num_dim=1,
+    validate_ndarray(array=samples, array_name='samples', can_be_empty=False, num_dim=1,
                      must_be_complex=False)
     validate_int_or_float(validate_this=threshold, param_name='threshold')
     validate_bool(use_db, 'use_db')
@@ -153,7 +153,7 @@ def print_threshold_indices(signal: numpy.ndarray, threshold: int | float, use_d
         validate_string(title, 'title', can_be_empty=True)
 
     # SETUP
-    mag_map = compute_magnitude_spectrum(signal)
+    mag_map = compute_magnitude_spectrum(samples)
     if use_db:
         mag_map = convert_mag_to_db(mag_map)
 
@@ -208,21 +208,21 @@ def main() -> None:
     # Read the input signal
     in_signal = read_samples(input_iq)
     # Apply the FIR filter to the input signal
-    filt_signal = apply_fir(signal=in_signal, coeffs=imp_resp)
+    filt_signal = apply_fir(samples=in_signal, coeffs=imp_resp)
     # Plot before, in the frequency domain
     # TO DO: DON'T DO NOW... Refactor center_freq args to also support integers
     samp_rate, center_freq = _gently_resolve_details(input_iq)
-    plot_spectrum(signal=in_signal, samp_rate=samp_rate, convert_db=convert_db,
+    plot_spectrum(samples=in_signal, samp_rate=samp_rate, convert_db=convert_db,
                   center_freq=center_freq, title=f'Magnitude Spectrum: {input_iq.name}')
     # Plot after, in the frequency domain
-    plot_spectrum(signal=filt_signal, samp_rate=samp_rate, convert_db=convert_db,
+    plot_spectrum(samples=filt_signal, samp_rate=samp_rate, convert_db=convert_db,
                   center_freq=center_freq, title=f'Magnitude Spectrum: {output_iq.name}')
 
     # 5. Write the filtered signal to the output file
     write_samples(filename=output_iq, samples=filt_signal, overwrite=True)
 
     # 6. Print the input signal's indices whose magnitude exceeds the threshold
-    print_threshold_indices(signal=in_signal, threshold=threshold, use_db=convert_db)
+    print_threshold_indices(samples=in_signal, threshold=threshold, use_db=convert_db)
 
 
 def _construct_arg_dict(args: argparse.Namespace) -> dict[str:Any]:

@@ -148,7 +148,7 @@ class SpecialRDSPICodeVPCIIUnitTest(RDSPICodeVPCIUnitTest):
         that PI codes have a discernable format.  However, subsequent attempts to add this block
         as a Block A should fail (e.g., add_bytes(), add_rds_group())
         """
-        pi_code = self.GOOD_BLOCK_D3[:RDS_BLOCK_DATA_LEN]
+        pi_code = self.good_block_d3[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code)
 
     def test_s02_out_of_order_group_shift2(self):
@@ -158,7 +158,7 @@ class SpecialRDSPICodeVPCIIUnitTest(RDSPICodeVPCIUnitTest):
         that PI codes have a discernable format.  However, subsequent attempts to add this block
         as a Block A should fail (e.g., add_bytes(), add_rds_group())
         """
-        pi_code = self.GOOD_BLOCK_C3[:RDS_BLOCK_DATA_LEN]
+        pi_code = self.good_block_c3[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code)
 
     def test_s03_out_of_order_group_shift3(self):
@@ -168,7 +168,7 @@ class SpecialRDSPICodeVPCIIUnitTest(RDSPICodeVPCIUnitTest):
         that PI codes have a discernable format.  However, subsequent attempts to add this block
         as a Block A should fail (e.g., add_bytes(), add_rds_group())
         """
-        pi_code = self.GOOD_BLOCK_B3[:RDS_BLOCK_DATA_LEN]
+        pi_code = self.good_block_b3[:RDS_BLOCK_DATA_LEN]
         self.run_test_return(pi_code)
 
 

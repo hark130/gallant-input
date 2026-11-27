@@ -84,8 +84,8 @@ class NormalRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
 
     def test_n01_valid_coherent_group1(self):
         """Valid example of a coherent RDS Group."""
-        pi_code = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]
-        rds_group = RDSGroup(self.GOOD_GROUP1)
+        pi_code = self.good_group1[:RDS_BLOCK_DATA_LEN]
+        rds_group = RDSGroup(self.good_group1)
         self.run_test_return(pi_code, rds_group)
 
 
@@ -101,14 +101,14 @@ class ErrorRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     def test_e02_rds_group_bad_obj_type_tuple(self):
         """Bad rds_group type: tuple."""
         pi_code = self.def_good_pic
-        rds_group = tuple((self.GOOD_BLOCK_A3, self.GOOD_BLOCK_B3, self.GOOD_BLOCK_C3,
-                           self.GOOD_BLOCK_D3))
+        rds_group = tuple((self.good_block_a3, self.good_block_b3, self.good_block_c3,
+                           self.good_block_d3))
         self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_e03_rds_group_bad_obj_type_int(self):
         """Bad rds_group type: int."""
         pi_code = self.def_good_pic
-        rds_group = convert_bin_bytes_to_int(self.GOOD_GROUP1)
+        rds_group = convert_bin_bytes_to_int(self.good_group1)
         self.run_test_exception(pi_code, rds_group, TypeError,
                                 'argument should have been of type')
 
@@ -128,14 +128,14 @@ class ErrorRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     def test_e06_rds_group_bad_type_tuple(self):
         """Bad rds_group type: RDSGroup(tuple)."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(tuple((self.GOOD_BLOCK_A3, self.GOOD_BLOCK_B3, self.GOOD_BLOCK_C3,
-                                    self.GOOD_BLOCK_D3)))
+        rds_group = RDSGroup(tuple((self.good_block_a3, self.good_block_b3, self.good_block_c3,
+                                    self.good_block_d3)))
         self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_e07_rds_group_bad_type_int(self):
         """Bad rds_group type: RDSGroup(int)."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(convert_bin_bytes_to_int(self.GOOD_GROUP1))
+        rds_group = RDSGroup(convert_bin_bytes_to_int(self.good_group1))
         self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_e08_rds_group_bad_value_empty(self):
@@ -148,28 +148,28 @@ class ErrorRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     def test_e09_rds_group_bad_value_short(self):
         """Bad rds_group value: short."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_GROUP1[:RDS_GROUP_LEN-1])
+        rds_group = RDSGroup(self.good_group1[:RDS_GROUP_LEN-1])
         self.run_test_exception(pi_code, rds_group, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e10_rds_group_bad_value_long(self):
         """Bad rds_group value: long."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_GROUP1 + b'1')
+        rds_group = RDSGroup(self.good_group1 + b'1')
         self.run_test_exception(pi_code, rds_group, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e11_rds_group_bad_value_two_blocks(self):
         """Bad rds_group value: two groups."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_GROUP1 + self.GOOD_GROUP1)
+        rds_group = RDSGroup(self.good_group1 + self.good_group1)
         self.run_test_exception(pi_code, rds_group, ValueError, 'The "rds_group" argument must '
                                 'be of length "104" instead of')
 
     def test_e12_rds_group_bad_value_binary(self):
         """Bad rds_group value: binary contains an invalid character."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3
+        rds_group = RDSGroup(self.good_block_a3 + self.good_block_b3 + self.good_block_c3
                              + self.BAD_BLOCK8)
         self.run_test_exception(pi_code, rds_group, ValueError, 'Invalid binary value detected')
 
@@ -180,47 +180,47 @@ class SpecialRDSPICodeARGUnitTest(RDSPICodeARGUnitTest):
     def test_s01_out_of_order_group_shift1(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 1."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3 + self.GOOD_BLOCK_B3
-                             + self.GOOD_BLOCK_C3)
+        rds_group = RDSGroup(self.good_block_d3 + self.good_block_a3 + self.good_block_b3
+                             + self.good_block_c3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
                                 'This RDS PI code set has a bad RDS group:')
 
     def test_s02_out_of_order_group_shift2(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 2."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3 + self.GOOD_BLOCK_A3
-                             + self.GOOD_BLOCK_B3)
+        rds_group = RDSGroup(self.good_block_c3 + self.good_block_d3 + self.good_block_a3
+                             + self.good_block_b3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
                                 'This RDS PI code set has a bad RDS group:')
 
     def test_s03_out_of_order_group_shift3(self):
         """A group of RDS blocks that are valid but out of order: caesar shift 3."""
         pi_code = self.def_good_pic
-        rds_group = RDSGroup(self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C3 + self.GOOD_BLOCK_D3
-                             + self.GOOD_BLOCK_A3)
+        rds_group = RDSGroup(self.good_block_b3 + self.good_block_c3 + self.good_block_d3
+                             + self.good_block_a3)
         self.run_test_exception(pi_code, rds_group, RDSIntegrityFailure,
                                 'This RDS PI code set has a bad RDS group:')
 
     def test_s04_valid_yet_disparate_blocks(self):
         """A group of RDS blocks that are not necessarily related to each other."""
-        pi_code = self.GOOD_BLOCK_A1[:RDS_BLOCK_DATA_LEN]
-        rds_group = RDSGroup(self.GOOD_BLOCK_A1 + self.GOOD_BLOCK_B3 + self.GOOD_BLOCK_C1
-                             + self.GOOD_BLOCK_D3)
+        pi_code = self.good_block_a1[:RDS_BLOCK_DATA_LEN]
+        rds_group = RDSGroup(self.good_block_a1 + self.good_block_b3 + self.good_block_c1
+                             + self.good_block_d3)
         self.run_test_return(pi_code, rds_group)
 
     def test_s05_method_mixup(self):
         """Confused add_bytes() for add_rds_group() (or vice-versa)."""
-        pi_code = self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]
-        rds_group = self.GOOD_GROUP1
+        pi_code = self.good_group1[:RDS_BLOCK_DATA_LEN]
+        rds_group = self.good_group1
         self.run_test_exception(pi_code, rds_group, TypeError, 'argument should have been of type')
 
     def test_s06_good_pic_wrong_block(self):
         """Valid pi_code in the ctor but the RDSGroup PI code doesn't match."""
-        pi_code = self.GOOD_BLOCK_B3[:RDS_BLOCK_DATA_LEN]
-        rds_group = RDSGroup(self.GOOD_GROUP1)
+        pi_code = self.good_block_b3[:RDS_BLOCK_DATA_LEN]
+        rds_group = RDSGroup(self.good_group1)
         self.run_test_exception(pi_code, rds_group, RDSPICodeMismatch,
                                 f'expected code "{pi_code}" but '
-                                f'"{self.GOOD_GROUP1[:RDS_BLOCK_DATA_LEN]}" was parsed instead')
+                                f'"{self.good_group1[:RDS_BLOCK_DATA_LEN]}" was parsed instead')
 
 
 if __name__ == '__main__':

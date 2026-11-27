@@ -1,0 +1,38 @@
+Manual Frequency Offset
+
+EXP2A (Control)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 91 packets, user 2 received 54: 40.66% packet loss.
+User 2 sent 89 packets, user 1 received 52: 41.57% packet loss.
+
+EXP2B (-1000)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 72 packets, user 2 received 50: 30.56% packet loss.
+User 2 sent 70 packets, user 1 received 41: 41.43% packet loss.
+
+EXP2C (-750)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 65 packets, user 2 received 42: 35.38% packet loss.
+User 2 sent 63 packets, user 1 received 36: 42.86% packet loss.
+
+EXP2D (-500)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 63 packets, user 2 received 42: 33.33% packet loss.
+User 2 sent 63 packets, user 1 received 36: 42.86% packet loss.
+
+EXP2E (-250)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 69 packets, user 2 received 46: 33.33% packet loss.
+User 2 sent 68 packets, user 1 received 34: 50.00% packet loss.
+
+EXP2F (+250)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 66 packets, user 2 received 43: 34.85% packet loss.
+User 2 sent 64 packets, user 1 received 33: 48.44% packet loss.
+
+EXP2G (+500)
+python rf_capstone_calc_error_rate.py 
+User 1 sent 87 packets, user 2 received 52: 40.23% packet loss.
+User 2 sent 85 packets, user 1 received 51: 40.00% packet loss.
+
+

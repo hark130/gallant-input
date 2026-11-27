@@ -17,6 +17,7 @@ from tediousstart.tediousstart import execute_test_cases
 from test.unit_test.test_rds.test_mgt.test_mgt02.test_mgt02 import RDSMsgGrpType02UnitTest
 
 
+# pylint: disable=too-many-ancestors
 class RDSMsgGrpType02RTCUnitTest(RDSMsgGrpType02UnitTest):
     """Parent class for all RDSMsgGroupType02.radio_text_chunk property unit tests.
 
